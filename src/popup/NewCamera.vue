@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="ison" width="80vw">
+    <v-dialog v-model="showDialog" width="80vw">
         <v-card>
             <p>ssss</p>
         </v-card>
@@ -10,10 +10,14 @@
 <script lang="js">
 
 export default {
-    model: {
-        prop: 'ison',
-        event: 'change'
-    },
+    props: ['modelValue'],
+    emits: ['update:modelValue'],
+    computed: { 
+      showDialog: { 
+        get () { return this.modelValue },
+        set (value) { this.$emit('update:modelValue', value) }     
+      }
+    }
 }
 
 </script>
