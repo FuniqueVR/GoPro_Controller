@@ -1,13 +1,13 @@
 <template>
   <v-app>
     <v-main>
-      <v-row class="w-100">
+      <v-row class="w-100 pa-2">
         <v-col cols="6">
           <v-row style="height:40vh">
-            <v-col cols="4">
+            <v-col cols="5">
               <GlobalControl />
             </v-col>
-            <v-col cols="8">
+            <v-col cols="7">
               <ActionButtons />
             </v-col>
           </v-row>
@@ -17,6 +17,7 @@
           <CameraList />
         </v-col>
       </v-row>
+      <NewCamera v-model="newcam" />
     </v-main>
   </v-app>
 </template>
@@ -27,6 +28,8 @@ import CameraList from './section/CameraList.vue'
 import GlobalControl from './section/GlobalControl.vue'
 import ControlInspector from './section/ControlInspector.vue'
 
+import NewCamera from './popup/NewCamera.vue'
+
 export default {
   name: 'App',
 
@@ -35,10 +38,12 @@ export default {
     CameraList,
     GlobalControl,
     ControlInspector,
+
+    NewCamera,
   },
 
   data: () => ({
-    //
+    newcam: true
   }),
 }
 </script>

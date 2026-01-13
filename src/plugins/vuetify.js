@@ -1,4 +1,4 @@
-import { VApp, VToolbar, VRow, VCol, VBtn } from 'vuetify/components'
+import { VApp, VToolbar, VRow, VCol, VBtn, VSelect, VDialog, VCard } from 'vuetify/components'
 // Styles
 import '@mdi/font/css/materialdesignicons.css'
 import 'vuetify/dist/vuetify.min.css'
@@ -23,6 +23,6 @@ export default createVuetify({
   components: {
     VApp,
     VToolbar,
-    VRow, VCol, VBtn,
+    VRow, VCol, VBtn, VSelect, VDialog, VCard
   },
 })
