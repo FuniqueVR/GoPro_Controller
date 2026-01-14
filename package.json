@@ -1,61 +1,44 @@
 {
-  "name": "gopro_controller",
-  "version": "0.1.0",
+  "name": "my-vue-app",
+  "productName": "my-vue-app",
+  "version": "1.0.0",
+  "description": "My Electron application description",
+  "main": ".vite/build/main.js",
   "private": true,
   "scripts": {
-    "serve": "vite preview",
-    "build": "vite build",
-    "lint": "vue-cli-service lint",
-    "dev": "vite",
-    "electron:build": "vue-cli-service electron:build",
-    "electron:serve": "vue-cli-service electron:serve",
-    "postinstall": "electron-builder install-app-deps",
-    "postuninstall": "electron-builder install-app-deps"
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "publish": "electron-forge publish",
+    "lint": "echo \"No linting configured\""
   },
-  "main": "background.js",
-  "dependencies": {
-    "@mdi/font": "5.9.55",
-    "axios": "^1.13.2",
-    "core-js": "^3.47.0",
-    "roboto-fontface": "*",
-    "vue": "^3.2.13",
-    "vuetify": "^3.0.0-beta.0",
-    "webfontloader": "^1.0.0"
+  "keywords": [],
+  "author": {
+    "name": "elly-funique",
+    "email": "chu.elly@funique.tv"
   },
+  "license": "MIT",
   "devDependencies": {
-    "@babel/core": "^7.12.16",
-    "@babel/eslint-parser": "^7.12.16",
-    "@vitejs/plugin-vue": "^3.0.3",
-    "@vue/cli-plugin-babel": "~5.0.0",
-    "@vue/cli-plugin-eslint": "~5.0.0",
-    "@vue/cli-service": "~5.0.0",
-    "electron": "^13.0.0",
-    "electron-devtools-installer": "^3.1.0",
-    "eslint": "^7.32.0",
-    "eslint-plugin-vue": "^8.0.3",
-    "vite": "^3.0.8",
-    "vite-plugin-vuetify": "^1.0.0-alpha.12",
-    "vue-cli-plugin-electron-builder": "~2.1.1",
-    "vue-cli-plugin-vuetify": "~2.5.8"
+    "@electron-forge/cli": "^7.11.1",
+    "@electron-forge/maker-deb": "^7.11.1",
+    "@electron-forge/maker-rpm": "^7.11.1",
+    "@electron-forge/maker-squirrel": "^7.11.1",
+    "@electron-forge/maker-zip": "^7.11.1",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.11.1",
+    "@electron-forge/plugin-fuses": "^7.11.1",
+    "@electron-forge/plugin-vite": "^7.11.1",
+    "@electron/fuses": "^1.8.0",
+    "@vitejs/plugin-vue": "^6.0.3",
+    "electron": "39.2.7",
+    "vite": "^5.4.21"
   },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "node": true
-    },
-    "extends": [
-      "plugin:vue/vue3-essential",
-      "eslint:recommended"
-    ],
-    "parserOptions": {
-      "parser": "@babel/eslint-parser"
-    },
-    "rules": {}
-  },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not dead",
-    "not ie 11"
-  ]
+  "dependencies": {
+    "axios": "^1.13.2",
+    "cors": "^2.8.5",
+    "electron-squirrel-startup": "^1.0.1",
+    "express": "^5.2.1",
+    "vite-plugin-vuetify": "^2.1.2",
+    "vue": "^3.5.26",
+    "vuetify": "^3.11.6"
+  }
 }

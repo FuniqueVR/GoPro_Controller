@@ -9,3 +9,10 @@
         </div>
     </div>
 </template>
+
+<script lang="js">
+export default {
+    name: "CameraList",
+    props: ['cameras']
+}
+</script>
