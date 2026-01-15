@@ -4,10 +4,21 @@ export class GoProCamera {
     name = ""
     url = ""
     connected = false
+    state = {}
+    info = {}
 
     constructor(name, url){
         this.name = name
         this.url = url
+    }
+
+    render(){
+        Axios.get(`http://${this.url}/gopro/camera/state`).then(x => {
+            this.state = x.data
+        }).catch(() => {})
+        Axios.get(`http://${this.url}/gopro/camera/info`).then(x => {
+            this.info = x.data
+        }).catch(() => {})
     }
 
     enable_control(p = true) {
@@ -28,5 +39,9 @@ export class GoProCamera {
 
     shutdown() {
         return Axios.get(`http://${this.url}/gp/gpControl/command/system/shutdown`).catch(() => {})
+    }
+
+    shutter(p){
+        return Axios.get(`http://${this.url}/gopro/camera/shutter/${ p ? 'start' : 'stop' }`).catch(() => {})
     }
 }

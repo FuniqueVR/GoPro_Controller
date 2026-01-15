@@ -53,10 +53,8 @@
 </template>
 
 <script lang="js">
-
 export default {
     name: "GlobalControl",
     emits: ['update:command'],
 }
-
 </script>

@@ -15,14 +15,27 @@ export class GoPro {
         Axios.get('http://127.0.0.1:18000/exist').then(x => {
             if(x.data.exist){
                 Axios.get('http://127.0.0.1:18000/load').then(y => {
-                    const yo = JSON.parse(y.data)
-                    this.cameras = yo.cameras
+                    const yo = y.data.data
+                    console.log("YO", yo)
+                    if(yo.camera != undefined){
+                        for(const cam of yo.camera){
+                            this.cameras.push(new GoProCamera(cam.name, cam.url))
+                            console.log(`Load Camera: ${cam.name} ${cam.url}`)
+                        }
+                    }
                     this.setting = yo.setting
+                    console.log(this.cameras)
                 })
             }else{
                 Axios.post('http://127.0.0.1:18000/save', this.toJson())
             }
         })
+    }
+
+    render(){
+        for(const x of this.cameras){
+            x.render();
+        }
     }
 
     update(){
@@ -40,6 +53,7 @@ export class GoPro {
         v.push(str[str.length - 1])
 
         this.cameras.push(new GoProCamera(name, `172.2${v[0]}.1${v[1]}${v[2]}.51:8080`))
+        this.update()
     }
 
     enable_control_all(p = true){
@@ -48,15 +62,21 @@ export class GoPro {
         }
     }
 
-    reboot_all(p){
+    reboot_all(){
         for(const x of this.cameras){
-            x.reboot(p);
+            x.reboot();
         }
     }
 
-    shutdown_all(p){
+    shutdown_all(){
         for(const x of this.cameras){
-            x.shutdown(p);
+            x.shutdown();
+        }
+    }
+
+    shutter(p){
+        for(const x of this.cameras){
+            x.shutter(p);
         }
     }
 

@@ -31,6 +31,7 @@ import ControlInspector from './section/ControlInspector.vue'
 import NewCamera from './popup/NewCamera.vue'
 
 import { GoPro } from './scripts/gopro'
+import Axios from 'axios'
 
 export default {
   name: 'App',
@@ -45,15 +46,18 @@ export default {
   },
 
   data: () => ({
+    mainloop: undefined,
     controller: new GoPro(),
     newcam: false
   }),
 
   mounted(){
-
+    this.mainloop = setInterval(() => {
+      this.controller.render()
+    }, 500);
   },
   unmounted(){
-
+    clearInterval(this.mainloop)
   },
 
   methods: {
@@ -77,6 +81,25 @@ export default {
         case 3:
           {
             this.controller.enable_control_all(false)
+            break;
+          }
+        case 4:
+          {
+            this.controller.shutdown_all()
+            break;
+          }
+        case 5:
+          {
+            this.controller.shutter(true)
+            break;
+          }
+        case 6:
+          {
+            this.controller.shutter(false)
+            break;
+          }
+        case 7:
+          {
             break;
           }
       }
