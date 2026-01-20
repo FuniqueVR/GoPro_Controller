@@ -11,6 +11,9 @@
 #include "imgui_impl_sdl3.h"
 #include "imgui_impl_opengl3.h"
 
+
+#include <opencv2/opencv.hpp>
+
 #include <stdio.h>
 #include <SDL3/SDL.h>
 #if defined(IMGUI_IMPL_OPENGL_ES2)
@@ -130,6 +133,8 @@ int main(int, char**)
     bool show_demo_window = true;
     bool show_another_window = false;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+    cv::VideoCapture cap;
+    cv::Mat frame;
 
     // Main loop
     bool done = false;
@@ -142,6 +147,13 @@ int main(int, char**)
     while (!done)
 #endif
     {
+        cap >> frame;
+        if (frame.empty()) {
+            cap.open("udp://172.28.161.51:554");
+            std::cerr << "Received empty frame or stream ended.\n";
+        }else{
+          std::cout << "Get the frame !";
+        }
         // Poll and handle events (inputs, window resize, etc.)
         // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
         // - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application, or clear/overwrite your copy of the mouse data.
@@ -165,6 +177,8 @@ int main(int, char**)
             continue;
         }
 
+        // Reading frame 
+
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplSDL3_NewFrame();
@@ -176,6 +190,7 @@ int main(int, char**)
 
         // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
         {
+            cv::VideoCapture cap;
             static float f = 0.0f;
             static int counter = 0;
 
