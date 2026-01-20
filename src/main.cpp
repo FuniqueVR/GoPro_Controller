@@ -6,7 +6,7 @@
 // - Getting Started      https://dearimgui.com/getting-started
 // - Documentation        https://dearimgui.com/docs (same as your local docs/ folder).
 // - Introduction, links and more at the top of imgui.cpp
-
+#include <vector>
 #include "imgui.h"
 #include "imgui_impl_sdl3.h"
 #include "imgui_impl_opengl3.h"
@@ -25,6 +25,7 @@
 #ifdef __EMSCRIPTEN__
 #include "../libs/emscripten/emscripten_mainloop_stub.h"
 #endif
+#include "data/video_texture.h"
 
 // Main code
 int main(int, char**)
@@ -135,6 +136,7 @@ int main(int, char**)
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     cv::VideoCapture cap;
     cv::Mat frame;
+    std::vector<VideoTexture*> my_textures;
 
     // Main loop
     bool done = false;
@@ -147,13 +149,6 @@ int main(int, char**)
     while (!done)
 #endif
     {
-        cap >> frame;
-        if (frame.empty()) {
-            cap.open("udp://172.28.161.51:554");
-            std::cerr << "Received empty frame or stream ended.\n";
-        }else{
-          std::cout << "Get the frame !";
-        }
         // Poll and handle events (inputs, window resize, etc.)
         // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
         // - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application, or clear/overwrite your copy of the mouse data.
@@ -183,6 +178,15 @@ int main(int, char**)
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplSDL3_NewFrame();
         ImGui::NewFrame();
+
+        if(!cap.isOpened()){
+            cap.open("udp://172.28.161.51:554");
+        }else{
+            cap >> frame;
+            if(!frame.empty()){
+                
+            }
+        }
 
         // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
         if (show_demo_window)
