@@ -59,6 +59,7 @@ target_link_libraries(server hv)
 # --- Master Executable ---
 add_executable(master
     src/master/main.cpp
+    src/master/GoProMaster.cpp
     ${IMGUI_SOURCES}
 )
 

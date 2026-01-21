@@ -33,9 +33,10 @@ void GoProController::sendCommandToAll(const std::string& path) {
         // For USB, it's typically http://172.2x.x.x:8080/gopro/...
         std::string url = "http://" + ip + "/gopro/" + path;
         
-        // Using async request
-        // We capture ip by value to print it
-        hv::http_client_send_async(NULL, HttpRequest::new_Get(url.c_str()), [ip, url](HttpResponsePtr resp) {
+        auto req = std::make_shared<HttpRequest>();
+        req->method = HTTP_GET;
+        req->url = url;
+        http_client_send_async(req, [ip, url](HttpResponsePtr resp) {
             if (resp == NULL) {
                 // std::cout << "Request failed to " << ip << std::endl;
                 return;

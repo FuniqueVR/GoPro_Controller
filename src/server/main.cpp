@@ -38,7 +38,7 @@ int main() {
     };
 
     hv::WebSocketServer server;
-    server.registerHttpService(&ws);
+    server.registerWebSocketService(&ws);
     server.setPort(9090);
 
     std::cout << "WebSocket Server listening on port 9090..." << std::endl;
