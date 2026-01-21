@@ -67,6 +67,7 @@ int main(int, char**)
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
@@ -88,6 +89,12 @@ int main(int, char**)
 
     // Main loop
     bool done = false;
+    bool websocket_server_window = true;
+    bool camera_list_win = true;
+    bool global_command_win = false;
+    bool local_command_win = false;
+    bool inspector_win = true;
+    bool record_win = false;
     char server_ip_buf[128] = "127.0.0.1";
 
     while (!done)
@@ -127,10 +134,23 @@ int main(int, char**)
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplSDL3_NewFrame();
         ImGui::NewFrame();
+        ImGui::DockSpaceOverViewport();
+
+        ImGui::BeginMainMenuBar();
+        if (ImGui::BeginMenu("Windows")) {
+            ImGui::MenuItem("Websocket Dashboard", NULL, &websocket_server_window);
+            ImGui::MenuItem("Camera List", NULL, &camera_list_win);
+            ImGui::MenuItem("Global Command", NULL, &global_command_win);
+            ImGui::MenuItem("Local Command", NULL, &local_command_win);
+            ImGui::MenuItem("Inspector", NULL, &inspector_win);
+            ImGui::MenuItem("Record", NULL, &record_win);
+            ImGui::EndMenu();
+        }
+        ImGui::EndMainMenuBar();
 
         // 1. Dashboard Window
-        {
-            ImGui::Begin("GoPro Dashboard");
+        if(websocket_server_window) {
+            ImGui::Begin("Websocket Dashboard");
 
             ImGui::Text("Hotkeys:");
             ImGui::BulletText("F2: Start Recording");
@@ -182,6 +202,30 @@ int main(int, char**)
             }
 
             ImGui::End();
+        }
+
+        if(camera_list_win) {
+            ImGui::Begin("GoPro Dashboard");
+            ImGui::End();
+        }
+
+        if(global_command_win) {
+            ImGui::Begin("Group Command");
+            ImGui::End();
+        }
+
+        if(local_command_win) {
+            ImGui::Begin("Camera Command");
+            ImGui::End();
+        }
+
+        if(inspector_win) {
+            ImGui::Begin("Inspector");
+            ImGui::End();
+        }
+
+        if(record_win){
+
         }
 
         // Rendering

@@ -2,6 +2,9 @@
 #include "hv/WebSocketServer.h"
 #include "hv/EventLoop.h"
 #include "GoProController.hpp"
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
 
 int main() {
     std::cout << "Starting GoPro Server (RPi)..." << std::endl;
@@ -15,22 +18,10 @@ int main() {
     };
     ws.onmessage = [&controller](const WebSocketChannelPtr& channel, const std::string& msg) {
         printf("Received: %s\n", msg.c_str());
-        
+        json j = json::parse(msg.c_str());
         // Simple command parsing
-        if (msg == "f2_start_recording") {
-            controller.startRecording();
-            channel->send("ACK: Started Recording");
-        } else if (msg == "f3_stop_recording") {
-            controller.stopRecording();
-            channel->send("ACK: Stopped Recording");
-        } else if (msg == "f4_mode_photo") {
-            controller.setModePhoto();
-            channel->send("ACK: Switched to Photo Mode");
-        } else if (msg == "f5_mode_video") {
-            controller.setModeVideo();
-            channel->send("ACK: Switched to Video Mode");
-        } else {
-            channel->send("ERR: Unknown Command");
+        if (j["key"].get<std::string>() == "command") {
+            channel->send("Execute command: " + j["value"]["name"].get<std::string>());
         }
     };
     ws.onclose = [](const WebSocketChannelPtr& channel) {
