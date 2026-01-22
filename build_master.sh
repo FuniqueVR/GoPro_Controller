@@ -7,4 +7,4 @@ cd build
 # Configure CMake
 cmake . -DBUILD_SERVER=OFF -DBUILD_MASTER=ON
 
-cmake --build .
+cmake --build . -j 8

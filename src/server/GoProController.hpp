@@ -3,12 +3,10 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <thread>
+#include <mutex>
+#include <atomic>
 #include "hv/requests.h"
-
-// Mock IPs for testing if no real cameras found
-static const std::vector<std::string> MOCK_IPS = {
-    "127.0.0.1:8081", "127.0.0.1:8082" 
-};
 
 class GoProController {
 public:
@@ -25,5 +23,8 @@ public:
     void sendCommandToAll(const std::string& path);
 
 private:
+    std::vector<std::thread> scan_workers;
     std::vector<std::string> camera_ips;
+    std::mutex ips_mutex;
+    std::atomic<bool> scanning{false}; // To track scanning state if needed
 };

@@ -11,4 +11,4 @@ cd build_server
 cmake .. -DCMAKE_TOOLCHAIN_FILE=../cmake/arm-gnueabihf.toolchain.cmake -DBUILD_SERVER=ON -DBUILD_MASTER=OFF
 
 # Build
-cmake --build .
+cmake --build . -j 8

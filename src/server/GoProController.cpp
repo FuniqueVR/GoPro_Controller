@@ -1,4 +1,5 @@
 #include "GoProController.hpp"
+#include "../common/iphelper.h"
 #include <future>
 
 GoProController::GoProController() {
@@ -6,31 +7,78 @@ GoProController::GoProController() {
 }
 
 GoProController::~GoProController() {
-
+    for(auto& thread : scan_workers){
+        if (thread.joinable()) {
+            thread.join();
+        }
+    }
 }
 
 void GoProController::scanCameras() {
-    std::cout << "[GoProController] Scanning for cameras..." << std::endl;
-    // TODO: Real implementation would scan network interfaces or specific subnets
-    // For now, use MOCK IPs
-    camera_ips = MOCK_IPS;
-    std::cout << "[GoProController] Found " << camera_ips.size() << " cameras (Mock)." << std::endl;
+    if (scanning) {
+        std::cout << "[GoProController] Scanning already in progress." << std::endl;
+        return;
+    }
+    scanning = true;
+
+    // Launch scanning in a separate thread to avoid blocking
+    std::cout << "[GoProController] Scanning for cameras (async)..." << std::endl;
+    
+    scan_workers = std::vector<std::thread>();
+    for(int i = 0; i < 1000; i++){
+        std::thread scan_thread = std::thread([&]() {
+            std::string buffer = std::to_string(i);
+            while(buffer.size() < 3){
+                buffer.insert(0, "0");
+            }
+            std::string URL = GetRemoteIP(buffer);
+            std::string keep = URL + "/gopro/camera/keep_alive";
+        
+            try {
+                // Added timeout to speed up failed connections
+                std::string data = exec("curl -s --connect-timeout 0.1 " + keep);
+                if(data == "{}"){
+                    std::cout << "[GoProController] Found camera at " << URL << std::endl;
+                    {
+                        std::lock_guard<std::mutex> lock(ips_mutex);
+                        camera_ips.push_back(URL);
+                    }
+                }
+            } catch (...) {
+                // Ignore curl errors
+            } 
+        });
+        scan_workers.push_back(std::move(scan_thread));
+    }
+
+    for(auto& thread : scan_workers){
+        if (thread.joinable()) {
+            thread.join();
+        }
+    }
+    
+    // Update camera_ips with thread safety
+    std::cout << "[GoProController] Found " << camera_ips.size() << " cameras." << std::endl;
+    scanning = false;
 }
 
 void GoProController::sendCommandToAll(const std::string& path) {
-    if (camera_ips.empty()) {
-        std::cout << "[GoProController] No cameras connected." << std::endl;
-        return;
+    std::vector<std::string> ips_copy;
+    {
+        std::lock_guard<std::mutex> lock(ips_mutex);
+        if (camera_ips.empty()) {
+            std::cout << "[GoProController] No cameras connected." << std::endl;
+            return;
+        }
+        ips_copy = camera_ips;
     }
 
-    std::cout << "[GoProController] Sending " << path << " to " << camera_ips.size() << " cameras." << std::endl;
+    std::cout << "[GoProController] Sending " << path << " to " << ips_copy.size() << " cameras." << std::endl;
 
     // Send async requests
-    for (const auto& ip : camera_ips) {
+    for (const auto& ip : ips_copy) {
         // Construct full URL
         // OpenGoPro URL format: http://<ip>:8080/gopro/<command>
-        // Adjust based on successful connection logic.
-        // For USB, it's typically http://172.2x.x.x:8080/gopro/...
         std::string url = "http://" + ip + "/gopro/" + path;
         
         auto req = std::make_shared<HttpRequest>();
