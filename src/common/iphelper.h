@@ -6,12 +6,22 @@
 #include <string>
 #include <array>
 
-std::string GetRemoteIP(std::string serial){
+std::string GetRemoteURLBySerial(std::string serial){
     if(serial.size() != 3){
+        std::cerr << "Serial string must be at least 3" << "\n";
         return "";
     }
 
     return std::string("http://172.2") + serial[0] + std::string(".1") + serial[1] + serial[2] + std::string(".51:8080");
+}
+
+std::string GetRemoteURLByIP(std::string IP){
+    if(IP.size() < 12){
+        std::cerr << "The IP string size must larger than 12" << "\n";
+        return "";
+    }
+
+    return std::string("http://") + IP + std::string(":8080");
 }
 
 std::string exec(std::string cmd) {

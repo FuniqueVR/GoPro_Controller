@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 #include "hv/WebSocketServer.h"
 #include "hv/EventLoop.h"
 #include "GoProController.hpp"
@@ -6,35 +7,67 @@
 
 using json = nlohmann::json;
 
-void ExecuteCommand(std::vector<const WebSocketChannelPtr&> hosts, json j){
+std::vector<const WebSocketChannelPtr*> hosts = std::vector<const WebSocketChannelPtr*>();
+GoProController controller;
+
+void ExecuteCommand(const WebSocketChannelPtr& channel, json j){
     std::string name = j["name"].get<std::string>();
+    std::string target = j["target"].get<std::string>();
+
+    if(name == "reboot"){
+        controller.reboot(target);
+    }else if(name == "shutdown"){
+        controller.shutdown(target);
+    }else if(name == "keep_alive"){
+        controller.keep_alive(target);
+    }else if(name == "usb_on"){
+        controller.usb_on(target);
+    }else if(name == "usb_off"){
+        controller.usb_off(target);
+    }else if(name == "datetime"){
+        controller.datetime(target);
+    }else if(name == "zoom"){
+        controller.zoom(target);
+    }else if(name == "shutter"){
+        controller.shutter(target);
+    }
+    else if(name == "ip"){
+        std::string r = controller.getAllIP();
+        channel->send(r);
+    }
+
     for(auto host : hosts){
-        host->send("Execute command: ");
+        host->get()->send(std::string("Execute command: ") + name);
     }
 }
 
 void QueryAction(const WebSocketChannelPtr& channel, json j){
+    std::string mode = j["mode"].get<std::string>();
+    std::string target = j["target"].get<std::string>();
 
+    if(mode == "all"){
+
+    }else if (mode == "single"){
+        
+    }
 }
 
 int main() {
     std::cout << "Starting GoPro Server (RPi)..." << std::endl;
 
-    std::vector<const WebSocketChannelPtr&> hosts = std::vector<const WebSocketChannelPtr&>();
-    GoProController controller;
     controller.scanCameras();
 
     hv::WebSocketService ws;
     ws.onopen = [&](const WebSocketChannelPtr& channel, const HttpRequestPtr& req) {
         printf("Client connected: %s\n", channel->peeraddr().c_str());
-        hosts.push_back(channel);
+        hosts.push_back(&channel);
     };
     ws.onmessage = [&](const WebSocketChannelPtr& channel, const std::string& msg) {
         printf("Received: %s\n", msg.c_str());
         json j = json::parse(msg.c_str());
         // Simple command parsing
         if (j["key"].get<std::string>() == "command") {
-            ExecuteCommand(hosts, j["value"]);
+            ExecuteCommand(channel, j["value"]);
         }
         else if (j["key"].get<std::string>() == "query") {
             QueryAction(channel, j["value"]);
@@ -43,7 +76,7 @@ int main() {
     ws.onclose = [&](const WebSocketChannelPtr& channel) {
         printf("Client disconnected\n");
         for(int i = 0; i < hosts.size(); i++){
-            bool find = std::strcmp(hosts[i]->peeraddr().c_str(),
+            bool find = std::strcmp(hosts[i]->get()->peeraddr().c_str(),
             channel->peeraddr().c_str());
             if(find){
                 hosts.erase(hosts.begin() + i);

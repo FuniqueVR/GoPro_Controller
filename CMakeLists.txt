@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 project(GoPro_Controller)
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 # Options
 option(BUILD_SERVER "Build the server (RPi) executable" ON)
@@ -16,6 +16,14 @@ if(BUILD_SERVER OR BUILD_MASTER)
         GIT_TAG        master
     )
     FetchContent_MakeAvailable(libhv)
+    include_directories(lib/mdns/include)
+    set(MDNS_DIR "lib/mdns")
+    file(GLOB MDNS_SOURCES
+        "${MDNS_DIR}/src/logger.cpp"
+        "${MDNS_DIR}/src/mdns.h"
+        "${MDNS_DIR}/src/mdns.cpp"
+        "${MDNS_DIR}/src/utils.cpp"
+    )
 endif()
 
 if(BUILD_MASTER)
@@ -63,6 +71,7 @@ if(BUILD_SERVER)
     add_executable(server
         src/server/main.cpp
         src/server/GoProController.cpp
+        ${MDNS_SOURCES}
     )
     target_link_libraries(server hv)
     # Ensure json include is available for server too if it uses nlohmann/json
@@ -75,6 +84,7 @@ if(BUILD_MASTER)
         src/master/main.cpp
         src/master/GoProMaster.cpp
         ${IMGUI_SOURCES}
+        ${MDNS_SOURCES}
     )
 
     target_link_libraries(master PRIVATE
@@ -82,5 +92,6 @@ if(BUILD_MASTER)
         SDL3::SDL3
         ${OpenCV_LIBS}
         hv
+        mdns_cpp::mdns_cpp
     )
 endif()

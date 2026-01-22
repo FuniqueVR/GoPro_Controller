@@ -86,7 +86,9 @@ title: 建置流程, 包含機器
 
 ## 協定
 
-透過 {IP}:3000/api 進入 websocket server
+可以參考 GoPro Http API 協定的 [Docs](https://gopro.github.io/OpenGoPro/http#tag/Webcam/operation/GPCAMERA_WEBCAM_START_OGP)
+
+透過 {IP}:9090/ 進入 websocket server
 
 接著透過這個方式傳輸訊息, websocket server 會有 analysis header 的 key, 把訊息丟到對的 processer.
 ```json
@@ -96,36 +98,90 @@ title: 建置流程, 包含機器
 }
 ```
 
-#### KEY: fetch
-
-抓到所有狀態
-
-需求物件結構
-```json
-{}
-```
-
-回傳物件結構
-```json
-{
-    "cameras": [
-        {
-            "serial": "string"
-        }
-    ]
-}
-```
-
 #### KEY: command
 
 抓到所有狀態
 
 需求物件結構
+target 必須存在, 如果為空字串, 則等於廣播
 ```json
 {
-    "name": [
-        "keep_alive", "", ""
-    ]
+    "name": "label",
+    "target": "IP target",
+    "arg": "String Argument"
+}
+```
+
+回傳物件結構
+```json
+{
+    "name": "coming label",
+    "message": "message"
+}
+```
+
+##### name: reboot
+
+對象 GoPro 重開機
+
+##### name: shutdown
+
+對象 GoPro 關機
+
+##### name: keep_alive
+
+重新啟動對象 GoPro USB 睡眠倒數
+
+##### name: usb_on
+
+開啟對象 GoPro USB 控制模式
+
+##### name: usb_off
+
+關閉對象 GoPro USB 控制模式
+
+##### name: datetime
+
+改變日期時間
+
+##### name: zoom
+
+##### name: shutter
+
+##### name: ip
+
+這項指令會回傳 ip 字串用 ``,`` 隔開
+
+#### KEY: query
+
+抓到所有狀態
+
+需求物件結構
+```json
+{
+    "name": "label",
+    "mode": "all | single",
+    "target": "IP target",
+}
+```
+
+回傳物件結構
+```json
+{
+
+}
+```
+
+#### KEY: webcam
+
+網路攝影機方面的動作
+
+需求物件結構
+```json
+{
+    "name": "label",
+    "mode": "all | single",
+    "target": "IP target"
 }
 ```
 
