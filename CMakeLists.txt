@@ -5,7 +5,6 @@ set(CMAKE_CXX_STANDARD 14)
 # Options
 option(BUILD_SERVER "Build the server (RPi) executable" ON)
 option(BUILD_MASTER "Build the master (PC) executable" ON)
-
 # Dependencies
 
 # libhv (Required for Server, used in Master too if needed, but primarily Server)

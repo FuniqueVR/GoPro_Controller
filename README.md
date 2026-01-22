@@ -2,6 +2,35 @@
 
 這是一個透過 GUI 控制 GoPro 的專案
 
+## 開發需求
+
+* Debine OS / Windows OS
+* CMake
+```bash
+sudo apt update
+sudo apt install cmake
+```
+* ARM64 C++編譯器
+可以透過以下指令下載
+```bash
+sudo apt update
+sudo apt install g++-aarch64-linux-gnu
+```
+
+總共有兩個輸出的應用程式
+* Master
+    * AMD64 (WIN/LINUX)
+* Server
+    * ARM64 (LINUX)
+
+#### Master
+
+附有 UI 介面的控制器, 可以透過這個介面跟其他 Websocket 或是 Go-Pro 直接連結.
+
+#### Server
+
+Websocket, Go-Pro 的中繼站, 會把訊息轉發到 Master.
+
 ## 架構圖
 
 ```mermaid
@@ -38,17 +67,15 @@ graph LR
         CAMC2[Go Pro 攝影機];
         CAMC3[Go Pro 攝影機];
         CAMCH[USB HUB];
-        CAMCR[樹莓派];
 
         CAMCH-->CAMC1;
         CAMCH-->CAMC2;
         CAMCH-->CAMC3;
-        CAMCR-->CAMCH;
     end
     L[筆電控制];
     L-->|Websocket|CAMAR;
     L-->|Websocket|CAMBR;
-    L-->|Websocket|CAMCR;
+    L-->|USB|CAMCH;
 ```
 
 ```mermaid
