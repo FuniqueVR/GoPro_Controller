@@ -73,3 +73,5 @@ vcpkg_installed/
 Testing/
 .cache/
 _deps/libhv-src
+_deps/libhv-src/
+_deps/libhv-*/
