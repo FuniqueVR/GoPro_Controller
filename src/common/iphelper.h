@@ -15,14 +15,25 @@ std::string GetRemoteIP(std::string serial){
 }
 
 std::string exec(std::string cmd) {
-    std::array<char, 128> buffer;
-    std::string result;
-    std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd.c_str(), "r"), pclose);
+    // Define a buffer size for reading output chunks
+    char buffer[128];
+    std::string result = "";
+    // Use unique_ptr to ensure the pipe is closed automatically (C++11 or later)
+    // The popen function is named _popen on Windows
+    #ifdef _WIN32
+        std::unique_ptr<FILE, decltype(&_pclose)> pipe(_popen(cmd.c_str(), "r"), _pclose);
+    #else
+        std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd.c_str(), "r"), pclose);
+    #endif
+
     if (!pipe) {
         throw std::runtime_error("popen() failed!");
     }
-    while (fgets(buffer.data(), static_cast<int>(buffer.size()), pipe.get()) != nullptr) {
-        result += buffer.data();
+
+    // Read the output a chunk at a time until the end
+    while (fgets(buffer, sizeof(buffer), pipe.get()) != nullptr) {
+        result += buffer;
     }
+
     return result;
 }

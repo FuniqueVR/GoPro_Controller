@@ -33,11 +33,14 @@ void GoProController::scanCameras() {
             }
             std::string URL = GetRemoteIP(buffer);
             std::string keep = URL + "/gopro/camera/keep_alive";
+
+            std::cout << "[GoProController] Scanning " << URL << "\n";
         
             try {
                 // Added timeout to speed up failed connections
-                std::string data = exec("curl -s --connect-timeout 0.1 " + keep);
-                if(data == "{}"){
+                std::string data = exec(
+                "curl -s --connect-timeout 0.1 \"" + keep + "\"");
+                if(data.size() > 0){
                     std::cout << "[GoProController] Found camera at " << URL << std::endl;
                     {
                         std::lock_guard<std::mutex> lock(ips_mutex);
