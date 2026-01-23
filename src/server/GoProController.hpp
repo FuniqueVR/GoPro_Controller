@@ -36,6 +36,19 @@ public:
     void zoom(std::string target);
     void shutter(std::string target);
 
+    std::string queryStatus(std::string target, int ID);
+    std::string setStatus(std::string target, int ID, int value);
+    std::string querySetting(std::string target, int ID);
+    std::string setSetting(std::string target, int ID, int value);
+
+    void webcamMode(std::string target);
+    void webcamOn(std::string target, int startPort, int res, int fps, bool TS);
+    void webcamOff(std::string target);
+    std::string webcamStatus(std::string target);
+    std::string webcamVersion(std::string target);
+
+    std::string getMediaList(std::string target);
+
     std::string getAllIP();
 
 protected:

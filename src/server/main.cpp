@@ -11,8 +11,15 @@ std::vector<const WebSocketChannelPtr*> hosts = std::vector<const WebSocketChann
 GoProController controller;
 
 void ExecuteCommand(const WebSocketChannelPtr& channel, json j){
-    std::string name = j["name"].get<std::string>();
-    std::string target = j["target"].get<std::string>();
+    std::string name = "";
+    std::string target = "";
+
+    if(j["name"].is_string()){
+        name = j["name"].get<std::string>();
+    }
+    if(j["target"].is_string()){
+        target = j["target"].get<std::string>();
+    }
 
     if(name == "reboot"){
         controller.reboot(target);
@@ -42,14 +49,48 @@ void ExecuteCommand(const WebSocketChannelPtr& channel, json j){
 }
 
 void QueryAction(const WebSocketChannelPtr& channel, json j){
-    std::string mode = j["mode"].get<std::string>();
-    std::string target = j["target"].get<std::string>();
+    std::string mode = "";
+    std::string target = "";
+    
+    if(j["mode"].is_string()){
+        mode = j["mode"].get<std::string>();
+    }
+    if(j["target"].is_string()){
+        target = j["target"].get<std::string>();
+    }
 
     if(mode == "all"){
 
     }else if (mode == "single"){
         
     }
+}
+
+void WebcamAction(const WebSocketChannelPtr& channel, json j){
+    std::string mode = "";
+    std::string target = "";
+    
+    if(j["mode"].is_string()){
+        mode = j["mode"].get<std::string>();
+    }
+    if(j["target"].is_string()){
+        target = j["target"].get<std::string>();
+    }
+
+    if(mode == "all"){
+        
+    }else if (mode == "single"){
+        
+    }
+}
+
+void MediaAction(const WebSocketChannelPtr& channel, json j){
+    std::string target = "";
+    
+    if(j["target"].is_string()){
+        target = j["target"].get<std::string>();
+    }
+
 }
 
 int main() {
@@ -71,6 +112,12 @@ int main() {
         }
         else if (j["key"].get<std::string>() == "query") {
             QueryAction(channel, j["value"]);
+        }
+        else if (j["key"].get<std::string>() == "webcam") {
+            WebcamAction(channel, j["value"]);
+        }
+        else if (j["key"].get<std::string>() == "media") {
+            MediaAction(channel, j["value"]);
         }
     };
     ws.onclose = [&](const WebSocketChannelPtr& channel) {
