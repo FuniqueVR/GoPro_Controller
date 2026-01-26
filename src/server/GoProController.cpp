@@ -123,6 +123,52 @@ void GoProController::shutter(std::string target, bool isstart){
     }
 }
 
+std::string GoProController::queryStatus(std::string target){
+    if(target.size() > 0){
+        _queryStatus(target);
+    }else{
+        for(std::string ip : camera_ips){
+            _queryStatus(ip);
+        }
+    }
+}
+
+std::string GoProController::setSetting(std::string target, int ID, int value){
+    if(target.size() > 0){
+        _setSetting(target, ID, value);
+    }else{
+        for(std::string ip : camera_ips){
+            _setSetting(ip, ID, value);
+        }
+    }
+}
+
+
+void GoProController::webcamMode(std::string target){
+
+}
+
+void GoProController::webcamOn(std::string target, int startPort, int res, int fps, bool TS){
+
+}
+
+void GoProController::webcamOff(std::string target){
+
+}
+
+std::string GoProController::webcamStatus(std::string target){
+
+}
+
+std::string GoProController::webcamVersion(std::string target){
+
+}
+
+std::string GoProController::getMediaList(std::string target){
+
+}
+
+
 std::string GoProController::getAllIP(){
     std::string result = "";
     for(std::string target : camera_ips){
@@ -177,4 +223,15 @@ void GoProController::_shutter(std::string target, bool ison){
     else url += "stop";
     std::string command = std::string("curl -s \"" + url + "\"");
     exec(command);
+}
+
+std::string GoProController::_queryStatus(std::string target){
+    std::string url = GetRemoteURLByIP(target) + "/gopro/camera/state";
+    std::string command = std::string("curl -s \"" + url + "\"");
+    std::string json_result = exec(command);
+    return json_result;
+}
+
+std::string GoProController::_setSetting(std::string target, int ID, int value){
+
 }

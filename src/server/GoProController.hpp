@@ -35,9 +35,7 @@ public:
     void zoom(std::string target);
     void shutter(std::string target, bool isstart);
 
-    std::string queryStatus(std::string target, int ID);
-    std::string setStatus(std::string target, int ID, int value);
-    std::string querySetting(std::string target, int ID);
+    std::string queryStatus(std::string target);
     std::string setSetting(std::string target, int ID, int value);
 
     void webcamMode(std::string target);
@@ -58,6 +56,9 @@ protected:
     void _datetime(std::string target);
     void _zoom(std::string target);
     void _shutter(std::string target, bool isstart);
+
+    std::string _queryStatus(std::string target);
+    std::string _setSetting(std::string target, int ID, int value);
 
 private:
     bool init = true;

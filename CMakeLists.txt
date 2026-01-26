@@ -92,6 +92,5 @@ if(BUILD_MASTER)
         SDL3::SDL3
         ${OpenCV_LIBS}
         hv
-        mdns_cpp::mdns_cpp
     )
 endif()

@@ -18,9 +18,6 @@
 
 int main(int, char**)
 {
-    std::string mes = exec("http://172.28.161.51:8080/gopro/camera/keep-alive");
-    std::cout << mes.c_str();
-    return 0;
     // Setup SDL
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD))
     {
