@@ -58,7 +58,7 @@ void ExecuteCommand(const WebSocketChannelPtr& channel, json j){
         channel->send(getPacket("command:shutter_off", r));
     }
     else if(name == "ip"){
-        r['data'] = controller.getAllIP();
+        r["data"] = controller.getAllIP();
         channel->send(getPacket("command:ip", r));
     }
 

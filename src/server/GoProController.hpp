@@ -36,7 +36,7 @@ public:
     void shutter(std::string target, bool isstart);
 
     std::string queryStatus(std::string target);
-    std::string setSetting(std::string target, int ID, int value);
+    std::string setSetting(std::string target, int ID, std::string value);
 
     void webcamMode(std::string target);
     void webcamOn(std::string target, int startPort, int res, int fps, bool TS);
@@ -58,10 +58,17 @@ protected:
     void _shutter(std::string target, bool isstart);
 
     std::string _queryStatus(std::string target);
-    std::string _setSetting(std::string target, int ID, int value);
+    std::string _setSetting(std::string target, int ID, std::string value);
+
+    void _webcamMode(std::string target);
+    void _webcamOn(std::string target, int startPort, int res, int fps, bool TS);
+    void _webcamOff(std::string target);
+    std::string _webcamStatus(std::string target);
+    std::string _webcamVersion(std::string target);
+
+    std::string _getMediaList(std::string target);
 
 private:
-    bool init = true;
     mdns_cpp::mDNS mdns;
     std::vector<std::thread> scan_workers;
     std::vector<std::string> camera_ips;
