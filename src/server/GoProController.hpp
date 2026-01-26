@@ -30,11 +30,10 @@ public:
     void reboot(std::string target);
     void shutdown(std::string target);
     void keep_alive(std::string target);
-    void usb_on(std::string target);
-    void usb_off(std::string target);
+    void usb(std::string target, bool ison);
     void datetime(std::string target);
     void zoom(std::string target);
-    void shutter(std::string target);
+    void shutter(std::string target, bool isstart);
 
     std::string queryStatus(std::string target, int ID);
     std::string setStatus(std::string target, int ID, int value);
@@ -55,11 +54,10 @@ protected:
     void _reboot(std::string target);
     void _shutdown(std::string target);
     void _keep_alive(std::string target);
-    void _usb_on(std::string target);
-    void _usb_off(std::string target);
+    void _usb(std::string target, bool ison);
     void _datetime(std::string target);
     void _zoom(std::string target);
-    void _shutter(std::string target);
+    void _shutter(std::string target, bool isstart);
 
 private:
     bool init = true;

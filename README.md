@@ -78,12 +78,6 @@ graph LR
     L-->|USB|CAMCH;
 ```
 
-```mermaid
----
-title: 建置流程, 包含機器
----
-```
-
 ## 協定
 
 可以參考 GoPro Http API 協定的 [Docs](https://gopro.github.io/OpenGoPro/http#tag/Webcam/operation/GPCAMERA_WEBCAM_START_OGP)

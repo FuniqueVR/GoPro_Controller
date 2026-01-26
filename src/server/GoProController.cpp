@@ -83,22 +83,12 @@ void GoProController::keep_alive(std::string target){
     }
 }
 
-void GoProController::usb_on(std::string target){
+void GoProController::usb(std::string target, bool ison){
     if(target.size() > 0){
-        _usb_on(target);
+        _usb(target, ison);
     }else{
         for(std::string ip : camera_ips){
-            _usb_on(ip);
-        }
-    }
-}
-
-void GoProController::usb_off(std::string target){
-    if(target.size() > 0){
-        _usb_off(target);
-    }else{
-        for(std::string ip : camera_ips){
-            _usb_off(ip);
+            _usb(ip, ison);
         }
     }
 }
@@ -123,12 +113,12 @@ void GoProController::zoom(std::string target){
     }
 }
 
-void GoProController::shutter(std::string target){
+void GoProController::shutter(std::string target, bool isstart){
     if(target.size() > 0){
-        _shutter(target);
+        _shutter(target, isstart);
     }else{
         for(std::string ip : camera_ips){
-            _shutter(ip);
+            _shutter(ip, isstart);
         }
     }
 }
@@ -161,14 +151,10 @@ void GoProController::_keep_alive(std::string target){
     exec(command);
 }
 
-void GoProController::_usb_on(std::string target){
-    std::string url = GetRemoteURLByIP(target) + "/gopro/camera/control/wired_usb?p=1";
-    std::string command = std::string("curl -s \"" + url + "\"");
-    exec(command);
-}
-
-void GoProController::_usb_off(std::string target){
-    std::string url = GetRemoteURLByIP(target) + "/gopro/camera/control/wired_usb?p=0";
+void GoProController::_usb(std::string target, bool ison){
+    std::string url = GetRemoteURLByIP(target) + "/gopro/camera/control/wired_usb?p=";
+    if(ison) url += "1";
+    else url += "0";
     std::string command = std::string("curl -s \"" + url + "\"");
     exec(command);
 }
@@ -185,8 +171,10 @@ void GoProController::_zoom(std::string target){
     exec(command);
 }
 
-void GoProController::_shutter(std::string target){
-    std::string url = GetRemoteURLByIP(target) + "/gopro/camera/control/wired_usb?p=0";
+void GoProController::_shutter(std::string target, bool ison){
+    std::string url = GetRemoteURLByIP(target) + "/gopro/camera/shutter/";
+    if(ison) url += "start";
+    else url += "stop";
     std::string command = std::string("curl -s \"" + url + "\"");
     exec(command);
 }

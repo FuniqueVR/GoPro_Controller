@@ -10,9 +10,17 @@ using json = nlohmann::json;
 std::vector<const WebSocketChannelPtr*> hosts = std::vector<const WebSocketChannelPtr*>();
 GoProController controller;
 
+std::string getPacket(std::string key, json data){
+    json response;
+    response["key"] = key;
+    response["value"] = data;
+    return response.dump();
+}
+
 void ExecuteCommand(const WebSocketChannelPtr& channel, json j){
     std::string name = "";
     std::string target = "";
+    json r;
 
     if(j["name"].is_string()){
         name = j["name"].get<std::string>();
@@ -23,24 +31,35 @@ void ExecuteCommand(const WebSocketChannelPtr& channel, json j){
 
     if(name == "reboot"){
         controller.reboot(target);
+        channel->send(getPacket("command:reboot", r));
     }else if(name == "shutdown"){
         controller.shutdown(target);
+        channel->send(getPacket("command:shutdown", r));
     }else if(name == "keep_alive"){
         controller.keep_alive(target);
+        channel->send(getPacket("command:keep_alive", r));
     }else if(name == "usb_on"){
-        controller.usb_on(target);
+        controller.usb(target, true);
+        channel->send(getPacket("command:usb_on", r));
     }else if(name == "usb_off"){
-        controller.usb_off(target);
+        controller.usb(target, false);
+        channel->send(getPacket("command:usb_off", r));
     }else if(name == "datetime"){
         controller.datetime(target);
+        channel->send(getPacket("command:datetime", r));
     }else if(name == "zoom"){
         controller.zoom(target);
-    }else if(name == "shutter"){
-        controller.shutter(target);
+        channel->send(getPacket("command:zoom", r));
+    }else if(name == "shutter_on"){
+        controller.shutter(target, true);
+        channel->send(getPacket("command:shutter", r));
+    }else if(name == "shutter_off"){
+        controller.shutter(target, false);
+        channel->send(getPacket("command:shutter_off", r));
     }
     else if(name == "ip"){
-        std::string r = controller.getAllIP();
-        channel->send(r);
+        r['data'] = controller.getAllIP();
+        channel->send(getPacket("command:ip", r));
     }
 
     for(auto host : hosts){
