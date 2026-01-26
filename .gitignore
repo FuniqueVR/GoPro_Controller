@@ -42,9 +42,9 @@
 *.app
 
 # Build directories
-build/
-Build/
-build-*/
+build_master/
+Build_master/
+build_master-*/
 build_server/
 Build_server/
 build_server-*/
