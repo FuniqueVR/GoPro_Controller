@@ -75,3 +75,4 @@ Testing/
 _deps/libhv-src
 _deps/libhv-src/
 _deps/libhv-*/
+build_master/_deps/libhv-src
