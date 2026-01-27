@@ -104,7 +104,7 @@ http-server -p 8080
 
 ```bash
 # SSH 到你的 PI
-sudo curl http://192.168.10.10:8080/build_server/server -o ./server
+sudo curl http://192.168.10.10:8080/build_server/server -o .usr/local/bin/server
 ```
 
 用 ldd 查看依賴性
@@ -126,6 +126,34 @@ ldd server
 ```bash
 # 快速解決依賴問題
 sudo curl http://192.168.10.10:8080/build_server/lib/libhv.so -o /lib/libhv.so
+```
+
+#### 開機自動執行
+
+弄一個 Bash script
+```bash
+sudo nano /usr/local/bin/startup.sh
+```
+
+弄一個 打上啟動程式的腳本
+```bash
+#!/bin/bash
+cd /home/ellly
+/usr/local/bin/server
+```
+
+重製 systemd
+```bash
+sudo chmod +x /usr/local/bin/startup.sh
+sudo systemctl daemon-reload
+sudo systemctl enable startup.service
+sudo systemctl start startup.service
+
+# 用這一行看執行 log
+sudo systemctl status startup.service
+
+# 用這一行重啟動
+sudo systemctl restart startup.service
 ```
 
 ## 協定
