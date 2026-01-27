@@ -8,10 +8,14 @@
 #include <future>
 
 std::string getPacket(std::string key, json data){
-    json response;
+    json response = json::object();
     response["key"] = key;
     response["value"] = data;
     return response.dump();
+}
+
+std::string getCommand(std::string url){
+    return std::string("curl -s --connect-timeout 1.5 \"" + url + "\"");
 }
 
 GoProController::GoProController() {
@@ -94,8 +98,15 @@ void GoProController::reboot(std::string target){
     if(target.size() > 0){
         _reboot(target);
     }else{
+        std::vector<std::future<void>> calls = std::vector<std::future<void>>();
         for(std::string ip : camera_ips){
-            _reboot(ip);
+            calls.push_back(std::async(std::launch::async, [this, ip]() {
+                this->_reboot(ip);
+            }));
+        }
+
+        for(auto& call : calls){
+            call.get();
         }
     }
 }
@@ -104,8 +115,15 @@ void GoProController::shutdown(std::string target){
     if(target.size() > 0){
         _shutdown(target);
     }else{
+        std::vector<std::future<void>> calls = std::vector<std::future<void>>();
         for(std::string ip : camera_ips){
-            _shutdown(ip);
+            calls.push_back(std::async(std::launch::async, [this, ip]() {
+                this->_shutdown(ip);
+            }));
+        }
+
+        for(auto& call : calls){
+            call.get();
         }
     }
 }
@@ -114,8 +132,15 @@ void GoProController::keep_alive(std::string target){
     if(target.size() > 0){
         _keep_alive(target);
     }else{
+        std::vector<std::future<void>> calls = std::vector<std::future<void>>();
         for(std::string ip : camera_ips){
-            _keep_alive(ip);
+            calls.push_back(std::async(std::launch::async, [this, ip]() {
+                this->_keep_alive(ip);
+            }));
+        }
+
+        for(auto& call : calls){
+            call.get();
         }
     }
 }
@@ -124,8 +149,15 @@ void GoProController::usb(std::string target, bool ison){
     if(target.size() > 0){
         _usb(target, ison);
     }else{
+        std::vector<std::future<void>> calls = std::vector<std::future<void>>();
         for(std::string ip : camera_ips){
-            _usb(ip, ison);
+            calls.push_back(std::async(std::launch::async, [this, ip, ison]() {
+                this->_usb(ip, ison);
+            }));
+        }
+
+        for(auto& call : calls){
+            call.get();
         }
     }
 }
@@ -134,8 +166,15 @@ void GoProController::datetime(std::string target){
     if(target.size() > 0){
         _datetime(target);
     }else{
+        std::vector<std::future<void>> calls = std::vector<std::future<void>>();
         for(std::string ip : camera_ips){
-            _datetime(ip);
+            calls.push_back(std::async(std::launch::async, [this, ip]() {
+                this->_datetime(ip);
+            }));
+        }
+
+        for(auto& call : calls){
+            call.get();
         }
     }
 }
@@ -144,8 +183,15 @@ void GoProController::zoom(std::string target){
     if(target.size() > 0){
         _zoom(target);
     }else{
+        std::vector<std::future<void>> calls = std::vector<std::future<void>>();
         for(std::string ip : camera_ips){
-            _zoom(ip);
+            calls.push_back(std::async(std::launch::async, [this, ip]() {
+                this->_zoom(ip);
+            }));
+        }
+
+        for(auto& call : calls){
+            call.get();
         }
     }
 }
@@ -154,54 +200,102 @@ void GoProController::shutter(std::string target, bool isstart){
     if(target.size() > 0){
         _shutter(target, isstart);
     }else{
+        std::vector<std::future<void>> calls = std::vector<std::future<void>>();
         for(std::string ip : camera_ips){
-            _shutter(ip, isstart);
+            calls.push_back(std::async(std::launch::async, [this, ip, isstart]() {
+                this->_shutter(ip, isstart);
+            }));
+        }
+
+        for(auto& call : calls){
+            call.get();
         }
     }
 }
 
 std::string GoProController::queryStatus(std::string target){
-    json r;
+    json res;
+    std::string address;
     json arr = json::array();
     if(target.size() > 0){
-        json res = json::parse(_queryStatus(target));
+        json res;
+        try{
+            std::pair<std::string, std::string> result = _queryStatus(target);
+            address = result.first;
+            res = json::parse(result.second);
+        }catch(...){
+            res = json::object();
+        }
         json i;
-        i["ip"] = target;
+        i["ip"] = address;
         i["status"] = res;
         arr.push_back(i);
     }else{
+        std::vector<std::future<std::pair<std::string, std::string>>> calls = 
+            std::vector<std::future<std::pair<std::string, std::string>>>();
         for(std::string ip : camera_ips){
-            json res = json::parse(_queryStatus(ip));
+            calls.push_back(std::async(std::launch::async, [this, ip, arr]() {
+                return _queryStatus(ip);
+            }));
+        }
+
+        for(auto& call : calls){
+            try{
+                std::pair<std::string, std::string> result = call.get();
+                address = result.first;
+                res = json::parse(result.second);
+            }catch(...){
+                res = json::object();
+            }
             json i;
-            i["ip"] = ip;
+            i["ip"] = address;
             i["status"] = res;
             arr.push_back(i);
         }
     }
-    r["data"] = arr;
-    return r.dump();
+    return arr.dump();
 }
 
 std::string GoProController::setSetting(std::string target, int ID, std::string value){
-    json r;
+    json res;
+    std::string address;
     json arr = json::array();
     if(target.size() > 0){
-        json res = json::parse(_setSetting(target, ID, value));
+        try{
+            std::pair<std::string, std::string> result = _setSetting(target, ID, value);
+            address = result.first;
+            res = json::parse(result.second);
+        }catch(...){
+            res = json::object();
+        }
         json i;
         i["ip"] = target;
         i["status"] = res;
         arr.push_back(i);
     }else{
+        std::vector<std::future<std::pair<std::string, std::string>>> calls = 
+            std::vector<std::future<std::pair<std::string, std::string>>>();
         for(std::string ip : camera_ips){
-            json res = json::parse(_setSetting(ip, ID, value));
+            calls.push_back(std::async(std::launch::async, [this, ip, ID, value]() {
+                return _setSetting(ip, ID, value);
+            }));
+        }
+
+        for(auto& call : calls){
+            try{
+                std::pair<std::string, std::string> result = call.get();
+                address = result.first;
+                res = json::parse(result.second);
+            }catch(...){
+                res = json::object();
+            }
             json i;
-            i["ip"] = ip;
+            i["ip"] = address;
             i["status"] = res;
             arr.push_back(i);
         }
     }
-    r["data"] = arr;
-    return r.dump();
+    return arr.dump();
 }
 
 
@@ -209,8 +303,15 @@ void GoProController::webcamMode(std::string target){
     if(target.size() > 0){
         _webcamMode(target);
     }else{
+        std::vector<std::future<void>> calls = std::vector<std::future<void>>();
         for(std::string ip : camera_ips){
-            _webcamMode(ip);
+            calls.push_back(std::async(std::launch::async, [this, ip]() {
+                this->_webcamMode(ip);
+            }));
+        }
+
+        for(auto& call : calls){
+            call.get();
         }
     }
 }
@@ -219,8 +320,15 @@ void GoProController::webcamUnMode(std::string target){
     if(target.size() > 0){
         _webcamUnMode(target);
     }else{
+        std::vector<std::future<void>> calls = std::vector<std::future<void>>();
         for(std::string ip : camera_ips){
-            _webcamUnMode(ip);
+            calls.push_back(std::async(std::launch::async, [this, ip]() {
+                this->_webcamUnMode(ip);
+            }));
+        }
+
+        for(auto& call : calls){
+            call.get();
         }
     }
 }
@@ -229,8 +337,15 @@ void GoProController::webcamOn(std::string target, int startPort, int res, int f
     if(target.size() > 0){
         _webcamOn(target, startPort, res, fov, TS);
     }else{
+        std::vector<std::future<void>> calls = std::vector<std::future<void>>();
         for(std::string ip : camera_ips){
-            _webcamOn(ip, startPort, res, fov, TS);
+            calls.push_back(std::async(std::launch::async, [this, ip, startPort, res, fov, TS]() {
+                this->_webcamOn(ip, startPort, res, fov, TS);
+            }));
+        }
+
+        for(auto& call : calls){
+            call.get();
         }
     }
 }
@@ -239,8 +354,15 @@ void GoProController::webcamOff(std::string target){
     if(target.size() > 0){
         _webcamOff(target);
     }else{
+        std::vector<std::future<void>> calls = std::vector<std::future<void>>();
         for(std::string ip : camera_ips){
-            _webcamOff(ip);
+            calls.push_back(std::async(std::launch::async, [this, ip]() {
+                this->_webcamOff(ip);
+            }));
+        }
+
+        for(auto& call : calls){
+            call.get();
         }
     }
 }
@@ -249,14 +371,24 @@ std::string GoProController::webcamStatus(std::string target){
     json r;
     json arr = json::array();
     if(target.size() > 0){
-        json res = json::parse(_webcamStatus(target));
+        json res;
+        try{
+            res = json::parse(_webcamStatus(target));
+        }catch(...){
+            res = json::object();
+        }
         json i;
         i["ip"] = target;
         i["status"] = res;
         arr.push_back(i);
     }else{
         for(std::string ip : camera_ips){
-            json res = json::parse(_webcamStatus(ip));
+            json res;
+            try{
+                res = json::parse(_webcamStatus(ip));
+            }catch(...){
+                res = json::object();
+            }
             json i;
             i["ip"] = ip;
             i["status"] = res;
@@ -271,14 +403,24 @@ std::string GoProController::webcamVersion(std::string target){
     json r;
     json arr = json::array();
     if(target.size() > 0){
-        json res = json::parse(_webcamVersion(target));
+        json res;
+        try{
+            res = json::parse(_webcamVersion(target));
+        }catch(...){
+            res = json::object();
+        }
         json i;
         i["ip"] = target;
         i["status"] = res;
         arr.push_back(i);
     }else{
         for(std::string ip : camera_ips){
-            json res = json::parse(_webcamVersion(ip));
+            json res;
+            try{
+                res = json::parse(_webcamVersion(ip));
+            }catch(...){
+                res = json::object();
+            }
             json i;
             i["ip"] = ip;
             i["status"] = res;
@@ -293,14 +435,24 @@ std::string GoProController::getMediaList(std::string target){
     json r;
     json arr = json::array();
     if(target.size() > 0){
-        json res = json::parse(_getMediaList(target));
+        json res;
+        try{
+            res = json::parse(_getMediaList(target));
+        }catch(...){
+            res = json::object();
+        }
         json i;
         i["ip"] = target;
         i["status"] = res;
         arr.push_back(i);
     }else{
         for(std::string ip : camera_ips){
-            json res = json::parse(_getMediaList(ip));
+            json res;
+            try{
+                res = json::parse(_getMediaList(ip));
+            }catch(...){
+                res = json::object();
+            }
             json i;
             i["ip"] = ip;
             i["status"] = res;
@@ -347,77 +499,64 @@ void GoProController::_updateRecord(){
 
 void GoProController::_reboot(std::string target){
     std::string url = GetRemoteURLByIP(target) + "/gp/gpControl/command/system/reset";
-    std::string command = std::string("curl -s \"" + url + "\"");
-    exec(command);
+    exec(getCommand(url));
 }
 
 void GoProController::_shutdown(std::string target){
     std::string url = GetRemoteURLByIP(target) + "/gp/gpControl/command/system/shutdown";
-    std::string command = std::string("curl -s \"" + url + "\"");
-    exec(command);
+    exec(getCommand(url));
 }
 
 void GoProController::_keep_alive(std::string target){
     std::string url = GetRemoteURLByIP(target) + "/gopro/camera/keep_alive";
-    std::string command = std::string("curl -s \"" + url + "\"");
-    exec(command);
+    exec(getCommand(url));
 }
 
 void GoProController::_usb(std::string target, bool ison){
     std::string url = GetRemoteURLByIP(target) + "/gopro/camera/control/wired_usb?p=";
     if(ison) url += "1";
     else url += "0";
-    std::string command = std::string("curl -s \"" + url + "\"");
-    exec(command);
+    exec(getCommand(url));
 }
 
 void GoProController::_datetime(std::string target){
     std::string url = GetRemoteURLByIP(target) + "/gopro/camera/control/wired_usb?p=0";
-    std::string command = std::string("curl -s \"" + url + "\"");
-    exec(command);
+    exec(getCommand(url));
 }
 
 void GoProController::_zoom(std::string target){
     std::string url = GetRemoteURLByIP(target) + "/gopro/camera/control/wired_usb?p=0";
-    std::string command = std::string("curl -s \"" + url + "\"");
-    exec(command);
+    exec(getCommand(url));
 }
 
 void GoProController::_shutter(std::string target, bool ison){
     std::string url = GetRemoteURLByIP(target) + "/gopro/camera/shutter/";
     if(ison) url += "start";
     else url += "stop";
-    std::string command = std::string("curl -s \"" + url + "\"");
-    exec(command);
+    exec(getCommand(url));
 }
 
-std::string GoProController::_queryStatus(std::string target){
+std::pair<std::string, std::string> GoProController::_queryStatus(std::string target){
     std::string url = GetRemoteURLByIP(target) + "/gopro/camera/state";
-    std::string command = std::string("curl -s \"" + url + "\"");
-    std::string json_result = exec(command);
-    return json_result;
+    return std::pair<std::string, std::string>(target, exec(getCommand(url)));
 }
 
-std::string GoProController::_setSetting(std::string target, int ID, std::string value){
+std::pair<std::string, std::string> GoProController::_setSetting(std::string target, int ID, std::string value){
     std::string url = GetRemoteURLByIP(target) + "/gopro/camera/setting?option=";
     url += value;
     url += "&setting=";
     url += std::to_string(ID);
-    std::string command = std::string("curl -s \"" + url + "\"");
-    std::string json_result = exec(command);
-    return json_result;
+    return std::pair<std::string, std::string>(target, exec(getCommand(url)));
 }
 
 void GoProController::_webcamMode(std::string target){
     std::string url = GetRemoteURLByIP(target) + "/gopro/webcam/preview";
-    std::string command = std::string("curl -s \"" + url + "\"");
-    exec(command);
+    exec(getCommand(url));
 }
 
 void GoProController::_webcamUnMode(std::string target){
     std::string url = GetRemoteURLByIP(target) + "/gopro/webcam/exit";
-    std::string command = std::string("curl -s \"" + url + "\"");
-    exec(command);
+    exec(getCommand(url));
 }
 
 void GoProController::_webcamOn(std::string target, int startPort, int res, int fov, bool TS){
@@ -432,30 +571,25 @@ void GoProController::_webcamOn(std::string target, int startPort, int res, int 
     }else{
         url += "&protocol=RTSP";
     }
-    std::string command = std::string("curl -s \"" + url + "\"");
-    exec(command);
+    exec(getCommand(url));
 }
 
 void GoProController::_webcamOff(std::string target){
     std::string url = GetRemoteURLByIP(target) + "/gopro/webcam/stop";
-    std::string command = std::string("curl -s \"" + url + "\"");
-    exec(command);
+    exec(getCommand(url));
 }
 
-std::string GoProController::_webcamStatus(std::string target){
+std::pair<std::string, std::string> GoProController::_webcamStatus(std::string target){
     std::string url = GetRemoteURLByIP(target) + "/gopro/webcam/status";
-    std::string command = std::string("curl -s \"" + url + "\"");
-    return exec(command);
+    return std::pair<std::string, std::string>(target, exec(getCommand(url)));
 }
 
-std::string GoProController::_webcamVersion(std::string target){
+std::pair<std::string, std::string> GoProController::_webcamVersion(std::string target){
     std::string url = GetRemoteURLByIP(target) + "/gopro/webcam/version";
-    std::string command = std::string("curl -s \"" + url + "\"");
-    return exec(command);
+    return std::pair<std::string, std::string>(target, exec(getCommand(url)));
 }
 
-std::string GoProController::_getMediaList(std::string target){
+std::pair<std::string, std::string> GoProController::_getMediaList(std::string target){
     std::string url = GetRemoteURLByIP(target) + "/gopro/media/list";
-    std::string command = std::string("curl -s \"" + url + "\"");
-    return exec(command);
+    return std::pair<std::string, std::string>(target, exec(getCommand(url)));
 }
