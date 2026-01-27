@@ -308,6 +308,27 @@ int main(int, char**)
 
         }
 
+        if(popup_add_camera){
+            ImGui::BeginPopupModal("Add Camera", NULL, ImGuiWindowFlags_AlwaysAutoResize);
+            ImGui::InputText("Camera IP", server_ip_buf, IM_ARRAYSIZE(server_ip_buf));
+            if (ImGui::Button("Add")) {
+                master.addServer(server_ip_buf);
+                master.connectAll();
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::EndPopup();
+        }
+        if(popup_scan_camera){
+            ImGui::BeginPopupModal("Scan Camera", NULL, ImGuiWindowFlags_AlwaysAutoResize);
+            ImGui::InputText("Camera IP", server_ip_buf, IM_ARRAYSIZE(server_ip_buf));
+            if (ImGui::Button("Add")) {
+                master.addServer(server_ip_buf);
+                master.connectAll();
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::EndPopup();
+        }
+
         // Rendering
         ImGui::Render();
         glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
