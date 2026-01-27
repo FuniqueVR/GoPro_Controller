@@ -92,6 +92,10 @@ int main(int, char**)
     bool local_command_win = false;
     bool inspector_win = false;
     bool record_win = false;
+
+    bool popup_add_camera = false;
+    bool popup_scan_camera = false;
+
     if(gui["websocket_server_window"].is_boolean() && gui["websocket_server_window"].get<bool>()){
         websocket_server_window = true;
     }
