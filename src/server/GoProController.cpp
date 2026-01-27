@@ -368,99 +368,132 @@ void GoProController::webcamOff(std::string target){
 }
 
 std::string GoProController::webcamStatus(std::string target){
-    json r;
+    json res;
+    std::string address;
     json arr = json::array();
     if(target.size() > 0){
         json res;
         try{
-            res = json::parse(_webcamStatus(target));
+            std::pair<std::string, std::string> result = _webcamStatus(target);
+            address = result.first;
+            res = json::parse(result.second);
         }catch(...){
             res = json::object();
         }
         json i;
-        i["ip"] = target;
+        i["ip"] = address;
         i["status"] = res;
         arr.push_back(i);
     }else{
+        std::vector<std::future<std::pair<std::string, std::string>>> calls = 
+            std::vector<std::future<std::pair<std::string, std::string>>>();
         for(std::string ip : camera_ips){
-            json res;
+            calls.push_back(std::async(std::launch::async, [this, ip]() {
+                return _webcamStatus(ip);
+            }));
+        }
+
+        for(auto& call : calls){
             try{
-                res = json::parse(_webcamStatus(ip));
+                std::pair<std::string, std::string> result = call.get();
+                address = result.first;
+                res = json::parse(result.second);
             }catch(...){
                 res = json::object();
             }
             json i;
-            i["ip"] = ip;
+            i["ip"] = address;
             i["status"] = res;
             arr.push_back(i);
         }
     }
-    r["data"] = arr;
-    return r.dump();
+    return arr.dump();
 }
 
 std::string GoProController::webcamVersion(std::string target){
-    json r;
+    json res;
+    std::string address;
     json arr = json::array();
     if(target.size() > 0){
         json res;
         try{
-            res = json::parse(_webcamVersion(target));
+            std::pair<std::string, std::string> result = _webcamVersion(target);
+            address = result.first;
+            res = json::parse(result.second);
         }catch(...){
             res = json::object();
         }
         json i;
-        i["ip"] = target;
+        i["ip"] = address;
         i["status"] = res;
         arr.push_back(i);
     }else{
+        std::vector<std::future<std::pair<std::string, std::string>>> calls = 
+            std::vector<std::future<std::pair<std::string, std::string>>>();
         for(std::string ip : camera_ips){
-            json res;
+            calls.push_back(std::async(std::launch::async, [this, ip]() {
+                return _webcamVersion(ip);
+            }));
+        }
+
+        for(auto& call : calls){
             try{
-                res = json::parse(_webcamVersion(ip));
+                std::pair<std::string, std::string> result = call.get();
+                address = result.first;
+                res = json::parse(result.second);
             }catch(...){
                 res = json::object();
             }
             json i;
-            i["ip"] = ip;
+            i["ip"] = address;
             i["status"] = res;
             arr.push_back(i);
         }
     }
-    r["data"] = arr;
-    return r.dump();
+    return arr.dump();
 }
 
 std::string GoProController::getMediaList(std::string target){
-    json r;
+    json res;
+    std::string address;
     json arr = json::array();
     if(target.size() > 0){
         json res;
         try{
-            res = json::parse(_getMediaList(target));
+            std::pair<std::string, std::string> result = _getMediaList(target);
+            address = result.first;
+            res = json::parse(result.second);
         }catch(...){
             res = json::object();
         }
         json i;
-        i["ip"] = target;
+        i["ip"] = address;
         i["status"] = res;
         arr.push_back(i);
     }else{
+        std::vector<std::future<std::pair<std::string, std::string>>> calls = 
+            std::vector<std::future<std::pair<std::string, std::string>>>();
         for(std::string ip : camera_ips){
-            json res;
+            calls.push_back(std::async(std::launch::async, [this, ip]() {
+                return _getMediaList(ip);
+            }));
+        }
+
+        for(auto& call : calls){
             try{
-                res = json::parse(_getMediaList(ip));
+                std::pair<std::string, std::string> result = call.get();
+                address = result.first;
+                res = json::parse(result.second);
             }catch(...){
                 res = json::object();
             }
             json i;
-            i["ip"] = ip;
+            i["ip"] = address;
             i["status"] = res;
             arr.push_back(i);
         }
     }
-    r["data"] = arr;
-    return r.dump();
+    return arr.dump();
 }
 
 
