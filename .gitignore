@@ -1,5 +1,7 @@
 # Prerequisites
 *.d
+*._deps
+*._deps/
 
 # Compiled Object files
 *.slo
@@ -40,9 +42,12 @@
 *.app
 
 # Build directories
-build/
-Build/
-build-*/
+build_master/
+Build_master/
+build_master-*/
+build_server/
+Build_server/
+build_server-*/
 
 # CMake generated files
 CMakeFiles/
@@ -67,3 +72,7 @@ vcpkg_installed/
 # test output & cache
 Testing/
 .cache/
+_deps/libhv-src
+_deps/libhv-src/
+_deps/libhv-*/
+build_master/_deps/libhv-src
