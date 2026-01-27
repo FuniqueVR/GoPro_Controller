@@ -1,5 +1,8 @@
 #include <iostream>
+#include <fstream>
+#include <chrono>
 #include <vector>
+#include <thread>
 #include <SDL3/SDL.h>
 #if defined(IMGUI_IMPL_OPENGL_ES2)
 #include <SDL3/SDL_opengles2.h>
@@ -10,11 +13,26 @@
 #include "imgui_impl_sdl3.h"
 #include "imgui_impl_opengl3.h"
 #include "../common/iphelper.h"
-#include "GoProMaster.hpp"
+#include "GoProMaster.h"
+#include "IO.h"
 
 // Simple Video Placeholder
 // TODO: Real Implementation
 #include <opencv2/opencv.hpp>
+
+bool done = false;
+GoProMaster master;
+json gui;
+json servers;
+char server_ip_buf[64] = "192.168.10.2";
+
+// The secondary thread handle the background update
+// This will automatically retry connect to server every 10 seconds.
+void background_worker(){
+    while(done){
+        std::this_thread::sleep_for(std::chrono::seconds(10));
+    }
+}
 
 int main(int, char**)
 {
@@ -63,6 +81,36 @@ int main(int, char**)
     SDL_GL_SetSwapInterval(1); // Enable vsync
     SDL_ShowWindow(window);
 
+    servers = loadServerList();
+    gui = loadGUI();
+    std::thread bg_thread(background_worker);
+
+    // Main loop
+    bool websocket_server_window = false;
+    bool camera_list_win = false;
+    bool global_command_win = false;
+    bool local_command_win = false;
+    bool inspector_win = false;
+    bool record_win = false;
+    if(gui["websocket_server_window"].is_boolean() && gui["websocket_server_window"].get<bool>()){
+        websocket_server_window = true;
+    }
+    if(gui["camera_list_win"].is_boolean() && gui["camera_list_win"].get<bool>()){
+        camera_list_win = true;
+    }
+    if(gui["global_command_win"].is_boolean() && gui["global_command_win"].get<bool>()){
+        global_command_win = true;
+    }
+    if(gui["local_command_win"].is_boolean() && gui["local_command_win"].get<bool>()){
+        local_command_win = true;
+    }
+    if(gui["inspector_win"].is_boolean() && gui["inspector_win"].get<bool>()){
+        inspector_win = true;
+    }
+    if(gui["record_win"].is_boolean() && gui["record_win"].get<bool>()){
+        record_win = true;
+    }
+
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -78,25 +126,6 @@ int main(int, char**)
     // Setup Platform/Renderer backends
     ImGui_ImplSDL3_InitForOpenGL(window, gl_context);
     ImGui_ImplOpenGL3_Init(glsl_version);
-
-    // GoPro Master Logic
-    GoProMaster master;
-    // Add default test servers
-    master.addServer("127.0.0.1"); // Local mock server
-    // master.addServer("192.168.1.101"); 
-    // master.addServer("192.168.1.102"); 
-
-    master.connectAll();
-
-    // Main loop
-    bool done = false;
-    bool websocket_server_window = true;
-    bool camera_list_win = true;
-    bool global_command_win = false;
-    bool local_command_win = false;
-    bool inspector_win = true;
-    bool record_win = false;
-    char server_ip_buf[128] = "127.0.0.1";
 
     while (!done)
     {
@@ -151,6 +180,7 @@ int main(int, char**)
 
         // 1. Dashboard Window
         if(websocket_server_window) {
+            ImGui::SetNextWindowContentSize(ImVec2(600, 400));
             ImGui::Begin("Websocket Dashboard");
 
             ImGui::Text("Hotkeys:");
@@ -206,21 +236,66 @@ int main(int, char**)
         }
 
         if(camera_list_win) {
+            ImGui::SetNextWindowContentSize(ImVec2(600, 400));
             ImGui::Begin("GoPro Dashboard");
             ImGui::End();
         }
 
         if(global_command_win) {
+            ImGui::SetNextWindowContentSize(ImVec2(600, 400));
             ImGui::Begin("Group Command");
+            {
+                ImGui::LabelText("Global Controls", "Commands applied to all connected cameras");
+
+                if(ImGui::Button("Scan All")) master.startRecordingAll(); ImGui::SameLine();
+                if(ImGui::Button("Add Server")) master.stopRecordingAll();
+
+                if(ImGui::Button("Add Camera")) master.startRecordingAll(); ImGui::SameLine();
+                if(ImGui::Button("Clean Camera")) master.stopRecordingAll();
+
+                if(ImGui::Button("Connect All")) master.startRecordingAll(); ImGui::SameLine();
+                if(ImGui::Button("Disconnect All")) master.stopRecordingAll();
+
+                if(ImGui::Button("Reboot")) master.startRecordingAll(); ImGui::SameLine();
+                if(ImGui::Button("Shutdown")) master.stopRecordingAll();
+
+                if(ImGui::Button("Record All")) master.startRecordingAll(); ImGui::SameLine();
+                if(ImGui::Button("Stop All")) master.stopRecordingAll();
+            }
             ImGui::End();
         }
 
         if(local_command_win) {
-            ImGui::Begin("Camera Command");
+            ImGui::SetNextWindowContentSize(ImVec2(600, 400));
+            ImGui::Begin("SCC#Camera Command");
+            {
+                ImGui::LabelText("Single Camera Control", "Commands applied to selected camera");
+
+                if(ImGui::Button("Record")) master.startRecordingAll(); ImGui::SameLine();
+                if(ImGui::Button("Stop")) master.stopRecordingAll(); ImGui::SameLine();
+                if(ImGui::Button("Setting Apply All")) master.stopRecordingAll();
+
+                if(ImGui::Button("Connect")) master.stopRecordingAll(); ImGui::SameLine();
+                if(ImGui::Button("Disconnect")) master.stopRecordingAll(); ImGui::SameLine();
+                if(ImGui::Button("Shutdown")) master.stopRecordingAll(); ImGui::SameLine();
+                if(ImGui::Button("Locate")) master.stopRecordingAll();
+
+                if(ImGui::BeginListBox("SCC#Mode")){
+                    ImGui::Selectable("SCC_Mode#PHOTO");
+                    ImGui::Selectable("SCC_Mode#VIDEO");
+                    ImGui::Selectable("SCC_Mode#WEBCAM");
+                    ImGui::EndListBox();
+                }
+
+                if(ImGui::BeginListBox("SCC#Preset")){
+                    ImGui::EndListBox();
+                }
+            }
             ImGui::End();
         }
 
         if(inspector_win) {
+            ImGui::SetNextWindowContentSize(ImVec2(600, 400));
             ImGui::Begin("Inspector");
             ImGui::End();
         }
@@ -239,6 +314,10 @@ int main(int, char**)
         SDL_GL_SwapWindow(window);
     }
 
+
+    if(bg_thread.joinable()){
+        bg_thread.join();
+    }
     // Cleanup
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplSDL3_Shutdown();

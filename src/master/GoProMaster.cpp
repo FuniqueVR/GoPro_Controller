@@ -1,7 +1,9 @@
-#include "GoProMaster.hpp"
+#include "GoProMaster.h"
 #include <iostream>
 
-GoProMaster::GoProMaster() {}
+GoProMaster::GoProMaster() {
+    
+}
 
 GoProMaster::~GoProMaster() {
     for (auto& s : servers) {

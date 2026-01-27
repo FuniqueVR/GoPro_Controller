@@ -5,6 +5,9 @@
 #include <memory>
 #include <functional>
 #include "hv/WebSocketClient.h"
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
 
 struct ServerConnection {
     std::string ip;

@@ -135,11 +135,30 @@ sudo curl http://192.168.10.10:8080/build_server/lib/libhv.so -o /lib/libhv.so
 sudo nano /usr/local/bin/startup.sh
 ```
 
-弄一個 打上啟動程式的腳本
+打上啟動程式的腳本
 ```bash
 #!/bin/bash
 cd /home/ellly
 /usr/local/bin/server
+```
+
+建議一個 Service 在 /lib/system/lib/systemd/system/startup.service
+```bash
+sudo nano /lib/systemd/system/startup.service
+```
+
+```bash
+[Unit]
+Description=My Websocket Server
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/startup.sh
+Restart=on-failure
+RestartSec=2s
+
+[Install]
+WantedBy=multi-user.target
 ```
 
 重製 systemd
