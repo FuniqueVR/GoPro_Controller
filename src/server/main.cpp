@@ -3,19 +3,9 @@
 #include "hv/WebSocketServer.h"
 #include "hv/EventLoop.h"
 #include "GoProController.hpp"
-#include <nlohmann/json.hpp>
-
-using json = nlohmann::json;
 
 std::vector<const WebSocketChannelPtr*> hosts = std::vector<const WebSocketChannelPtr*>();
 GoProController controller;
-
-std::string getPacket(std::string key, json data){
-    json response;
-    response["key"] = key;
-    response["value"] = data;
-    return response.dump();
-}
 
 void ExecuteCommand(const WebSocketChannelPtr& channel, json j){
     std::string name = "";
@@ -58,8 +48,12 @@ void ExecuteCommand(const WebSocketChannelPtr& channel, json j){
         channel->send(getPacket("command:shutter_off", r));
     }
     else if(name == "ip"){
-        r["data"] = controller.getAllIP();
+        r["data"] = json::parse(controller.getAllIP());
         channel->send(getPacket("command:ip", r));
+    }
+    else if(name == "scan"){
+        controller.scanCameras();
+        channel->send(getPacket("command:scan", r));
     }
 
     for(auto host : hosts){

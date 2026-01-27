@@ -78,6 +78,20 @@ graph LR
     L-->|USB|CAMCH;
 ```
 
+## Raspberry 建構
+
+需要在 Repo Root 開啟 http-server 建議工具: [http-server](https://www.npmjs.com/package/http-server)
+
+```bash
+# 在 Repo 本地開啟
+http-server -p 8080
+```
+
+接著開啟另一個 Terminal
+
+```bash
+```
+
 ## 協定
 
 可以參考 GoPro Http API 協定的 [Docs](https://gopro.github.io/OpenGoPro/http#tag/Webcam/operation/GPCAMERA_WEBCAM_START_OGP)
@@ -97,12 +111,10 @@ graph LR
 抓到所有狀態
 
 需求物件結構
-target 必須存在, 如果為空字串, 則等於廣播
 ```json
 {
     "name": "label",
-    "target": "IP target",
-    "arg": "String Argument"
+    "target": "IP target"
 }
 ```
 
@@ -144,7 +156,15 @@ target 必須存在, 如果為空字串, 則等於廣播
 
 ##### name: ip
 
-這項指令會回傳 ip 字串用 ``,`` 隔開
+這項指令會回傳 ip
+
+```json
+{
+    "data": [
+        "IP.A", "IP.B"
+    ]
+}
+```
 
 #### KEY: query
 

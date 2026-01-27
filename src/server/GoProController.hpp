@@ -9,12 +9,16 @@
 #include "mdns_cpp/logger.hpp"
 #include "mdns_cpp/mdns.hpp"
 #include "hv/requests.h"
+#include <nlohmann/json.hpp>
 
 /**
  * Most of the function will have first string target as parameter.
  * User can leave this field with empty string to repersent the broadcasting type,
  * This mean this type of action will send to all the connected clients.
 */
+
+using json = nlohmann::json;
+std::string getPacket(std::string key, json data);
 
 class GoProController {
 public:

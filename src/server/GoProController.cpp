@@ -5,9 +5,7 @@
 #include <chrono>   // For std::chrono::seconds, milliseconds, etc.
 #include <thread>   // For std::this_thread::sleep_for
 #include <future>
-#include <nlohmann/json.hpp>
 
-using json = nlohmann::json;
 std::string getPacket(std::string key, json data){
     json response;
     response["key"] = key;
@@ -273,13 +271,11 @@ std::string GoProController::getMediaList(std::string target){
 
 
 std::string GoProController::getAllIP(){
-    std::string result = "";
+    json result = json::array();
     for(std::string target : camera_ips){
-        result += target;
-        result += ",";
+        result.push_back(target);
     }
-    result.pop_back();
-    return result;
+    return result.dump();
 }
 
 void GoProController::_reboot(std::string target){
