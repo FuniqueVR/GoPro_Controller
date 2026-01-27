@@ -80,6 +80,19 @@ graph LR
 
 ## Raspberry 建構
 
+#### IP Setup
+
+通常希望開發的機器使用 192.168.10.10, gw 192.168.10.1, netmask 255.255.255.0\
+PI 則是 192.168.10.(2-9), gw 192.168.10.1, netmask 255.255.255.0
+
+```bash
+SSH 進去你的 PI
+# 介面化 PI 網路管理
+sudo nmtui
+```
+
+#### 安裝程式
+
 需要在 Repo Root 開啟 http-server 建議工具: [http-server](https://www.npmjs.com/package/http-server)
 
 ```bash
@@ -90,6 +103,29 @@ http-server -p 8080
 接著開啟另一個 Terminal
 
 ```bash
+# SSH 到你的 PI
+sudo curl http://192.168.10.10:8080/build_server/server -o ./server
+```
+
+用 ldd 查看依賴性
+
+```bash
+ldd server
+# Output:
+#   linux-vdso.so.1 (0x0000007fb8ded000)
+#   libhv.so => /lib/libhv.so (0x0000007fb8a50000)
+#   libstdc++.so.6 => /lib/aarch64-linux-gnu/libstdc++.so.6 (0x0000007fb87e0000)
+#   libgcc_s.so.1 => /lib/aarch64-linux-gnu/libgcc_s.so.1 (0x0000007fb87a0000)
+#   libc.so.6 => /lib/aarch64-linux-gnu/libc.so.6 (0x0000007fb85e0000)
+#   /lib/ld-linux-aarch64.so.1 (0x0000007fb8da0000)
+#   libm.so.6 => /lib/aarch64-linux-gnu/libm.so.6 (0x0000007fb8530000)
+```
+
+你會看到 libhv.so 依賴於 /lib 資料夾, 如果還沒有安裝依賴庫
+
+```bash
+# 快速解決依賴問題
+sudo curl http://192.168.10.10:8080/build_server/lib/libhv.so -o /lib/libhv.so
 ```
 
 ## 協定
