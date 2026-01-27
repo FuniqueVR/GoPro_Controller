@@ -25,7 +25,8 @@ public:
     GoProController();
     ~GoProController();
 
-    void scanCameras(); // Find connected cameras
+    void scanCameras();
+    void addCameras(std::string serial);
     void startRecording();
     void stopRecording();
     void setModePhoto();
@@ -43,7 +44,8 @@ public:
     std::string setSetting(std::string target, int ID, std::string value);
 
     void webcamMode(std::string target);
-    void webcamOn(std::string target, int startPort, int res, int fps, bool TS);
+    void webcamUnMode(std::string target);
+    void webcamOn(std::string target, int startPort, int res, int fov, bool TS);
     void webcamOff(std::string target);
     std::string webcamStatus(std::string target);
     std::string webcamVersion(std::string target);
@@ -53,6 +55,9 @@ public:
     std::string getAllIP();
 
 protected:
+    void _loadRecord();
+    void _updateRecord();
+
     void _reboot(std::string target);
     void _shutdown(std::string target);
     void _keep_alive(std::string target);
@@ -65,7 +70,8 @@ protected:
     std::string _setSetting(std::string target, int ID, std::string value);
 
     void _webcamMode(std::string target);
-    void _webcamOn(std::string target, int startPort, int res, int fps, bool TS);
+    void _webcamUnMode(std::string target);
+    void _webcamOn(std::string target, int startPort, int res, int fov, bool TS);
     void _webcamOff(std::string target);
     std::string _webcamStatus(std::string target);
     std::string _webcamVersion(std::string target);
@@ -74,6 +80,7 @@ protected:
 
 private:
     mdns_cpp::mDNS mdns;
+    bool mdns_scaned = false;
     std::vector<std::thread> scan_workers;
     std::vector<std::string> camera_ips;
     std::mutex ips_mutex;

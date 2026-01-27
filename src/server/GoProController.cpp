@@ -1,6 +1,7 @@
 #include "GoProController.hpp"
 #include "../common/iphelper.h"
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <chrono>   // For std::chrono::seconds, milliseconds, etc.
 #include <thread>   // For std::this_thread::sleep_for
@@ -14,7 +15,7 @@ std::string getPacket(std::string key, json data){
 }
 
 GoProController::GoProController() {
-    // Basic initialization
+    _loadRecord();
 }
 
 GoProController::~GoProController() {
@@ -26,17 +27,48 @@ GoProController::~GoProController() {
 }
 
 void GoProController::scanCameras() {
-    mdns_cpp::Logger::setLoggerSink([&](const std::string& log_msg) {
-        std::string keyword = std::string("gopro");
-        size_t pos = log_msg.find(keyword);
-        if(pos != std::string::npos){
-            std::string p = std::string(log_msg.substr(0,13).c_str());
-            std::cout << "MDNS gopro service found: " << p << "\n";
-            camera_ips.push_back(p);
-        }
-    });
-    camera_ips.clear();
+    if(!mdns_scaned){
+        mdns_scaned = true;
+            mdns_cpp::Logger::setLoggerSink([&](const std::string& log_msg) {
+            std::string keyword = std::string("gopro");
+            size_t pos = log_msg.find(keyword);
+            if(pos != std::string::npos){
+                std::string p = std::string(log_msg.substr(0,13).c_str());
+                std::cout << "[MDNS] gopro service found: " << p << "\n";
+                bool find = false;
+                for(auto i : camera_ips){
+                    if(i == p){
+                        find = true;
+                        break;
+                    }
+                }
+                if(!find){
+                    camera_ips.push_back(p);
+                    _updateRecord();
+                }
+            }else {
+                std::cout << "[MDNS] ignore service: " << log_msg << "\n";
+            }
+        });
+    }
     mdns.executeDiscovery();
+}
+
+void GoProController::addCameras(std::string serial){
+    if(serial.size() >= 3){
+        std::string p = GetRemoteIPBySerial(serial);
+        bool find = false;
+        for(auto i : camera_ips){
+            if(i == p){
+                find = true;
+                break;
+            }
+        }
+        if(!find){
+            camera_ips.push_back(p);
+            _updateRecord();
+        }
+    }
 }
 
 
@@ -183,12 +215,22 @@ void GoProController::webcamMode(std::string target){
     }
 }
 
-void GoProController::webcamOn(std::string target, int startPort, int res, int fps, bool TS){
+void GoProController::webcamUnMode(std::string target){
     if(target.size() > 0){
-        _webcamOn(target, startPort, res, fps, TS);
+        _webcamUnMode(target);
     }else{
         for(std::string ip : camera_ips){
-            _webcamOn(ip, startPort, res, fps, TS);
+            _webcamUnMode(ip);
+        }
+    }
+}
+
+void GoProController::webcamOn(std::string target, int startPort, int res, int fov, bool TS){
+    if(target.size() > 0){
+        _webcamOn(target, startPort, res, fov, TS);
+    }else{
+        for(std::string ip : camera_ips){
+            _webcamOn(ip, startPort, res, fov, TS);
         }
     }
 }
@@ -278,6 +320,31 @@ std::string GoProController::getAllIP(){
     return result.dump();
 }
 
+void GoProController::_loadRecord(){
+    std::ifstream inFile("record.txt");
+    if (!inFile.is_open()) {
+        std::cerr << "Error: Could not open the file." << std::endl;
+        return; // Return with an error code
+    }
+    std::string line;
+    while (std::getline(inFile, line)) {
+        camera_ips.push_back(line);
+    }
+    inFile.close();
+}
+
+void GoProController::_updateRecord(){
+    std::ofstream outFile("record.txt");
+    if (!outFile.is_open()) {
+        std::cerr << "Error: Could not open the file." << std::endl;
+        return; // Return with an error code
+    }
+    for(auto i : camera_ips){
+        outFile << i << "\n";
+    }
+    outFile.close();
+}
+
 void GoProController::_reboot(std::string target){
     std::string url = GetRemoteURLByIP(target) + "/gp/gpControl/command/system/reset";
     std::string command = std::string("curl -s \"" + url + "\"");
@@ -343,6 +410,12 @@ std::string GoProController::_setSetting(std::string target, int ID, std::string
 
 void GoProController::_webcamMode(std::string target){
     std::string url = GetRemoteURLByIP(target) + "/gopro/webcam/preview";
+    std::string command = std::string("curl -s \"" + url + "\"");
+    exec(command);
+}
+
+void GoProController::_webcamUnMode(std::string target){
+    std::string url = GetRemoteURLByIP(target) + "/gopro/webcam/exit";
     std::string command = std::string("curl -s \"" + url + "\"");
     exec(command);
 }

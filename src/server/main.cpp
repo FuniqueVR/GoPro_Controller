@@ -55,45 +55,97 @@ void ExecuteCommand(const WebSocketChannelPtr& channel, json j){
         controller.scanCameras();
         channel->send(getPacket("command:scan", r));
     }
-
-    for(auto host : hosts){
-        host->get()->send(std::string("Execute command: ") + name);
+    else if(name == "add" && target.size() >= 3){
+        controller.addCameras(target);
+        channel->send(getPacket("command:add", r));
+    }else{
+        channel->send(getPacket("command:unknown", r));
     }
 }
 
 void QueryAction(const WebSocketChannelPtr& channel, json j){
-    std::string mode = "";
+    std::string name = "";
     std::string target = "";
+    int id = 0;
+    std::string value = "";
+    json r;
     
-    if(j["mode"].is_string()){
-        mode = j["mode"].get<std::string>();
+    if(j["name"].is_string()){
+        name = j["name"].get<std::string>();
     }
     if(j["target"].is_string()){
         target = j["target"].get<std::string>();
     }
+    if(j["id"].is_number_integer()){
+        id = j["id"].get<int>();
+    }
+    if(j["value"].is_string()){
+        value = j["value"].get<std::string>();
+    }
 
-    if(mode == "all"){
-
-    }else if (mode == "single"){
-        
+    if(name == "get"){
+        r["data"] = json::parse(controller.queryStatus(target));
+        channel->send(getPacket("query:get", r));
+    }
+    else if(name == "set"){
+        r["data"] = json::parse(controller.setSetting(target, id, value));
+        channel->send(getPacket("query:set", r));
     }
 }
 
 void WebcamAction(const WebSocketChannelPtr& channel, json j){
-    std::string mode = "";
+    std::string name = "";
     std::string target = "";
+    int port = 10000;
+    int res = 4;
+    int fov = 0;
+    bool ts = true;
+    json r;
     
-    if(j["mode"].is_string()){
-        mode = j["mode"].get<std::string>();
+    if(j["name"].is_string()){
+        name = j["name"].get<std::string>();
     }
     if(j["target"].is_string()){
         target = j["target"].get<std::string>();
     }
+    if(j["port"].is_number_integer()){
+        port = j["port"].get<int>();
+    }
+    if(j["res"].is_number_integer()){
+        res = j["res"].get<int>();
+    }
+    if(j["fov"].is_number_integer()){
+        fov = j["fov"].get<int>();
+    }
+    if(j["ts"].is_boolean()){
+        ts = j["ts"].get<bool>();
+    }
 
-    if(mode == "all"){
-        
-    }else if (mode == "single"){
-        
+    if(name == "preview"){
+        controller.webcamMode(target);
+        channel->send(getPacket("webcam:reboot", r));
+    }
+    else if (name == "exit"){
+        controller.webcamUnMode(target);
+        channel->send(getPacket("webcam:exit", r));
+    }
+    else if (name == "start"){
+        controller.webcamOn(target, port, res, fov, ts);
+        channel->send(getPacket("webcam:start", r));
+    }
+    else if (name == "stop"){
+        controller.webcamOff(target);
+        channel->send(getPacket("webcam:stop", r));
+    }
+    else if (name == "status"){
+        r["data"] = json::parse(controller.webcamStatus(target));
+        channel->send(getPacket("webcam:status", r));
+    }
+    else if (name == "version"){
+        r["data"] = json::parse(controller.webcamVersion(target));
+        channel->send(getPacket("webcam:version", r));
+    }else{
+        channel->send(getPacket("webcam:unknown", r));
     }
 }
 
@@ -108,9 +160,6 @@ void MediaAction(const WebSocketChannelPtr& channel, json j){
 
 int main() {
     std::cout << "Starting GoPro Server (RPi)..." << std::endl;
-
-    controller.scanCameras();
-
     hv::WebSocketService ws;
     ws.onopen = [&](const WebSocketChannelPtr& channel, const HttpRequestPtr& req) {
         printf("Client connected: %s\n", channel->peeraddr().c_str());
