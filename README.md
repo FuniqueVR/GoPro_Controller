@@ -80,6 +80,18 @@ graph LR
 
 ## Raspberry 建構
 
+```mermaid
+---
+title: 開發結構
+---
+graph LR
+    C[開發用電腦];
+    PI[Raspberry PI];
+    G[Go Pro 攝影機];
+    C-->|網路線|PI;
+    G-->|USB|PI;
+```
+
 #### IP Setup
 
 通常希望開發的機器使用 192.168.10.10, gw 192.168.10.1, netmask 255.255.255.0\
@@ -178,6 +190,8 @@ sudo systemctl restart startup.service
 ## 協定
 
 可以參考 GoPro Http API 協定的 [Docs](https://gopro.github.io/OpenGoPro/http#tag/Webcam/operation/GPCAMERA_WEBCAM_START_OGP)
+
+你的 GoPro 必須要用 USB 連著 (沒錯, GoPro 可以用 Http 控制, 當用 USB 接著)
 
 透過 {IP}:9090/ 進入 websocket server
 
