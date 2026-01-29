@@ -3,8 +3,8 @@
 #include <fstream>
 #include <string>
 
-const const char* SERVER_LIST_PATH = "servers.json";
-const const char* GUI_PATH = "gui.json";
+const char* SERVER_LIST_PATH = "servers.json";
+const char* GUI_PATH = "gui.json";
 
 void saveServerList(json data){
     std::ofstream file(SERVER_LIST_PATH);

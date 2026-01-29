@@ -71,6 +71,7 @@ if(BUILD_SERVER)
     add_executable(server
         src/server/main.cpp
         src/server/GoProController.cpp
+        src/server/UdpProxyServer.cpp
         ${MDNS_SOURCES}
     )
     target_link_libraries(server hv)
@@ -83,6 +84,7 @@ if(BUILD_MASTER)
     add_executable(master
         src/master/main.cpp
         src/master/GoProMaster.cpp
+        src/master/IO.cpp
         ${IMGUI_SOURCES}
         ${MDNS_SOURCES}
     )

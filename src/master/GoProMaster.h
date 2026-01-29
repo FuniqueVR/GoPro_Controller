@@ -11,6 +11,7 @@ using json = nlohmann::json;
 
 struct ServerConnection {
     std::string ip;
+    std::string uuid;
     hv::WebSocketClient client;
     bool connected = false;
     std::string last_message;
@@ -21,8 +22,15 @@ public:
     GoProMaster();
     ~GoProMaster();
 
-    void addServer(const std::string& ip);
-    void connectAll();
+    std::string addServer(const std::string& ip);
+    void reconnectAll();
+    void disconnectAll();
+    void cleanAll();
+
+    void reconnect(const std::string& uuid);
+    void disconnect(const std::string& uuid);
+    void clean(const std::string& uuid);
+
     
     // Commands
     void startRecordingAll();

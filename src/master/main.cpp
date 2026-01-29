@@ -25,6 +25,7 @@ GoProMaster master;
 json gui;
 json servers;
 char server_ip_buf[64] = "192.168.10.2";
+char server_uuid_buf[64] = "";
 
 // The secondary thread handle the background update
 // This will automatically retry connect to server every 10 seconds.
@@ -172,13 +173,24 @@ int main(int, char**)
 
         ImGui::BeginMainMenuBar();
         if (ImGui::BeginMenu("Windows")) {
-            ImGui::MenuItem("Websocket Dashboard", NULL, &websocket_server_window);
-            ImGui::MenuItem("Camera List", NULL, &camera_list_win);
-            ImGui::MenuItem("Global Command", NULL, &global_command_win);
-            ImGui::MenuItem("Local Command", NULL, &local_command_win);
-            ImGui::MenuItem("Inspector", NULL, &inspector_win);
-            ImGui::MenuItem("Record", NULL, &record_win);
+            bool update_menu = false;
+            update_menu = ImGui::MenuItem("Websocket Dashboard", NULL, &websocket_server_window);
+            update_menu = update_menu || ImGui::MenuItem("Camera List", NULL, &camera_list_win);
+            update_menu = update_menu || ImGui::MenuItem("Global Command", NULL, &global_command_win);
+            update_menu = update_menu || ImGui::MenuItem("Local Command", NULL, &local_command_win);
+            update_menu = update_menu || ImGui::MenuItem("Inspector", NULL, &inspector_win);
+            update_menu = update_menu || ImGui::MenuItem("Record", NULL, &record_win);
             ImGui::EndMenu();
+            if(update_menu){
+                gui["websocket_server_window"] = websocket_server_window;
+                gui["camera_list_win"] = camera_list_win;
+                gui["global_command_win"] = global_command_win;
+                gui["local_command_win"] = local_command_win;
+                gui["inspector_win"] = inspector_win;
+                gui["record_win"] = record_win;
+                saveGUI(gui);
+                ImGui::SaveIniSettingsToDisk("imgui.ini");
+            }
         }
         ImGui::EndMainMenuBar();
 
@@ -205,17 +217,36 @@ int main(int, char**)
 
             ImGui::Text("Server Connections:");
             ImGui::InputText("Server IP", server_ip_buf, IM_ARRAYSIZE(server_ip_buf));
+            ImGui::InputText("Server UUID", server_uuid_buf, IM_ARRAYSIZE(server_uuid_buf));
             if (ImGui::Button("Add Server")) {
-                master.addServer(server_ip_buf);
-                master.connectAll();
+                std::string uuid = master.addServer(server_ip_buf);
+                master.reconnect(uuid);
             }
             ImGui::SameLine();
+            if (ImGui::Button("Remove Server")) {
+                master.clean(server_uuid_buf);
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Disconnect Server")) {
+                master.disconnect(server_uuid_buf);
+            }
+
             if (ImGui::Button("Reconnect All")) {
-                master.connectAll();
+                master.reconnectAll();
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Disconnect All")) {
+                master.disconnectAll();
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Clean")) {
+                master.cleanAll();
             }
 
             // Server List Table
-            if (ImGui::BeginTable("Servers", 3, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg)) {
+            if (ImGui::BeginTable("Servers", 5, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg)) {
+                ImGui::TableSetupColumn("UUID");
+                ImGui::TableSetupColumn("Name");
                 ImGui::TableSetupColumn("IP Address");
                 ImGui::TableSetupColumn("Status");
                 ImGui::TableSetupColumn("Last Message");
@@ -226,11 +257,15 @@ int main(int, char**)
                     ImGui::TableSetColumnIndex(0);
                     ImGui::Text("%s", s->ip.c_str());
                     ImGui::TableSetColumnIndex(1);
+                    ImGui::Text("%s", s->ip.c_str());
+                    ImGui::TableSetColumnIndex(2);
+                    ImGui::Text("%s", s->ip.c_str());
+                    ImGui::TableSetColumnIndex(3);
                     if (s->connected) 
                         ImGui::TextColored(ImVec4(0,1,0,1), "Connected");
                     else 
                         ImGui::TextColored(ImVec4(1,0,0,1), "Disconnected");
-                    ImGui::TableSetColumnIndex(2);
+                    ImGui::TableSetColumnIndex(4);
                     ImGui::Text("%s", s->last_message.c_str());
                 }
                 ImGui::EndTable();
@@ -313,7 +348,7 @@ int main(int, char**)
             ImGui::InputText("Camera IP", server_ip_buf, IM_ARRAYSIZE(server_ip_buf));
             if (ImGui::Button("Add")) {
                 master.addServer(server_ip_buf);
-                master.connectAll();
+                master.reconnectAll();
                 ImGui::CloseCurrentPopup();
             }
             ImGui::EndPopup();
@@ -323,7 +358,7 @@ int main(int, char**)
             ImGui::InputText("Camera IP", server_ip_buf, IM_ARRAYSIZE(server_ip_buf));
             if (ImGui::Button("Add")) {
                 master.addServer(server_ip_buf);
-                master.connectAll();
+                master.reconnectAll();
                 ImGui::CloseCurrentPopup();
             }
             ImGui::EndPopup();
