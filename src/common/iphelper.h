@@ -1,4 +1,6 @@
 #pragma once
+#ifndef IPHELPER_H
+#define IPHELPER_H
 #include <cstdio>
 #include <iostream>
 #include <memory>
@@ -92,3 +94,4 @@ namespace uuid {
         return ss.str();
     }
 }
+#endif // IPHELPER_H

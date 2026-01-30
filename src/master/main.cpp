@@ -12,7 +12,6 @@
 #include "imgui.h"
 #include "imgui_impl_sdl3.h"
 #include "imgui_impl_opengl3.h"
-#include "../common/iphelper.h"
 #include "GoProMaster.h"
 #include "IO.h"
 
@@ -25,7 +24,6 @@ GoProMaster master;
 json gui;
 json servers;
 char server_ip_buf[64] = "192.168.10.2";
-char server_uuid_buf[64] = "";
 
 // The secondary thread handle the background update
 // This will automatically retry connect to server every 10 seconds.
@@ -33,6 +31,113 @@ void background_worker(){
     while(done){
         std::this_thread::sleep_for(std::chrono::seconds(10));
     }
+}
+
+void setup_catppuccin_mocha_theme() {
+    ImGuiStyle& style = ImGui::GetStyle();
+    ImVec4* colors = style.Colors;
+
+    // Catppuccin Mocha Palette
+    // --------------------------------------------------------
+    const ImVec4 base       = ImVec4(0.117f, 0.117f, 0.172f, 1.0f); // #1e1e2e
+    const ImVec4 mantle     = ImVec4(0.109f, 0.109f, 0.156f, 1.0f); // #181825
+    const ImVec4 surface0   = ImVec4(0.200f, 0.207f, 0.286f, 1.0f); // #313244
+    const ImVec4 surface1   = ImVec4(0.247f, 0.254f, 0.337f, 1.0f); // #3f4056
+    const ImVec4 surface2   = ImVec4(0.290f, 0.301f, 0.388f, 1.0f); // #4a4d63
+    const ImVec4 overlay0   = ImVec4(0.396f, 0.403f, 0.486f, 1.0f); // #65677c
+    const ImVec4 overlay2   = ImVec4(0.576f, 0.584f, 0.654f, 1.0f); // #9399b2
+    const ImVec4 text       = ImVec4(0.803f, 0.815f, 0.878f, 1.0f); // #cdd6f4
+    const ImVec4 subtext0   = ImVec4(0.639f, 0.658f, 0.764f, 1.0f); // #a3a8c3
+    const ImVec4 mauve      = ImVec4(0.796f, 0.698f, 0.972f, 1.0f); // #cba6f7
+    const ImVec4 peach      = ImVec4(0.980f, 0.709f, 0.572f, 1.0f); // #fab387
+    const ImVec4 yellow     = ImVec4(0.980f, 0.913f, 0.596f, 1.0f); // #f9e2af
+    const ImVec4 green      = ImVec4(0.650f, 0.890f, 0.631f, 1.0f); // #a6e3a1
+    const ImVec4 teal       = ImVec4(0.580f, 0.886f, 0.819f, 1.0f); // #94e2d5
+    const ImVec4 sapphire   = ImVec4(0.458f, 0.784f, 0.878f, 1.0f); // #74c7ec
+    const ImVec4 blue       = ImVec4(0.533f, 0.698f, 0.976f, 1.0f); // #89b4fa
+    const ImVec4 lavender   = ImVec4(0.709f, 0.764f, 0.980f, 1.0f); // #b4befe
+
+    // Main window and backgrounds
+    colors[ImGuiCol_WindowBg]             = base;
+    colors[ImGuiCol_ChildBg]              = base;
+    colors[ImGuiCol_PopupBg]              = surface0;
+    colors[ImGuiCol_Border]               = surface1;
+    colors[ImGuiCol_BorderShadow]         = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
+    colors[ImGuiCol_FrameBg]              = surface0;
+    colors[ImGuiCol_FrameBgHovered]       = surface1;
+    colors[ImGuiCol_FrameBgActive]        = surface2;
+    colors[ImGuiCol_TitleBg]              = mantle;
+    colors[ImGuiCol_TitleBgActive]        = surface0;
+    colors[ImGuiCol_TitleBgCollapsed]     = mantle;
+    colors[ImGuiCol_MenuBarBg]            = mantle;
+    colors[ImGuiCol_ScrollbarBg]          = surface0;
+    colors[ImGuiCol_ScrollbarGrab]        = surface2;
+    colors[ImGuiCol_ScrollbarGrabHovered] = overlay0;
+    colors[ImGuiCol_ScrollbarGrabActive]  = overlay2;
+    colors[ImGuiCol_CheckMark]            = green;
+    colors[ImGuiCol_SliderGrab]           = sapphire;
+    colors[ImGuiCol_SliderGrabActive]     = blue;
+    colors[ImGuiCol_Button]               = surface0;
+    colors[ImGuiCol_ButtonHovered]        = surface1;
+    colors[ImGuiCol_ButtonActive]         = surface2;
+    colors[ImGuiCol_Header]               = surface0;
+    colors[ImGuiCol_HeaderHovered]        = surface1;
+    colors[ImGuiCol_HeaderActive]         = surface2;
+    colors[ImGuiCol_Separator]            = surface1;
+    colors[ImGuiCol_SeparatorHovered]     = mauve;
+    colors[ImGuiCol_SeparatorActive]      = mauve;
+    colors[ImGuiCol_ResizeGrip]           = surface2;
+    colors[ImGuiCol_ResizeGripHovered]    = mauve;
+    colors[ImGuiCol_ResizeGripActive]     = mauve;
+    colors[ImGuiCol_Tab]                  = surface0;
+    colors[ImGuiCol_TabHovered]           = surface2;
+    colors[ImGuiCol_TabActive]            = surface1;
+    colors[ImGuiCol_TabUnfocused]         = surface0;
+    colors[ImGuiCol_TabUnfocusedActive]   = surface1;
+    colors[ImGuiCol_DockingPreview]       = sapphire;
+    colors[ImGuiCol_DockingEmptyBg]       = base;
+    colors[ImGuiCol_PlotLines]            = blue;
+    colors[ImGuiCol_PlotLinesHovered]     = peach;
+    colors[ImGuiCol_PlotHistogram]        = teal;
+    colors[ImGuiCol_PlotHistogramHovered] = green;
+    colors[ImGuiCol_TableHeaderBg]        = surface0;
+    colors[ImGuiCol_TableBorderStrong]    = surface1;
+    colors[ImGuiCol_TableBorderLight]     = surface0;
+    colors[ImGuiCol_TableRowBg]           = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
+    colors[ImGuiCol_TableRowBgAlt]        = ImVec4(1.0f, 1.0f, 1.0f, 0.06f);
+    colors[ImGuiCol_TextSelectedBg]       = surface2;
+    colors[ImGuiCol_DragDropTarget]       = yellow;
+    colors[ImGuiCol_NavHighlight]         = lavender;
+    colors[ImGuiCol_NavWindowingHighlight]= ImVec4(1.0f, 1.0f, 1.0f, 0.7f);
+    colors[ImGuiCol_NavWindowingDimBg]    = ImVec4(0.8f, 0.8f, 0.8f, 0.2f);
+    colors[ImGuiCol_ModalWindowDimBg]     = ImVec4(0.0f, 0.0f, 0.0f, 0.35f);
+    colors[ImGuiCol_Text]                 = text;
+    colors[ImGuiCol_TextDisabled]         = subtext0;
+
+    // Rounded corners
+    style.WindowRounding    = 6.0f;
+    style.ChildRounding     = 6.0f;
+    style.FrameRounding     = 4.0f;
+    style.PopupRounding     = 4.0f;
+    style.ScrollbarRounding = 9.0f;
+    style.GrabRounding      = 4.0f;
+    style.TabRounding       = 4.0f;
+
+    // Padding and spacing
+    style.WindowPadding     = ImVec2(8.0f, 8.0f);
+    style.FramePadding      = ImVec2(5.0f, 3.0f);
+    style.ItemSpacing       = ImVec2(8.0f, 4.0f);
+    style.ItemInnerSpacing  = ImVec2(4.0f, 4.0f);
+    style.IndentSpacing     = 21.0f;
+    style.ScrollbarSize     = 14.0f;
+    style.GrabMinSize       = 10.0f;
+
+    // Borders
+    style.WindowBorderSize  = 1.0f;
+    style.ChildBorderSize   = 1.0f;
+    style.PopupBorderSize   = 1.0f;
+    style.FrameBorderSize   = 0.0f;
+    style.TabBorderSize     = 0.0f;
 }
 
 int main(int, char**)
@@ -86,7 +191,12 @@ int main(int, char**)
     gui = loadGUI();
     std::thread bg_thread(background_worker);
 
-    // Main loop
+    std::string websocket_server_selection = "";
+    std::string camera_selection = "";
+    static const char* current_mode_item = "PHOTO##SCC";
+    static const char* current_preset_item = NULL;
+    static const char* current_video_resolution_item = "4K##INSC";
+    std::string current_camera_item = "";
     bool websocket_server_window = false;
     bool camera_list_win = false;
     bool global_command_win = false;
@@ -122,16 +232,19 @@ int main(int, char**)
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
     ImGuiStyle& style = ImGui::GetStyle();
     style.ScaleAllSizes(main_scale);
+    setup_catppuccin_mocha_theme();
 
     // Setup Platform/Renderer backends
     ImGui_ImplSDL3_InitForOpenGL(window, gl_context);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
+    // Main loop
     while (!done)
     {
         // Poll and handle events
@@ -217,18 +330,17 @@ int main(int, char**)
 
             ImGui::Text("Server Connections:");
             ImGui::InputText("Server IP", server_ip_buf, IM_ARRAYSIZE(server_ip_buf));
-            ImGui::InputText("Server UUID", server_uuid_buf, IM_ARRAYSIZE(server_uuid_buf));
             if (ImGui::Button("Add Server")) {
                 std::string uuid = master.addServer(server_ip_buf);
                 master.reconnect(uuid);
             }
             ImGui::SameLine();
             if (ImGui::Button("Remove Server")) {
-                master.clean(server_uuid_buf);
+                master.clean(server_ip_buf);
             }
             ImGui::SameLine();
             if (ImGui::Button("Disconnect Server")) {
-                master.disconnect(server_uuid_buf);
+                master.disconnect(server_ip_buf);
             }
 
             if (ImGui::Button("Reconnect All")) {
@@ -244,9 +356,7 @@ int main(int, char**)
             }
 
             // Server List Table
-            if (ImGui::BeginTable("Servers", 5, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg)) {
-                ImGui::TableSetupColumn("UUID");
-                ImGui::TableSetupColumn("Name");
+            if (ImGui::BeginTable("Servers", 3, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg)) {
                 ImGui::TableSetupColumn("IP Address");
                 ImGui::TableSetupColumn("Status");
                 ImGui::TableSetupColumn("Last Message");
@@ -257,15 +367,11 @@ int main(int, char**)
                     ImGui::TableSetColumnIndex(0);
                     ImGui::Text("%s", s->ip.c_str());
                     ImGui::TableSetColumnIndex(1);
-                    ImGui::Text("%s", s->ip.c_str());
-                    ImGui::TableSetColumnIndex(2);
-                    ImGui::Text("%s", s->ip.c_str());
-                    ImGui::TableSetColumnIndex(3);
                     if (s->connected) 
                         ImGui::TextColored(ImVec4(0,1,0,1), "Connected");
                     else 
                         ImGui::TextColored(ImVec4(1,0,0,1), "Disconnected");
-                    ImGui::TableSetColumnIndex(4);
+                    ImGui::TableSetColumnIndex(2);
                     ImGui::Text("%s", s->last_message.c_str());
                 }
                 ImGui::EndTable();
@@ -277,6 +383,19 @@ int main(int, char**)
         if(camera_list_win) {
             ImGui::SetNextWindowContentSize(ImVec2(600, 400));
             ImGui::Begin("GoPro Dashboard");
+            {
+                for(const auto& c : master.getCameras()){
+                    if(c){
+                        std::lock_guard<std::mutex> lock(master.server_mtx);
+                        bool selected = c->ip == current_camera_item;
+                        if(ImGui::Selectable(c->ip.c_str(), selected)){
+                            // User select interaction
+                            current_camera_item = c->ip;
+                            master.query_only(c->server, "get", c->ip);
+                        }
+                    }
+                }
+            }
             ImGui::End();
         }
 
@@ -286,7 +405,7 @@ int main(int, char**)
             {
                 ImGui::LabelText("Global Controls", "Commands applied to all connected cameras");
 
-                if(ImGui::Button("Scan All")) master.startRecordingAll(); ImGui::SameLine();
+                if(ImGui::Button("Scan All")) master.command_only("scan"); ImGui::SameLine();
                 if(ImGui::Button("Add Server")) master.stopRecordingAll();
 
                 if(ImGui::Button("Add Camera")) master.startRecordingAll(); ImGui::SameLine();
@@ -295,8 +414,8 @@ int main(int, char**)
                 if(ImGui::Button("Connect All")) master.startRecordingAll(); ImGui::SameLine();
                 if(ImGui::Button("Disconnect All")) master.stopRecordingAll();
 
-                if(ImGui::Button("Reboot")) master.startRecordingAll(); ImGui::SameLine();
-                if(ImGui::Button("Shutdown")) master.stopRecordingAll();
+                if(ImGui::Button("Reboot All")) master.command_only("reboot"); ImGui::SameLine();
+                if(ImGui::Button("Shutdown All")) master.command_only("shutdown");
 
                 if(ImGui::Button("Record All")) master.startRecordingAll(); ImGui::SameLine();
                 if(ImGui::Button("Stop All")) master.stopRecordingAll();
@@ -306,9 +425,12 @@ int main(int, char**)
 
         if(local_command_win) {
             ImGui::SetNextWindowContentSize(ImVec2(600, 400));
-            ImGui::Begin("SCC#Camera Command");
+            ImGui::Begin("Camera Command##SCC");
             {
                 ImGui::LabelText("Single Camera Control", "Commands applied to selected camera");
+
+                bool should_disabled = current_camera_item.size() < 10 || master.findCamera(current_camera_item) == -1;
+                ImGui::BeginDisabled(should_disabled);
 
                 if(ImGui::Button("Record")) master.startRecordingAll(); ImGui::SameLine();
                 if(ImGui::Button("Stop")) master.stopRecordingAll(); ImGui::SameLine();
@@ -319,16 +441,25 @@ int main(int, char**)
                 if(ImGui::Button("Shutdown")) master.stopRecordingAll(); ImGui::SameLine();
                 if(ImGui::Button("Locate")) master.stopRecordingAll();
 
-                if(ImGui::BeginListBox("SCC#Mode")){
-                    ImGui::Selectable("SCC_Mode#PHOTO");
-                    ImGui::Selectable("SCC_Mode#VIDEO");
-                    ImGui::Selectable("SCC_Mode#WEBCAM");
-                    ImGui::EndListBox();
+                const char* mode_items[] = { "PHOTO##SCC", "VIDEO##SCC", "WEBCAM##SCC"};
+                if(ImGui::BeginCombo("Mode##SCC", current_mode_item)){
+                    for (int n = 0; n < 3; n++)
+                    {
+                        bool is_selected = (current_mode_item == mode_items[n]); // You can store your selection however you want, outside or inside your objects
+                        if (ImGui::Selectable(mode_items[n], is_selected))
+                            current_mode_item = mode_items[n];
+                        if (is_selected)
+                            ImGui::SetItemDefaultFocus();   // You may set the initial focus when opening the combo (scrolling + for keyboard navigation support)
+                    }
+                    ImGui::EndCombo();
+                }
+                
+                const char* preset_items[] = { };
+                if(ImGui::BeginCombo("Preset##SCC", current_preset_item)){
+                    ImGui::EndCombo();
                 }
 
-                if(ImGui::BeginListBox("SCC#Preset")){
-                    ImGui::EndListBox();
-                }
+                ImGui::EndDisabled();
             }
             ImGui::End();
         }
@@ -336,11 +467,32 @@ int main(int, char**)
         if(inspector_win) {
             ImGui::SetNextWindowContentSize(ImVec2(600, 400));
             ImGui::Begin("Inspector");
+            {
+                bool should_disabled = current_camera_item.size() < 10 || master.findCamera(current_camera_item) == -1;
+                ImGui::BeginDisabled(should_disabled);
+
+                const char* video_resolution_items[] = { "4K##INSC", "2.7K##INSC", "2.7K 4:3##INSC"};
+                if(ImGui::BeginCombo("Video Resolution", current_video_resolution_item)){
+                    for (int n = 0; n < 3; n++)
+                    {
+                        bool is_selected = (current_mode_item == video_resolution_items[n]); // You can store your selection however you want, outside or inside your objects
+                        if (ImGui::Selectable(video_resolution_items[n], is_selected))
+                            current_video_resolution_item = video_resolution_items[n];
+                        if (is_selected)
+                            ImGui::SetItemDefaultFocus();   // You may set the initial focus when opening the combo (scrolling + for keyboard navigation support)
+                    }
+                    ImGui::EndCombo();
+                }
+
+                ImGui::EndDisabled();
+            }
             ImGui::End();
         }
 
         if(record_win){
-
+            ImGui::SetNextWindowContentSize(ImVec2(600, 400));
+            ImGui::Begin("Record");
+            ImGui::End();
         }
 
         if(popup_add_camera){
@@ -366,6 +518,14 @@ int main(int, char**)
 
         // Rendering
         ImGui::Render();
+
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            ImGui::UpdatePlatformWindows();
+            ImGui::RenderPlatformWindowsDefault();
+            // TODO for OpenGL: restore current GL context.
+        }
+
         glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
         ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
         glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);

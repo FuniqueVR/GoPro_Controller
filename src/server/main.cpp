@@ -10,7 +10,7 @@ GoProController controller;
 void ExecuteCommand(const WebSocketChannelPtr& channel, json j){
     std::string name = "";
     std::string target = "";
-    json r;
+    json r = json::object();
 
     if(j["name"].is_string()){
         name = j["name"].get<std::string>();
