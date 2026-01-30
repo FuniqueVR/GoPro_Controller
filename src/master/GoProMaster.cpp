@@ -120,24 +120,13 @@ void GoProMaster::command_only(const std::string command, std::string target){
     }
 }
 
-void GoProMaster::command_only(const std::string camera, const std::string command, std::string target){
+void GoProMaster::command_only(const std::string server, const std::string command, std::string target){
     json data = json::object();
     data["key"] = "command";
     data["value"] = json::object();
     data["value"]["name"] = command;
     data["value"]["target"] = target;
 
-    int32_t cam_index = findCamera(camera);
-    std::string server = "";
-    bool findserver = false;
-    for(auto c : cameras){
-        if(c->ip == camera && c->server != ""){
-            findserver = true;
-            server = c->server;
-            break;
-        }
-    }
-    if(!findserver) return;
     for(auto s : servers){
         if(s->ip == server && s->connected){
             s->client.send(data.dump());
@@ -160,24 +149,13 @@ void GoProMaster::query_only(const std::string command, std::string target){
     }
 }
 
-void GoProMaster::query_only(const std::string camera, const std::string command, std::string target){
+void GoProMaster::query_only(const std::string server, const std::string command, std::string target){
     json data = json::object();
     data["key"] = "query";
     data["value"] = json::object();
     data["value"]["name"] = command;
     data["value"]["target"] = target;
 
-    int32_t cam_index = findCamera(camera);
-    std::string server = "";
-    bool findserver = false;
-    for(auto c : cameras){
-        if(c->ip == camera && c->server != ""){
-            findserver = true;
-            server = c->server;
-            break;
-        }
-    }
-    if(!findserver) return;
     for(auto s : servers){
         if(s->ip == server && s->connected){
             s->client.send(data.dump());
@@ -276,6 +254,13 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
                 auto cam = std::make_shared<CameraInfo>();
                 cam->state = ip.value()["status"];
                 cameras.push_back(cam);
+                std::cout << "Added camera state " << ip_ref << std::endl;
+                std::cout << cam->state.dump() << std::endl;
+            }else{
+                auto cam = cameras[found];
+                cam->state = ip.value()["status"];
+                std::cout << "Update camera state " << ip_ref << std::endl;
+                std::cout << cam->state.dump() << std::endl;
             }
         }
     }

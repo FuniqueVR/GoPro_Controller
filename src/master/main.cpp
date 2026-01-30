@@ -140,6 +140,18 @@ void setup_catppuccin_mocha_theme() {
     style.TabBorderSize     = 0.0f;
 }
 
+void updateServerList(){
+    json data = json::object();
+    data["data"] = json::array();
+    for(const auto s : master.getServers()){
+        if(s){
+            data["data"].push_back(s->ip);
+        }
+    }
+    servers = data;
+    saveServerList(data);
+}
+
 int main(int, char**)
 {
     // Setup SDL
@@ -151,18 +163,28 @@ int main(int, char**)
 
     // Decide GL+GLSL versions
 #if defined(IMGUI_IMPL_OPENGL_ES2)
+    // GL ES 2.0 + GLSL 100 (WebGL 1.0)
     const char* glsl_version = "#version 100";
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+#elif defined(IMGUI_IMPL_OPENGL_ES3)
+    // GL ES 3.0 + GLSL 300 es (WebGL 2.0)
+    const char* glsl_version = "#version 300 es";
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 #elif defined(__APPLE__)
+    // GL 3.2 Core + GLSL 150
     const char* glsl_version = "#version 150";
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG); // Always required on Mac
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
 #else
+    // GL 3.0 + GLSL 130
     const char* glsl_version = "#version 130";
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -190,6 +212,16 @@ int main(int, char**)
     servers = loadServerList();
     gui = loadGUI();
     std::thread bg_thread(background_worker);
+
+    if(servers["data"].is_array()){
+        for(int i = 0; i < servers["data"].size(); i++){
+            if(servers["data"].at(i).is_string()){
+                std::string buffer_ip = servers["data"].at(i).get<std::string>();
+                std::string ip = master.addServer(server_ip_buf);
+                master.reconnect(ip);
+            }
+        }
+    }
 
     std::string websocket_server_selection = "";
     std::string camera_selection = "";
@@ -233,12 +265,20 @@ int main(int, char**)
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+    io.ConfigDpiScaleFonts = true;
+    io.ConfigDpiScaleViewports = true;
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
     ImGuiStyle& style = ImGui::GetStyle();
     style.ScaleAllSizes(main_scale);
     setup_catppuccin_mocha_theme();
+
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    {
+        style.WindowRounding = 0.0f;
+        style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+    }
 
     // Setup Platform/Renderer backends
     ImGui_ImplSDL3_InitForOpenGL(window, gl_context);
@@ -307,6 +347,8 @@ int main(int, char**)
         }
         ImGui::EndMainMenuBar();
 
+        ImGui::ShowDemoWindow();
+
         // 1. Dashboard Window
         if(websocket_server_window) {
             ImGui::SetNextWindowContentSize(ImVec2(600, 400));
@@ -331,12 +373,14 @@ int main(int, char**)
             ImGui::Text("Server Connections:");
             ImGui::InputText("Server IP", server_ip_buf, IM_ARRAYSIZE(server_ip_buf));
             if (ImGui::Button("Add Server")) {
-                std::string uuid = master.addServer(server_ip_buf);
-                master.reconnect(uuid);
+                std::string ip = master.addServer(server_ip_buf);
+                master.reconnect(ip);
+                updateServerList();
             }
             ImGui::SameLine();
             if (ImGui::Button("Remove Server")) {
                 master.clean(server_ip_buf);
+                updateServerList();
             }
             ImGui::SameLine();
             if (ImGui::Button("Disconnect Server")) {
@@ -353,6 +397,7 @@ int main(int, char**)
             ImGui::SameLine();
             if (ImGui::Button("Clean")) {
                 master.cleanAll();
+                updateServerList();
             }
 
             // Server List Table
@@ -391,6 +436,7 @@ int main(int, char**)
                         if(ImGui::Selectable(c->ip.c_str(), selected)){
                             // User select interaction
                             current_camera_item = c->ip;
+                            std::cout << "Select camera: " << c->ip << std::endl;
                             master.query_only(c->server, "get", c->ip);
                         }
                     }
@@ -519,22 +565,25 @@ int main(int, char**)
         // Rendering
         ImGui::Render();
 
-        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-        {
-            ImGui::UpdatePlatformWindows();
-            ImGui::RenderPlatformWindowsDefault();
-            // TODO for OpenGL: restore current GL context.
-        }
-
         glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
         ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
         glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
         glClear(GL_COLOR_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            SDL_Window* backup_current_window = SDL_GL_GetCurrentWindow();
+            SDL_GLContext backup_current_context = SDL_GL_GetCurrentContext();
+            ImGui::UpdatePlatformWindows();
+            ImGui::RenderPlatformWindowsDefault();
+            SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
+        }
+
         SDL_GL_SwapWindow(window);
     }
 
-
+    master.disconnectAll();
     if(bg_thread.joinable()){
         bg_thread.join();
     }

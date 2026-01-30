@@ -23,23 +23,21 @@ void saveGUI(json data){
 }
 
 json loadServerList(){
-    json data = json::array();
     std::ifstream file(SERVER_LIST_PATH);
     if(!file.is_open()){
-        std::cerr << "No server list found" << std::endl;
-        return data;
+        std::cerr << "No server config found" << std::endl;
+        return json::object();
     }
 
-    std::string line;
-    while(std::getline(file, line)){
-        if(line.length() > 0){
-            data.push_back(std::string(line));
-        }
-    }
+    std::stringstream buffer;
+    std::string fileContents;
+
+    buffer << file.rdbuf();
+    fileContents = buffer.str();
 
     file.close();
 
-    return data;
+    return json::parse(fileContents);
 }
 
 json loadGUI(){

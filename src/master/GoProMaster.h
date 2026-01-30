@@ -86,7 +86,6 @@ struct ConvertStatus {
     int32_t wifi_provisioning_state;
     int32_t remote_version;
     int32_t remote_connected;
-    int32_t pairing_state;
     std::string connected_wifi_ssid;
     std::string ap_ssid;
     int32_t connected_devices;
@@ -182,9 +181,9 @@ public:
 
     // Commands
     void command_only(const std::string command, std::string target = "");
-    void command_only(const std::string camera, const std::string command, std::string target = "");
+    void command_only(const std::string server, const std::string command, std::string target = "");
     void query_only(const std::string command, std::string target = "");
-    void query_only(const std::string camera, const std::string command, std::string target = "");
+    void query_only(const std::string server, const std::string command, std::string target = "");
     void startRecordingAll();
     void stopRecordingAll();
     void setModePhotoAll();
