@@ -1,4 +1,7 @@
 #pragma once
+#ifndef CAMERACODE_H
+#define CAMERACODE_H
+#include <cinttypes>
 
 enum VIDEO_RESOLUTION_ {
     V4K,
@@ -58,9 +61,9 @@ const static char* VIDEO_RESOLUTION_STRING[] = {
     "2.7K 4:3 V2",
     "4K43 V2",
     "5.3K 4:3 V2"
-}
+};
 
-const static uint32_t VIDEO_RESOLUTION_VALUE[] = {
+const static int32_t VIDEO_RESOLUTION_VALUE[] = {
     1,
     4,
     6,
@@ -88,7 +91,7 @@ const static uint32_t VIDEO_RESOLUTION_VALUE[] = {
     111,
     112,
     113
-}
+};
 
 enum FRAME_PRE_SECOND_ {
     V240,
@@ -120,9 +123,9 @@ const static char* FRAME_PRE_SECOND_STRING[] = {
     "400.0",
     "360.0",
     "300.0",
-}
+};
 
-const static uint32_t FRAME_PRE_SECOND_VALUE[] = {
+const static int32_t FRAME_PRE_SECOND_VALUE[] = {
     0,
     1,
     2,
@@ -136,4 +139,6 @@ const static uint32_t FRAME_PRE_SECOND_VALUE[] = {
     15,
     16,
     17
-}
+};
+
+#endif

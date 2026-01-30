@@ -305,6 +305,19 @@ void GoProMaster::cleanCameraFromServer(const std::string ip){
     }
 }
 
+bool GoProMaster::getStateFromCamera(CameraInfo target, ConvertSetting&& res){
+    json data = target.state;
+    if(data["settings"].is_object()){
+        if(data["settings"].at(2).is_number()){
+            res.resolution = data["settings"].at(2).get<int32_t>();
+        }
+        if(data["settings"].at(3).is_number()){
+            res.fps = data["settings"].at(3).get<int32_t>();
+        }
+    }
+    return true;
+}
+
 int32_t GoProMaster::findCamera(const std::string ip){
     int32_t index = 0;
     for(const auto& c : cameras){
