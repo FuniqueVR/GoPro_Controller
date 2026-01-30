@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) [2026] [Elly/Funique]
+ *
+ * This software is licensed under the [MIT License].
+ * See the LICENSE file in the project root for more information.
+*/
 #pragma once
 
 #include <vector>
@@ -11,6 +17,10 @@
 
 using json = nlohmann::json;
 
+/**
+ * The setting data for the camera
+ * Should be generate by GoProMaster::getSettingsFromCamera method
+ */
 struct ConvertSetting {
     int32_t resolution;
     int32_t fps;
@@ -68,6 +78,10 @@ struct ConvertSetting {
     int32_t automatic_wifi_ap;
 };
 
+/**
+ * The status data for the camera
+ * Should be generate by GoProMaster::getstatusFromCamera method
+ */
 struct ConvertStatus {
     int32_t battery_present;
     int32_t internal_battery_bars;
