@@ -300,26 +300,63 @@ void GoProMaster::setdone(){
 
 bool GoProMaster::getSettingsFromCamera(CameraInfo target, ConvertSetting&& res){
     json data = target.state;
-    if(data["settings"].is_object()){
-        json settings = data["settings"];
-        if(settings.at(2).is_number()){
-            res.resolution = settings.at(2).get<int32_t>();
-        }
-        if(settings.at(3).is_number()){
-            res.fps = settings.at(3).get<int32_t>();
-        }
-        if(settings.at(5).is_number()){
-            res.video_timelapse = settings.at(5).get<int32_t>();
-        }
+    if(!data["settings"].is_object()){
+        return false;
+    }
+
+    json settings = data["settings"];
+    if(settings.at(2).is_number()){
+        res.resolution = settings.at(2).get<int32_t>();
+    }
+    if(settings.at(3).is_number()){
+        res.fps = settings.at(3).get<int32_t>();
+    }
+    if(settings.at(5).is_number()){
+        res.video_timelapse = settings.at(5).get<int32_t>();
+    }
+    if(settings.at(30).is_number()){
+        res.photo_timelapse = settings.at(30).get<int32_t>();
+    }
+    if(settings.at(32).is_number()){
+        res.nightlapse = settings.at(32).get<int32_t>();
+    }
+    if(settings.at(43).is_number()){
+        res.webcam_digital_lenses = settings.at(43).get<int32_t>();
+    }
+    if(settings.at(59).is_number()){
+        res.auto_powerdown = settings.at(59).get<int32_t>();
+    }
+    if(settings.at(83).is_number()){
+        res.gps = settings.at(83).get<int32_t>();
+    }
+    if(settings.at(88).is_number()){
+        res.brightness = settings.at(88).get<int32_t>();
+    }
+    if(settings.at(91).is_number()){
+        res.led = settings.at(91).get<int32_t>();
+    }
+    if(settings.at(108).is_number()){
+        res.aspect_ratio = settings.at(108).get<int32_t>();
+    }
+    if(settings.at(121).is_number()){
+        res.video_lens = settings.at(121).get<int32_t>();
+    }
+    if(settings.at(122).is_number()){
+        res.photo_lens = settings.at(122).get<int32_t>();
+    }
+    if(settings.at(123).is_number()){
+        res.timelapse_digital_lenses = settings.at(123).get<int32_t>();
     }
     return true;
 }
 
 bool GoProMaster::getStatusFromCamera(CameraInfo target, ConvertStatus&& res){
     json data = target.state;
-    if(data["status"].is_object()){
-        
+    if(!data["status"].is_object()){
+        return false;
     }
+
+    json status = data["status"];
     return true;
 }
 
