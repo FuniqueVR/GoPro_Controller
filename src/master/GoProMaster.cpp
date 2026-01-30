@@ -305,7 +305,7 @@ void GoProMaster::cleanCameraFromServer(const std::string ip){
     }
 }
 
-bool GoProMaster::getStateFromCamera(CameraInfo target, ConvertSetting&& res){
+bool GoProMaster::getSettingsFromCamera(CameraInfo target, ConvertSetting&& res){
     json data = target.state;
     if(data["settings"].is_object()){
         if(data["settings"].at(2).is_number()){
@@ -314,6 +314,14 @@ bool GoProMaster::getStateFromCamera(CameraInfo target, ConvertSetting&& res){
         if(data["settings"].at(3).is_number()){
             res.fps = data["settings"].at(3).get<int32_t>();
         }
+    }
+    return true;
+}
+
+bool GoProMaster::getStatusFromCamera(CameraInfo target, ConvertStatus&& res){
+    json data = target.state;
+    if(data["status"].is_object()){
+        
     }
     return true;
 }
