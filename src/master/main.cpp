@@ -583,6 +583,7 @@ int main(int, char**)
         SDL_GL_SwapWindow(window);
     }
 
+    master.setdone();
     master.disconnectAll();
     if(bg_thread.joinable()){
         bg_thread.join();

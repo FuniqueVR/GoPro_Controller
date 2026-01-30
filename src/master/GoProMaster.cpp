@@ -9,6 +9,10 @@ GoProMaster::GoProMaster() {
 
 GoProMaster::~GoProMaster() {
     std::cout << "GoProMaster destroy" << std::endl;
+    setdone();
+    if(t1.joinable()){
+        t1.join();
+    }
     for (auto& s : servers) {
         s->client.close();
         cleanCameraFromServer(s->ip);
@@ -189,7 +193,7 @@ const std::vector<std::shared_ptr<ServerConnection>>& GoProMaster::getServers() 
 }
 
 void GoProMaster::update(){
-    while (true) {
+    while (!done) {
         for (auto& s : servers) {
             if (!s->connected) continue;
             json get_status = json::object();
@@ -290,14 +294,22 @@ void GoProMaster::cleanCameraFromServer(const std::string ip){
     }
 }
 
+void GoProMaster::setdone(){
+    done = true;
+}
+
 bool GoProMaster::getSettingsFromCamera(CameraInfo target, ConvertSetting&& res){
     json data = target.state;
     if(data["settings"].is_object()){
-        if(data["settings"].at(2).is_number()){
-            res.resolution = data["settings"].at(2).get<int32_t>();
+        json settings = data["settings"];
+        if(settings.at(2).is_number()){
+            res.resolution = settings.at(2).get<int32_t>();
         }
-        if(data["settings"].at(3).is_number()){
-            res.fps = data["settings"].at(3).get<int32_t>();
+        if(settings.at(3).is_number()){
+            res.fps = settings.at(3).get<int32_t>();
+        }
+        if(settings.at(5).is_number()){
+            res.video_timelapse = settings.at(5).get<int32_t>();
         }
     }
     return true;

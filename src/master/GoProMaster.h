@@ -198,6 +198,7 @@ private:
     std::vector<std::shared_ptr<CameraInfo>> cameras;
     std::vector<std::shared_ptr<ServerConnection>> servers;
     std::thread t1;
+    bool done = false;
 
     void update();
     void processMessage(const std::string& ip, const std::string& msg);
@@ -205,6 +206,7 @@ private:
     void cleanCameraFromServer(const std::string ip);
 
 public:
+    void setdone();
     bool getSettingsFromCamera(CameraInfo target, ConvertSetting&& res);
     bool getStatusFromCamera(CameraInfo target, ConvertStatus&& res);
 
