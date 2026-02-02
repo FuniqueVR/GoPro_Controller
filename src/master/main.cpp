@@ -234,7 +234,11 @@ int main(int, char**)
     std::string camera_selection = "";
     static const char* current_mode_item = "PHOTO##SCC";
     static const char* current_preset_item = NULL;
-    static const char* current_video_resolution_item = "4K##INSC";
+    ConvertSetting current_setting_items;
+    for(int i = 0; i < GOPRO_SETTING_SIZE; i++){
+        int32_t id = GOPRO_SETTING_IDS[i];
+        current_setting_items.values[i] = 0;
+    }
     std::string current_camera_item = "";
     bool websocket_server_window = false;
     bool camera_list_win = false;
@@ -445,6 +449,7 @@ int main(int, char**)
                             current_camera_item = c->ip;
                             std::cout << "Select camera: " << c->ip << std::endl;
                             master.query_only(c->server, "get", c->ip);
+                            master.getSettingsFromCamera(*c, current_setting_items);
                         }
                     }
                 }
@@ -521,18 +526,28 @@ int main(int, char**)
             ImGui::SetNextWindowContentSize(ImVec2(600, 400));
             ImGui::Begin("Inspector");
             {
-                bool should_disabled = current_camera_item.size() < 10 || master.findCamera(current_camera_item) == -1;
+                int32_t camera_ip = master.findCamera(current_camera_item);
+                bool should_disabled = current_camera_item.size() < 10 || camera_ip == -1;
                 ImGui::BeginDisabled(should_disabled);
 
                 for(int i = 0; i < GOPRO_SETTING_SIZE; i++){
                     int id = GOPRO_SETTING_IDS[i];
-                    if(ImGui::BeginCombo(GET_SETTING_NAME_BY_ID(id), current_video_resolution_item)){
-                        for (int n = 0; n < 3; n++)
+                    std::string name = GET_SETTING_NAME_BY_ID(id);
+                    if(name.size() == 0) continue;
+                    name += "##InspectorTitle";
+                    int32_t select_id = current_setting_items.values[i];
+                    const char* select_string = GET_SETTING_STRING_BY_ID(id)[select_id];
+
+                    if(ImGui::BeginCombo(name.c_str(), select_string)){
+                        for (int n = 0; n < GET_SETTING_SIZE_BY_ID(id); n++)
                         {
-                            bool is_selected = (current_mode_item == GET_SETTING_STRING_BY_ID(id)[n]); // You can store your selection however you want, outside or inside your objects
-                            if (ImGui::Selectable(GET_SETTING_STRING_BY_ID(id)[n], is_selected))
+                            std::string option = GET_SETTING_STRING_BY_ID(id)[n];
+                            if(option.size() == 0) continue;
+                            option += ("##InspectorOption_" + name); 
+                            bool is_selected = (current_mode_item == option); // You can store your selection however you want, outside or inside your objects
+                            if (ImGui::Selectable(option.c_str(), is_selected))
                             {
-                                current_video_resolution_item = GET_SETTING_STRING_BY_ID(id)[n];
+                                current_setting_items.values[i] = n;
                             }
                             if (is_selected)
                                 ImGui::SetItemDefaultFocus();   // You may set the initial focus when opening the combo (scrolling + for keyboard navigation support)

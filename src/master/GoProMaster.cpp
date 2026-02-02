@@ -6,7 +6,6 @@
 */
 #include "GoProMaster.h"
 #include "../common/iphelper.h"
-#include "../common/camera_code.h"
 #include <iostream>
 
 GoProMaster::GoProMaster() {
@@ -305,64 +304,26 @@ void GoProMaster::setdone(){
     done = true;
 }
 
-bool GoProMaster::getSettingsFromCamera(CameraInfo target, ConvertSetting&& res){
+bool GoProMaster::getSettingsFromCamera(CameraInfo target, ConvertSetting& res){
     json data = target.state;
     if(!data["settings"].is_object()){
         return false;
     }
 
     json settings = data["settings"];
-    if(settings.at(2).is_number()){
-        res.resolution = settings.at(2).get<int32_t>();
-        for(int i = 0; i < VIDEO_RESOLUTION_SIZE; i++){
-            if(res.resolution == VIDEO_RESOLUTION_VALUE[i]){
-                res.resolution = i;
+    for(int i = 0; i < GOPRO_SETTING_SIZE; i++){
+        int id = GOPRO_SETTING_IDS[i];
+
+        if(settings.at(id).is_number()){
+            int32_t assign_value_id = settings.at(id).get<int32_t>();
+            const int32_t* i_list = GET_SETTING_VALUE_BY_ID(id);
+
+            for(int j = 0; j < GET_SETTING_SIZE_BY_ID(id); j++){
+                if(i_list[j] == assign_value_id){
+                    res.values[i] = j;
+                }
             }
         }
-    }
-    if(settings.at(3).is_number()){
-        res.fps = settings.at(3).get<int32_t>();
-        for(int i = 0; i < FRAME_PRE_SECOND_SIZE; i++){
-            if(res.fps == FRAME_PRE_SECOND_VALUE[i]){
-                res.fps = i;
-            }
-        }
-    }
-    if(settings.at(5).is_number()){
-        res.video_timelapse = settings.at(5).get<int32_t>();
-    }
-    if(settings.at(30).is_number()){
-        res.photo_timelapse = settings.at(30).get<int32_t>();
-    }
-    if(settings.at(32).is_number()){
-        res.nightlapse = settings.at(32).get<int32_t>();
-    }
-    if(settings.at(43).is_number()){
-        res.webcam_digital_lenses = settings.at(43).get<int32_t>();
-    }
-    if(settings.at(59).is_number()){
-        res.auto_powerdown = settings.at(59).get<int32_t>();
-    }
-    if(settings.at(83).is_number()){
-        res.gps = settings.at(83).get<int32_t>();
-    }
-    if(settings.at(88).is_number()){
-        res.brightness = settings.at(88).get<int32_t>();
-    }
-    if(settings.at(91).is_number()){
-        res.led = settings.at(91).get<int32_t>();
-    }
-    if(settings.at(108).is_number()){
-        res.aspect_ratio = settings.at(108).get<int32_t>();
-    }
-    if(settings.at(121).is_number()){
-        res.video_lens = settings.at(121).get<int32_t>();
-    }
-    if(settings.at(122).is_number()){
-        res.photo_lens = settings.at(122).get<int32_t>();
-    }
-    if(settings.at(123).is_number()){
-        res.timelapse_digital_lenses = settings.at(123).get<int32_t>();
     }
     return true;
 }

@@ -14,6 +14,7 @@
 #include <functional>
 #include "hv/WebSocketClient.h"
 #include <nlohmann/json.hpp>
+#include "../common/camera_code.h"
 
 using json = nlohmann::json;
 
@@ -22,60 +23,7 @@ using json = nlohmann::json;
  * Should be generate by GoProMaster::getSettingsFromCamera method
  */
 struct ConvertSetting {
-    int32_t resolution;
-    int32_t fps;
-    int32_t video_timelapse;
-    int32_t photo_timelapse;
-    int32_t nightlapse;
-    int32_t webcam_digital_lenses;
-    int32_t auto_powerdown;
-    int32_t gps;
-    int32_t brightness;
-    int32_t led;
-    int32_t aspect_ratio;
-    int32_t video_lens;
-    int32_t photo_lens;
-    int32_t timelapse_digital_lenses;
-    int32_t photo_output;
-    int32_t media_format;
-    int32_t anti_flicker;
-    int32_t hypersmooth;
-    int32_t video_horizon_leveling;
-    int32_t photo_horizon_leveling;
-    int32_t video_duration;
-    int32_t multishot_duration;
-    int32_t max_lans;
-    int32_t hind_sight;
-    int32_t scheduled_capture;
-    int32_t photo_single_interval;
-    int32_t photo_interval_duration;
-    int32_t video_performance_mode;
-    int32_t control_mode;
-    int32_t easy_mode_speed;
-    int32_t enable_night_photo;
-    int32_t wireless_band;
-    int32_t star_trails;
-    int32_t system_video_mode;
-    int32_t video_bit_rate;
-    int32_t bit_depth;
-    int32_t profiles;
-    int32_t video_easy_mode;
-    int32_t lapse_mode;
-    int32_t max_lens_mod;
-    int32_t max_lens_mode_enable;
-    int32_t easy_night_photo;
-    int32_t multishot_aspect_ratio;
-    int32_t framing;
-    int32_t camera_mode;
-    int32_t _360_photo_extension;
-    int32_t beep_volume;
-    int32_t setup_screen_saver;
-    int32_t setup_language;
-    int32_t photo_mode;
-    int32_t video_framing;
-    int32_t multishot_framing;
-    int32_t frame_rate;
-    int32_t automatic_wifi_ap;
+    int32_t values[GOPRO_SETTING_SIZE];
 };
 
 /**
@@ -266,7 +214,7 @@ public:
      * We will need to convert the Value ID to index here
      * It's easier for me to display stuff on the gui this way
      */
-    bool getSettingsFromCamera(CameraInfo target, ConvertSetting&& res);
+    bool getSettingsFromCamera(CameraInfo target, ConvertSetting& res);
     bool getStatusFromCamera(CameraInfo target, ConvertStatus&& res);
 
     int32_t findCamera(const std::string ip);
