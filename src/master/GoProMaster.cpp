@@ -6,6 +6,7 @@
 */
 #include "GoProMaster.h"
 #include "../common/iphelper.h"
+#include "../common/camera_code.h"
 #include <iostream>
 
 GoProMaster::GoProMaster() {
@@ -313,9 +314,19 @@ bool GoProMaster::getSettingsFromCamera(CameraInfo target, ConvertSetting&& res)
     json settings = data["settings"];
     if(settings.at(2).is_number()){
         res.resolution = settings.at(2).get<int32_t>();
+        for(int i = 0; i < VIDEO_RESOLUTION_SIZE; i++){
+            if(res.resolution == VIDEO_RESOLUTION_VALUE[i]){
+                res.resolution = i;
+            }
+        }
     }
     if(settings.at(3).is_number()){
         res.fps = settings.at(3).get<int32_t>();
+        for(int i = 0; i < FRAME_PRE_SECOND_SIZE; i++){
+            if(res.fps == FRAME_PRE_SECOND_VALUE[i]){
+                res.fps = i;
+            }
+        }
     }
     if(settings.at(5).is_number()){
         res.video_timelapse = settings.at(5).get<int32_t>();

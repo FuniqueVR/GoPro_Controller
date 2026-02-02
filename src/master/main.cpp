@@ -20,6 +20,7 @@
 #include "imgui_impl_opengl3.h"
 #include "GoProMaster.h"
 #include "IO.h"
+#include "../common/camera_code.h"
 
 // Simple Video Placeholder
 // TODO: Real Implementation
@@ -523,19 +524,22 @@ int main(int, char**)
                 bool should_disabled = current_camera_item.size() < 10 || master.findCamera(current_camera_item) == -1;
                 ImGui::BeginDisabled(should_disabled);
 
-                const char* video_resolution_items[] = { "4K##INSC", "2.7K##INSC", "2.7K 4:3##INSC"};
-                if(ImGui::BeginCombo("Video Resolution", current_video_resolution_item)){
-                    for (int n = 0; n < 3; n++)
-                    {
-                        bool is_selected = (current_mode_item == video_resolution_items[n]); // You can store your selection however you want, outside or inside your objects
-                        if (ImGui::Selectable(video_resolution_items[n], is_selected))
-                            current_video_resolution_item = video_resolution_items[n];
-                        if (is_selected)
-                            ImGui::SetItemDefaultFocus();   // You may set the initial focus when opening the combo (scrolling + for keyboard navigation support)
+                for(int i = 0; i < GOPRO_SETTING_SIZE; i++){
+                    int id = GOPRO_SETTING_IDS[i];
+                    if(ImGui::BeginCombo(GET_SETTING_NAME_BY_ID(id), current_video_resolution_item)){
+                        for (int n = 0; n < 3; n++)
+                        {
+                            bool is_selected = (current_mode_item == GET_SETTING_STRING_BY_ID(id)[n]); // You can store your selection however you want, outside or inside your objects
+                            if (ImGui::Selectable(GET_SETTING_STRING_BY_ID(id)[n], is_selected))
+                            {
+                                current_video_resolution_item = GET_SETTING_STRING_BY_ID(id)[n];
+                            }
+                            if (is_selected)
+                                ImGui::SetItemDefaultFocus();   // You may set the initial focus when opening the combo (scrolling + for keyboard navigation support)
+                        }
+                        ImGui::EndCombo();
                     }
-                    ImGui::EndCombo();
                 }
-
                 ImGui::EndDisabled();
             }
             ImGui::End();

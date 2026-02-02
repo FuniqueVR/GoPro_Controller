@@ -9,6 +9,22 @@
 #define CAMERACODE_H
 #include <cinttypes>
 
+#define GOPRO_SETTING_SIZE 54
+#define GOPRO_STATUS_SIZE 82
+
+const static int32_t GOPRO_SETTING_IDS[] = {
+    2,3,5,30,32,43,59,83,88,91,108,121,122,123,125,128,134,135,150,151,156,157,162,167,168,171,172,173,175,176,
+    177,178,179,180,182,183,184,186,187,189,190,191,192,193,194,196,216,219,223,227,232,233,234,236
+};
+const static int32_t GOPRO_STATE_IDS[] = {
+    1,2,6,8,9,10,11,13,17,19,20,21,22,23,24,26,27,28,29,30,31,32,33,34,35,38,39,41,42,45,49,54,55,56,58,59,60,
+    65,66,67,68,69,70,74,75,76,77,78,79,81,82,83,85,86,88,89,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,
+    110,111,112,113,114,115,116,117,118,122
+};
+
+#define VIDEO_RESOLUTION_SIZE 27
+#define VIDEO_RESOLUTION_NAME "Video Resolution"
+
 enum VIDEO_RESOLUTION_ {
     V4K,
     V27K,
@@ -99,6 +115,9 @@ const static int32_t VIDEO_RESOLUTION_VALUE[] = {
     113
 };
 
+#define FRAME_PRE_SECOND_SIZE 13
+#define FRAME_PRE_SECOND_NAME "Frame Per Second"
+
 enum FRAME_PRE_SECOND_ {
     V240,
     V120,
@@ -147,4 +166,61 @@ const static int32_t FRAME_PRE_SECOND_VALUE[] = {
     17
 };
 
+enum VIDEO_TIMELAPSE_RATE_ {
+    V0_5Sec,
+    V1Sec,
+    V2Sec,
+    V5Sec,
+    V10Sec,
+    V30Sec,
+    V60Sec,
+    V2M,
+    V5M,
+    V30M,
+    V60M,
+    V3Sec,
+};
+
+const static char* VIDEO_TIMELAPSE_RATE_STRING[] = {
+    "0.5 Sec",
+    "1 Sec",
+    "2 Sec",
+    "5 Sec",
+    "10 Sec",
+    "30 Sec",
+    "60 Sec",
+    "2 Min",
+    "5 Min",
+    "30 Min",
+    "60 Min",
+    "3 Sec",
+};
+
+const static int32_t VIDEO_TIMELAPSE_RATE_VALUE[] = {
+    0,1,2,3,4,5,6,7,8,9,10,11
+};
+
+int32_t GET_SETTING_SIZE_BY_ID(int32_t x){
+    if(x == 2) return VIDEO_RESOLUTION_SIZE;
+    else if(x == 3) return FRAME_PRE_SECOND_SIZE;
+    else return 0;
+};
+
+const char* GET_SETTING_NAME_BY_ID(int32_t x){
+    if(x == 2) return VIDEO_RESOLUTION_NAME;
+    else if(x == 3) return FRAME_PRE_SECOND_NAME;
+    else return "";
+};
+    
+const char** GET_SETTING_STRING_BY_ID(int32_t x){
+    if(x == 2) return FRAME_PRE_SECOND_STRING;
+    else if(x == 3) return VIDEO_TIMELAPSE_RATE_STRING;
+    return nullptr;
+};
+    
+const int32_t* GET_SETTING_VALUE_BY_ID(int32_t x){
+    if(x == 2) return FRAME_PRE_SECOND_VALUE;
+    else if(x == 3) return VIDEO_TIMELAPSE_RATE_VALUE;
+    else return nullptr;
+};
 #endif

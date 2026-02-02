@@ -262,6 +262,10 @@ private:
 
 public:
     void setdone();
+    /**
+     * We will need to convert the Value ID to index here
+     * It's easier for me to display stuff on the gui this way
+     */
     bool getSettingsFromCamera(CameraInfo target, ConvertSetting&& res);
     bool getStatusFromCamera(CameraInfo target, ConvertStatus&& res);
 
