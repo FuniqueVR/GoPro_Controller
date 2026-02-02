@@ -94,11 +94,16 @@ graph LR
 
 #### IP Setup
 
-通常希望開發的機器使用 192.168.10.10, gw 192.168.10.1, netmask 255.255.255.0\
-PI 則是 192.168.10.(2-9), gw 192.168.10.1, netmask 255.255.255.0
+通常希望開發的機器使用
+* 192.168.10.10, gw 192.168.10.1, netmask 255.255.255.0
+
+PI 則是 
+* 192.168.10.(2-9), gw 192.168.10.1, netmask 255.255.255.0
+
+這個就是為了方便而已, 當然你可以改你自己喜歡的 IP 結構.
 
 ```bash
-SSH 進去你的 PI
+# SSH 進去你的 PI
 # 介面化 PI 網路管理
 sudo nmtui
 ```
@@ -112,11 +117,32 @@ sudo nmtui
 http-server -p 8080
 ```
 
+```mermaid
+---
+title: 動作
+---
+graph LR
+    PI[Raspberry];
+    C[開發用電腦
+    端口開放 8080 
+    給別人連進來];
+```
+
 接著開啟另一個 Terminal
 
 ```bash
 # SSH 到你的 PI
 sudo curl http://192.168.10.10:8080/build_server/server -o .usr/local/bin/server
+```
+
+```mermaid
+---
+title: 動作
+---
+graph LR
+    PI[Raspberry];
+    C[開發用電腦];
+    PI-->|透過 Http 拉檔案|C;
 ```
 
 用 ldd 查看依賴性
@@ -125,7 +151,7 @@ sudo curl http://192.168.10.10:8080/build_server/server -o .usr/local/bin/server
 ldd server
 # Output:
 #   linux-vdso.so.1 (0x0000007fb8ded000)
-#   libhv.so => /lib/libhv.so (0x0000007fb8a50000)
+#   libhv.so => /lib/libhv.so (0x0000007fb8a50000) 這一行 !!
 #   libstdc++.so.6 => /lib/aarch64-linux-gnu/libstdc++.so.6 (0x0000007fb87e0000)
 #   libgcc_s.so.1 => /lib/aarch64-linux-gnu/libgcc_s.so.1 (0x0000007fb87a0000)
 #   libc.so.6 => /lib/aarch64-linux-gnu/libc.so.6 (0x0000007fb85e0000)
@@ -148,6 +174,9 @@ sudo nano /usr/local/bin/startup.sh
 ```
 
 打上啟動程式的腳本
+
+下面這一大串就是為了一開機就可以把程式 run 起來的設定.
+
 ```bash
 #!/bin/bash
 cd /home/ellly

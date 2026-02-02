@@ -166,22 +166,60 @@ struct ConvertStatus {
     std::string camera_name;
 };
 
+/**
+ * Basically holds the information of the camera
+ * And which websocket server its from
+ */
 struct CameraInfo {
+    /**
+     * Camera IP
+     */
     std::string ip;
+    /**
+     * Websocket server ip
+     */
     std::string server;
+    /**
+     * The json states
+     */
     json state;
 };
 
+/**
+ * Basically holds the Websocket instance
+ */
 struct ServerConnection {
+    /**
+     * Websocket IP
+     */
     std::string ip;
+    /**
+     * The libhv websocket client
+     */
     hv::WebSocketClient client;
+    /**
+     * Current connection state
+     */
     bool connected = false;
+    /**
+     * last message received from the server
+     */
     std::string last_message;
 };
 
+
+/**
+ * GoPro Master Worker
+ * Use this hub stuff to control multiple websocket server or camera
+ * And handles the message sender and process
+ * It also use multithread to decode the message from the websocket instancess
+ */
 class GoProMaster {
 public:
     GoProMaster();
+    /**
+     * Destroy the threadings and release the resource under.
+     */
     ~GoProMaster();
 
     std::string addServer(const std::string& ip);
@@ -189,6 +227,9 @@ public:
     void disconnectAll();
     void cleanAll();
 
+    /**
+     * 
+     */
     void reconnect(const std::string& ip);
     void disconnect(const std::string& ip);
     void clean(const std::string& ip);
