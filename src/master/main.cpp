@@ -523,7 +523,7 @@ int main(int, char**)
         }
 
         if(inspector_win) {
-            ImGui::SetNextWindowContentSize(ImVec2(600, 400));
+            //ImGui::SetNextWindowContentSize(ImVec2(600, 400));
             ImGui::Begin("Inspector");
             {
                 int32_t camera_ip = master.findCamera(current_camera_item);
