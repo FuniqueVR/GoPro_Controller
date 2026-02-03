@@ -234,19 +234,25 @@ int main(int, char**)
     std::string camera_selection = "";
     static const char* current_mode_item = "PHOTO##SCC";
     static const char* current_preset_item = NULL;
+
+    // Current select camera setting
     ConvertSetting current_setting_items;
+    bool current_setting_items_bind = false;
     for(int i = 0; i < GOPRO_SETTING_SIZE; i++){
         int32_t id = GOPRO_SETTING_IDS[i];
         current_setting_items.values[i] = 0;
     }
+    // Current select camera IP address
     std::string current_camera_item = "";
+
+    // All the window flags
     bool websocket_server_window = false;
     bool camera_list_win = false;
     bool global_command_win = false;
     bool local_command_win = false;
     bool inspector_win = false;
     bool record_win = false;
-
+    // All the popup window flags
     bool popup_add_camera = false;
     bool popup_scan_camera = false;
 
@@ -446,10 +452,11 @@ int main(int, char**)
                         bool selected = c->ip == current_camera_item;
                         if(ImGui::Selectable(c->ip.c_str(), selected)){
                             // User select interaction
+                            current_setting_items_bind = false;
                             current_camera_item = c->ip;
                             std::cout << "Select camera: " << c->ip << std::endl;
                             master.query_only(c->server, "get", c->ip);
-                            master.getSettingsFromCamera(*c, current_setting_items);
+                            current_setting_items_bind = master.getSettingsFromCamera(*c, current_setting_items);
                         }
                     }
                 }
@@ -492,7 +499,7 @@ int main(int, char**)
 
                 if(ImGui::Button("Record")) master.startRecordingAll(); ImGui::SameLine();
                 if(ImGui::Button("Stop")) master.stopRecordingAll(); ImGui::SameLine();
-                if(ImGui::Button("Setting Apply All")) master.stopRecordingAll();
+                if(ImGui::Button("Setting Apply All")) master.applyAll(current_camera_item, current_setting_items);
 
                 if(ImGui::Button("Connect")) master.stopRecordingAll(); ImGui::SameLine();
                 if(ImGui::Button("Disconnect")) master.stopRecordingAll(); ImGui::SameLine();
@@ -527,7 +534,7 @@ int main(int, char**)
             ImGui::Begin("Inspector");
             {
                 int32_t camera_ip = master.findCamera(current_camera_item);
-                bool should_disabled = current_camera_item.size() < 10 || camera_ip == -1;
+                bool should_disabled = current_camera_item.size() < 10 || camera_ip == -1 || !current_setting_items_bind;
                 ImGui::BeginDisabled(should_disabled);
 
                 for(int i = 0; i < GOPRO_SETTING_SIZE; i++){

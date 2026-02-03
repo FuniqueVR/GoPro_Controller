@@ -190,6 +190,26 @@ void GoProMaster::setModeVideoAll() {
     sendToAll("f5_mode_video");
 }
 
+bool GoProMaster::applyAll(const std::string& ip, const ConvertSetting& res){
+    for (auto& s : servers) {
+        if (!s->connected) continue;
+        for(int32_t i = 0; i < GOPRO_SETTING_SIZE; i++){
+            int32_t id = GOPRO_SETTING_IDS[i];
+            json get_status = json::object();
+            get_status["key"] = "query";
+            get_status["value"] = json::object();
+            get_status["value"]["name"] = "set";
+
+            const int32_t* ids = GET_SETTING_VALUE_BY_ID(id);
+            int32_t select_index = res.values[i];
+
+            get_status["value"]["id"] = id;
+            get_status["value"]["value"] = ids[select_index];
+            s->client.send(get_status.dump());
+        }
+    }
+}
+
 const std::vector<std::shared_ptr<CameraInfo>>& GoProMaster::getCameras() const {
     return cameras;
 }

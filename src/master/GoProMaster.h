@@ -192,6 +192,8 @@ public:
     void setModePhotoAll();
     void setModeVideoAll();
 
+    bool applyAll(const std::string& ip, const ConvertSetting& res);
+
     std::mutex server_mtx;
 
     // Data for UI

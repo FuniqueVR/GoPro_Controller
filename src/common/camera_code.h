@@ -44,6 +44,9 @@ inline const int32_t GET_SETTING_SIZE_BY_ID(int32_t x) {
         case 2: return VIDEO_RESOLUTION_SIZE;
         case 3: return FRAMES_PER_SECOND_SIZE;
         case 5: return VIDEO_TIMELAPSE_RATE_SIZE;
+        case 30: return PHOTO_TIMELAPSE_RATE_SIZE;
+        case 32: return NIGHTLAPSE_RATE_SIZE;
+        case 43: return WEBCAM_DIGITAL_LENSES_SIZE;
         case 59: return AUTO_POWER_DOWN_SIZE;
         case 83: return GPS_SIZE;
         case 88: return LCD_BRIGHTNESS_SIZE;
@@ -89,6 +92,9 @@ inline const char* GET_SETTING_NAME_BY_ID(int32_t x) {
         case 2: return VIDEO_RESOLUTION_NAME;
         case 3: return FRAMES_PER_SECOND_NAME;
         case 5: return VIDEO_TIMELAPSE_RATE_NAME;
+        case 30: return PHOTO_TIMELAPSE_RATE_NAME;
+        case 32: return NIGHTLAPSE_RATE_NAME;
+        case 43: return WEBCAM_DIGITAL_LENSES_NAME;
         case 59: return AUTO_POWER_DOWN_NAME;
         case 83: return GPS_NAME;
         case 88: return LCD_BRIGHTNESS_NAME;
@@ -134,6 +140,9 @@ inline const char** GET_SETTING_STRING_BY_ID(int32_t x) {
         case 2: return VIDEO_RESOLUTION_STRING;
         case 3: return FRAMES_PER_SECOND_STRING;
         case 5: return VIDEO_TIMELAPSE_RATE_STRING;
+        case 30: return PHOTO_TIMELAPSE_RATE_STRING;
+        case 32: return NIGHTLAPSE_RATE_STRING;
+        case 43: return WEBCAM_DIGITAL_LENSES_STRING;
         case 59: return AUTO_POWER_DOWN_STRING;
         case 83: return GPS_STRING;
         case 88: return LCD_BRIGHTNESS_STRING;
@@ -179,6 +188,9 @@ inline const int32_t* GET_SETTING_VALUE_BY_ID(int32_t x) {
         case 2: return VIDEO_RESOLUTION_VALUE;
         case 3: return FRAMES_PER_SECOND_VALUE;
         case 5: return VIDEO_TIMELAPSE_RATE_VALUE;
+        case 30: return PHOTO_TIMELAPSE_RATE_VALUE;
+        case 32: return NIGHTLAPSE_RATE_VALUE;
+        case 43: return WEBCAM_DIGITAL_LENSES_VALUE;
         case 59: return AUTO_POWER_DOWN_VALUE;
         case 83: return GPS_VALUE;
         case 88: return LCD_BRIGHTNESS_VALUE;
