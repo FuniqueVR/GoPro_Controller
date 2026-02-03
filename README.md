@@ -167,6 +167,8 @@ ldd server
 ```bash
 # 快速解決依賴問題
 sudo curl http://192.168.10.10:8080/build_server/lib/libhv.so -o /lib/libhv.so
+sudo curl http://192.168.10.10:8080/build_server/_deps/curl-build/lib/libcurl-d.so.4 -o /lib/libcurl-d.so.4
+sudo curl http://192.168.10.10:8080/build_server/_deps/curl-build/lib/libcurl-d.so -o /lib/libcurl-d.so
 ```
 
 #### 開機自動執行

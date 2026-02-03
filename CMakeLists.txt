@@ -24,25 +24,30 @@ if(BUILD_SERVER OR BUILD_MASTER)
         "${MDNS_DIR}/src/mdns.cpp"
         "${MDNS_DIR}/src/utils.cpp"
     )
+    if (BUILD_SERVER)
+        # --- Curl Configuration for AArch64 ---
+        set(SIZEOF_OFF_T 8 CACHE INTERNAL "")
+        set(SIZEOF_CURL_OFF_T 8 CACHE INTERNAL "")
+        set(SIZEOF_SIZE_T 8 CACHE INTERNAL "")
+        set(SIZEOF_LONG 8 CACHE INTERNAL "")
+        set(HAVE_RECV ON CACHE INTERNAL "")
+        set(HAVE_SEND ON CACHE INTERNAL "")
+        set(HAVE_BOOL_T ON CACHE INTERNAL "")
 
+        # Disable features that usually break cross-compiles
+        set(CURL_DISABLE_LDAP ON CACHE INTERNAL "")
+        set(CURL_DISABLE_LDAPS ON CACHE INTERNAL "")
+        set(BUILD_CURL_EXE OFF CACHE INTERNAL "")
+        set(BUILD_TESTING OFF CACHE INTERNAL "")
+        set(CURL_USE_OPENSSL OFF CACHE INTERNAL "")
+        set(CURL_ENABLE_SSL OFF CACHE INTERNAL "")
+    endif()
     FetchContent_Declare(
         curl
-        GIT_REPOSITORY https://github.com/curl/curl.git
-        GIT_TAG        curl-8_5_0  # Specify version
-        GIT_SHALLOW    TRUE
+        URL https://github.com/curl/curl/releases/download/curl-8_5_0/curl-8.5.0.tar.gz
     )
-
-    # Configure curl options BEFORE making it available
-    set(BUILD_CURL_EXE OFF CACHE INTERNAL "")
-    set(BUILD_SHARED_LIBS OFF CACHE INTERNAL "")
-    set(CURL_STATICLIB ON CACHE INTERNAL "")
-    set(HTTP_ONLY ON CACHE INTERNAL "")
-    set(CMAKE_USE_OPENSSL ON CACHE INTERNAL "")
-    set(CURL_USE_MBEDTLS OFF CACHE INTERNAL "")
-    set(CURL_CA_PATH "none" CACHE INTERNAL "")
-
     FetchContent_MakeAvailable(curl)
-    find_package(OpenSSL REQUIRED)
+    
 endif()
 
 if(BUILD_MASTER)
@@ -86,15 +91,16 @@ endif()
 
 # --- Server Executable ---
 if(BUILD_SERVER)
+    link_directories(/usr/lib/aarch64-linux-gnu)
     add_executable(server
         src/server/main.cpp
         src/server/GoProController.cpp
         src/server/UdpProxyServer.cpp
         ${MDNS_SOURCES}
     )
-    target_link_libraries(server hv CURL::libcurl OpenSSL::SSL OpenSSL::Crypto)
+    target_link_libraries(server hv libcurl)
     # Ensure json include is available for server too if it uses nlohmann/json
-    target_include_directories(server PRIVATE lib/json/include ${CURL_INCLUDE_DIRS}) 
+    target_include_directories(server PRIVATE lib/json/include) 
 endif()
 
 # --- Master Executable ---
@@ -112,5 +118,6 @@ if(BUILD_MASTER)
         SDL3::SDL3
         ${OpenCV_LIBS}
         hv
+        libcurl
     )
 endif()

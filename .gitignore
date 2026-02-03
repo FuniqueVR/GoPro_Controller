@@ -48,6 +48,9 @@ build_master-*/
 build_server/
 Build_server/
 build_server-*/
+build_server_amd/
+Build_server_amd/
+build_server_amd-*/
 
 # CMake generated files
 CMakeFiles/
