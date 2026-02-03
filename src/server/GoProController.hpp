@@ -33,6 +33,7 @@ public:
     ~GoProController();
 
     void scanCameras();
+    void cleanCameras();
     void addCameras(std::string serial);
     void startRecording();
     void stopRecording();

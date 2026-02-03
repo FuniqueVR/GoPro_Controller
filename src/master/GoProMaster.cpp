@@ -210,6 +210,15 @@ bool GoProMaster::applyAll(const std::string& ip, const ConvertSetting& res){
     }
 }
 
+void GoProMaster::registerCameraSettingFeedback(camera_setting_feedback v){
+    _camera_setting_feedback = v;
+}
+
+void GoProMaster::registerCameraStatusFeedback(camera_status_feedback v){
+    _camera_status_feedback = v;
+}
+
+
 const std::vector<std::shared_ptr<CameraInfo>>& GoProMaster::getCameras() const {
     return cameras;
 }
@@ -257,8 +266,8 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
             }
             std::string ip_ref = ip.value().get<std::string>();
             int32_t found = findCamera(ip_ref);
+            std::lock_guard<std::mutex> lock(camera_mtx);
             if(found == -1){
-                std::lock_guard<std::mutex> lock(server_mtx);
                 auto cam = std::make_shared<CameraInfo>();
                 cam->ip = ip_ref;
                 cam->server = server;
@@ -313,7 +322,7 @@ void GoProMaster::cleanCameraFromServer(const std::string ip){
         const auto& c = i->get();
         if(c){
             if(c->server == ip){
-                std::lock_guard<std::mutex> lock(server_mtx);
+                std::lock_guard<std::mutex> lock(camera_mtx);
                 cameras.erase(i);
             }
         }

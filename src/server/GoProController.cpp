@@ -64,6 +64,11 @@ void GoProController::scanCameras() {
     mdns.executeDiscovery();
 }
 
+void GoProController::cleanCameras(){
+    camera_ips.clear();
+    _updateRecord();
+}
+
 void GoProController::addCameras(std::string serial){
     if(serial.size() >= 3){
         std::string p = GetRemoteIPBySerial(serial);

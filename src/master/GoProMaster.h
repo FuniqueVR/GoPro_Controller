@@ -133,6 +133,9 @@ struct CameraInfo {
     json state;
 };
 
+typedef void (*camera_setting_feedback)(ConvertSetting setting);
+typedef void (*camera_status_feedback)(ConvertStatus status);
+
 /**
  * Basically holds the Websocket instance
  */
@@ -194,7 +197,10 @@ public:
 
     bool applyAll(const std::string& ip, const ConvertSetting& res);
 
-    std::mutex server_mtx;
+    void registerCameraSettingFeedback(camera_setting_feedback v);
+    void registerCameraStatusFeedback(camera_status_feedback v);
+
+    std::mutex camera_mtx;
 
     // Data for UI
     const std::vector<std::shared_ptr<CameraInfo>>& getCameras() const;
@@ -203,6 +209,9 @@ private:
     std::vector<std::shared_ptr<CameraInfo>> cameras;
     std::vector<std::shared_ptr<ServerConnection>> servers;
     std::thread t1;
+    camera_setting_feedback _camera_setting_feedback = NULL;
+    camera_status_feedback _camera_status_feedback = NULL;
+
     bool done = false;
 
     void update();

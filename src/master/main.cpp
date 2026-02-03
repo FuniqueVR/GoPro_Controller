@@ -32,6 +32,28 @@ json gui;
 json servers;
 char server_ip_buf[64] = "192.168.10.2";
 
+std::string websocket_server_selection = "";
+std::string camera_selection = "";
+static const char* current_mode_item = "PHOTO##SCC";
+static const char* current_preset_item = NULL;
+
+// Current select camera setting
+ConvertSetting current_setting_items;
+bool current_setting_items_bind = false;
+// Current select camera IP address
+std::string current_camera_item = "";
+
+// All the window flags
+bool websocket_server_window = false;
+bool camera_list_win = false;
+bool global_command_win = false;
+bool local_command_win = false;
+bool inspector_win = false;
+bool record_win = false;
+// All the popup window flags
+bool popup_add_camera = false;
+bool popup_scan_camera = false;
+
 // The secondary thread handle the background update
 // This will automatically retry connect to server every 10 seconds.
 void background_worker(){
@@ -220,6 +242,11 @@ int main(int, char**)
     gui = loadGUI();
     std::thread bg_thread(background_worker);
 
+    for(int i = 0; i < GOPRO_SETTING_SIZE; i++){
+        int32_t id = GOPRO_SETTING_IDS[i];
+        current_setting_items.values[i] = 0;
+    }
+
     if(servers["data"].is_array()){
         for(int i = 0; i < servers["data"].size(); i++){
             if(servers["data"].at(i).is_string()){
@@ -229,32 +256,6 @@ int main(int, char**)
             }
         }
     }
-
-    std::string websocket_server_selection = "";
-    std::string camera_selection = "";
-    static const char* current_mode_item = "PHOTO##SCC";
-    static const char* current_preset_item = NULL;
-
-    // Current select camera setting
-    ConvertSetting current_setting_items;
-    bool current_setting_items_bind = false;
-    for(int i = 0; i < GOPRO_SETTING_SIZE; i++){
-        int32_t id = GOPRO_SETTING_IDS[i];
-        current_setting_items.values[i] = 0;
-    }
-    // Current select camera IP address
-    std::string current_camera_item = "";
-
-    // All the window flags
-    bool websocket_server_window = false;
-    bool camera_list_win = false;
-    bool global_command_win = false;
-    bool local_command_win = false;
-    bool inspector_win = false;
-    bool record_win = false;
-    // All the popup window flags
-    bool popup_add_camera = false;
-    bool popup_scan_camera = false;
 
     if(gui["websocket_server_window"].is_boolean() && gui["websocket_server_window"].get<bool>()){
         websocket_server_window = true;
@@ -448,7 +449,7 @@ int main(int, char**)
             {
                 for(const auto& c : master.getCameras()){
                     if(c){
-                        std::lock_guard<std::mutex> lock(master.server_mtx);
+                        std::lock_guard<std::mutex> lock(master.camera_mtx);
                         bool selected = c->ip == current_camera_item;
                         if(ImGui::Selectable(c->ip.c_str(), selected)){
                             // User select interaction
@@ -456,7 +457,7 @@ int main(int, char**)
                             current_camera_item = c->ip;
                             std::cout << "Select camera: " << c->ip << std::endl;
                             master.query_only(c->server, "get", c->ip);
-                            current_setting_items_bind = master.getSettingsFromCamera(*c, current_setting_items);
+                            //current_setting_items_bind = master.getSettingsFromCamera(*c, current_setting_items);
                         }
                     }
                 }
