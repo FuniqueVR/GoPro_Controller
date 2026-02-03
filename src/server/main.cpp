@@ -209,3 +209,9 @@ int main() {
 
     return 0;
 }
+
+#ifdef ESP
+extern "C" void app_main(){
+    main();
+}
+#endif
