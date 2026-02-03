@@ -61,6 +61,10 @@ void ExecuteCommand(const WebSocketChannelPtr& channel, json j){
         controller.scanCameras();
         channel->send(getPacket("command:scan", r));
     }
+    else if(name == "clean"){
+        controller.cleanCameras();
+        channel->send(getPacket("command:clean", r));
+    }
     else if(name == "add" && target.size() >= 3){
         controller.addCameras(target);
         channel->send(getPacket("command:add", r));

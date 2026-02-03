@@ -475,16 +475,19 @@ int main(int, char**)
                 if(ImGui::Button("Add Server")) master.stopRecordingAll();
 
                 if(ImGui::Button("Add Camera")) master.startRecordingAll(); ImGui::SameLine();
-                if(ImGui::Button("Clean Camera")) master.stopRecordingAll();
+                if(ImGui::Button("Clean Camera")) master.command_only("clean");
 
-                if(ImGui::Button("Connect All")) master.startRecordingAll(); ImGui::SameLine();
-                if(ImGui::Button("Disconnect All")) master.stopRecordingAll();
+                if(ImGui::Button("Connect All")) master.command_only("usb_on"); ImGui::SameLine();
+                if(ImGui::Button("Disconnect All")) master.command_only("usb_off");
 
                 if(ImGui::Button("Reboot All")) master.command_only("reboot"); ImGui::SameLine();
                 if(ImGui::Button("Shutdown All")) master.command_only("shutdown");
 
-                if(ImGui::Button("Record All")) master.startRecordingAll(); ImGui::SameLine();
-                if(ImGui::Button("Stop All")) master.stopRecordingAll();
+                if(ImGui::Button("Record All")) master.command_only("shutter_on"); ImGui::SameLine();
+                if(ImGui::Button("Stop All")) master.command_only("shutter_off");
+
+                if(ImGui::Button("Enter Webcam")) master.webcam_only("preview"); ImGui::SameLine();
+                if(ImGui::Button("Exit Webcam")) master.webcam_only("exit");
             }
             ImGui::End();
         }

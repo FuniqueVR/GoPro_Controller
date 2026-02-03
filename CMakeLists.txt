@@ -24,6 +24,25 @@ if(BUILD_SERVER OR BUILD_MASTER)
         "${MDNS_DIR}/src/mdns.cpp"
         "${MDNS_DIR}/src/utils.cpp"
     )
+
+    FetchContent_Declare(
+        curl
+        GIT_REPOSITORY https://github.com/curl/curl.git
+        GIT_TAG        curl-8_5_0  # Specify version
+        GIT_SHALLOW    TRUE
+    )
+
+    # Configure curl options BEFORE making it available
+    set(BUILD_CURL_EXE OFF CACHE INTERNAL "")
+    set(BUILD_SHARED_LIBS OFF CACHE INTERNAL "")
+    set(CURL_STATICLIB ON CACHE INTERNAL "")
+    set(HTTP_ONLY ON CACHE INTERNAL "")
+    set(CMAKE_USE_OPENSSL ON CACHE INTERNAL "")
+    set(CURL_USE_MBEDTLS OFF CACHE INTERNAL "")
+    set(CURL_CA_PATH "none" CACHE INTERNAL "")
+
+    FetchContent_MakeAvailable(curl)
+    find_package(OpenSSL REQUIRED)
 endif()
 
 if(BUILD_MASTER)
@@ -65,7 +84,6 @@ if(BUILD_MASTER)
     include_directories(lib/json/include)
 endif()
 
-
 # --- Server Executable ---
 if(BUILD_SERVER)
     add_executable(server
@@ -74,9 +92,9 @@ if(BUILD_SERVER)
         src/server/UdpProxyServer.cpp
         ${MDNS_SOURCES}
     )
-    target_link_libraries(server hv)
+    target_link_libraries(server hv CURL::libcurl OpenSSL::SSL OpenSSL::Crypto)
     # Ensure json include is available for server too if it uses nlohmann/json
-    target_include_directories(server PRIVATE lib/json/include) 
+    target_include_directories(server PRIVATE lib/json/include ${CURL_INCLUDE_DIRS}) 
 endif()
 
 # --- Master Executable ---

@@ -15,6 +15,7 @@
 #include <array>
 #include <random>
 #include <sstream>
+#include <curl/curl.h>
 
 std::string GetRemoteIPBySerial(std::string serial){
     if(serial.size() != 3){
@@ -44,24 +45,25 @@ std::string GetRemoteURLByIP(std::string IP){
 }
 
 std::string exec(std::string cmd) {
-    // Define a buffer size for reading output chunks
-    char buffer[128];
-    std::string result = "";
-    // Use unique_ptr to ensure the pipe is closed automatically (C++11 or later)
-    // The popen function is named _popen on Windows
-    #ifdef _WIN32
-        std::unique_ptr<FILE, decltype(&_pclose)> pipe(_popen(cmd.c_str(), "r"), _pclose);
-    #else
-        std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd.c_str(), "r"), pclose);
-    #endif
+    CURL* curl = curl_easy_init();
+    CURLcode res;
+    std::string result;
 
-    if (!pipe) {
-        throw std::runtime_error("popen() failed!");
-    }
+    if(curl) {
+        curl_easy_setopt(curl, CURLOPT_URL, cmd.c_str());
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &result);
+        curl_easy_setopt(curl, CURLOPT_TIMEOUT, 1.5f);
 
-    // Read the output a chunk at a time until the end
-    while (fgets(buffer, sizeof(buffer), pipe.get()) != nullptr) {
-        result += buffer;
+        res = curl_easy_perform(curl);
+
+        if(res != CURLE_OK) {
+            std::cerr << "GET failed: " << curl_easy_strerror(res) << std::endl;
+            result.clear();
+        }
+            
+        curl_easy_cleanup(curl);
+    }else{
+        std::cerr << "Curl init failed" << std::endl;
     }
 
     return result;

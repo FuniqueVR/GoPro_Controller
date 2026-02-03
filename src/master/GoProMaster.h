@@ -190,6 +190,8 @@ public:
     void command_only(const std::string server, const std::string command, std::string target = "");
     void query_only(const std::string command, std::string target = "");
     void query_only(const std::string server, const std::string command, std::string target = "");
+    void webcam_only(const std::string command, std::string target = "");
+    void webcam_only(const std::string server, const std::string command, std::string target = "");
     void startRecordingAll();
     void stopRecordingAll();
     void setModePhotoAll();

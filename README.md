@@ -132,7 +132,10 @@ graph LR
 
 ```bash
 # SSH 到你的 PI
-sudo curl http://192.168.10.10:8080/build_server/server -o .usr/local/bin/server
+sudo systemctl stop startup.service
+sudo curl http://192.168.10.10:8080/build_server/server -o /usr/local/bin/server
+sudo systemctl start startup.service
+sudo systemctl status startup.service
 ```
 
 ```mermaid
@@ -214,6 +217,29 @@ sudo systemctl status startup.service
 
 # 用這一行重啟動
 sudo systemctl restart startup.service
+```
+
+### Hardware 探索問題
+
+![udev_issue](./docs/udev_issue.png)
+
+當樹莓派直接連結到 USB HUB, 會產生 udev worker 無限的去抓 hardware...\
+這些執行序會燒光你的 CPU 資源.\
+我們必須去透過設定, 讓 udev 最高執行序被設定 (預設是沒有上限)
+
+```bash
+# 編輯 udev config
+sudo nano /etc/udev/udev.conf
+```
+
+```bash
+# 給它 4 個子執行序上限
+udev_children_max=4
+```
+
+```bash
+# 重開服務
+sudo systemctl restart systemd-udevd
 ```
 
 ## 協定

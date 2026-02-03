@@ -12,6 +12,9 @@
 #include <chrono>   // For std::chrono::seconds, milliseconds, etc.
 #include <thread>   // For std::this_thread::sleep_for
 #include <future>
+#include <unistd.h>
+#include <sys/types.h>
+#include <pwd.h>
 
 std::string getPacket(std::string key, json data){
     json response = json::object();
@@ -21,14 +24,16 @@ std::string getPacket(std::string key, json data){
 }
 
 std::string getCommand(std::string url){
-    return std::string("curl -s --connect-timeout 1.5 \"" + url + "\"");
+    return url;
 }
 
 GoProController::GoProController() {
+    curl_global_init(CURL_GLOBAL_DEFAULT);
     _loadRecord();
 }
 
 GoProController::~GoProController() {
+    curl_global_cleanup();
     for(auto& thread : scan_workers){
         if (thread.joinable()) {
             thread.join();
@@ -61,7 +66,9 @@ void GoProController::scanCameras() {
             }
         });
     }
-    mdns.executeDiscovery();
+    scan_workers.push_back(std::thread([&](){
+        mdns.executeDiscovery();
+    }));
 }
 
 void GoProController::cleanCameras(){
@@ -517,9 +524,10 @@ std::string GoProController::getAllIP(){
 }
 
 void GoProController::_loadRecord(){
-    std::ifstream inFile("record.txt");
+    std::string txt = "/home/ellly/record.txt";
+    std::ifstream inFile(txt.c_str());
     if (!inFile.is_open()) {
-        std::cerr << "Error: Could not open the file." << std::endl;
+        std::cerr << "Error: Could not open the file: " << txt << std::endl;
         return; // Return with an error code
     }
     std::string line;
