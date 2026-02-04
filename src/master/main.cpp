@@ -43,7 +43,7 @@ static const char* current_mode_item = "PHOTO##SCC";
 static const char* current_preset_item = NULL;
 
 // Current select camera setting
-ConvertSetting current_setting_items;
+json current_setting_items;
 bool current_setting_items_bind = false;
 // Current select camera IP address
 std::string current_camera_item = "";
@@ -67,9 +67,9 @@ void background_worker(){
     }
 }
 
-void settingGetterFeedback(ConvertSetting setting){
+void settingGetterFeedback(json setting){
     current_setting_items = setting;
-    current_setting_items_bind = false;
+    current_setting_items_bind = true;
 }
 
 void setup_catppuccin_mocha_theme() {
@@ -255,11 +255,6 @@ int main(int, char**)
     gui = loadGUI();
     std::thread bg_thread(background_worker);
     master.registerCameraSettingFeedback(settingGetterFeedback);
-
-    for(int i = 0; i < GOPRO_SETTING_SIZE; i++){
-        int32_t id = GOPRO_SETTING_IDS[i];
-        current_setting_items.values[i] = 0;
-    }
 
     if(servers["data"].is_array()){
         for(int i = 0; i < servers["data"].size(); i++){
@@ -559,16 +554,31 @@ int main(int, char**)
                 bool should_disabled = current_camera_item.size() < 10 || camera_ip == -1 || !current_setting_items_bind;
                 ImGui::BeginDisabled(should_disabled);
 
-                for(int i = 0; i < GOPRO_SETTING_SIZE; i++){
-                    int id = GOPRO_SETTING_IDS[i];
+                for(int32_t i = 0; i < GOPRO_SETTING_SIZE; i++){
+                    int32_t id = GOPRO_SETTING_IDS[i];
                     std::string name = GET_SETTING_NAME_BY_ID(id);
-                    if(name.size() == 0) continue;
+                    size_t size = GET_SETTING_SIZE_BY_ID(id);
+                    if (!current_setting_items[std::to_string(id)].is_number()) {
+                        continue;
+                    }
+                    if (name.size() == 0) {
+                        std::cerr << "Inspector ID: " << id << " name.size() == 0" << std::endl;
+                        continue;
+                    }
+
                     name += "##InspectorTitle";
-                    int32_t select_id = current_setting_items.values[i];
-                    const char* select_string = GET_SETTING_STRING_BY_ID(id)[select_id];
+                    int32_t select_index = current_setting_items[std::to_string(id)].get<int32_t>();
+                    const char** select_string_list = GET_SETTING_STRING_BY_ID(id);
+                    if(select_string_list == nullptr) {
+                        std::cerr << "Inspector: select_string_list == nullptr" << std::endl;
+                        continue;
+                    }
+                    if(select_index >= size) continue;
+                    const char* select_string = select_string_list[select_index];
+                    if(select_string == nullptr) continue;
 
                     if(ImGui::BeginCombo(name.c_str(), select_string)){
-                        for (int n = 0; n < GET_SETTING_SIZE_BY_ID(id); n++)
+                        for (int n = 0; n < size; n++)
                         {
                             std::string option = GET_SETTING_STRING_BY_ID(id)[n];
                             if(option.size() == 0) continue;
@@ -576,7 +586,7 @@ int main(int, char**)
                             bool is_selected = (current_mode_item == option); // You can store your selection however you want, outside or inside your objects
                             if (ImGui::Selectable(option.c_str(), is_selected))
                             {
-                                current_setting_items.values[i] = n;
+                                current_setting_items[std::to_string(id)] = n; // Change index
                             }
                             if (is_selected)
                                 ImGui::SetItemDefaultFocus();   // You may set the initial focus when opening the combo (scrolling + for keyboard navigation support)

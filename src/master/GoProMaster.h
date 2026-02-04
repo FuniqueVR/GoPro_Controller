@@ -19,103 +19,6 @@
 #include "../common/camera_code.h"
 
 using json = nlohmann::json;
-
-/**
- * The setting data for the camera
- * Should be generate by GoProMaster::getSettingsFromCamera method
- */
-struct ConvertSetting {
-    int32_t values[GOPRO_SETTING_SIZE];
-};
-
-/**
- * The status data for the camera
- * Should be generate by GoProMaster::getstatusFromCamera method
- */
-struct ConvertStatus {
-    int32_t battery_present;
-    int32_t internal_battery_bars;
-    int32_t overheating;
-    int32_t busy;
-    int32_t quick_capture;
-    int32_t encoding;
-    int32_t lcd_lock;
-    int32_t video_encoding_duration;
-    int32_t wireless_connections_enable;
-    int32_t pairing_state;
-    int32_t last_pairing_type;
-    int32_t last_paring_success;
-    int32_t wifi_scan_state;
-    int32_t last_wifi_scan_success;
-    int32_t wifi_provisioning_state;
-    int32_t remote_version;
-    int32_t remote_connected;
-    std::string connected_wifi_ssid;
-    std::string ap_ssid;
-    int32_t connected_devices;
-    int32_t preview_stream;
-    int32_t primary_storage;
-    int32_t remaining_photos;
-    int32_t remaining_video_time;
-    int32_t photos;
-    int32_t videos;
-    int32_t ota;
-    int32_t pending_fw_update_cancel;
-    int32_t locate;
-    int32_t timelapse_interval_countdown;
-    int32_t sd_card_remaining;
-    int32_t preview_stream_available;
-    int32_t wifi_bar;
-    int32_t active_hilight;
-    int32_t time_since_last_hilight;
-    int32_t minimum_status_poll_period;
-    int32_t liveview_exposure_select_mode;
-    int32_t liveview_y;
-    int32_t liveview_x;
-    int32_t gps_lock;
-    int32_t ap_mode;
-    int32_t inhernal_battery_percentage;
-    int32_t microphone_accessory;
-    int32_t zoom_level;
-    int32_t wireless_band;
-    int32_t zoom_available;
-    int32_t mobile_friendly;
-    int32_t ftu;
-    int32_t v5ghz_availiable;
-    int32_t ready;
-    int32_t ota_changed;
-    int32_t cold;
-    int32_t rotation;
-    int32_t zoom_while_encoding;
-    int32_t flatmode;
-    int32_t video_preset;
-    int32_t photo_preset;
-    int32_t timelapse_preset;
-    int32_t preset_group;
-    int32_t preset;
-    int32_t preset_modified;
-    int32_t remaining_live_bursts;
-    int32_t live_bursts;
-    int32_t capture_delay_active;
-    int32_t media_mode_state;
-    int32_t time_warp_speed;
-    int32_t linux_core;
-    int32_t lens_type;
-    int32_t hindsignt;
-    int32_t schedule_capture_preset_id;
-    int32_t scheduled_capture;
-    int32_t display_mod_status;
-    int32_t sd_card_write_speed_error;
-    int32_t sd_card_error;
-    int32_t turbo_transfer;
-    int32_t camera_control_id;
-    int32_t usb_connected;
-    int32_t usb_controlled;
-    int32_t sd_card_capacity;
-    int32_t photo_interval_capture_count;
-    std::string camera_name;
-};
-
 /**
  * Basically holds the information of the camera
  * And which websocket server its from
@@ -135,8 +38,8 @@ struct CameraInfo {
     json state;
 };
 
-typedef void (*camera_setting_feedback)(ConvertSetting setting);
-typedef void (*camera_status_feedback)(ConvertStatus status);
+typedef void (*camera_setting_feedback)(json setting);
+typedef void (*camera_status_feedback)(json status);
 
 /**
  * Basically holds the Websocket instance
@@ -199,7 +102,7 @@ public:
     void setModePhotoAll();
     void setModeVideoAll();
 
-    bool applyAll(const std::string& ip, const ConvertSetting& res);
+    bool applyAll(const std::string& ip, const json& res);
 
     void registerCameraSettingFeedback(camera_setting_feedback v);
     void registerCameraStatusFeedback(camera_status_feedback v);
@@ -230,11 +133,8 @@ public:
      * We will need to convert the Value ID to index here
      * It's easier for me to display stuff on the gui this way
      */
-    bool getSettingsFromCamera(CameraInfo target, ConvertSetting& res);
-    bool getStatusFromCamera(CameraInfo target, ConvertStatus&& res);
-
-    void getSettingFromJsonData(json data, ConvertSetting& res);
-    void getStatusFromJsonData(json data, ConvertStatus& res);
+    bool getSettingsFromCamera(CameraInfo target, json& res);
+    bool getStatusFromCamera(CameraInfo target, json&& res);
 
     int32_t findCamera(const std::string ip);
     int32_t findServer(const std::string ip);

@@ -791,11 +791,6 @@ const static int32_t MAX_LENS_MOD_ENABLE_VALUE[] = {
 #define EASY_NIGHT_PHOTO_SIZE 2
 #define EASY_NIGHT_PHOTO_NAME "Easy Night Photo"
 
-enum class EASY_NIGHT_PHOTO_ {
-    OFF,
-    ON
-};
-
 const static char* EASY_NIGHT_PHOTO_STRING[] = {
     "Off",
     "On"
@@ -803,6 +798,20 @@ const static char* EASY_NIGHT_PHOTO_STRING[] = {
 
 const static int32_t EASY_NIGHT_PHOTO_VALUE[] = {
     0, 1
+};
+
+#define MULTI_SHOT_ASPECT_RATIO_SIZE 4
+#define MULTI_SHOT_ASPECT_RATIO_NAME "Multi Shot Aspect Ratio"
+
+const static char* MULTI_SHOT_ASPECT_RATIO_STRING[] = {
+    "4:3",
+    "16:9",
+    "8:7",
+    "9:16"
+};
+
+const static int32_t MULTI_SHOT_ASPECT_RATIO_VALUE[] = {
+    0, 1, 3, 4
 };
 
 #define FRAMING_SIZE 3
