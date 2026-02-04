@@ -238,6 +238,7 @@ bool GoProMaster::applyAll(const std::string& ip, const json& res){
             }
         }
     }).detach();
+    return true;
 }
 
 void GoProMaster::registerCameraSettingFeedback(camera_setting_feedback v){
@@ -358,6 +359,9 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
                     std::cout << "Skip setting feedback: Detect function pointer is NULL" << std::endl;
                 }
             }
+        }
+        else if(key == "query:set"){
+            
         }
         else{
             std::cerr << "Invalid message from " << server << ": " << msg << std::endl;
