@@ -221,21 +221,23 @@ void GoProMaster::setModeVideoAll() {
 }
 
 bool GoProMaster::applyAll(const std::string& ip, const json& res){
-    for (auto& s : servers) {
-        if (!s->connected) continue;
-        for(int32_t i = 0; i < GOPRO_SETTING_SIZE; i++){
-            int32_t id = GOPRO_SETTING_IDS[i];
-            if(!res[std::to_string(id)].is_number()) continue;
+    std::thread([=](){    
+        for (auto& s : servers) {
+            if (!s->connected) continue;
+            for(int32_t i = 0; i < GOPRO_SETTING_SIZE; i++){
+                int32_t id = GOPRO_SETTING_IDS[i];
+                if(!res[std::to_string(id)].is_number()) continue;
 
-            json get_status = json::object();
-            get_status["key"] = "query";
-            get_status["value"] = json::object();
-            get_status["value"]["name"] = "set";
-            get_status["value"]["id"] = id;
-            get_status["value"]["value"] = res[std::to_string(id)].get<int32_t>();
-            s->client.send(get_status.dump());
+                json get_status = json::object();
+                get_status["key"] = "query";
+                get_status["value"] = json::object();
+                get_status["value"]["name"] = "set";
+                get_status["value"]["id"] = id;
+                get_status["value"]["value"] = res[std::to_string(id)].get<int32_t>();
+                s->client.send(get_status.dump());
+            }
         }
-    }
+    }).detach();
 }
 
 void GoProMaster::registerCameraSettingFeedback(camera_setting_feedback v){
@@ -339,13 +341,11 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
                     _cam = *cam;
                     cameras.push_back(cam);
                     std::cout << "Added camera state " << ip_ref << std::endl;
-                    std::cout << cam->state.dump() << std::endl;
                 }else{
                     auto cam = cameras[found];
                     cam->state = ip.value()["status"];
                     _cam = *cam;
                     std::cout << "Update camera state " << ip_ref << std::endl;
-                    std::cout << cam->state.dump() << std::endl;
                 }
                 if(_camera_setting_feedback != NULL){
                     json buffer_setting = json::object();
@@ -397,6 +397,7 @@ bool GoProMaster::getSettingsFromCamera(CameraInfo target, json& res){
         return false;
     }
     res = data["settings"];
+    // Convert value id to index number
     for(int32_t i = 0; i < GOPRO_SETTING_SIZE; i++){
         int32_t id = GOPRO_SETTING_IDS[i];
         if(!res[std::to_string(id)].is_number()) continue;
@@ -406,7 +407,7 @@ bool GoProMaster::getSettingsFromCamera(CameraInfo target, json& res){
         const int32_t* all_values = GET_SETTING_VALUE_BY_ID(id);
         for(int32_t j = 0; j < size; j++){
             if(all_values[j] == value){
-                //res[std::to_string(id)] = j; // Set index, instead of value id
+                res[std::to_string(id)] = j; // Set index, instead of value id
                 break;
             }
         }
@@ -426,8 +427,10 @@ bool GoProMaster::getStatusFromCamera(CameraInfo target, json&& res){
 int32_t GoProMaster::findCamera(const std::string ip){
     int32_t index = 0;
     for(const auto& c : cameras){
-        if(c->ip == ip){
-            return index;
+        if(c){
+            if(c->ip == ip){
+                return index;
+            }
         }
         ++index;
     }

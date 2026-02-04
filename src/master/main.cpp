@@ -516,7 +516,7 @@ int main(int, char**)
 
                 if(ImGui::Button("Record")) master.startRecordingAll(); ImGui::SameLine();
                 if(ImGui::Button("Stop")) master.stopRecordingAll(); ImGui::SameLine();
-                if(ImGui::Button("Setting Apply All")) master.applyAll(current_camera_item, current_setting_items);
+                if(ImGui::Button("Setting Apply All")) master.applyAll(std::string(current_camera_item), current_setting_items);
 
                 if(ImGui::Button("Connect")) master.stopRecordingAll(); ImGui::SameLine();
                 if(ImGui::Button("Disconnect")) master.stopRecordingAll(); ImGui::SameLine();
@@ -573,7 +573,10 @@ int main(int, char**)
                         std::cerr << "Inspector: select_string_list == nullptr" << std::endl;
                         continue;
                     }
-                    if(select_index >= size) continue;
+                    if(select_index >= size) {
+                        std::cerr << "Inspector: select_index >= size..." << id << "..." << select_index << "..." << size << std::endl;
+                        continue;
+                    }
                     const char* select_string = select_string_list[select_index];
                     if(select_string == nullptr) continue;
 
