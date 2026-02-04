@@ -41,7 +41,9 @@ std::string GoProMaster::addServer(const std::string& ip) {
         conn->connected = true;
     };
     conn->client.onmessage = [conn, this](const std::string& msg) {
-        processMessage(conn->ip, msg);
+        std::thread([=]() {
+            processMessage(conn->ip, msg);
+        }).detach();
     };
     conn->client.onclose = [conn, this]() {
         if(conn->connected){
@@ -273,71 +275,75 @@ void GoProMaster::update(){
 }
 
 void GoProMaster::processMessage(const std::string& server, const std::string& msg){
-    json data = json::parse(msg);
-    if(!data["key"].is_string()){
-        std::cerr << "Invalid message from " << server << ": " << msg << std::endl;
-        std::cerr << "Key is not string" << std::endl;
-        return;
-    }
-    if(data["value"].is_null()){
-        std::cerr << "Invalid message from " << server << ": " << msg << std::endl;
-        std::cerr << "Value is null" << std::endl;
-        return;
-    }
-    std::string key = data["key"].get<std::string>();
-    if(key == "command:ip"){
-        if(!data["value"]["data"].is_array()){
+    try{
+        json data = json::parse(msg);
+        if(!data["key"].is_string()){
             std::cerr << "Invalid message from " << server << ": " << msg << std::endl;
-            std::cerr << "command:ip, return value should be array" << std::endl;
+            std::cerr << "Key is not string" << std::endl;
             return;
         }
-        for(auto ip = data["value"]["data"].begin(); ip != data["value"]["data"].end(); ++ip){
-            if(!ip.value().is_string()){
-                continue;
-            }
-            std::string ip_ref = ip.value().get<std::string>();
-            int32_t found = findCamera(ip_ref);
-            std::lock_guard<std::mutex> lock(camera_mtx);
-            if(found == -1){
-                auto cam = std::make_shared<CameraInfo>();
-                cam->ip = ip_ref;
-                cam->server = server;
-                cameras.push_back(cam);
-                std::cout << "Discovered camera " << ip_ref << " from server " << server << std::endl;
-            }
-        }
-        ipQueryFinish.insert_or_assign(server, false);
-    }
-    else if(key == "query:get"){
-        if(!data["value"]["data"].is_array()){
+        if(data["value"].is_null()){
             std::cerr << "Invalid message from " << server << ": " << msg << std::endl;
-            std::cerr << "query:get, return value should be array" << std::endl;
+            std::cerr << "Value is null" << std::endl;
             return;
         }
-        for(auto ip = data["value"]["data"].begin(); ip != data["value"]["data"].end(); ++ip){
-            if(!ip.value()["ip"].is_string() || !ip.value()["status"].is_object()){
-                continue;
+        std::string key = data["key"].get<std::string>();
+        if(key == "command:ip"){
+            if(!data["value"]["data"].is_array()){
+                std::cerr << "Invalid message from " << server << ": " << msg << std::endl;
+                std::cerr << "command:ip, return value should be array" << std::endl;
+                return;
             }
+            for(auto ip = data["value"]["data"].begin(); ip != data["value"]["data"].end(); ++ip){
+                if(!ip.value().is_string()){
+                    continue;
+                }
+                std::string ip_ref = ip.value().get<std::string>();
+                int32_t found = findCamera(ip_ref);
+                std::lock_guard<std::mutex> lock(camera_mtx);
+                if(found == -1){
+                    auto cam = std::make_shared<CameraInfo>();
+                    cam->ip = ip_ref;
+                    cam->server = server;
+                    cameras.push_back(cam);
+                    std::cout << "Discovered camera " << ip_ref << " from server " << server << std::endl;
+                }
+            }
+            ipQueryFinish.insert_or_assign(server, false);
+        }
+        else if(key == "query:get"){
+            if(!data["value"]["data"].is_array()){
+                std::cerr << "Invalid message from " << server << ": " << msg << std::endl;
+                std::cerr << "query:get, return value should be array" << std::endl;
+                return;
+            }
+            for(auto ip = data["value"]["data"].begin(); ip != data["value"]["data"].end(); ++ip){
+                if(!ip.value()["ip"].is_string() || !ip.value()["status"].is_object()){
+                    continue;
+                }
 
-            std::string ip_ref = ip.value()["ip"].get<std::string>();
-            int32_t found = findCamera(ip_ref);
-            if(found == -1){
-                auto cam = std::make_shared<CameraInfo>();
-                cam->state = ip.value()["status"];
-                cameras.push_back(cam);
-                std::cout << "Added camera state " << ip_ref << std::endl;
-                std::cout << cam->state.dump() << std::endl;
-            }else{
-                auto cam = cameras[found];
-                cam->state = ip.value()["status"];
-                std::cout << "Update camera state " << ip_ref << std::endl;
-                std::cout << cam->state.dump() << std::endl;
+                std::string ip_ref = ip.value()["ip"].get<std::string>();
+                int32_t found = findCamera(ip_ref);
+                if(found == -1){
+                    auto cam = std::make_shared<CameraInfo>();
+                    cam->state = ip.value()["status"];
+                    cameras.push_back(cam);
+                    std::cout << "Added camera state " << ip_ref << std::endl;
+                    std::cout << cam->state.dump() << std::endl;
+                }else{
+                    auto cam = cameras[found];
+                    cam->state = ip.value()["status"];
+                    std::cout << "Update camera state " << ip_ref << std::endl;
+                    std::cout << cam->state.dump() << std::endl;
+                }
             }
         }
-    }
-    else{
-        std::cerr << "Invalid message from " << server << ": " << msg << std::endl;
-        std::cerr << "No registerd action from this key: " << key << std::endl;
+        else{
+            std::cerr << "Invalid message from " << server << ": " << msg << std::endl;
+            std::cerr << "No registerd action from this key: " << key << std::endl;
+        }
+    }catch(const std::exception& e){
+        std::cerr << "JSON Parse error: " << e.what() << std::endl;
     }
 }
 
