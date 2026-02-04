@@ -233,6 +233,9 @@ public:
     bool getSettingsFromCamera(CameraInfo target, ConvertSetting& res);
     bool getStatusFromCamera(CameraInfo target, ConvertStatus&& res);
 
+    void getSettingFromJsonData(json data, ConvertSetting& res);
+    void getStatusFromJsonData(json data, ConvertStatus& res);
+
     int32_t findCamera(const std::string ip);
     int32_t findServer(const std::string ip);
     int32_t findCamera(const std::string server, const std::string ip);

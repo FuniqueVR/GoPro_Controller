@@ -67,6 +67,11 @@ void background_worker(){
     }
 }
 
+void settingGetterFeedback(ConvertSetting setting){
+    current_setting_items = setting;
+    current_setting_items_bind = false;
+}
+
 void setup_catppuccin_mocha_theme() {
     ImGuiStyle& style = ImGui::GetStyle();
     ImVec4* colors = style.Colors;
@@ -249,6 +254,7 @@ int main(int, char**)
     servers = loadServerList();
     gui = loadGUI();
     std::thread bg_thread(background_worker);
+    master.registerCameraSettingFeedback(settingGetterFeedback);
 
     for(int i = 0; i < GOPRO_SETTING_SIZE; i++){
         int32_t id = GOPRO_SETTING_IDS[i];
