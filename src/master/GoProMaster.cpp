@@ -48,6 +48,7 @@ std::string GoProMaster::addServer(const std::string& ip) {
         if(conn->connected){
             std::cout << "Disconnected from server: " << conn->ip << std::endl;
             conn->connected = false;
+            cleanCameraFromServer(conn->ip);
         }
     };
 
@@ -287,6 +288,7 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
         }
         std::string key = data["key"].get<std::string>();
         if(key == "command:ip"){
+            cleanCameraFromServer(server);
             if(!data["value"]["data"].is_array()){
                 std::cerr << "Invalid message from " << server << ": " << msg << std::endl;
                 std::cerr << "command:ip, return value should be array" << std::endl;
@@ -304,7 +306,6 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
                     cam->ip = ip_ref;
                     cam->server = server;
                     cameras.push_back(cam);
-                    std::cout << "Discovered camera " << ip_ref << " from server " << server << std::endl;
                 }
             }
             ipQueryFinish.insert_or_assign(server, false);
@@ -354,14 +355,12 @@ void GoProMaster::sendToAll(const std::string& msg) {
 }
 
 void GoProMaster::cleanCameraFromServer(const std::string ip){
-    for(std::vector<std::shared_ptr<CameraInfo>>::iterator i = cameras.end() + 1; i >= cameras.begin(); i--){
-        const auto& c = i->get();
-        if(c){
-            if(c->server == ip){
-                std::lock_guard<std::mutex> lock(camera_mtx);
-                cameras.erase(i);
-            }
-        }
+    auto iter = std::find_if(cameras.begin(), cameras.end(),
+        [&](auto &s){ return ((*s).server == ip); }
+    );
+    if(iter != cameras.end()){
+        cameras.erase(iter);
+        cleanCameraFromServer(ip);
     }
 }
 
