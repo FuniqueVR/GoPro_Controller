@@ -31,6 +31,11 @@ GoProMaster master;
 json gui;
 json servers;
 char server_ip_buf[64] = "192.168.10.2";
+char popup1_server_ip_buf[64] = "192.168.10.2";
+char popup1_camera_serial_buf[64] = "1234";
+char popup1_error[64] = "";
+char popup2_server_ip_buf[64] = "192.168.10.2";
+char popup2_error[64] = "";
 
 std::string websocket_server_selection = "";
 std::string camera_selection = "";
@@ -50,9 +55,6 @@ bool global_command_win = false;
 bool local_command_win = false;
 bool inspector_win = false;
 bool record_win = false;
-// All the popup window flags
-bool popup_add_camera = false;
-bool popup_scan_camera = false;
 
 // The secondary thread handle the background update
 // This will automatically retry connect to server every 10 seconds.
@@ -368,7 +370,7 @@ int main(int, char**)
         }
         ImGui::EndMainMenuBar();
 
-        ImGui::ShowDemoWindow();
+        //ImGui::ShowDemoWindow();
 
         // 1. Dashboard Window
         if(websocket_server_window) {
@@ -400,12 +402,12 @@ int main(int, char**)
             }
             ImGui::SameLine();
             if (ImGui::Button("Remove Server")) {
-                master.clean(server_ip_buf);
+                master.clean(std::string(server_ip_buf));
                 updateServerList();
             }
             ImGui::SameLine();
             if (ImGui::Button("Disconnect Server")) {
-                master.disconnect(server_ip_buf);
+                master.disconnect(std::string(server_ip_buf));
             }
 
             if (ImGui::Button("Reconnect All")) {
@@ -477,7 +479,7 @@ int main(int, char**)
                 if(ImGui::Button("Scan All")) master.command_only("scan"); ImGui::SameLine();
                 if(ImGui::Button("Add Server")) master.stopRecordingAll();
 
-                if(ImGui::Button("Add Camera")) master.startRecordingAll(); ImGui::SameLine();
+                if(ImGui::Button("Add Camera")) ImGui::OpenPopup("Add Camera"); ImGui::SameLine();
                 if(ImGui::Button("Clean Camera")) master.command_only("clean");
 
                 if(ImGui::Button("Connect All")) master.command_only("usb_on"); ImGui::SameLine();
@@ -580,25 +582,47 @@ int main(int, char**)
             ImGui::End();
         }
 
-        if(popup_add_camera){
-            ImGui::BeginPopupModal("Add Camera", NULL, ImGuiWindowFlags_AlwaysAutoResize);
-            ImGui::InputText("Camera IP", server_ip_buf, IM_ARRAYSIZE(server_ip_buf));
-            if (ImGui::Button("Add")) {
-                master.addServer(server_ip_buf);
-                master.reconnectAll();
-                ImGui::CloseCurrentPopup();
+        if(ImGui::BeginPopupModal("Add Camera")){
+            ImGui::InputText("Server IP", popup1_server_ip_buf, IM_ARRAYSIZE(popup1_server_ip_buf));
+            ImGui::InputText("Camera IP", popup1_camera_serial_buf, IM_ARRAYSIZE(popup1_camera_serial_buf));
+            ImGui::TextColored(ImVec4(1, 0, 0, 1), popup1_error);
+            if (ImGui::Button("Confirm")) {
+                bool pass = true;
+                if(master.findServer(popup1_server_ip_buf) == -1){
+                    strncpy(popup1_error, "Server does not exist.", sizeof(popup1_error) - 1);
+                    popup1_error[sizeof(popup1_error) - 1] = 0;
+                    pass = false;
+                }
+                if(master.findCamera(GetRemoteIPBySerial(popup1_camera_serial_buf)) != -1){
+                    strncpy(popup1_error, "Camera already added.", sizeof(popup1_error) - 1);
+                    popup1_error[sizeof(popup1_error) - 1] = 0;
+                    pass = false;
+                }
+
+                if(pass){
+                    master.command_only(popup1_server_ip_buf, "add", popup1_camera_serial_buf);
+                }
             }
             ImGui::EndPopup();
         }
-        if(popup_scan_camera){
-            ImGui::BeginPopupModal("Scan Camera", NULL, ImGuiWindowFlags_AlwaysAutoResize);
-            ImGui::InputText("Camera IP", server_ip_buf, IM_ARRAYSIZE(server_ip_buf));
-            if (ImGui::Button("Add")) {
-                master.addServer(server_ip_buf);
-                master.reconnectAll();
-                ImGui::CloseCurrentPopup();
+        
+        if(ImGui::BeginPopupModal("Scan Camera")){
+            ImGui::InputText("Server IP", popup2_server_ip_buf, IM_ARRAYSIZE(popup2_server_ip_buf));
+            ImGui::Text("You can leave it empty for broadcast to all websocket server");
+            ImGui::TextColored(ImVec4(1, 0, 0, 1), popup2_error);
+            if (ImGui::Button("Confirm")) {
+                bool pass = true;
+                if(master.findServer(popup2_server_ip_buf) == -1 && sizeof(popup2_server_ip_buf) == 0){
+                    strncpy(popup2_error, "Server does not exist.", sizeof(popup2_error) - 1);
+                    popup2_error[sizeof(popup2_error) - 1] = 0;
+                    pass = false;
+                }
+
+                if(pass){
+                    master.command_only(popup2_server_ip_buf, "scan", "");
+                }
             }
-            ImGui::EndPopup();
+            ImGui::EndPopup();               
         }
 
         // Rendering

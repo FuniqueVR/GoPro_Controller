@@ -5,7 +5,6 @@
  * See the LICENSE file in the project root for more information.
 */
 #include "GoProMaster.h"
-#include "../common/iphelper.h"
 #include <iostream>
 
 GoProMaster::GoProMaster() {
@@ -49,7 +48,6 @@ std::string GoProMaster::addServer(const std::string& ip) {
         if(conn->connected){
             std::cout << "Disconnected from server: " << conn->ip << std::endl;
             conn->connected = false;
-            cleanCameraFromServer(conn->ip);
         }
     };
 

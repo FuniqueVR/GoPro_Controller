@@ -18,12 +18,12 @@
 #include <curl/curl.h>
 
 // 1. Add this callback outside the function
-size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* userp) {
+inline size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* userp) {
     userp->append((char*)contents, size * nmemb);
     return size * nmemb;
 }
 
-std::string GetRemoteIPBySerial(std::string serial){
+inline std::string GetRemoteIPBySerial(std::string serial){
     if(serial.size() != 3){
         std::cerr << "Serial string must be at least 3" << "\n";
         return "";
@@ -32,7 +32,7 @@ std::string GetRemoteIPBySerial(std::string serial){
     return std::string("172.2") + serial[0] + std::string(".1") + serial[1] + serial[2] + std::string(".51");
 }
 
-std::string GetRemoteURLBySerial(std::string serial){
+inline std::string GetRemoteURLBySerial(std::string serial){
     if(serial.size() != 3){
         std::cerr << "Serial string must be at least 3" << "\n";
         return "";
@@ -41,7 +41,7 @@ std::string GetRemoteURLBySerial(std::string serial){
     return std::string("http://172.2") + serial[0] + std::string(".1") + serial[1] + serial[2] + std::string(".51:8080");
 }
 
-std::string GetRemoteURLByIP(std::string IP){
+inline std::string GetRemoteURLByIP(std::string IP){
     if(IP.size() < 12){
         std::cerr << "The IP string size must larger than 12" << "\n";
         return "";
@@ -50,7 +50,7 @@ std::string GetRemoteURLByIP(std::string IP){
     return std::string("http://") + IP + std::string(":8080");
 }
 
-std::string exec(std::string cmd) {
+inline std::string exec(std::string cmd) {
     CURL* curl = curl_easy_init();
     CURLcode res;
     std::string result;
@@ -82,7 +82,7 @@ namespace uuid {
     static std::uniform_int_distribution<> dis(0, 15);
     static std::uniform_int_distribution<> dis2(8, 11);
 
-    std::string generate_uuid_v4() {
+    inline std::string generate_uuid_v4() {
         std::stringstream ss;
         int i;
         ss << std::hex;

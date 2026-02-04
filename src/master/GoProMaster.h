@@ -15,6 +15,7 @@
 #include <functional>
 #include "hv/WebSocketClient.h"
 #include <nlohmann/json.hpp>
+#include "../common/iphelper.h"
 #include "../common/camera_code.h"
 
 using json = nlohmann::json;
