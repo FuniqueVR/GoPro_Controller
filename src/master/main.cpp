@@ -56,6 +56,9 @@ bool local_command_win = false;
 bool inspector_win = false;
 bool record_win = false;
 
+bool popup_add_camera_win = false;
+bool popup_scan_camera_win = false;
+
 // The secondary thread handle the background update
 // This will automatically retry connect to server every 10 seconds.
 void background_worker(){
@@ -256,7 +259,7 @@ int main(int, char**)
         for(int i = 0; i < servers["data"].size(); i++){
             if(servers["data"].at(i).is_string()){
                 std::string buffer_ip = servers["data"].at(i).get<std::string>();
-                std::string ip = master.addServer(server_ip_buf);
+                std::string ip = master.addServer(buffer_ip);
                 master.reconnect(ip);
             }
         }
@@ -285,6 +288,10 @@ int main(int, char**)
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
+    io.ConfigErrorRecovery = true;
+    io.ConfigErrorRecoveryEnableAssert = true;
+    io.ConfigErrorRecoveryEnableDebugLog = true;
+    io.ConfigErrorRecoveryEnableTooltip = true;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
@@ -370,7 +377,7 @@ int main(int, char**)
         }
         ImGui::EndMainMenuBar();
 
-        //ImGui::ShowDemoWindow();
+        ImGui::ShowDemoWindow();
 
         // 1. Dashboard Window
         if(websocket_server_window) {
@@ -477,9 +484,9 @@ int main(int, char**)
                 ImGui::LabelText("Global Controls", "Commands applied to all connected cameras");
 
                 if(ImGui::Button("Scan All")) master.command_only("scan"); ImGui::SameLine();
-                if(ImGui::Button("Add Server")) master.stopRecordingAll();
+                if(ImGui::Button("Scan Server")) popup_scan_camera_win = true;
 
-                if(ImGui::Button("Add Camera")) ImGui::OpenPopup("Add Camera"); ImGui::SameLine();
+                if(ImGui::Button("Add Camera")) popup_add_camera_win = true; ImGui::SameLine();
                 if(ImGui::Button("Clean Camera")) master.command_only("clean");
 
                 if(ImGui::Button("Connect All")) master.command_only("usb_on"); ImGui::SameLine();
@@ -582,10 +589,22 @@ int main(int, char**)
             ImGui::End();
         }
 
-        if(ImGui::BeginPopupModal("Add Camera")){
+        if(popup_add_camera_win){
+            popup_add_camera_win = false;
+            ImGui::OpenPopup("Add Camera##Popup");
+        }
+        if(popup_scan_camera_win){
+            popup_scan_camera_win = false;
+            ImGui::OpenPopup("Scan Camera##Popup");
+        }
+
+        // Always center this window when appearing
+        ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+        ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+        if(ImGui::BeginPopupModal("Add Camera##Popup", NULL, ImGuiWindowFlags_AlwaysAutoResize)){
             ImGui::InputText("Server IP", popup1_server_ip_buf, IM_ARRAYSIZE(popup1_server_ip_buf));
             ImGui::InputText("Camera IP", popup1_camera_serial_buf, IM_ARRAYSIZE(popup1_camera_serial_buf));
-            ImGui::TextColored(ImVec4(1, 0, 0, 1), popup1_error);
+            ImGui::TextColored(ImVec4(1, 0, 0, 1), std::string(popup1_error).c_str());
             if (ImGui::Button("Confirm")) {
                 bool pass = true;
                 if(master.findServer(popup1_server_ip_buf) == -1){
@@ -600,16 +619,23 @@ int main(int, char**)
                 }
 
                 if(pass){
-                    master.command_only(popup1_server_ip_buf, "add", popup1_camera_serial_buf);
+                    master.command_only(std::string(popup1_server_ip_buf), "add", std::string(popup1_camera_serial_buf));
                 }
+            }
+            ImGui::SameLine();
+            if(ImGui::Button("Cancel")){
+                ImGui::CloseCurrentPopup();
             }
             ImGui::EndPopup();
         }
         
-        if(ImGui::BeginPopupModal("Scan Camera")){
+        // Always center this window when appearing
+        center = ImGui::GetMainViewport()->GetCenter();
+        ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+        if(ImGui::BeginPopupModal("Scan Camera##Popup", NULL, ImGuiWindowFlags_AlwaysAutoResize)){
             ImGui::InputText("Server IP", popup2_server_ip_buf, IM_ARRAYSIZE(popup2_server_ip_buf));
             ImGui::Text("You can leave it empty for broadcast to all websocket server");
-            ImGui::TextColored(ImVec4(1, 0, 0, 1), popup2_error);
+            ImGui::TextColored(ImVec4(1, 0, 0, 1), std::string(popup2_error).c_str());
             if (ImGui::Button("Confirm")) {
                 bool pass = true;
                 if(master.findServer(popup2_server_ip_buf) == -1 && sizeof(popup2_server_ip_buf) == 0){
@@ -619,8 +645,16 @@ int main(int, char**)
                 }
 
                 if(pass){
-                    master.command_only(popup2_server_ip_buf, "scan", "");
+                    if(sizeof(popup2_server_ip_buf) == 0){
+                        master.command_only("scan");
+                    }else{
+                        master.command_only(popup2_server_ip_buf, "scan", "");
+                    }
                 }
+            }
+            ImGui::SameLine();
+            if(ImGui::Button("Cancel")){
+                ImGui::CloseCurrentPopup();
             }
             ImGui::EndPopup();               
         }

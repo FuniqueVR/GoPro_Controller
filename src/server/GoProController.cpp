@@ -524,10 +524,11 @@ std::string GoProController::getAllIP(){
 }
 
 void GoProController::_loadRecord(){
-    std::string txt = "/home/ellly/record.txt";
-    std::ifstream inFile(txt.c_str());
+    std::string homedir = getpwuid(getuid())->pw_dir;
+    homedir += "/record.txt";
+    std::ifstream inFile(homedir.c_str());
     if (!inFile.is_open()) {
-        std::cerr << "Error: Could not open the file: " << txt << std::endl;
+        std::cerr << "Error: Could not open the file: " << homedir << std::endl;
         return; // Return with an error code
     }
     std::string line;
@@ -538,9 +539,12 @@ void GoProController::_loadRecord(){
 }
 
 void GoProController::_updateRecord(){
-    std::ofstream outFile("record.txt");
+    std::string homedir = getpwuid(getuid())->pw_dir;
+    homedir += "/record.txt";
+    std::ofstream outFile( homedir.c_str() );
+    
     if (!outFile.is_open()) {
-        std::cerr << "Error: Could not open the file." << std::endl;
+        std::cerr << "Error: Could not open the file." << homedir << std::endl;
         return; // Return with an error code
     }
     for(auto i : camera_ips){

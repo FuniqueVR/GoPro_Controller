@@ -24,7 +24,7 @@ inline size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::stri
 }
 
 inline std::string GetRemoteIPBySerial(std::string serial){
-    if(serial.size() != 3){
+    if(serial.size() < 3){
         std::cerr << "Serial string must be at least 3" << "\n";
         return "";
     }
@@ -33,7 +33,7 @@ inline std::string GetRemoteIPBySerial(std::string serial){
 }
 
 inline std::string GetRemoteURLBySerial(std::string serial){
-    if(serial.size() != 3){
+    if(serial.size() < 3){
         std::cerr << "Serial string must be at least 3" << "\n";
         return "";
     }
