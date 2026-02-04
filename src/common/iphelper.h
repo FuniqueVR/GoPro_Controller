@@ -17,6 +17,12 @@
 #include <sstream>
 #include <curl/curl.h>
 
+// 1. Add this callback outside the function
+size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* userp) {
+    userp->append((char*)contents, size * nmemb);
+    return size * nmemb;
+}
+
 std::string GetRemoteIPBySerial(std::string serial){
     if(serial.size() != 3){
         std::cerr << "Serial string must be at least 3" << "\n";
@@ -51,8 +57,9 @@ std::string exec(std::string cmd) {
 
     if(curl) {
         curl_easy_setopt(curl, CURLOPT_URL, cmd.c_str());
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &result);
-        curl_easy_setopt(curl, CURLOPT_TIMEOUT, 1.5f);
+        curl_easy_setopt(curl, CURLOPT_TIMEOUT, 1500L);
 
         res = curl_easy_perform(curl);
 

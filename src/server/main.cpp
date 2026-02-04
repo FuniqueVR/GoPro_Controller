@@ -169,6 +169,9 @@ void MediaAction(const WebSocketChannelPtr& channel, json j){
 }
 
 int main() {
+    setvbuf(stdout, NULL, _IONBF, 0);
+    setvbuf(stderr, NULL, _IONBF, 0);
+
     std::cout << "Starting GoPro Server (RPi)..." << std::endl;
     hv::WebSocketService ws;
     ws.onopen = [&](const WebSocketChannelPtr& channel, const HttpRequestPtr& req) {
@@ -176,21 +179,27 @@ int main() {
         hosts.push_back(&channel);
     };
     ws.onmessage = [&](const WebSocketChannelPtr& channel, const std::string& msg) {
-        printf("Received: %s\n", msg.c_str());
-        json j = json::parse(msg.c_str());
-        // Simple command parsing
-        if (j["key"].get<std::string>() == "command") {
-            ExecuteCommand(channel, j["value"]);
-        }
-        else if (j["key"].get<std::string>() == "query") {
-            QueryAction(channel, j["value"]);
-        }
-        else if (j["key"].get<std::string>() == "webcam") {
-            WebcamAction(channel, j["value"]);
-        }
-        else if (j["key"].get<std::string>() == "media") {
-            MediaAction(channel, j["value"]);
-        }
+        std::thread([=]() {
+            printf("Received: %s\n", msg.c_str());
+            try{
+                json j = json::parse(msg.c_str());
+                // Simple command parsing
+                if (j["key"].get<std::string>() == "command") {
+                    ExecuteCommand(channel, j["value"]);
+                }
+                else if (j["key"].get<std::string>() == "query") {
+                    QueryAction(channel, j["value"]);
+                }
+                else if (j["key"].get<std::string>() == "webcam") {
+                    WebcamAction(channel, j["value"]);
+                }
+                else if (j["key"].get<std::string>() == "media") {
+                    MediaAction(channel, j["value"]);
+                }
+            }catch(const std::exception& e){
+                std::cerr << "JSON Parse error: " << e.what() << std::endl;
+            }
+        }).detach();
     };
     ws.onclose = [&](const WebSocketChannelPtr& channel) {
         printf("Client disconnected\n");

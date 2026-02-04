@@ -185,7 +185,8 @@ sudo nano /usr/local/bin/startup.sh
 ```bash
 #!/bin/bash
 cd /home/ellly
-/usr/local/bin/server
+# 讓我們的程序 只跑在 CPU 3
+taskset -c 3 /usr/local/bin/server
 ```
 
 建議一個 Service 在 /lib/system/lib/systemd/system/startup.service
@@ -235,14 +236,68 @@ sudo nano /etc/udev/udev.conf
 ```
 
 ```bash
-# 給它 4 個子執行序上限
-udev_children_max=4
+# 給它 2 個子執行序上限
+udev_children_max=2
 ```
 
 ```bash
 # 重開服務
 sudo systemctl restart systemd-udevd
 ```
+
+確保 SSH 不會卡
+
+```bash
+sudo nano /etc/ssh/sshd_config
+```
+
+加這一行
+
+```bash
+IPQoS throughput lowdelay
+```
+
+然後重開 ssh 服務
+
+```bash
+sudo systemctl restart ssh
+```
+
+讓 udev 跑在 0, 1, 2 執行序
+
+```bash
+sudo taskset -p -a 7 $(pidof systemd-udevd)
+```
+
+在 /boot/firmware/cmdline.txt 加上這幾個
+
+```bash
+sudo nano /boot/cmdline.txt
+```
+
+```bash
+dwc_otg.fiq_fix_enable=1 dwc_otg.fiq_fsm_enable=1 dwc_otg.nak_holdoff=1,isolcpus=3
+```
+
+* fiq_fix_enable=1
+    * USB 加速, CPU 優化性能
+* fiq_fsm_enable=1
+    * Kernal 排序上的優化
+* nak_holdoff=1
+    * 如果沒資料, 不會主動 request, CPU 優化
+* isolcpus=3
+    * 隔離 CPU 核心 3
+
+之所以需要以上的設定是因為這個 
+
+這個是連結 Hub 的時候
+![lsusb](./docs/lsusb.png)
+
+這個是網路上對於 cdc_ncm 協定的解釋
+![cdc_ncm](./docs/cdc_ncm.png)
+
+每個 Go Pro USB 連結, 建立 3 個協定. 所以才灌爆 Kernal...\
+上面做的事情基本上就是, 我的程式要跑在 CPU 3, 其他 USB 什麼鬼的給我去 CPU 1, 2, 3
 
 ## 協定
 

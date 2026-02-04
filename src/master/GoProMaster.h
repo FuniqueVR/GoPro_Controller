@@ -7,6 +7,7 @@
 #pragma once
 
 #include <vector>
+#include <map>
 #include <string>
 #include <memory>
 #include <mutex>
@@ -211,6 +212,7 @@ private:
     std::vector<std::shared_ptr<CameraInfo>> cameras;
     std::vector<std::shared_ptr<ServerConnection>> servers;
     std::thread t1;
+    std::unordered_map<std::string, bool> ipQueryFinish = std::unordered_map<std::string, bool>();
     camera_setting_feedback _camera_setting_feedback = NULL;
     camera_status_feedback _camera_status_feedback = NULL;
 

@@ -260,10 +260,12 @@ void GoProMaster::update(){
     while (!done) {
         for (auto& s : servers) {
             if (!s->connected) continue;
+            if (ipQueryFinish.count(s->ip) && ipQueryFinish.at(s->ip)) continue;
             json get_status = json::object();
             get_status["key"] = "command";
             get_status["value"] = json::object();
             get_status["value"]["name"] = "ip";
+            ipQueryFinish.insert_or_assign(s->ip, true);
             s->client.send(get_status.dump());
         }
         std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -304,6 +306,7 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
                 std::cout << "Discovered camera " << ip_ref << " from server " << server << std::endl;
             }
         }
+        ipQueryFinish.insert_or_assign(server, false);
     }
     else if(key == "query:get"){
         if(!data["value"]["data"].is_array()){
