@@ -92,24 +92,23 @@ void GoProController::addCameras(std::string serial){
     }
 }
 
+void GoProController::setPreset(std::string target, int32_t mode){
+    if(target.size() > 0){
+        _setPreset(target, mode);
+    }else{
+        std::vector<std::future<void>> calls = std::vector<std::future<void>>();
+        for(std::string ip : camera_ips){
+            calls.push_back(std::async(std::launch::async, [this, ip, mode]() {
+                this->_setPreset(ip, mode);
+            }));
+        }
 
-void GoProController::startRecording() {
-    // Command: /gopro/camera/shutter/start
-    
+        for(auto& call : calls){
+            call.get();
+        }
+    }
 }
 
-void GoProController::stopRecording() {
-    // Command: /gopro/camera/shutter/stop
-    
-}
-
-void GoProController::setModePhoto() {
-    
-}
-
-void GoProController::setModeVideo() {
-    
-}
 
 void GoProController::reboot(std::string target){
     if(target.size() > 0){
@@ -551,6 +550,11 @@ void GoProController::_updateRecord(){
         outFile << i << "\n";
     }
     outFile.close();
+}
+
+void GoProController::_setPreset(std::string target, int32_t mode){
+    std::string url = GetRemoteURLByIP(target) + "/gopro/camera/presets/load?id=" + std::to_string(mode);
+    exec(getCommand(url));
 }
 
 void GoProController::_reboot(std::string target){

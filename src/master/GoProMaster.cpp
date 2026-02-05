@@ -204,20 +204,8 @@ void GoProMaster::webcam_only(const std::string server, const std::string comman
     }
 }
 
-void GoProMaster::startRecordingAll() {
-    sendToAll("f2_start_recording");
-}
+void GoProMaster::webcam_start(const std::string server){
 
-void GoProMaster::stopRecordingAll() {
-    sendToAll("f3_stop_recording");
-}
-
-void GoProMaster::setModePhotoAll() {
-    sendToAll("f4_mode_photo");
-}
-
-void GoProMaster::setModeVideoAll() {
-    sendToAll("f5_mode_video");
 }
 
 bool GoProMaster::applyAll(const std::string& ip, const json& res){

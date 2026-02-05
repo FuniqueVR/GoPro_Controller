@@ -78,7 +78,7 @@ void QueryAction(const WebSocketChannelPtr& channel, json j){
     std::string target = "";
     int id = 0;
     std::string value = "";
-    json r;
+    json r = json::object();
     
     if(j["name"].is_string()){
         name = j["name"].get<std::string>();
@@ -110,7 +110,7 @@ void WebcamAction(const WebSocketChannelPtr& channel, json j){
     int res = 4;
     int fov = 0;
     bool ts = true;
-    json r;
+    json r = json::object();
     
     if(j["name"].is_string()){
         name = j["name"].get<std::string>();
@@ -156,6 +156,28 @@ void WebcamAction(const WebSocketChannelPtr& channel, json j){
         channel->send(getPacket("webcam:version", r));
     }else{
         channel->send(getPacket("webcam:unknown", r));
+    }
+}
+
+void ModeAction(const WebSocketChannelPtr& channel, json j){
+    std::string name = "";
+    std::string target = "";
+    int mode = 0;
+    json r = json::object();
+
+    if(j["name"].is_string()){
+        name = j["name"].get<std::string>();
+    }
+    if(j["target"].is_string()){
+        target = j["target"].get<std::string>();
+    }
+    if(j["mode"].is_number()){
+        mode = j["mode"].get<int32_t>();
+    }
+
+    if(name == "load"){
+        controller.setPreset(target, mode);
+        channel->send(getPacket("preset:set", r));
     }
 }
 

@@ -35,10 +35,7 @@ public:
     void scanCameras();
     void cleanCameras();
     void addCameras(std::string serial);
-    void startRecording();
-    void stopRecording();
-    void setModePhoto();
-    void setModeVideo();
+    void setPreset(std::string target, int32_t mode);
 
     void reboot(std::string target);
     void shutdown(std::string target);
@@ -66,6 +63,7 @@ protected:
     void _loadRecord();
     void _updateRecord();
 
+    void _setPreset(std::string target, int32_t mode);
     void _reboot(std::string target);
     void _shutdown(std::string target);
     void _keep_alive(std::string target);

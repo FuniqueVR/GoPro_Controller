@@ -48,8 +48,8 @@ std::string popup3_error = "";
 
 std::string websocket_server_selection = "";
 std::string camera_selection = "";
-static const char* current_mode_item = "PHOTO##SCC";
-static const char* current_preset_item = NULL;
+std::string current_mode_item_string = "Video";
+int32_t current_mode_item = 0;
 
 // Current select camera setting
 json current_setting_items;
@@ -359,19 +359,19 @@ int main(int, char**)
             // Hotkeys
             if (event.type == SDL_EVENT_KEY_DOWN) {
                 if (event.key.key == SDLK_F2) {
-                    master.startRecordingAll();
+                    master.command_only("shutter_on");
                     printf("Hotkey F2: Start Recording\n");
                 }
                 if (event.key.key == SDLK_F3) {
-                    master.stopRecordingAll();
+                    master.command_only("shutter_off");
                     printf("Hotkey F3: Stop Recording\n");
                 }
                 if (event.key.key == SDLK_F4) {
-                    master.setModePhotoAll();
+                    master.presetSwitch("", 65535);
                     printf("Hotkey F4: Photo Mode\n");
                 }
                 if (event.key.key == SDLK_F5) {
-                    master.setModeVideoAll();
+                    master.presetSwitch("", 0);
                     printf("Hotkey F5: Video Mode\n");
                 }
             }
@@ -426,10 +426,10 @@ int main(int, char**)
             ImGui::Separator();
 
             ImGui::Text("Manual Control:");
-            if (ImGui::Button("Start Rec (F2)")) master.startRecordingAll(); ImGui::SameLine();
-            if (ImGui::Button("Stop Rec (F3)")) master.stopRecordingAll();
-            if (ImGui::Button("Photo Mode (F4)")) master.setModePhotoAll(); ImGui::SameLine();
-            if (ImGui::Button("Video Mode (F5)")) master.setModeVideoAll();
+            if (ImGui::Button("Start Rec (F2)")) master.command_only("shutter_on"); ImGui::SameLine();
+            if (ImGui::Button("Stop Rec (F3)")) master.command_only("shutter_off");
+            if (ImGui::Button("Photo Mode (F4)")) master.presetSwitch("", 65536); ImGui::SameLine();
+            if (ImGui::Button("Video Mode (F5)")) master.presetSwitch("", 0);
 
             ImGui::Separator();
 
@@ -562,30 +562,28 @@ int main(int, char**)
                 bool should_disabled = current_camera_item.size() < 10 || master.findCamera(current_camera_item) == -1;
                 ImGui::BeginDisabled(should_disabled);
 
-                if(ImGui::Button("Record")) master.startRecordingAll(); ImGui::SameLine();
-                if(ImGui::Button("Stop")) master.stopRecordingAll(); ImGui::SameLine();
-                if(ImGui::Button("Setting Apply All")) master.applyAll(std::string(current_camera_item), current_setting_items);
+                if(ImGui::Button("Record")) master.command_only("", "shutter_on", current_camera_item); ImGui::SameLine();
+                if(ImGui::Button("Stop")) master.command_only("", "shutter_off", current_camera_item); ImGui::SameLine();
+                if(ImGui::Button("Setting Apply All")) master.applyAll(current_camera_item, current_setting_items);
 
-                if(ImGui::Button("Connect")) master.stopRecordingAll(); ImGui::SameLine();
-                if(ImGui::Button("Disconnect")) master.stopRecordingAll(); ImGui::SameLine();
-                if(ImGui::Button("Shutdown")) master.stopRecordingAll(); ImGui::SameLine();
-                if(ImGui::Button("Locate")) master.stopRecordingAll();
+                if(ImGui::Button("Connect")) master.command_only("", "usb_on", current_camera_item); ImGui::SameLine();
+                if(ImGui::Button("Disconnect")) master.command_only("", "usb_off", current_camera_item); ImGui::SameLine();
+                if(ImGui::Button("Shutdown")) master.command_only("", "usb_on", current_camera_item); ImGui::SameLine();
+                if(ImGui::Button("Locate")) master.command_only("", "usb_on", current_camera_item);
 
-                const char* mode_items[] = { "PHOTO##SCC", "VIDEO##SCC", "WEBCAM##SCC"};
-                if(ImGui::BeginCombo("Mode##SCC", current_mode_item)){
-                    for (int n = 0; n < 3; n++)
+                if(ImGui::BeginCombo("Mode##SCC", current_mode_item_string.c_str())){
+                    for (int n = 0; n < GOPRO_MODE_SIZE; n++)
                     {
-                        bool is_selected = (current_mode_item == mode_items[n]); // You can store your selection however you want, outside or inside your objects
-                        if (ImGui::Selectable(mode_items[n], is_selected))
-                            current_mode_item = mode_items[n];
+                        std::string curr = GOPRO_MODE_STRING[n];
+                        std::string curr_b = curr + "##SCC_Option";
+                        bool is_selected = (current_mode_item_string == curr); // You can store your selection however you want, outside or inside your objects
+                        if (ImGui::Selectable(curr_b.c_str(), is_selected)){
+                            current_mode_item_string = curr;
+                            current_mode_item = n;
+                        }
                         if (is_selected)
                             ImGui::SetItemDefaultFocus();   // You may set the initial focus when opening the combo (scrolling + for keyboard navigation support)
                     }
-                    ImGui::EndCombo();
-                }
-                
-                const char* preset_items[] = { };
-                if(ImGui::BeginCombo("Preset##SCC", current_preset_item)){
                     ImGui::EndCombo();
                 }
 
@@ -633,7 +631,7 @@ int main(int, char**)
                         {
                             std::string option = GET_SETTING_STRING_BY_ID(id)[n];
                             if(option.size() == 0) continue;
-                            bool is_selected = (current_mode_item == option); // You can store your selection however you want, outside or inside your objects
+                            bool is_selected = (current_setting_items[std::to_string(id)] == n); // You can store your selection however you want, outside or inside your objects
                             option += ("##InspectorOption_" + name); 
                             if (ImGui::Selectable(option.c_str(), is_selected))
                             {
@@ -764,13 +762,7 @@ int main(int, char**)
             }
             
             if(ImGui::Button("Confirm")){
-                master.startRecordingAll(
-                    popup3_server_ip_buf,
-                    popup3_port_buf,
-                    popup3_ts_buf,
-                    popup3_res_string_buf,
-                    popup3_fov_string_buf
-                );
+                
             }
             ImGui::SameLine();
             if(ImGui::Button("Cancel")){

@@ -45,9 +45,15 @@
 build_master/
 Build_master/
 build_master-*/
+build_master_win/
+Build_master_win/
+build_master_win-*/
 build_server/
 Build_server/
 build_server-*/
+build_server_win/
+Build_server_win/
+build_server_win-*/
 build_server_amd/
 Build_server_amd/
 build_server_amd-*/

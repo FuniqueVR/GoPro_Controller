@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Clean previous build artifacts seriously to avoid cache issues
-rm -rf CMakeCache.txt CMakeFiles build_server
-
 # Create a separate build directory for server
 mkdir -p build_server
 cd build_server

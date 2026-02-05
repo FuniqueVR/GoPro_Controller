@@ -99,6 +99,7 @@ public:
     void webcam_only(const std::string server, const std::string command, std::string target = "");
     void webcam_start(const std::string server);
 
+    void presetSwitch(const std::string server, int32_t mode);
     bool applyAll(const std::string& ip, const json& res);
 
     void registerCameraSettingFeedback(camera_setting_feedback v);
