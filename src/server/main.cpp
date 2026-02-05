@@ -78,6 +78,7 @@ void QueryAction(const WebSocketChannelPtr& channel, json j){
     std::string target = "";
     int id = 0;
     std::string value = "";
+    json jvalue = json::object();
     json r = json::object();
     
     if(j["name"].is_string()){
@@ -92,6 +93,9 @@ void QueryAction(const WebSocketChannelPtr& channel, json j){
     if(j["value"].is_string()){
         value = j["value"].get<std::string>();
     }
+    else if(j["value"].is_object()){
+        jvalue = j["value"];
+    }
 
     if(name == "get"){
         r["data"] = json::parse(controller.queryStatus(target));
@@ -100,6 +104,13 @@ void QueryAction(const WebSocketChannelPtr& channel, json j){
     else if(name == "set"){
         r["data"] = json::parse(controller.setSetting(target, id, value));
         channel->send(getPacket("query:set", r));
+    }
+    else if(name == "setall"){
+        r["data"] = json::parse(controller.setSettingAll(target, jvalue));
+        channel->send(getPacket("query:setall", r));
+    }
+    else{
+        channel->send(getPacket("query:unknown", r));
     }
 }
 

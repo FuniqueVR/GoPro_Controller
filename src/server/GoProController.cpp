@@ -5,7 +5,6 @@
  * See the LICENSE file in the project root for more information.
 */
 #include "GoProController.hpp"
-#include "../common/iphelper.h"
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -277,43 +276,30 @@ std::string GoProController::setSetting(std::string target, int ID, std::string 
     std::string address;
     json arr = json::array();
     if(target.size() > 0){
+        // Target one IP
         try{
             std::pair<std::string, std::string> result = _setSetting(target, ID, value);
             address = result.first;
             res = json::parse(result.second);
-        }catch(...){
+        }catch(const std::exception ex){
             res = json::object();
         }
         json i;
         i["ip"] = target;
         i["status"] = res;
         arr.push_back(i);
-    }else{
-        std::vector<std::future<std::pair<std::string, std::string>>> calls = 
-            std::vector<std::future<std::pair<std::string, std::string>>>();
-        for(std::string ip : camera_ips){
-            calls.push_back(std::async(std::launch::async, [this, ip, ID, value]() {
-                return _setSetting(ip, ID, value);
-            }));
-        }
-
-        for(auto& call : calls){
-            try{
-                std::pair<std::string, std::string> result = call.get();
-                address = result.first;
-                res = json::parse(result.second);
-            }catch(...){
-                res = json::object();
-            }
-            json i;
-            i["ip"] = address;
-            i["status"] = res;
-            arr.push_back(i);
-        }
     }
     return arr.dump();
 }
 
+std::string GoProController::setSettingAll(std::string target, json value){
+    for(int32_t i = 0; i < GOPRO_SETTING_SIZE; i++){
+        int32_t id = GOPRO_SETTING_IDS[i];
+        if(!value[std::to_string(id)].is_number()) continue;
+        int32_t val = value[std::to_string(id)].get<int32_t>();
+        setSetting(target, id, std::to_string(val));
+    }
+}
 
 void GoProController::webcamMode(std::string target){
     if(target.size() > 0){

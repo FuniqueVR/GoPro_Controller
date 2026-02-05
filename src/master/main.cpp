@@ -626,6 +626,8 @@ int main(int, char**)
                     const char* select_string = select_string_list[select_index];
                     if(select_string == nullptr) continue;
 
+                    const int32_t* values_id = GET_SETTING_VALUE_BY_ID(id);
+
                     if(ImGui::BeginCombo(name.c_str(), select_string)){
                         for (int n = 0; n < size; n++)
                         {
@@ -636,6 +638,7 @@ int main(int, char**)
                             if (ImGui::Selectable(option.c_str(), is_selected))
                             {
                                 current_setting_items[std::to_string(id)] = n; // Change index
+                                master.apply(current_camera_item, id, values_id[n]);
                             }
                             if (is_selected)
                                 ImGui::SetItemDefaultFocus();   // You may set the initial focus when opening the combo (scrolling + for keyboard navigation support)

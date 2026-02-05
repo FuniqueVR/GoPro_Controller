@@ -17,6 +17,8 @@
 #include "mdns_cpp/mdns.hpp"
 #include "hv/requests.h"
 #include <nlohmann/json.hpp>
+#include "../common/iphelper.h"
+#include "../common/camera_code.h"
 
 /**
  * Most of the function will have first string target as parameter.
@@ -47,6 +49,7 @@ public:
 
     std::string queryStatus(std::string target);
     std::string setSetting(std::string target, int ID, std::string value);
+    std::string setSettingAll(std::string target, json value);
 
     void webcamMode(std::string target);
     void webcamUnMode(std::string target);

@@ -223,25 +223,34 @@ void GoProMaster::presetSwitch(const std::string server, int32_t mode) {
     }).detach();
 }
 
-bool GoProMaster::applyAll(const std::string& ip, const json& res){
+void GoProMaster::apply(const std::string& ip, const int32_t id, const int32_t value){
     std::thread([=](){    
         for (auto& s : servers) {
             if (!s->connected) continue;
-            for(int32_t i = 0; i < GOPRO_SETTING_SIZE; i++){
-                int32_t id = GOPRO_SETTING_IDS[i];
-                if(!res[std::to_string(id)].is_number()) continue;
-
-                json get_status = json::object();
-                get_status["key"] = "query";
-                get_status["value"] = json::object();
-                get_status["value"]["name"] = "set";
-                get_status["value"]["id"] = id;
-                get_status["value"]["value"] = res[std::to_string(id)].get<int32_t>();
-                s->client.send(get_status.dump());
-            }
+            json get_status = json::object();
+            get_status["key"] = "query";
+            get_status["value"] = json::object();
+            get_status["value"]["name"] = "set";
+            get_status["value"]["target"] = ip;
+            get_status["value"]["id"] = id;
+            get_status["value"]["value"] =  std::to_string(value);
+            s->client.send(get_status.dump());
         }
     }).detach();
-    return true;
+}
+
+void GoProMaster::applyAll(const std::string& ip, const json& res){
+    std::thread([=](){    
+        for (auto& s : servers) {
+            if (!s->connected) continue;
+            json get_status = json::object();
+            get_status["key"] = "query";
+            get_status["value"] = json::object();
+            get_status["value"]["name"] = "setall";
+            get_status["value"]["value"] = res;
+            s->client.send(get_status.dump());
+        }
+    }).detach();
 }
 
 void GoProMaster::registerCameraSettingFeedback(camera_setting_feedback v){

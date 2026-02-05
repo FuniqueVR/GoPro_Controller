@@ -100,7 +100,8 @@ public:
     void webcam_start(const std::string server);
 
     void presetSwitch(const std::string server, int32_t mode);
-    bool applyAll(const std::string& ip, const json& res);
+    void apply(const std::string& ip, const int32_t id, const int32_t value);
+    void applyAll(const std::string& ip, const json& res);
 
     void registerCameraSettingFeedback(camera_setting_feedback v);
     void registerCameraStatusFeedback(camera_status_feedback v);
