@@ -20,6 +20,7 @@ GoProMaster::~GoProMaster() {
     }
     for (auto& s : servers) {
         s->client.close();
+        std::lock_guard<std::mutex> lock(camera_mtx);
         cleanCameraFromServer(s->ip);
     }
 }
@@ -48,6 +49,7 @@ std::string GoProMaster::addServer(const std::string& ip) {
         if(conn->connected){
             std::cout << "Disconnected from server: " << conn->ip << std::endl;
             conn->connected = false;
+            std::lock_guard<std::mutex> lock(camera_mtx);
             cleanCameraFromServer(conn->ip);
         }
     };
@@ -301,6 +303,7 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
         }
         std::string key = data["key"].get<std::string>();
         if(key == "command:ip"){
+            std::lock_guard<std::mutex> lock(camera_mtx);
             cleanCameraFromServer(server);
             if(!data["value"]["data"].is_array()){
                 std::cerr << "Invalid message from " << server << ": " << msg << std::endl;
@@ -313,7 +316,6 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
                 }
                 std::string ip_ref = ip.value().get<std::string>();
                 int32_t found = findCamera(ip_ref);
-                std::lock_guard<std::mutex> lock(camera_mtx);
                 if(found == -1){
                     auto cam = std::make_shared<CameraInfo>();
                     cam->ip = ip_ref;
@@ -441,7 +443,7 @@ bool GoProMaster::getStatusFromCamera(CameraInfo target, json&& res){
 }
 
 int32_t GoProMaster::findCamera(const std::string ip){
-    int32_t index = 0;
+    int32_t index = 0;    
     for(const auto& c : cameras){
         if(c){
             if(c->ip == ip){

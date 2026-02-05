@@ -57,6 +57,9 @@ bool current_setting_items_bind = false;
 // Current select camera IP address
 std::string current_camera_item = "";
 
+std::string apply_all_item_string = "Video Resolution";
+int32_t apply_all_item = 2;
+
 // All the window flags
 bool system_style_win = false;
 
@@ -509,15 +512,20 @@ int main(int, char**)
             }
             for(const auto& c : master.getCameras()){
                 if(c){
-                    std::lock_guard<std::mutex> lock(master.camera_mtx);
-                    bool selected = c->ip == current_camera_item;
-                    if(ImGui::Selectable(c->ip.c_str(), selected)){
-                        // User select interaction
-                        current_setting_items_bind = false;
-                        current_camera_item = c->ip;
-                        std::cout << "Select camera: " << c->ip << std::endl;
-                        master.query_only(c->server, "get", c->ip);
-                        //current_setting_items_bind = master.getSettingsFromCamera(*c, current_setting_items);
+                    try{
+                        std::lock_guard<std::mutex> lock(master.camera_mtx);
+                        bool selected = c->ip == current_camera_item;
+                        std::string plusID = c->ip + "##CameraList";
+                        if(ImGui::Selectable(plusID.data(), selected)){
+                            // User select interaction
+                            current_setting_items_bind = false;
+                            current_camera_item = c->ip;
+                            std::cout << "Select camera: " << c->ip << std::endl;
+                            master.query_only(c->server, "get", c->ip);
+                            //current_setting_items_bind = master.getSettingsFromCamera(*c, current_setting_items);
+                        }
+                    }catch(const std::exception& ex){
+                        std::cerr << ex.what() << std::endl;
                     }
                 }
             }
@@ -563,8 +571,7 @@ int main(int, char**)
                 ImGui::BeginDisabled(should_disabled);
 
                 if(ImGui::Button("Record")) master.command_only("", "shutter_on", current_camera_item); ImGui::SameLine();
-                if(ImGui::Button("Stop")) master.command_only("", "shutter_off", current_camera_item); ImGui::SameLine();
-                if(ImGui::Button("Setting Apply All")) master.applyAll(current_camera_item, current_setting_items);
+                if(ImGui::Button("Stop")) master.command_only("", "shutter_off", current_camera_item);
 
                 if(ImGui::Button("Connect")) master.command_only("", "usb_on", current_camera_item); ImGui::SameLine();
                 if(ImGui::Button("Disconnect")) master.command_only("", "usb_off", current_camera_item); ImGui::SameLine();
@@ -587,6 +594,33 @@ int main(int, char**)
                     ImGui::EndCombo();
                 }
 
+                ImGui::Separator();
+
+                if(ImGui::Button("Setting Apply All")) master.applyAll("", current_setting_items); ImGui::SameLine();
+                if(ImGui::Button("Setting Apply All By ID")) {
+                    json buffer = json::object();
+                    int32_t v = current_setting_items[std::to_string(apply_all_item)].get<int32_t>();
+                    buffer[std::to_string(apply_all_item)] = GET_SETTING_VALUE_BY_ID(apply_all_item)[v];
+                    master.applyAll("", buffer);
+                }
+
+                if(ImGui::BeginCombo("ID", apply_all_item_string.c_str())){
+                    for (int n = 0; n < GOPRO_SETTING_SIZE; n++)
+                    {
+                        int32_t id = GOPRO_SETTING_IDS[n];
+                        std::string curr = GET_SETTING_NAME_BY_ID(id);
+                        bool is_selected = (current_mode_item_string == curr); // You can store your selection however you want, outside or inside your objects
+                        std::string curr_b = curr + "##Setting_ID_Option";
+                        if (ImGui::Selectable(curr_b.c_str(), is_selected)){
+                            apply_all_item_string = curr;
+                            apply_all_item = GOPRO_SETTING_IDS[n];
+                        }
+                        if (is_selected)
+                            ImGui::SetItemDefaultFocus();   // You may set the initial focus when opening the combo (scrolling + for keyboard navigation support)
+                    }
+                    ImGui::EndCombo();
+                }
+
                 ImGui::EndDisabled();
             }
             ImGui::End();
@@ -596,6 +630,7 @@ int main(int, char**)
             //ImGui::SetNextWindowContentSize(ImVec2(600, 400));
             ImGui::Begin("Inspector");
             {
+                std::lock_guard<std::mutex> lock(master.camera_mtx);
                 int32_t camera_ip = master.findCamera(current_camera_item);
                 bool should_disabled = current_camera_item.size() < 10 || camera_ip == -1 || !current_setting_items_bind;
                 ImGui::BeginDisabled(should_disabled);

@@ -238,7 +238,7 @@ std::string GoProController::queryStatus(std::string target){
             std::pair<std::string, std::string> result = _queryStatus(target);
             address = result.first;
             res = json::parse(result.second);
-        }catch(...){
+        }catch(const std::exception& ex){
             res = json::object();
         }
         json i;
@@ -259,7 +259,7 @@ std::string GoProController::queryStatus(std::string target){
                 std::pair<std::string, std::string> result = call.get();
                 address = result.first;
                 res = json::parse(result.second);
-            }catch(...){
+            }catch(const std::exception& ex){
                 res = json::object();
             }
             json i;
@@ -280,25 +280,46 @@ std::string GoProController::setSetting(std::string target, int ID, std::string 
         try{
             std::pair<std::string, std::string> result = _setSetting(target, ID, value);
             address = result.first;
-            res = json::parse(result.second);
-        }catch(const std::exception ex){
+            res = json::object();
+        }catch(const std::exception& ex){
+            std::cerr << "setSetting failed: "  << ex.what() << std::endl;
             res = json::object();
         }
         json i;
         i["ip"] = target;
         i["status"] = res;
         arr.push_back(i);
+    }else{
+        std::cerr << "setSetting failed: target is empty" << std::endl;
     }
     return arr.dump();
 }
 
 std::string GoProController::setSettingAll(std::string target, json value){
+    json res = json::array();
     for(int32_t i = 0; i < GOPRO_SETTING_SIZE; i++){
         int32_t id = GOPRO_SETTING_IDS[i];
-        if(!value[std::to_string(id)].is_number()) continue;
+        if(!value[std::to_string(id)].is_number()) {
+            std::cerr << "setSettingAll failed: id "  << id << " is not number" << std::endl;
+            continue;
+        }
         int32_t val = value[std::to_string(id)].get<int32_t>();
-        setSetting(target, id, std::to_string(val));
+        std::vector<std::future<std::string>> calls = 
+            std::vector<std::future<std::string>>();
+        for(std::string& ip : camera_ips){
+            calls.push_back(std::async(std::launch::async, [this, ip, id, val]() {
+                return setSetting(ip, id, std::to_string(val));
+            }));
+        }
+
+        for(auto& call : calls){
+            call.wait();
+            std::string result = call.get();
+            std::cout << result << std::endl;
+        }
+        std::cout << "setSettingAll finish setting id: " << id << std::endl;
     }
+    return res.dump();
 }
 
 void GoProController::webcamMode(std::string target){
@@ -379,7 +400,7 @@ std::string GoProController::webcamStatus(std::string target){
             std::pair<std::string, std::string> result = _webcamStatus(target);
             address = result.first;
             res = json::parse(result.second);
-        }catch(...){
+        }catch(const std::exception& ex){
             res = json::object();
         }
         json i;
@@ -400,7 +421,7 @@ std::string GoProController::webcamStatus(std::string target){
                 std::pair<std::string, std::string> result = call.get();
                 address = result.first;
                 res = json::parse(result.second);
-            }catch(...){
+            }catch(const std::exception& ex){
                 res = json::object();
             }
             json i;
@@ -422,7 +443,7 @@ std::string GoProController::webcamVersion(std::string target){
             std::pair<std::string, std::string> result = _webcamVersion(target);
             address = result.first;
             res = json::parse(result.second);
-        }catch(...){
+        }catch(const std::exception& ex){
             res = json::object();
         }
         json i;
@@ -443,7 +464,7 @@ std::string GoProController::webcamVersion(std::string target){
                 std::pair<std::string, std::string> result = call.get();
                 address = result.first;
                 res = json::parse(result.second);
-            }catch(...){
+            }catch(const std::exception& ex){
                 res = json::object();
             }
             json i;
@@ -465,7 +486,7 @@ std::string GoProController::getMediaList(std::string target){
             std::pair<std::string, std::string> result = _getMediaList(target);
             address = result.first;
             res = json::parse(result.second);
-        }catch(...){
+        }catch(const std::exception& ex){
             res = json::object();
         }
         json i;
@@ -486,7 +507,7 @@ std::string GoProController::getMediaList(std::string target){
                 std::pair<std::string, std::string> result = call.get();
                 address = result.first;
                 res = json::parse(result.second);
-            }catch(...){
+            }catch(const std::exception& ex){
                 res = json::object();
             }
             json i;
@@ -589,6 +610,7 @@ std::pair<std::string, std::string> GoProController::_queryStatus(std::string ta
 }
 
 std::pair<std::string, std::string> GoProController::_setSetting(std::string target, int ID, std::string value){
+    std::cout << "_setSetting: " << ID << ", " << value << std::endl;
     std::string url = GetRemoteURLByIP(target) + "/gopro/camera/setting?option=";
     url += value;
     url += "&setting=";
