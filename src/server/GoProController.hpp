@@ -61,6 +61,7 @@ public:
     std::string getMediaList(std::string target);
 
     std::string getAllIP();
+    std::string getAllStatus();
 
 protected:
     void _loadRecord();
