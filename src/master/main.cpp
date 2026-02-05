@@ -367,7 +367,7 @@ int main(int, char**)
                     printf("Hotkey F3: Stop Recording\n");
                 }
                 if (event.key.key == SDLK_F4) {
-                    master.presetSwitch("", 65535);
+                    master.presetSwitch("", 65536);
                     printf("Hotkey F4: Photo Mode\n");
                 }
                 if (event.key.key == SDLK_F5) {

@@ -208,6 +208,21 @@ void GoProMaster::webcam_start(const std::string server){
 
 }
 
+void GoProMaster::presetSwitch(const std::string server, int32_t mode) {
+    std::thread([=](){
+        for (auto& s : servers) {
+            if (!s->connected) continue;
+            if (server.size() > 0 && server != s->ip) continue;
+            json get_status = json::object();
+            get_status["key"] = "preset";
+            get_status["value"] = json::object();
+            get_status["value"]["name"] = "load";
+            get_status["value"]["mode"] = mode;
+            s->client.send(get_status.dump());
+        }
+    }).detach();
+}
+
 bool GoProMaster::applyAll(const std::string& ip, const json& res){
     std::thread([=](){    
         for (auto& s : servers) {

@@ -554,6 +554,7 @@ void GoProController::_updateRecord(){
 
 void GoProController::_setPreset(std::string target, int32_t mode){
     std::string url = GetRemoteURLByIP(target) + "/gopro/camera/presets/load?id=" + std::to_string(mode);
+    std::cout << "Set preset: " << url << std::endl;
     exec(getCommand(url));
 }
 

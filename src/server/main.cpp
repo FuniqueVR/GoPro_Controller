@@ -178,6 +178,8 @@ void ModeAction(const WebSocketChannelPtr& channel, json j){
     if(name == "load"){
         controller.setPreset(target, mode);
         channel->send(getPacket("preset:set", r));
+    }else{
+        channel->send(getPacket("webcam:unknown", r));
     }
 }
 
@@ -217,6 +219,9 @@ int main() {
                 }
                 else if (j["key"].get<std::string>() == "media") {
                     MediaAction(channel, j["value"]);
+                }
+                else if (j["key"].get<std::string>() == "preset") {
+                    ModeAction(channel, j["value"]);
                 }
             }catch(const std::exception& e){
                 std::cerr << "JSON Parse error: " << e.what() << std::endl;
