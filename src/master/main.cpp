@@ -565,6 +565,7 @@ int main(int, char**)
             ImGui::SetNextWindowContentSize(ImVec2(600, 400));
             ImGui::Begin("Camera Command##SCC");
             {
+                std::lock_guard<std::mutex> lock(master.camera_mtx);
                 ImGui::LabelText("Single Camera Control", "Commands applied to selected camera");
 
                 bool should_disabled = current_camera_item.size() < 10 || master.findCamera(current_camera_item) == -1;
