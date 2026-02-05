@@ -14,7 +14,6 @@
 #include <future>
 #include <unistd.h>
 #include <sys/types.h>
-#include <pwd.h>
 
 std::string getPacket(std::string key, json data){
     json response = json::object();
@@ -514,7 +513,6 @@ std::string GoProController::getMediaList(std::string target){
     return arr.dump();
 }
 
-
 std::string GoProController::getAllIP(){
     json result = json::array();
     for(std::string target : camera_ips){
@@ -524,8 +522,9 @@ std::string GoProController::getAllIP(){
 }
 
 void GoProController::_loadRecord(){
-    std::string homedir = getpwuid(getuid())->pw_dir;
+    std::string homedir = get_env_var("WS_ROOT");
     homedir += "/record.txt";
+    std::cout << "Trying load data from: " << homedir << std::endl;
     std::ifstream inFile(homedir.c_str());
     if (!inFile.is_open()) {
         std::cerr << "Error: Could not open the file: " << homedir << std::endl;
@@ -539,8 +538,9 @@ void GoProController::_loadRecord(){
 }
 
 void GoProController::_updateRecord(){
-    std::string homedir = getpwuid(getuid())->pw_dir;
+    std::string homedir = get_env_var("WS_ROOT");
     homedir += "/record.txt";
+    std::cout << "Trying export data to: " << homedir << std::endl;
     std::ofstream outFile( homedir.c_str() );
     
     if (!outFile.is_open()) {

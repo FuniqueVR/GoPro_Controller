@@ -76,6 +76,16 @@ inline std::string exec(std::string cmd) {
     return result;
 }
 
+inline std::string get_env_var( std::string const & key ) {                                 
+    char * val;                                                                        
+    val = getenv( key.c_str() );                                                       
+    std::string retval = "";                                                           
+    if (val != NULL) {                                                                 
+        retval = val;                                                                    
+    }                                                                                  
+    return retval;                                                                        
+}  
+
 namespace uuid {
     static std::random_device              rd;
     static std::mt19937                    gen(rd());

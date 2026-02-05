@@ -109,6 +109,7 @@ if(BUILD_MASTER)
         src/master/main.cpp
         src/master/GoProMaster.cpp
         src/master/IO.cpp
+        lib/imgui/misc/cpp/imgui_stdlib.cpp
         ${IMGUI_SOURCES}
         ${MDNS_SOURCES}
     )

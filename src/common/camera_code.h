@@ -14,6 +14,7 @@
 #include <cinttypes>
 #include "camera_setting.h"
 #include "camera_status.h"
+#include "camera_other.h"
 
 #define GOPRO_SETTING_SIZE 54
 const static int32_t GOPRO_SETTING_IDS[] = {

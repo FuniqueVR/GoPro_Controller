@@ -97,10 +97,7 @@ public:
     void query_only(const std::string server, const std::string command, std::string target = "");
     void webcam_only(const std::string command, std::string target = "");
     void webcam_only(const std::string server, const std::string command, std::string target = "");
-    void startRecordingAll();
-    void stopRecordingAll();
-    void setModePhotoAll();
-    void setModeVideoAll();
+    void webcam_start(const std::string server);
 
     bool applyAll(const std::string& ip, const json& res);
 
