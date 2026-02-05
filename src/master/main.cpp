@@ -510,10 +510,10 @@ int main(int, char**)
                 }
                 ImGui::EndMenuBar();
             }
+            std::lock_guard<std::mutex> lock(master.camera_mtx);
             for(const auto& c : master.getCameras()){
                 if(c){
                     try{
-                        std::lock_guard<std::mutex> lock(master.camera_mtx);
                         bool selected = c->ip == current_camera_item;
                         std::string plusID = c->ip + "##CameraList";
                         if(ImGui::Selectable(plusID.data(), selected)){

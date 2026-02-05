@@ -395,12 +395,15 @@ void GoProMaster::sendToAll(const std::string& msg) {
 }
 
 void GoProMaster::cleanCameraFromServer(const std::string ip){
-    auto iter = std::find_if(cameras.begin(), cameras.end(),
+    std::vector<std::shared_ptr<CameraInfo>>::iterator iter = std::find_if(cameras.begin(), cameras.end(),
         [&](auto &s){ return ((*s).server == ip); }
     );
-    if(iter != cameras.end()){
+
+    while(iter != cameras.end()){
         cameras.erase(iter);
-        cleanCameraFromServer(ip);
+        iter = std::find_if(cameras.begin(), cameras.end(),
+            [&](auto &s){ return ((*s).server == ip); }
+        );
     }
 }
 
