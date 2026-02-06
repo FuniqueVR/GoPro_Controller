@@ -4,8 +4,6 @@
 mkdir -p build_server_amd
 cd build_server_amd
 
-cp ../Roboto-Medium.ttf .
-
 # Configure CMake with Toolchain
 cmake .. -DCMAKE_BUILD_TYPE=Debug -DBUILD_SERVER=ON -DBUILD_MASTER=OFF
 

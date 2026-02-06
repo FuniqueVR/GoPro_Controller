@@ -75,6 +75,7 @@ bool popup_scan_camera_win = false;
 bool popup_start_webcam_win = false;
 bool popup_execute_win = false;
 ExecutionType execution_type = ExecutionType::SetAll;
+std::unordered_map<std::string, std::string> execution_logs = std::unordered_map<std::string, std::string>();
 
 // The secondary thread handle the background update
 // This will automatically retry connect to server every 10 seconds.
@@ -321,7 +322,7 @@ int main(int, char**)
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
-    io.Fonts->AddFontDefault();
+    io.Fonts->AddFontFromFileTTF("Roboto-Medium.ttf");
     io.FontGlobalScale = 1.5f;
     io.DisplayFramebufferScale = ImVec2(1.5f, 1.5f);
     io.ConfigErrorRecovery = true;
@@ -352,7 +353,7 @@ int main(int, char**)
     ImGui_ImplSDL3_InitForOpenGL(window, gl_context);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
-    ImGuiWindowFlags w_flag = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_MenuBar;
+    ImGuiWindowFlags w_flag = ImGuiWindowFlags_NoCollapse;
     ImGuiWindowFlags wp_flag = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize;
 
     // Main loop
@@ -766,7 +767,7 @@ int main(int, char**)
             bool updated = false;
             updated = ImGui::InputText("Server IP", &popup1_server_ip_buf);
             updated = ImGui::InputText("Camera IP", &popup1_camera_serial_buf);
-            ImGui::TextColored(ImVec4(1, 0, 0, 1), popup1_error.c_str());
+            ImGui::TextColored(ImVec4(1, 0, 0, 1), "%s", popup1_error.c_str());
             if(updated){
                 popup1_error.clear();
             }
@@ -795,7 +796,7 @@ int main(int, char**)
             bool updated = false;
             updated = ImGui::InputText("Server IP", &popup2_server_ip_buf);
             ImGui::Text("You can leave it empty for broadcast to all websocket server");
-            ImGui::TextColored(ImVec4(1, 0, 0, 1), popup2_error.c_str());
+            ImGui::TextColored(ImVec4(1, 0, 0, 1), "%s", popup2_error.c_str());
             if(updated){
                 popup2_error.clear();
             }
@@ -860,7 +861,7 @@ int main(int, char**)
                 ImGui::EndCombo();
             }
             
-            ImGui::TextColored(ImVec4(1, 0, 0, 1), popup3_error.c_str());
+            ImGui::TextColored(ImVec4(1, 0, 0, 1), "%s", popup3_error.c_str());
             if(updated){
                 popup3_error.clear();
             }
