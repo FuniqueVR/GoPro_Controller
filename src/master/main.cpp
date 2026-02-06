@@ -506,18 +506,7 @@ int main(int, char**)
                     if(c){
                         try{
                             bool selected = c->ip == current_camera_item;
-                            std::string plusStatus = c->ip;
-                            if(c->state.is_object() && c->state["settings"].is_object()){
-                                if(c->state["settings"]["2"].is_number()){
-
-                                }
-                                if(c->state["settings"]["2"].is_number()){
-                                    
-                                }
-                                if(c->state["settings"]["2"].is_number()){
-                                    
-                                }
-                            }
+                            std::string plusStatus = master.getBarInfo(c->ip);
                             std::string plusID = plusStatus + "##CameraList";
                             if(ImGui::Selectable(plusID.data(), selected)){
                                 // User select interaction
@@ -737,9 +726,13 @@ int main(int, char**)
         }
 
         if(ImGui::BeginPopupModal("Add Camera##Popup", NULL, ImGuiWindowFlags_AlwaysAutoResize)){
-            ImGui::InputText("Server IP", &popup1_server_ip_buf);
-            ImGui::InputText("Camera IP", &popup1_camera_serial_buf);
-            ImGui::TextColored(ImVec4(1, 0, 0, 1), popup1_error.data());
+            bool updated = false;
+            updated = ImGui::InputText("Server IP", &popup1_server_ip_buf);
+            updated = ImGui::InputText("Camera IP", &popup1_camera_serial_buf);
+            ImGui::TextColored(ImVec4(1, 0, 0, 1), popup1_error.c_str());
+            if(updated){
+                popup1_error.clear();
+            }
             if (ImGui::Button("Confirm")) {
                 bool pass = true;
                 if(master.findServer(popup1_server_ip_buf) == -1){
@@ -762,9 +755,13 @@ int main(int, char**)
             ImGui::EndPopup();
         }
         if(ImGui::BeginPopupModal("Scan Camera##Popup", NULL, ImGuiWindowFlags_AlwaysAutoResize)){
-            ImGui::InputText("Server IP", &popup2_server_ip_buf);
+            bool updated = false;
+            updated = ImGui::InputText("Server IP", &popup2_server_ip_buf);
             ImGui::Text("You can leave it empty for broadcast to all websocket server");
-            ImGui::TextColored(ImVec4(1, 0, 0, 1), popup2_error.data());
+            ImGui::TextColored(ImVec4(1, 0, 0, 1), popup2_error.c_str());
+            if(updated){
+                popup2_error.clear();
+            }
             if (ImGui::Button("Confirm")) {
                 bool pass = true;
                 if(master.findServer(popup2_server_ip_buf) == -1 && sizeof(popup2_server_ip_buf) == 0){
@@ -787,9 +784,10 @@ int main(int, char**)
             ImGui::EndPopup();               
         }
         if(ImGui::BeginPopupModal("Start Webcam##Popup", NULL, ImGuiWindowFlags_AlwaysAutoResize)){
-            ImGui::InputText("Server IP", &popup3_server_ip_buf);
-            ImGui::InputText("Port Start", &popup3_port_buf);
-            ImGui::Checkbox("Use TS", &popup3_ts_buf);
+            bool updated = false;
+            updated = ImGui::InputText("Server IP", &popup3_server_ip_buf);
+            updated = ImGui::InputText("Port Start", &popup3_port_buf);
+            updated = ImGui::Checkbox("Use TS", &popup3_ts_buf);
             if(ImGui::BeginCombo("Res", popup3_res_string_buf.c_str())){
                 for(int32_t n = 0; n < WEBCAM_START_RES_SIZE; n++){
                     std::string option = WEBCAM_START_RES_STRING[n];
@@ -798,6 +796,7 @@ int main(int, char**)
                     std::string option_r = option + ("##WebcamOption_" + std::string(WEBCAM_START_RES_NAME)); 
                     if (ImGui::Selectable(option_r.c_str(), is_selected))
                     {
+                        updated = true;
                         popup3_res_buf = n; // Change index
                         popup3_res_string_buf = option;
                     }
@@ -814,6 +813,7 @@ int main(int, char**)
                     std::string option_r = option + ("##WebcamOption_" + std::string(WEBCAM_START_FOV_NAME)); 
                     if (ImGui::Selectable(option.c_str(), is_selected))
                     {
+                        updated = true;
                         popup3_fov_buf = n; // Change index
                         popup3_fov_string_buf = option;
                     }
@@ -823,6 +823,10 @@ int main(int, char**)
                 ImGui::EndCombo();
             }
             
+            ImGui::TextColored(ImVec4(1, 0, 0, 1), popup3_error.c_str());
+            if(updated){
+                popup3_error.clear();
+            }
             if(ImGui::Button("Confirm")){
                 
             }

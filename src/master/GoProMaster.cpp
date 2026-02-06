@@ -473,6 +473,10 @@ bool GoProMaster::getStatusFromCamera(CameraInfo target, json&& res){
     return true;
 }
 
+std::string GoProMaster::getBarInfo(const std::string camera_ip){
+    
+}
+
 int32_t GoProMaster::findCamera(const std::string ip){
     int32_t index = 0;    
     for(const auto& c : cameras){
