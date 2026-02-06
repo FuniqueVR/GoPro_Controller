@@ -350,7 +350,7 @@ int main(int, char**)
     ImGui_ImplSDL3_InitForOpenGL(window, gl_context);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
-    ImGuiWindowFlags w_flag = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_MenuBar;
+    ImGuiWindowFlags w_flag = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_MenuBar;
     ImGuiWindowFlags wp_flag = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize;
 
     // Main loop
@@ -425,28 +425,38 @@ int main(int, char**)
 
                 ImGui::Text("Manual Control:");
                 if (ImGui::Button("Start Rec (F2)")) master.command_only("shutter_on"); ImGui::SameLine();
+                ImGui::SetItemTooltip("Keyboard shortcut for broadcasting record signal to all connected cameras");
                 if (ImGui::Button("Stop Rec (F3)")) master.command_only("shutter_off");
-                if (ImGui::Button("Photo Mode (F4)")) master.presetSwitch("", 65536); ImGui::SameLine();
+                ImGui::SetItemTooltip("Keyboard shortcut for broadcasting stop signal to all connected cameras");
+                if (ImGui::Button("Photo Mode (F4)")) master.presetSwitch("", 65536);  ImGui::SameLine();
+                ImGui::SetItemTooltip("Keyboard shortcut for broadcasting switch to photo mode signal to all connected cameras");
                 if (ImGui::Button("Video Mode (F5)")) master.presetSwitch("", 0);
+                ImGui::SetItemTooltip("Keyboard shortcut for broadcasting switch to video mode signal to all connected cameras");
 
                 ImGui::Separator();
 
                 ImGui::Text("Server Connections:");
                 ImGui::InputText("Server IP", &server_ip_buf);
+                ImGui::SetItemTooltip("Enter the server ip address here, example will be 127.0.0.1 or 192.168.61.123");
                 if (ImGui::Button("Add Server")) {
                     std::string ip = master.addServer(server_ip_buf);
                     master.reconnect(ip);
                     updateServerList();
                 }
+                ImGui::SetItemTooltip("Trying to connect server base on address you enter");
+
                 ImGui::SameLine();
                 if (ImGui::Button("Remove Server")) {
                     master.clean(std::string(server_ip_buf));
                     updateServerList();
                 }
+                ImGui::SetItemTooltip("Trying to remove server base on address you enter, You must disconnect the server before hit remove by the way.");
+
                 ImGui::SameLine();
                 if (ImGui::Button("Disconnect Server")) {
                     master.disconnect(std::string(server_ip_buf));
                 }
+                ImGui::SetItemTooltip("Trying to disconnect server base on address you enter");
 
                 if (ImGui::Button("Reconnect All")) {
                     master.reconnectAll();
@@ -493,7 +503,7 @@ int main(int, char**)
         if(system_style_win){
             ImGui::Begin("System Style Window", &system_style_win, w_flag);
             {
-                ImGui::ShowStyleEditor(&style);
+                //ImGui::ShowStyleEditor(&style);
             }
             ImGui::End();
 

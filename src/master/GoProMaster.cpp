@@ -284,7 +284,17 @@ void GoProMaster::update(){
             ipQueryFinish.insert_or_assign(s->ip, true);
             s->client.send(get_status.dump());
         }
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        for (auto& s : servers) {
+            if (!s->connected) continue;
+            if (stateQueryFinish.count(s->ip) && stateQueryFinish.at(s->ip)) continue;
+            json get_status = json::object();
+            get_status["key"] = "query";
+            get_status["value"] = json::object();
+            get_status["value"]["name"] = "get";
+            ipQueryFinish.insert_or_assign(s->ip, true);
+            s->client.send(get_status.dump());
+        }
+        std::this_thread::sleep_for(std::chrono::seconds(2));
     }
 }
 
@@ -474,7 +484,7 @@ bool GoProMaster::getStatusFromCamera(CameraInfo target, json&& res){
 }
 
 std::string GoProMaster::getBarInfo(const std::string camera_ip){
-    
+
 }
 
 int32_t GoProMaster::findCamera(const std::string ip){
