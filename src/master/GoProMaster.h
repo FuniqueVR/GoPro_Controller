@@ -129,7 +129,15 @@ public:
     void apply(const std::string& ip, const int32_t id, const int32_t value);
     void applyAll(const std::string& ip, const json& res);
 
+    /**
+     * Register the feedback event
+     * Called when fetch inspector setting data
+     */
     void registerCameraSettingFeedback(camera_setting_feedback v);
+    /**
+     * Register the feedback event
+     * Called when fetch Monitor data
+     */
     void registerCameraStatusFeedback(camera_status_feedback v);
 
     /**
@@ -152,9 +160,23 @@ public:
      */
     const std::vector<std::shared_ptr<ServerConnection>>& getServers() const;
 private:
+    /** 
+     * All cameras record for master
+    */
     std::vector<std::shared_ptr<CameraInfo>> cameras;
+    /** 
+     * All websocket servers record for master
+    */
     std::vector<std::shared_ptr<ServerConnection>> servers;
+    /**
+     * Basically a update thread, THere is a while true loop in it,
+     * And when done is true, it automatically escape the loop
+     */
     std::thread t1;
+    /**
+     * Tells thread, if this websocket finish the ip query
+     * This prevent command stacking, when last ip fetch is not finish yet
+     */
     std::unordered_map<std::string, bool> ipQueryFinish = std::unordered_map<std::string, bool>();
     camera_setting_feedback _camera_setting_feedback = NULL;
     camera_status_feedback _camera_status_feedback = NULL;
@@ -169,7 +191,15 @@ private:
     void update();
     void processMessage(const std::string& ip, const std::string& msg);
     void sendToAll(const std::string& msg);
+    /**
+     * Clean all cameras by server ip
+     */
     void cleanCameraFromServer(const std::string server);
+    /**
+     * Base on the new ip list
+     * Appending new ip that dont appear old ips
+     * Remove ip that does not exists in the new ip list
+     */
     void replaceCameraFromServer(const std::string server, const std::vector<std::string> ips);
 
 public:

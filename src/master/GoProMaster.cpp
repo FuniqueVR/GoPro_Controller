@@ -304,25 +304,20 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
         std::string key = data["key"].get<std::string>();
         if(key == "command:ip"){
             std::lock_guard<std::mutex> lock(camera_mtx);
-            cleanCameraFromServer(server);
             if(!data["value"]["data"].is_array()){
                 std::cerr << "Invalid message from " << server << ": " << msg << std::endl;
                 std::cerr << "command:ip, return value should be array" << std::endl;
                 return;
             }
+            std::vector<std::string> ips = std::vector<std::string>();
             for(auto ip = data["value"]["data"].begin(); ip != data["value"]["data"].end(); ++ip){
                 if(!ip.value().is_string()){
                     continue;
                 }
                 std::string ip_ref = ip.value().get<std::string>();
-                int32_t found = findCamera(ip_ref);
-                if(found == -1){
-                    auto cam = std::make_shared<CameraInfo>();
-                    cam->ip = ip_ref;
-                    cam->server = server;
-                    cameras.push_back(cam);
-                }
+                ips.push_back(ip_ref);
             }
+            replaceCameraFromServer(server, ips);
             ipQueryFinish.insert_or_assign(server, false);
         }
         else if(key == "query:get"){
@@ -408,10 +403,36 @@ void GoProMaster::cleanCameraFromServer(const std::string server){
 }
 
 void GoProMaster::replaceCameraFromServer(const std::string server, const std::vector<std::string> ips){
-    std::vector<std::string> current = std::vector<std::string>();
-    std::vector<std::shared_ptr<CameraInfo>>::iterator iter = std::find_if(cameras.begin(), cameras.end(),
-        [&](auto &s){ return ((*s).server == server); }
-    );
+    // Append part
+    for(int32_t i = 0; i < ips.size(); i++){
+        bool find = false;
+        for(int32_t j = 0; j < cameras.size(); j++){
+            if(cameras[j]->ip == ips[i]){
+                find = true;
+                break;
+            }
+        }
+        if(find){
+            CameraInfo c = CameraInfo();
+            c.server = server;
+            c.ip = ips[i];
+            cameras.push_back(std::make_shared<CameraInfo>(c));
+        }
+    }
+
+    // Remove part
+    for(auto i = cameras.rbegin(); i != cameras.rend(); i++){
+        bool find = false;
+        for(int32_t j = 0; j < ips.size(); j++){
+            if((*i)->ip == ips[j]){
+                find = true;
+                break;
+            }
+        }
+        if(!find){
+            cameras.erase(i.base());
+        }
+    }
 }
 
 void GoProMaster::setdone(){
