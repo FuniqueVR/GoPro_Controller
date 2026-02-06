@@ -291,7 +291,7 @@ void GoProMaster::update(){
             get_status["key"] = "query";
             get_status["value"] = json::object();
             get_status["value"]["name"] = "get";
-            ipQueryFinish.insert_or_assign(s->ip, true);
+            stateQueryFinish.insert_or_assign(s->ip, true);
             s->client.send(get_status.dump());
         }
         std::this_thread::sleep_for(std::chrono::seconds(2));
@@ -313,7 +313,6 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
         }
         std::string key = data["key"].get<std::string>();
         if(key == "command:ip"){
-            std::lock_guard<std::mutex> lock(camera_mtx);
             if(!data["value"]["data"].is_array()){
                 std::cerr << "Invalid message from " << server << ": " << msg << std::endl;
                 std::cerr << "command:ip, return value should be array" << std::endl;
@@ -327,6 +326,7 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
                 std::string ip_ref = ip.value().get<std::string>();
                 ips.push_back(ip_ref);
             }
+            std::lock_guard<std::mutex> lock(camera_mtx);
             replaceCameraFromServer(server, ips);
             ipQueryFinish.insert_or_assign(server, false);
         }
@@ -346,6 +346,7 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
              *     * ip <- Go pro ip address
              *     * status <- Where all the go pro status keeps
              */
+            std::lock_guard<std::mutex> lock(camera_mtx);
             for(auto ip = data["value"]["data"].begin(); ip != data["value"]["data"].end(); ++ip){
                 if(!ip.value()["ip"].is_string() || !ip.value()["status"].is_object()){
                     std::cerr << "query:get error: Require ip and status in value.data" << std::endl;
@@ -378,6 +379,7 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
                     std::cout << "Skip setting feedback: Detect function pointer is NULL" << std::endl;
                 }
             }
+            stateQueryFinish.insert_or_assign(server, false);
         }
         else if(key == "query:set"){
             
@@ -422,7 +424,7 @@ void GoProMaster::replaceCameraFromServer(const std::string server, const std::v
                 break;
             }
         }
-        if(find){
+        if(!find){
             CameraInfo c = CameraInfo();
             c.server = server;
             c.ip = ips[i];
@@ -431,16 +433,18 @@ void GoProMaster::replaceCameraFromServer(const std::string server, const std::v
     }
 
     // Remove part
-    for(auto i = cameras.rbegin(); i != cameras.rend(); i++){
+    for(auto i = cameras.end() - 1; i >= cameras.begin(); --i){
         bool find = false;
         for(int32_t j = 0; j < ips.size(); j++){
-            if((*i)->ip == ips[j]){
-                find = true;
-                break;
+            if(*i){
+                if((*i)->ip == ips[j]){
+                    find = true;
+                    break;
+                }
             }
         }
         if(!find){
-            cameras.erase(i.base());
+            cameras.erase(i);
         }
     }
 }
@@ -452,7 +456,6 @@ void GoProMaster::setdone(){
 bool GoProMaster::getSettingsFromCamera(CameraInfo target, json& res){
     json data = target.state;
     if(!data["settings"].is_object()){
-        std::cerr << "getSettingsFromCamera failed: Cannot get settings property" << std::endl;
         return false;
     }
     res = data["settings"];
@@ -484,7 +487,31 @@ bool GoProMaster::getStatusFromCamera(CameraInfo target, json&& res){
 }
 
 std::string GoProMaster::getBarInfo(const std::string camera_ip){
-
+    bool find = false;
+    CameraInfo obj;
+    for(int32_t i = 0; i < cameras.size(); i++){
+        if(cameras[i]->ip == camera_ip){
+            find = true;
+            obj = *cameras[i];
+        }
+    }
+    if(!find) return camera_ip + "  ...";
+    json p = json::object();
+    if(getSettingsFromCamera(obj, p)){
+        std::string result = camera_ip + "  ";
+        if(p["2"].is_number()){
+            int32_t vr = p["2"].get<int32_t>();
+            result += VIDEO_RESOLUTION_STRING[vr];
+            result += "  ";
+        }
+        if(p["3"].is_number()){
+            int32_t vr = p["3"].get<int32_t>();
+            result += FRAMES_PER_SECOND_STRING[vr];
+            result += "  ";
+        }
+        return p;
+    }
+    return camera_ip + "  ...";
 }
 
 int32_t GoProMaster::findCamera(const std::string ip){

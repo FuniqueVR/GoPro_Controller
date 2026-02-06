@@ -543,21 +543,30 @@ int main(int, char**)
         }
 
         if(global_command_win) {
-            ImGui::Begin("Group Command", &global_command_win, w_flag);
+            ImGui::Begin("Global Command", &global_command_win, w_flag);
             {
-                ImGui::LabelText("Global Controls", "Commands applied to all connected cameras");
+                ImGui::Text("Global Controls");
+                ImGui::Text("Commands applied to all connected cameras");
 
                 if(ImGui::Button("Scan All")) master.command_only("scan"); ImGui::SameLine();
+                ImGui::SetItemTooltip("Scan all websocket server for cameras");
                 if(ImGui::Button("Scan Server")) popup_scan_camera_win = true;
+                ImGui::SetItemTooltip("Scan one websocket server for cameras\nThis will popup a window for you to enter websocket server address to targeting");
 
                 if(ImGui::Button("Add Camera")) popup_add_camera_win = true; ImGui::SameLine();
+                ImGui::SetItemTooltip("Menually add camera address to one websocket server list");
                 if(ImGui::Button("Clean Camera")) master.command_only("clean");
+                ImGui::SetItemTooltip("Clean all websocket server camera record");
 
                 if(ImGui::Button("Connect All")) master.command_only("usb_on"); ImGui::SameLine();
+                ImGui::SetItemTooltip("Tells all cameras usb control on");
                 if(ImGui::Button("Disconnect All")) master.command_only("usb_off");
+                ImGui::SetItemTooltip("Tells all cameras usb control off");
 
                 if(ImGui::Button("Reboot All")) master.command_only("reboot"); ImGui::SameLine();
+                ImGui::SetItemTooltip("Tells all cameras reboot right now");
                 if(ImGui::Button("Shutdown All")) master.command_only("shutdown");
+                ImGui::SetItemTooltip("Tells all cameras shutdown right now");
 
                 if(ImGui::Button("Record All")) master.command_only("shutter_on"); ImGui::SameLine();
                 if(ImGui::Button("Stop All")) master.command_only("shutter_off");
