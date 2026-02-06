@@ -73,6 +73,8 @@ bool record_win = false;
 bool popup_add_camera_win = false;
 bool popup_scan_camera_win = false;
 bool popup_start_webcam_win = false;
+bool popup_execute_win = false;
+ExecutionType execution_type = ExecutionType::SetAll;
 
 // The secondary thread handle the background update
 // This will automatically retry connect to server every 10 seconds.
@@ -618,8 +620,15 @@ int main(int, char**)
 
                 ImGui::Separator();
 
-                if(ImGui::Button("Setting Apply All")) master.applyAll("", current_setting_items); ImGui::SameLine();
+                if(ImGui::Button("Setting Apply All")) {
+                    popup_execute_win = true;
+                    execution_type = ExecutionType::SetAll;
+                    master.applyAll("", current_setting_items);
+                } 
+                ImGui::SameLine();
                 if(ImGui::Button("Setting Apply All By ID")) {
+                    popup_execute_win = true;
+                    execution_type = ExecutionType::Set;
                     json buffer = json::object();
                     int32_t v = current_setting_items[std::to_string(apply_all_item)].get<int32_t>();
                     buffer[std::to_string(apply_all_item)] = GET_SETTING_VALUE_BY_ID(apply_all_item)[v];
@@ -746,6 +755,12 @@ int main(int, char**)
             center = ImGui::GetMainViewport()->GetCenter();
             ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
         }
+        if(popup_execute_win){
+            popup_execute_win = false;
+            ImGui::OpenPopup("Execute Command##Popup");
+            center = ImGui::GetMainViewport()->GetCenter();
+            ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+        }
 
         if(ImGui::BeginPopupModal("Add Camera##Popup", NULL, wp_flag)){
             bool updated = false;
@@ -858,7 +873,14 @@ int main(int, char**)
             }
             ImGui::EndPopup();
         }
-
+        if(ImGui::BeginPopupModal("Execute Command##Popup", NULL, wp_flag)){
+            if(ImGui::Button("Confirm")){
+                master.registerCameraSetFeedback(NULL);
+                master.registerCameraSetAllFeedback(NULL);
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::EndPopup();
+        }
         // Rendering
         ImGui::Render();
 

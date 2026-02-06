@@ -40,6 +40,8 @@ struct CameraInfo {
 
 typedef void (*camera_setting_feedback)(json setting);
 typedef void (*camera_status_feedback)(json status);
+typedef void (*camera_set_feedback)(json res);
+typedef void (*camera_setall_feedback)(json res);
 
 /**
  * Basically holds the Websocket instance
@@ -139,6 +141,8 @@ public:
      * Called when fetch Monitor data
      */
     void registerCameraStatusFeedback(camera_status_feedback v);
+    void registerCameraSetFeedback(camera_set_feedback v);
+    void registerCameraSetAllFeedback(camera_setall_feedback v);
 
     /**
      * Camera list multithread lock guard
@@ -185,6 +189,8 @@ private:
     std::unordered_map<std::string, bool> stateQueryFinish = std::unordered_map<std::string, bool>();
     camera_setting_feedback _camera_setting_feedback = NULL;
     camera_status_feedback _camera_status_feedback = NULL;
+    camera_set_feedback _camera_set_feedback = NULL;
+    camera_setall_feedback _camera_setall_feedback = NULL;
     /**
      * Is app exit or not flag
      */

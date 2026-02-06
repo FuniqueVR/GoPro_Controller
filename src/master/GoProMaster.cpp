@@ -263,6 +263,13 @@ void GoProMaster::registerCameraStatusFeedback(camera_status_feedback v){
     _camera_status_feedback = v;
 }
 
+void GoProMaster::registerCameraSetFeedback(camera_set_feedback v){
+    _camera_set_feedback = v;
+}
+
+void GoProMaster::registerCameraSetAllFeedback(camera_setall_feedback v){
+    _camera_setall_feedback = v;
+}
 
 const std::vector<std::shared_ptr<CameraInfo>>& GoProMaster::getCameras() const {
     return cameras;
@@ -284,16 +291,7 @@ void GoProMaster::update(){
             ipQueryFinish.insert_or_assign(s->ip, true);
             s->client.send(get_status.dump());
         }
-        for (auto& s : servers) {
-            if (!s->connected) continue;
-            if (stateQueryFinish.count(s->ip) && stateQueryFinish.at(s->ip)) continue;
-            json get_status = json::object();
-            get_status["key"] = "query";
-            get_status["value"] = json::object();
-            get_status["value"]["name"] = "get";
-            stateQueryFinish.insert_or_assign(s->ip, true);
-            s->client.send(get_status.dump());
-        }
+        
         std::this_thread::sleep_for(std::chrono::seconds(2));
     }
 }
@@ -373,7 +371,7 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
                     if(getSettingsFromCamera(_cam, buffer_setting)){
                         _camera_setting_feedback(buffer_setting);
                     }else{
-                        std::cout << "Error setting feedback: getSettingsFromCamera failed" << std::endl;    
+                        std::cout << "Error setting feedback: getSettingsFromCamera failed " << _cam.ip << std::endl;    
                     }
                 }else{
                     std::cout << "Skip setting feedback: Detect function pointer is NULL" << std::endl;
@@ -415,36 +413,32 @@ void GoProMaster::cleanCameraFromServer(const std::string server){
 }
 
 void GoProMaster::replaceCameraFromServer(const std::string server, const std::vector<std::string> ips){
+    // Remove part
+    auto it = std::remove_if(cameras.begin(), cameras.end(), [&](const std::shared_ptr<CameraInfo>& c) {
+        // Only consider cameras belonging to this specific server
+        if (c && c->server == server) {
+            // If the camera's IP is NOT found in the new 'ips' list, delete it
+            return std::find(ips.begin(), ips.end(), c->ip) == ips.end();
+        }
+        return false;
+    });
+    cameras.erase(it, cameras.end());
+
     // Append part
-    for(int32_t i = 0; i < ips.size(); i++){
-        bool find = false;
-        for(int32_t j = 0; j < cameras.size(); j++){
-            if(cameras[j]->ip == ips[i]){
-                find = true;
+    for (const auto& new_ip : ips) {
+        bool exists = false;
+        for (const auto& existing_cam : cameras) {
+            if (existing_cam && existing_cam->ip == new_ip) {
+                exists = true;
                 break;
             }
         }
-        if(!find){
-            CameraInfo c = CameraInfo();
-            c.server = server;
-            c.ip = ips[i];
-            cameras.push_back(std::make_shared<CameraInfo>(c));
-        }
-    }
 
-    // Remove part
-    for(auto i = cameras.end() - 1; i >= cameras.begin(); --i){
-        bool find = false;
-        for(int32_t j = 0; j < ips.size(); j++){
-            if(*i){
-                if((*i)->ip == ips[j]){
-                    find = true;
-                    break;
-                }
-            }
-        }
-        if(!find){
-            cameras.erase(i);
+        if (!exists) {
+            auto new_cam = std::make_shared<CameraInfo>();
+            new_cam->server = server;
+            new_cam->ip = new_ip;
+            cameras.push_back(new_cam);
         }
     }
 }
@@ -488,30 +482,36 @@ bool GoProMaster::getStatusFromCamera(CameraInfo target, json&& res){
 
 std::string GoProMaster::getBarInfo(const std::string camera_ip){
     bool find = false;
-    CameraInfo obj;
+    json obj;
     for(int32_t i = 0; i < cameras.size(); i++){
         if(cameras[i]->ip == camera_ip){
             find = true;
-            obj = *cameras[i];
+            obj = cameras[i]->state;
         }
     }
     if(!find) return camera_ip + "  ...";
-    json p = json::object();
-    if(getSettingsFromCamera(obj, p)){
-        std::string result = camera_ip + "  ";
-        if(p["2"].is_number()){
-            int32_t vr = p["2"].get<int32_t>();
-            result += VIDEO_RESOLUTION_STRING[vr];
-            result += "  ";
+    std::string result = camera_ip + "  ";
+    if(obj["2"].is_number()){
+        int32_t vr = obj["2"].get<int32_t>();
+        for(int32_t i = 0; i < VIDEO_RESOLUTION_SIZE; i++){
+            if(vr == VIDEO_RESOLUTION_VALUE[i]){
+                vr = i;
+            }
         }
-        if(p["3"].is_number()){
-            int32_t vr = p["3"].get<int32_t>();
-            result += FRAMES_PER_SECOND_STRING[vr];
-            result += "  ";
-        }
-        return p;
+        result += VIDEO_RESOLUTION_STRING[vr];
+        result += "  ";
     }
-    return camera_ip + "  ...";
+    if(obj["3"].is_number()){
+        int32_t vr = obj["3"].get<int32_t>();
+        for(int32_t i = 0; i < FRAMES_PER_SECOND_SIZE; i++){
+            if(vr == FRAMES_PER_SECOND_VALUE[i]){
+                vr = i;
+            }
+        }
+        result += FRAMES_PER_SECOND_STRING[vr];
+        result += "  ";
+    }
+    return result;
 }
 
 int32_t GoProMaster::findCamera(const std::string ip){

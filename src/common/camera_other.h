@@ -49,4 +49,8 @@ const static int32_t WEBCAM_START_FOV_VALUE[] = {
     0, 2, 3, 4
 };
 
+enum class ExecutionType {
+    Set, SetAll
+};
+
 #endif
