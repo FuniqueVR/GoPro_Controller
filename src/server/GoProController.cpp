@@ -14,6 +14,8 @@
 #include <unistd.h>
 #include <sys/types.h>
 
+const int CHUNK_SIZE = 4;
+
 std::string getPacket(std::string key, json data){
     json response = json::object();
     response["key"] = key;
@@ -248,25 +250,27 @@ std::string GoProController::queryStatus(std::string target){
     }else{
         std::vector<std::future<std::pair<std::string, std::string>>> calls = 
             std::vector<std::future<std::pair<std::string, std::string>>>();
+        
         for(std::string ip : camera_ips){
             calls.push_back(std::async(std::launch::async, [this, ip, arr]() {
                 return _queryStatus(ip);
             }));
-        }
 
-        for(auto& call : calls){
-            try{
-                std::pair<std::string, std::string> result = call.get();
-                address = result.first;
-                res = json::parse(result.second);
-            }catch(const std::exception& ex){
-                res = json::object();
+            for(auto& call : calls){
+                try{
+                    std::pair<std::string, std::string> result = call.get();
+                    address = result.first;
+                    res = json::parse(result.second);
+                }catch(const std::exception& ex){
+                    res = json::object();
+                }
+                json i;
+                i["ip"] = address;
+                i["status"] = res;
+                std::cout << "Group query finish: " << address << std::endl;
+                arr.push_back(i);
             }
-            json i;
-            i["ip"] = address;
-            i["status"] = res;
-            std::cout << "Group query finish: " << address << std::endl;
-            arr.push_back(i);
+            calls.clear();
         }
     }
     return arr.dump();
