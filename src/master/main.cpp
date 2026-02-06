@@ -179,19 +179,20 @@ void setup_catppuccin_mocha_theme() {
 
     // Padding and spacing
     style.WindowPadding     = ImVec2(8.0f, 8.0f);
-    style.FramePadding      = ImVec2(5.0f, 3.0f);
+    style.FramePadding      = ImVec2(16.0f, 5.0f);
     style.ItemSpacing       = ImVec2(8.0f, 4.0f);
     style.ItemInnerSpacing  = ImVec2(4.0f, 4.0f);
     style.IndentSpacing     = 21.0f;
-    style.ScrollbarSize     = 14.0f;
+    style.ScrollbarSize     = 20.0f;
     style.GrabMinSize       = 10.0f;
 
     // Borders
     style.WindowBorderSize  = 1.0f;
     style.ChildBorderSize   = 1.0f;
     style.PopupBorderSize   = 1.0f;
-    style.FrameBorderSize   = 0.0f;
+    style.FrameBorderSize   = 1.0f;
     style.TabBorderSize     = 0.0f;
+    style.TabRounding       = 12.0f;
 }
 
 void updateServerList(){
@@ -349,6 +350,9 @@ int main(int, char**)
     ImGui_ImplSDL3_InitForOpenGL(window, gl_context);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
+    ImGuiWindowFlags w_flag = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_MenuBar;
+    ImGuiWindowFlags wp_flag = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize;
+
     // Main loop
     while (!done)
     {
@@ -409,7 +413,7 @@ int main(int, char**)
 
         // 1. Dashboard Window
         if(websocket_server_window) {
-            ImGui::Begin("Websocket Dashboard", &websocket_server_window, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_MenuBar);
+            ImGui::Begin("Websocket Dashboard", &websocket_server_window, w_flag);
             {
                 ImGui::Text("Hotkeys:");
                 ImGui::BulletText("F2: Start Recording");
@@ -487,7 +491,7 @@ int main(int, char**)
         }
 
         if(system_style_win){
-            ImGui::Begin("System Style Window", &system_style_win);
+            ImGui::Begin("System Style Window", &system_style_win, w_flag);
             {
                 ImGui::ShowStyleEditor(&style);
             }
@@ -499,7 +503,7 @@ int main(int, char**)
         }
 
         if(camera_list_win) {
-            ImGui::Begin("GoPro Dashboard", &camera_list_win);
+            ImGui::Begin("GoPro Dashboard", &camera_list_win, w_flag);
             {
                 std::lock_guard<std::mutex> lock(master.camera_mtx);
                 for(const auto& c : master.getCameras()){
@@ -529,7 +533,7 @@ int main(int, char**)
         }
 
         if(global_command_win) {
-            ImGui::Begin("Group Command", &global_command_win);
+            ImGui::Begin("Group Command", &global_command_win, w_flag);
             {
                 ImGui::LabelText("Global Controls", "Commands applied to all connected cameras");
 
@@ -561,7 +565,7 @@ int main(int, char**)
         }
 
         if(local_command_win) {
-            ImGui::Begin("Camera Command##SCC", &local_command_win);
+            ImGui::Begin("Camera Command##SCC", &local_command_win, w_flag);
             {
                 std::lock_guard<std::mutex> lock(master.camera_mtx);
                 ImGui::LabelText("Single Camera Control", "Commands applied to selected camera");
@@ -630,8 +634,7 @@ int main(int, char**)
         }
 
         if(inspector_win) {
-            //ImGui::SetNextWindowContentSize(ImVec2(600, 400));
-            ImGui::Begin("Inspector", &inspector_win);
+            ImGui::Begin("Inspector", &inspector_win, w_flag);
             {
                 std::lock_guard<std::mutex> lock(master.camera_mtx);
                 int32_t camera_ip = master.findCamera(current_camera_item);
@@ -694,7 +697,7 @@ int main(int, char**)
         }
 
         if(record_win){
-            ImGui::Begin("Record", &record_win);
+            ImGui::Begin("Record", &record_win, w_flag);
             {
 
             }
@@ -725,7 +728,7 @@ int main(int, char**)
             ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
         }
 
-        if(ImGui::BeginPopupModal("Add Camera##Popup", NULL, ImGuiWindowFlags_AlwaysAutoResize)){
+        if(ImGui::BeginPopupModal("Add Camera##Popup", NULL, wp_flag)){
             bool updated = false;
             updated = ImGui::InputText("Server IP", &popup1_server_ip_buf);
             updated = ImGui::InputText("Camera IP", &popup1_camera_serial_buf);
@@ -754,7 +757,7 @@ int main(int, char**)
             }
             ImGui::EndPopup();
         }
-        if(ImGui::BeginPopupModal("Scan Camera##Popup", NULL, ImGuiWindowFlags_AlwaysAutoResize)){
+        if(ImGui::BeginPopupModal("Scan Camera##Popup", NULL, wp_flag)){
             bool updated = false;
             updated = ImGui::InputText("Server IP", &popup2_server_ip_buf);
             ImGui::Text("You can leave it empty for broadcast to all websocket server");
@@ -783,7 +786,7 @@ int main(int, char**)
             }
             ImGui::EndPopup();               
         }
-        if(ImGui::BeginPopupModal("Start Webcam##Popup", NULL, ImGuiWindowFlags_AlwaysAutoResize)){
+        if(ImGui::BeginPopupModal("Start Webcam##Popup", NULL, wp_flag)){
             bool updated = false;
             updated = ImGui::InputText("Server IP", &popup3_server_ip_buf);
             updated = ImGui::InputText("Port Start", &popup3_port_buf);
