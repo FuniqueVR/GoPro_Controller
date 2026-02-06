@@ -85,6 +85,15 @@ void background_worker(){
     }
 }
 
+void assign_log(std::string key, std::string value){
+    if(execution_logs.count(key)){
+        std::string b = execution_logs.at(key);
+        execution_logs.insert_or_assign(key, b + "\n" + value);
+    }else{
+        execution_logs.insert_or_assign(key, value);
+    }
+}
+
 void settingGetterFeedback(json setting){
     current_setting_items = setting;
     current_setting_items_bind = true;
@@ -285,6 +294,7 @@ int main(int, char**)
     gui = loadGUI();
     std::thread bg_thread(background_worker);
     master.registerCameraSettingFeedback(settingGetterFeedback);
+    master.registerCameraLogFeedback(assign_log);
 
     if(servers["data"].is_array()){
         for(int i = 0; i < servers["data"].size(); i++){
@@ -323,7 +333,7 @@ int main(int, char**)
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     io.Fonts->AddFontFromFileTTF("Roboto-Medium.ttf");
-    io.FontGlobalScale = 1.5f;
+    io.FontGlobalScale = 1.3f;
     io.DisplayFramebufferScale = ImVec2(1.5f, 1.5f);
     io.ConfigErrorRecovery = true;
     io.ConfigErrorRecoveryEnableAssert = true;
@@ -525,7 +535,7 @@ int main(int, char**)
                             bool selected = c->ip == current_camera_item;
                             std::string plusStatus = master.getBarInfo(c->ip);
                             std::string plusID = plusStatus + "##CameraList";
-                            if(ImGui::Selectable(plusID.data(), selected)){
+                            if(ImGui::Selectable(plusID.c_str(), selected)){
                                 // User select interaction
                                 current_setting_items_bind = false;
                                 current_camera_item = c->ip;
@@ -624,15 +634,27 @@ int main(int, char**)
                 if(ImGui::Button("Setting Apply All")) {
                     popup_execute_win = true;
                     execution_type = ExecutionType::SetAll;
+                    execution_logs.clear();
+
+                    for(const auto& i : master.getCameras()){
+                        execution_logs.insert_or_assign(i->ip, "");
+                    }
+
                     master.applyAll("", current_setting_items);
                 } 
                 ImGui::SameLine();
                 if(ImGui::Button("Setting Apply All By ID")) {
                     popup_execute_win = true;
                     execution_type = ExecutionType::Set;
+                    execution_logs.clear();
                     json buffer = json::object();
                     int32_t v = current_setting_items[std::to_string(apply_all_item)].get<int32_t>();
                     buffer[std::to_string(apply_all_item)] = GET_SETTING_VALUE_BY_ID(apply_all_item)[v];
+                    
+                    for(const auto& i : master.getCameras()){
+                        execution_logs.insert_or_assign(i->ip, "");
+                    }
+
                     master.applyAll("", buffer);
                 }
 
@@ -875,9 +897,19 @@ int main(int, char**)
             ImGui::EndPopup();
         }
         if(ImGui::BeginPopupModal("Execute Command##Popup", NULL, wp_flag)){
+            int32_t index = 0;
+            for(auto i = execution_logs.begin(); i != execution_logs.end(); ++i){
+                std::string label = i->first;
+                std::string data = i->second;
+                label += "##Log_TreeNode_" + std::to_string(index);
+                if(ImGui::TreeNodeEx(label.c_str(), ImGuiTreeNodeFlags_DefaultOpen)){
+                    ImGui::Text("%s", data.c_str());
+                    ImGui::TreePop();
+                }
+                index++;
+            }
+
             if(ImGui::Button("Confirm")){
-                master.registerCameraSetFeedback(NULL);
-                master.registerCameraSetAllFeedback(NULL);
                 ImGui::CloseCurrentPopup();
             }
             ImGui::EndPopup();

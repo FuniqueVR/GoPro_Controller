@@ -263,12 +263,8 @@ void GoProMaster::registerCameraStatusFeedback(camera_status_feedback v){
     _camera_status_feedback = v;
 }
 
-void GoProMaster::registerCameraSetFeedback(camera_set_feedback v){
-    _camera_set_feedback = v;
-}
-
-void GoProMaster::registerCameraSetAllFeedback(camera_setall_feedback v){
-    _camera_setall_feedback = v;
+void GoProMaster::registerCameraLogFeedback(camera_log_feedback v){
+    _camera_log_feedback = v;
 }
 
 const std::vector<std::shared_ptr<CameraInfo>>& GoProMaster::getCameras() const {
@@ -289,6 +285,17 @@ void GoProMaster::update(){
             get_status["value"] = json::object();
             get_status["value"]["name"] = "ip";
             ipQueryFinish.insert_or_assign(s->ip, true);
+            s->client.send(get_status.dump());
+        }
+
+        for (auto& s : servers) {
+            if (!s->connected) continue;
+            if (stateQueryFinish.count(s->ip) && stateQueryFinish.at(s->ip)) continue;
+            json get_status = json::object();
+            get_status["key"] = "query";
+            get_status["value"] = json::object();
+            get_status["value"]["name"] = "get";
+            stateQueryFinish.insert_or_assign(s->ip, true);
             s->client.send(get_status.dump());
         }
         
@@ -364,7 +371,6 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
                     auto cam = cameras[found];
                     cam->state = ip.value()["status"];
                     _cam = *cam;
-                    std::cout << "Update camera state " << ip_ref << std::endl;
                 }
                 if(_camera_setting_feedback != NULL){
                     json buffer_setting = json::object();
@@ -490,27 +496,33 @@ std::string GoProMaster::getBarInfo(const std::string camera_ip){
         }
     }
     if(!find) return camera_ip + "  ...";
+    find = false;
     std::string result = camera_ip + "  ";
-    if(obj["2"].is_number()){
-        int32_t vr = obj["2"].get<int32_t>();
-        for(int32_t i = 0; i < VIDEO_RESOLUTION_SIZE; i++){
-            if(vr == VIDEO_RESOLUTION_VALUE[i]){
-                vr = i;
+    if(obj["settings"].is_object()){
+        if(obj["settings"]["2"].is_number()){
+            int32_t vr = obj["settings"]["2"].get<int32_t>();
+            for(int32_t i = 0; i < VIDEO_RESOLUTION_SIZE; i++){
+                if(vr == VIDEO_RESOLUTION_VALUE[i]){
+                    vr = i;
+                }
             }
+            result += VIDEO_RESOLUTION_STRING[vr];
+            result += "  ";
+            find = true;
         }
-        result += VIDEO_RESOLUTION_STRING[vr];
-        result += "  ";
-    }
-    if(obj["3"].is_number()){
-        int32_t vr = obj["3"].get<int32_t>();
-        for(int32_t i = 0; i < FRAMES_PER_SECOND_SIZE; i++){
-            if(vr == FRAMES_PER_SECOND_VALUE[i]){
-                vr = i;
+        if(obj["settings"]["3"].is_number()){
+            int32_t vr = obj["settings"]["3"].get<int32_t>();
+            for(int32_t i = 0; i < FRAMES_PER_SECOND_SIZE; i++){
+                if(vr == FRAMES_PER_SECOND_VALUE[i]){
+                    vr = i;
+                }
             }
+            result += FRAMES_PER_SECOND_STRING[vr];
+            result += "  ";
+            find = true;
         }
-        result += FRAMES_PER_SECOND_STRING[vr];
-        result += "  ";
     }
+    if(!find) return camera_ip + "  ...";
     return result;
 }
 
