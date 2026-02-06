@@ -527,14 +527,6 @@ std::string GoProController::getAllIP(){
     return result.dump();
 }
 
-std::string GoProController::getAllStatus(){
-    json result = json::array();
-    for(std::string target : camera_ips){
-        
-    }
-    return result.dump();
-}
-
 void GoProController::_loadRecord(){
     std::string homedir = get_env_var("WS_ROOT");
     homedir += "/record.txt";

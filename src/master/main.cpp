@@ -318,6 +318,9 @@ int main(int, char**)
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
+    io.Fonts->AddFontDefault();
+    io.FontGlobalScale = 1.5f;
+    io.DisplayFramebufferScale = ImVec2(1.5f, 1.5f);
     io.ConfigErrorRecovery = true;
     io.ConfigErrorRecoveryEnableAssert = true;
     io.ConfigErrorRecoveryEnableDebugLog = true;
@@ -404,137 +407,140 @@ int main(int, char**)
         }
         ImGui::EndMainMenuBar();
 
-        ImGui::ShowDemoWindow();
-
         // 1. Dashboard Window
         if(websocket_server_window) {
-            ImGui::Begin("Websocket Dashboard", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_MenuBar);
-            if (ImGui::BeginMenuBar()){
-                if(ImGui::BeginMenu("Action")){
-                    if(ImGui::MenuItem("Close Window")){
-                        websocket_server_window = false;
-                        updateGUIList();
+            ImGui::Begin("Websocket Dashboard", &websocket_server_window, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_MenuBar);
+            {
+                ImGui::Text("Hotkeys:");
+                ImGui::BulletText("F2: Start Recording");
+                ImGui::BulletText("F3: Stop Recording");
+                ImGui::BulletText("F4: Switch to Photo Mode");
+                ImGui::BulletText("F5: Switch to Video Mode");
+
+                ImGui::Separator();
+
+                ImGui::Text("Manual Control:");
+                if (ImGui::Button("Start Rec (F2)")) master.command_only("shutter_on"); ImGui::SameLine();
+                if (ImGui::Button("Stop Rec (F3)")) master.command_only("shutter_off");
+                if (ImGui::Button("Photo Mode (F4)")) master.presetSwitch("", 65536); ImGui::SameLine();
+                if (ImGui::Button("Video Mode (F5)")) master.presetSwitch("", 0);
+
+                ImGui::Separator();
+
+                ImGui::Text("Server Connections:");
+                ImGui::InputText("Server IP", &server_ip_buf);
+                if (ImGui::Button("Add Server")) {
+                    std::string ip = master.addServer(server_ip_buf);
+                    master.reconnect(ip);
+                    updateServerList();
+                }
+                ImGui::SameLine();
+                if (ImGui::Button("Remove Server")) {
+                    master.clean(std::string(server_ip_buf));
+                    updateServerList();
+                }
+                ImGui::SameLine();
+                if (ImGui::Button("Disconnect Server")) {
+                    master.disconnect(std::string(server_ip_buf));
+                }
+
+                if (ImGui::Button("Reconnect All")) {
+                    master.reconnectAll();
+                }
+                ImGui::SameLine();
+                if (ImGui::Button("Disconnect All")) {
+                    master.disconnectAll();
+                }
+                ImGui::SameLine();
+                if (ImGui::Button("Clean")) {
+                    master.cleanAll();
+                    updateServerList();
+                }
+
+                // Server List Table
+                if (ImGui::BeginTable("Servers", 3, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg)) {
+                    ImGui::TableSetupColumn("IP Address");
+                    ImGui::TableSetupColumn("Status");
+                    ImGui::TableSetupColumn("Last Message");
+                    ImGui::TableHeadersRow();
+
+                    for (const auto& s : master.getServers()) {
+                        ImGui::TableNextRow();
+                        ImGui::TableSetColumnIndex(0);
+                        ImGui::Text("%s", s->ip.c_str());
+                        ImGui::TableSetColumnIndex(1);
+                        if (s->connected) 
+                            ImGui::TextColored(ImVec4(0,1,0,1), "Connected");
+                        else 
+                            ImGui::TextColored(ImVec4(1,0,0,1), "Disconnected");
+                        ImGui::TableSetColumnIndex(2);
+                        ImGui::Text("%s", s->last_message.c_str());
                     }
-                    ImGui::EndMenu();
+                    ImGui::EndTable();
                 }
-                ImGui::EndMenuBar();
             }
-
-            ImGui::Text("Hotkeys:");
-            ImGui::BulletText("F2: Start Recording");
-            ImGui::BulletText("F3: Stop Recording");
-            ImGui::BulletText("F4: Switch to Photo Mode");
-            ImGui::BulletText("F5: Switch to Video Mode");
-
-            ImGui::Separator();
-
-            ImGui::Text("Manual Control:");
-            if (ImGui::Button("Start Rec (F2)")) master.command_only("shutter_on"); ImGui::SameLine();
-            if (ImGui::Button("Stop Rec (F3)")) master.command_only("shutter_off");
-            if (ImGui::Button("Photo Mode (F4)")) master.presetSwitch("", 65536); ImGui::SameLine();
-            if (ImGui::Button("Video Mode (F5)")) master.presetSwitch("", 0);
-
-            ImGui::Separator();
-
-            ImGui::Text("Server Connections:");
-            ImGui::InputText("Server IP", &server_ip_buf);
-            if (ImGui::Button("Add Server")) {
-                std::string ip = master.addServer(server_ip_buf);
-                master.reconnect(ip);
-                updateServerList();
-            }
-            ImGui::SameLine();
-            if (ImGui::Button("Remove Server")) {
-                master.clean(std::string(server_ip_buf));
-                updateServerList();
-            }
-            ImGui::SameLine();
-            if (ImGui::Button("Disconnect Server")) {
-                master.disconnect(std::string(server_ip_buf));
-            }
-
-            if (ImGui::Button("Reconnect All")) {
-                master.reconnectAll();
-            }
-            ImGui::SameLine();
-            if (ImGui::Button("Disconnect All")) {
-                master.disconnectAll();
-            }
-            ImGui::SameLine();
-            if (ImGui::Button("Clean")) {
-                master.cleanAll();
-                updateServerList();
-            }
-
-            // Server List Table
-            if (ImGui::BeginTable("Servers", 3, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg)) {
-                ImGui::TableSetupColumn("IP Address");
-                ImGui::TableSetupColumn("Status");
-                ImGui::TableSetupColumn("Last Message");
-                ImGui::TableHeadersRow();
-
-                for (const auto& s : master.getServers()) {
-                    ImGui::TableNextRow();
-                    ImGui::TableSetColumnIndex(0);
-                    ImGui::Text("%s", s->ip.c_str());
-                    ImGui::TableSetColumnIndex(1);
-                    if (s->connected) 
-                        ImGui::TextColored(ImVec4(0,1,0,1), "Connected");
-                    else 
-                        ImGui::TextColored(ImVec4(1,0,0,1), "Disconnected");
-                    ImGui::TableSetColumnIndex(2);
-                    ImGui::Text("%s", s->last_message.c_str());
-                }
-                ImGui::EndTable();
-            }
-
             ImGui::End();
+
+            if(!websocket_server_window){
+                updateGUIList();
+            }
         }
 
         if(system_style_win){
-            ImGui::Begin("System Style Window");
-            ImGui::ShowStyleEditor(&style);
+            ImGui::Begin("System Style Window", &system_style_win);
+            {
+                ImGui::ShowStyleEditor(&style);
+            }
             ImGui::End();
+
+            if(system_style_win){
+                updateGUIList();
+            }
         }
 
         if(camera_list_win) {
-            ImGui::SetNextWindowContentSize(ImVec2(600, 400));
-            ImGui::Begin("GoPro Dashboard");
-            if (ImGui::BeginMenuBar()){
-                if(ImGui::BeginMenu("Action")){
-                    if(ImGui::MenuItem("Close Window")){
-                        camera_list_win = false;
-                        updateGUIList();
-                    }
-                    ImGui::EndMenu();
-                }
-                ImGui::EndMenuBar();
-            }
-            std::lock_guard<std::mutex> lock(master.camera_mtx);
-            for(const auto& c : master.getCameras()){
-                if(c){
-                    try{
-                        bool selected = c->ip == current_camera_item;
-                        std::string plusID = c->ip + "##CameraList";
-                        if(ImGui::Selectable(plusID.data(), selected)){
-                            // User select interaction
-                            current_setting_items_bind = false;
-                            current_camera_item = c->ip;
-                            std::cout << "Select camera: " << c->ip << std::endl;
-                            master.query_only(c->server, "get", c->ip);
-                            //current_setting_items_bind = master.getSettingsFromCamera(*c, current_setting_items);
+            ImGui::Begin("GoPro Dashboard", &camera_list_win);
+            {
+                std::lock_guard<std::mutex> lock(master.camera_mtx);
+                for(const auto& c : master.getCameras()){
+                    if(c){
+                        try{
+                            bool selected = c->ip == current_camera_item;
+                            std::string plusStatus = c->ip;
+                            if(c->state.is_object() && c->state["settings"].is_object()){
+                                if(c->state["settings"]["2"].is_number()){
+
+                                }
+                                if(c->state["settings"]["2"].is_number()){
+                                    
+                                }
+                                if(c->state["settings"]["2"].is_number()){
+                                    
+                                }
+                            }
+                            std::string plusID = plusStatus + "##CameraList";
+                            if(ImGui::Selectable(plusID.data(), selected)){
+                                // User select interaction
+                                current_setting_items_bind = false;
+                                current_camera_item = c->ip;
+                                std::cout << "Select camera: " << c->ip << std::endl;
+                                master.query_only(c->server, "get", c->ip);
+                                //current_setting_items_bind = master.getSettingsFromCamera(*c, current_setting_items);
+                            }
+                        }catch(const std::exception& ex){
+                            std::cerr << ex.what() << std::endl;
                         }
-                    }catch(const std::exception& ex){
-                        std::cerr << ex.what() << std::endl;
                     }
                 }
             }
             ImGui::End();
+            if(!camera_list_win){
+                updateGUIList();
+            }
         }
 
         if(global_command_win) {
-            ImGui::SetNextWindowContentSize(ImVec2(600, 400));
-            ImGui::Begin("Group Command");
+            ImGui::Begin("Group Command", &global_command_win);
             {
                 ImGui::LabelText("Global Controls", "Commands applied to all connected cameras");
 
@@ -559,11 +565,14 @@ int main(int, char**)
                 if(ImGui::Button("Start Webcam")) popup_start_webcam_win = true;
             }
             ImGui::End();
+
+            if(!global_command_win){
+                updateGUIList();
+            }
         }
 
         if(local_command_win) {
-            ImGui::SetNextWindowContentSize(ImVec2(600, 400));
-            ImGui::Begin("Camera Command##SCC");
+            ImGui::Begin("Camera Command##SCC", &local_command_win);
             {
                 std::lock_guard<std::mutex> lock(master.camera_mtx);
                 ImGui::LabelText("Single Camera Control", "Commands applied to selected camera");
@@ -625,11 +634,15 @@ int main(int, char**)
                 ImGui::EndDisabled();
             }
             ImGui::End();
+
+            if(!local_command_win){
+                updateGUIList();
+            }
         }
 
         if(inspector_win) {
             //ImGui::SetNextWindowContentSize(ImVec2(600, 400));
-            ImGui::Begin("Inspector");
+            ImGui::Begin("Inspector", &inspector_win);
             {
                 std::lock_guard<std::mutex> lock(master.camera_mtx);
                 int32_t camera_ip = master.findCamera(current_camera_item);
@@ -685,12 +698,22 @@ int main(int, char**)
                 ImGui::EndDisabled();
             }
             ImGui::End();
+
+            if(!inspector_win){
+                updateGUIList();
+            }
         }
 
         if(record_win){
-            ImGui::SetNextWindowContentSize(ImVec2(600, 400));
-            ImGui::Begin("Record");
+            ImGui::Begin("Record", &record_win);
+            {
+
+            }
             ImGui::End();
+
+            if(!record_win){
+                updateGUIList();
+            }
         }
 
         ImVec2 center = ImVec2(0, 0);
