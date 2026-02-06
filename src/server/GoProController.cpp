@@ -265,6 +265,7 @@ std::string GoProController::queryStatus(std::string target){
             json i;
             i["ip"] = address;
             i["status"] = res;
+            std::cout << "Group query finish: " << address << std::endl;
             arr.push_back(i);
         }
     }
