@@ -78,19 +78,45 @@ public:
      */
     ~GoProMaster();
 
-    std::string addServer(const std::string& ip);
-    void reconnectAll();
-    void disconnectAll();
-    void cleanAll();
-
+    // ----------------------------------------------------------
+    //
+    //       Websocket Server Action
+    //
+    // ----------------------------------------------------------
     /**
-     * 
+     * Menually add websocket server and connect to it
+     */
+    std::string addServer(const std::string& ip);
+    /**
+     * Reconnect all the exists websocket server record
+     */
+    void reconnectAll();
+    /**
+     * Disconnect all the exists websocket server record
+     */
+    void disconnectAll();
+    /**
+     * Remove all the disconnected websocket server record
+     */
+    void cleanAll();
+    /**
+     * Reconnect server by ip, If not found: do nothing
      */
     void reconnect(const std::string& ip);
+    /**
+     * Disconnect server by ip, If not found: do nothing
+     */
     void disconnect(const std::string& ip);
+    /**
+     * Remove server by ip, If not found: do nothing
+     */
     void clean(const std::string& ip);
 
-    // Commands
+    // ----------------------------------------------------------
+    //
+    //       Websocket Server Sending Signal
+    //
+    // ----------------------------------------------------------
     void command_only(const std::string command, std::string target = "");
     void command_only(const std::string server, const std::string command, std::string target = "");
     void query_only(const std::string command, std::string target = "");
@@ -106,10 +132,24 @@ public:
     void registerCameraSettingFeedback(camera_setting_feedback v);
     void registerCameraStatusFeedback(camera_status_feedback v);
 
+    /**
+     * Camera list multithread lock guard
+     * This will prevent race condition
+     */
     std::mutex camera_mtx;
 
-    // Data for UI
+    // ----------------------------------------------------------
+    //
+    //       Cache Data Getter
+    //
+    // ----------------------------------------------------------
+    /**
+     * Get current camera record
+     */
     const std::vector<std::shared_ptr<CameraInfo>>& getCameras() const;
+    /**
+     * Get current websocket server record
+     */
     const std::vector<std::shared_ptr<ServerConnection>>& getServers() const;
 private:
     std::vector<std::shared_ptr<CameraInfo>> cameras;
@@ -118,13 +158,19 @@ private:
     std::unordered_map<std::string, bool> ipQueryFinish = std::unordered_map<std::string, bool>();
     camera_setting_feedback _camera_setting_feedback = NULL;
     camera_status_feedback _camera_status_feedback = NULL;
-
+    /**
+     * Is app exit or not flag
+     */
     bool done = false;
 
+    /**
+     * The background thread for fetch update from all websocket server and update etc...
+     */
     void update();
     void processMessage(const std::string& ip, const std::string& msg);
     void sendToAll(const std::string& msg);
-    void cleanCameraFromServer(const std::string ip);
+    void cleanCameraFromServer(const std::string server);
+    void replaceCameraFromServer(const std::string server, const std::vector<std::string> ips);
 
 public:
     void setdone();

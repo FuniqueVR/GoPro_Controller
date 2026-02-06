@@ -394,17 +394,24 @@ void GoProMaster::sendToAll(const std::string& msg) {
     }
 }
 
-void GoProMaster::cleanCameraFromServer(const std::string ip){
+void GoProMaster::cleanCameraFromServer(const std::string server){
     std::vector<std::shared_ptr<CameraInfo>>::iterator iter = std::find_if(cameras.begin(), cameras.end(),
-        [&](auto &s){ return ((*s).server == ip); }
+        [&](auto &s){ return ((*s).server == server); }
     );
 
     while(iter != cameras.end()){
         cameras.erase(iter);
         iter = std::find_if(cameras.begin(), cameras.end(),
-            [&](auto &s){ return ((*s).server == ip); }
+            [&](auto &s){ return ((*s).server == server); }
         );
     }
+}
+
+void GoProMaster::replaceCameraFromServer(const std::string server, const std::vector<std::string> ips){
+    std::vector<std::string> current = std::vector<std::string>();
+    std::vector<std::shared_ptr<CameraInfo>>::iterator iter = std::find_if(cameras.begin(), cameras.end(),
+        [&](auto &s){ return ((*s).server == server); }
+    );
 }
 
 void GoProMaster::setdone(){
