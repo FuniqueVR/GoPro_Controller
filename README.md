@@ -33,6 +33,8 @@ Websocket, Go-Pro 的中繼站, 會把訊息轉發到 Master.
 
 ## 架構圖
 
+Raspberry pi 用於負載分散, 如果性能不夠也可以改用 mini pc 或是 desktop pc 承擔
+
 ```mermaid
 ---
 title: 結構
