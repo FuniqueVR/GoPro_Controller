@@ -540,7 +540,34 @@ std::string GoProController::getMediaList(std::string target){
 }
 
 std::string GoProController::getLastMedia(std::string target){
-
+    json res;
+    std::string address;
+    json arr = json::array();
+    if(target.size() > 0){
+        try{
+            std::pair<std::string, std::string> result = _getLastMedia(target);
+            address = result.first;
+            res = json::parse(result.second);
+        }catch(const std::exception& ex){
+            res = json::object();
+        }
+        json i;
+        i["ip"] = address;
+        i["filename"] = res;
+        arr.push_back(i);
+    }else{
+        json res;
+        std::vector<std::pair<std::string, std::string>> results = _getAllLastMedia(camera_ips);
+        for(int32_t i = 0; i < results.size(); i++){
+            address = results[i].first;
+            res = json::parse(results[i].second);
+            json b;
+            b["ip"] = address;
+            b["filename"] = res;
+            arr.push_back(b);
+        }
+    }
+    return arr.dump();
 }
 
 std::string GoProController::getAllIP(){

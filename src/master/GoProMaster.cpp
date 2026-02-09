@@ -63,6 +63,7 @@ std::string GoProMaster::addServer(const std::string& ip) {
             cleanCameraFromServer(conn->ip);
             stateQueryFinish.insert_or_assign(conn->ip, false);
             ipQueryFinish.insert_or_assign(conn->ip, false);
+            mediaQueryFinish.insert_or_assign(conn->ip, false);
         }
     };
 
@@ -250,8 +251,10 @@ void GoProMaster::download_last_media(const std::string dir){
         std::vector<std::string> urls = std::vector<std::string>();
         std::vector<std::string> names = std::vector<std::string>();
         for(auto& s : cameras){
-            urls.push_back("http://" + s->server + ":9090/last_media?ip=" + s->ip);
-            names.push_back(dir + "/" + s->name + fs::path(s->last_media).extension().c_str());
+            std::string filename = s->name + fs::path(s->last_media).extension().string();
+            if(filename.size() == 0) continue;
+            urls.push_back("http://" + s->server + ":8080/last_media?ip=" + s->ip);
+            names.push_back(dir + "/" + filename);
         }
         execs_download(urls, names);
     }).detach();
@@ -345,8 +348,19 @@ void GoProMaster::update(){
             stateQueryFinish.insert_or_assign(s->ip, true);
             s->client.send(get_status.dump());
         }
+
+        for (auto& s : servers) {
+            if (!s->connected) continue;
+            if (mediaQueryFinish.count(s->ip) && mediaQueryFinish.at(s->ip)) continue;
+            json get_status = json::object();
+            get_status["key"] = "media";
+            get_status["value"] = json::object();
+            get_status["value"]["name"] = "lastmedia";
+            mediaQueryFinish.insert_or_assign(s->ip, true);
+            s->client.send(get_status.dump());
+        }
         
-        std::this_thread::sleep_for(std::chrono::seconds(2));
+        std::this_thread::sleep_for(std::chrono::seconds(3));
     }
 }
 
@@ -464,7 +478,33 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
             
         }
         else if(key == "media:lastmedia"){
+            if(!data["value"]["data"].is_array()){
+                std::cerr << "Invalid message from " << server << ": " << msg << std::endl;
+                std::cerr << "media:lastmedia, return value should be array" << std::endl;
+                return;
+            }
 
+            std::lock_guard<std::mutex> lock(camera_mtx);
+            for(auto ip = data["value"]["data"].begin(); ip != data["value"]["data"].end(); ++ip){
+                if(!ip.value()["ip"].is_string() || !ip.value()["filename"].is_object()){
+                    std::cerr << "media:lastmedia error: Require ip and filename in value.data" << std::endl;
+                    continue;
+                }
+                std::string folder = "";
+                std::string file = "";
+                if(ip.value()["filename"]["folder"].is_string()){
+                    folder = ip.value()["filename"]["folder"].get<std::string>();
+                }
+                if(ip.value()["filename"]["file"].is_string()){
+                    file = ip.value()["filename"]["folfileder"].get<std::string>();
+                }
+                std::string ip_ref = ip.value()["ip"].get<std::string>();
+                int32_t found = findCamera(ip_ref);
+                if(found == -1){
+                    cameras[found]->last_media = folder + "/" + file;
+                }
+            }
+            mediaQueryFinish.insert_or_assign(server, false);
         }
         else{
             std::cerr << "Invalid message from " << server << ": " << msg << std::endl;

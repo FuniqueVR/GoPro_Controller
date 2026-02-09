@@ -16,12 +16,12 @@
 #include "camera_status.h"
 #include "camera_other.h"
 
-#define GOPRO_SETTING_SIZE 54
+#define GOPRO_SETTING_SIZE 57
 const static int32_t GOPRO_SETTING_IDS[] = {
-    2,3,5,30,32,43,59,83,88,91,
-    108,121,122,123,125,128,134,135,150,151,
+    2,3,13,102,121,108,183,182,115,122,125,5,30,32,43,59,83,88,91,
+    123,128,134,135,150,151,
     156,157,162,167,168,171,172,173,175,176,
-    177,178,179,180,182,183,184,186,187,189,
+    177,178,179,180,184,186,187,189,
     190,191,192,193,194,196,216,219,223,227,
     232,233,234,236
 };
@@ -45,6 +45,7 @@ inline const int32_t GET_SETTING_SIZE_BY_ID(int32_t x) {
         case 2: return VIDEO_RESOLUTION_SIZE;
         case 3: return FRAMES_PER_SECOND_SIZE;
         case 5: return VIDEO_TIMELAPSE_RATE_SIZE;
+        case 13: return ISO_SIZE;
         case 30: return PHOTO_TIMELAPSE_RATE_SIZE;
         case 32: return NIGHTLAPSE_RATE_SIZE;
         case 43: return WEBCAM_DIGITAL_LENSES_SIZE;
@@ -52,7 +53,9 @@ inline const int32_t GET_SETTING_SIZE_BY_ID(int32_t x) {
         case 83: return GPS_SIZE;
         case 88: return LCD_BRIGHTNESS_SIZE;
         case 91: return LED_SIZE;
+        case 102: return ISO_SIZE;
         case 108: return VIDEO_ASPECT_RATIO_SIZE;
+        case 115: return WHITE_BALANCE_SIZE;
         case 121: return VIDEO_LENS_SIZE;
         case 122: return PHOTO_LENS_SIZE;
         case 123: return TIME_LAPSE_DIGITAL_LENSES_SIZE;
@@ -100,6 +103,7 @@ inline const char* GET_SETTING_NAME_BY_ID(int32_t x) {
         case 2: return VIDEO_RESOLUTION_NAME;
         case 3: return FRAMES_PER_SECOND_NAME;
         case 5: return VIDEO_TIMELAPSE_RATE_NAME;
+        case 13: return ISO_MIN_NAME;
         case 30: return PHOTO_TIMELAPSE_RATE_NAME;
         case 32: return NIGHTLAPSE_RATE_NAME;
         case 43: return WEBCAM_DIGITAL_LENSES_NAME;
@@ -107,7 +111,9 @@ inline const char* GET_SETTING_NAME_BY_ID(int32_t x) {
         case 83: return GPS_NAME;
         case 88: return LCD_BRIGHTNESS_NAME;
         case 91: return LED_NAME;
+        case 102: return ISO_MAX_NAME;
         case 108: return VIDEO_ASPECT_RATIO_NAME;
+        case 115: return WHITE_BALANCE_NAME;
         case 121: return VIDEO_LENS_NAME;
         case 122: return PHOTO_LENS_NAME;
         case 123: return TIME_LAPSE_DIGITAL_LENSES_NAME;
@@ -155,6 +161,7 @@ inline const char** GET_SETTING_STRING_BY_ID(int32_t x) {
         case 2: return VIDEO_RESOLUTION_STRING;
         case 3: return FRAMES_PER_SECOND_STRING;
         case 5: return VIDEO_TIMELAPSE_RATE_STRING;
+        case 13: return ISO_STRING;
         case 30: return PHOTO_TIMELAPSE_RATE_STRING;
         case 32: return NIGHTLAPSE_RATE_STRING;
         case 43: return WEBCAM_DIGITAL_LENSES_STRING;
@@ -162,7 +169,9 @@ inline const char** GET_SETTING_STRING_BY_ID(int32_t x) {
         case 83: return GPS_STRING;
         case 88: return LCD_BRIGHTNESS_STRING;
         case 91: return LED_STRING;
+        case 102: return ISO_STRING;
         case 108: return VIDEO_ASPECT_RATIO_STRING;
+        case 115: return WHITE_BALANCE_STRING;
         case 121: return VIDEO_LENS_STRING;
         case 122: return PHOTO_LENS_STRING;
         case 123: return TIME_LAPSE_DIGITAL_LENSES_STRING;
@@ -210,6 +219,7 @@ inline const int32_t* GET_SETTING_VALUE_BY_ID(int32_t x) {
         case 2: return VIDEO_RESOLUTION_VALUE;
         case 3: return FRAMES_PER_SECOND_VALUE;
         case 5: return VIDEO_TIMELAPSE_RATE_VALUE;
+        case 13: return ISO_VALUE;
         case 30: return PHOTO_TIMELAPSE_RATE_VALUE;
         case 32: return NIGHTLAPSE_RATE_VALUE;
         case 43: return WEBCAM_DIGITAL_LENSES_VALUE;
@@ -217,7 +227,9 @@ inline const int32_t* GET_SETTING_VALUE_BY_ID(int32_t x) {
         case 83: return GPS_VALUE;
         case 88: return LCD_BRIGHTNESS_VALUE;
         case 91: return LED_VALUE;
+        case 102: return ISO_VALUE;
         case 108: return VIDEO_ASPECT_RATIO_VALUE;
+        case 115: return WHITE_BALANCE_VALUE;
         case 121: return VIDEO_LENS_VALUE;
         case 122: return PHOTO_LENS_VALUE;
         case 123: return TIME_LAPSE_DIGITAL_LENSES_VALUE;

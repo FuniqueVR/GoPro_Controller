@@ -287,6 +287,8 @@ void HttpServer(){
             return resp->String("{\"error\": \"Missing ip parameter\"}");
         }
 
+        std::cout << "Http GET /last_media " << target_ip << std::endl;
+
         try{
             std::string res = exec("http://" + target_ip + ":8080/gopro/media/last_captured");
             json last_data = json::parse(res);
@@ -298,6 +300,9 @@ void HttpServer(){
             std::string file = last_data["file"].get<std::string>();
 
             std::string gopro_url = "http://" + target_ip + ":8080/videos/DCIM/" + folder + "/" + file;
+
+            std::cout << "Trying to proxy to file getter: " << gopro_url << std::endl;
+
             auto gopro_resp = requests::get(gopro_url.c_str());
 
             if (gopro_resp == NULL) {
@@ -321,8 +326,10 @@ void HttpServer(){
     http_server.registerHttpService(&router);
     http_server.setPort(8080);
     http_server.setThreadNum(4);
-    http_server.run();
+    
     std::cout << "Http Server listening on port 8080..." << std::endl;
+
+    http_server.run();
 }
 
 int main() {
@@ -337,8 +344,8 @@ int main() {
         HttpServer();
     });
 
-    t1.join();
     t2.join();
+    t1.join();
     return 0;
 }
 

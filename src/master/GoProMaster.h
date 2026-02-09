@@ -191,6 +191,7 @@ private:
      * This prevent command stacking, when last state fetch is not finish yet
      */
     std::unordered_map<std::string, bool> stateQueryFinish = std::unordered_map<std::string, bool>();
+    std::unordered_map<std::string, bool> mediaQueryFinish = std::unordered_map<std::string, bool>();
     camera_setting_feedback _camera_setting_feedback = NULL;
     camera_status_feedback _camera_status_feedback = NULL;
     camera_log_feedback _camera_log_feedback = NULL;

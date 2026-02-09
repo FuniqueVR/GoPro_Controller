@@ -67,12 +67,7 @@ inline std::string exec(std::string cmd) {
         curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, 1500L);
 
         res = curl_easy_perform(curl);
-
-        if(res != CURLE_OK) {
-            std::cerr << "GET failed: " << curl_easy_strerror(res) << std::endl;
-            result.clear();
-        }
-            
+        
         curl_easy_cleanup(curl);
     }else{
         std::cerr << "Curl init failed" << std::endl;
@@ -133,12 +128,6 @@ inline std::vector<std::string> execs(std::vector<std::string> cmds) {
                 curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_status_code);
                 curl_easy_getinfo(curl, CURLINFO_PRIVATE, buffer);
 
-                if(http_status_code==200) {
-                    printf("200 OK for %s\n", buffer);
-                } else {
-                    fprintf(stderr, "GET of %s returned http status code %d\n", buffer, http_status_code);
-                }
-
                 curl_multi_remove_handle(curlm, curl);
                 curl_easy_cleanup(curl);
             }
@@ -174,7 +163,8 @@ inline void execs_download(std::vector<std::string> cmds, std::vector<std::strin
             curl_easy_setopt(curlb, CURLOPT_URL, cmds[i].c_str());
             curl_easy_setopt(curlb, CURLOPT_WRITEFUNCTION, write_data);
             curl_easy_setopt(curlb, CURLOPT_WRITEDATA, fps[i]);
-            curl_easy_setopt(curlb, CURLOPT_TIMEOUT_MS, 1500L);
+            curl_easy_setopt(curlb, CURLOPT_TIMEOUT_MS, 60000L);
+            curl_easy_setopt(curlb, CURLOPT_CONNECTTIMEOUT_MS, 5000L);
             curl_easy_setopt(curlb, CURLOPT_FOLLOWLOCATION, 1L);
             curl_multi_add_handle(curlm, curlb);
         }
@@ -183,7 +173,7 @@ inline void execs_download(std::vector<std::string> cmds, std::vector<std::strin
 
         do {
             int32_t numfds = 0;
-            resm = curl_multi_wait(curlm, NULL, 0, 1500, &numfds);
+            resm = curl_multi_wait(curlm, NULL, 0, 1000, &numfds);
 
             if(res != CURLE_OK) {
                 //std::cerr << "GET failed curl_multi_wait: " << numfds << "/" << cmds.size() << std::endl;

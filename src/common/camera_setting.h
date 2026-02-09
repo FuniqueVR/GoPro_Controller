@@ -930,5 +930,44 @@ const static int32_t AUTOMATIC_WI_FI_ACCESS_POINT_VALUE[] = {
     0, 1
 };
 
+#define ISO_SIZE 8
+#define ISO_MIN_NAME "ISO Minimum"
+#define ISO_MAX_NAME "ISO Maximum"
+
+const static char* ISO_STRING[] = {
+    "Auto",
+    "6400",
+    "3200",
+    "1600",
+    "800",
+    "400",
+    "200",
+    "100",
+};
+
+const static int32_t ISO_VALUE[] = {
+    9, 0, 3, 1, 4, 2, 7, 8
+};
+
+#define WHITE_BALANCE_SIZE 11
+#define WHITE_BALANCE_NAME "White Balance"
+
+const static char* WHITE_BALANCE_STRING[] = {
+    "6500K",
+    "6000K",
+    "5500K",
+    "5000K",
+    "4500K",
+    "Auto",
+    "Native",
+    "4000K",
+    "3200K",
+    "2800K",
+    "2300K",
+};
+
+const static int32_t WHITE_BALANCE_VALUE[] = {
+    3, 7, 2, 12, 11, 0, 4, 5, 10, 9, 8,
+};
 
 #endif
