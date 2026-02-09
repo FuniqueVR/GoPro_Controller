@@ -76,6 +76,82 @@ inline std::string exec(std::string cmd) {
     return result;
 }
 
+
+inline std::vector<std::string> execs(std::vector<std::string> cmds) {
+    CURLM* curlm = curl_multi_init();
+    CURL* curl = NULL;
+    int32_t still_running = 0;
+    int32_t msgs_left = 0;
+    int32_t http_status_code = 0;
+    CURLMcode resm;
+    CURLcode res;
+    CURLMsg *msg=NULL;
+    std::vector<std::string> result = std::vector<std::string>();
+
+    if(curlm) {
+        for(int32_t i = 0; i < cmds.size(); i++){
+            CURL* curlb = curl_easy_init();
+            curl_easy_setopt(curlb, CURLOPT_URL, cmds[i].c_str());
+            curl_easy_setopt(curlb, CURLOPT_WRITEFUNCTION, WriteCallback);
+            curl_easy_setopt(curlb, CURLOPT_WRITEDATA, &result);
+            curl_easy_setopt(curlb, CURLOPT_TIMEOUT, 1500L);
+            curl_multi_add_handle(curlm, curlb);
+        }
+
+        curl_multi_perform(curlm, &still_running);
+
+        do {
+            int32_t numfds = 0;
+            resm = curl_multi_wait(curlm, NULL, 0, 1500L, &numfds);
+
+            if(res != CURLE_OK) {
+                std::cerr << "GET failed curl_multi_wait: " << std::endl;
+                result.clear();
+            }
+
+            curl_multi_perform(curlm, &still_running);
+        } while (still_running);
+            
+        while((msg = curl_multi_info_read(curlm, &msgs_left))){
+            if (msg->msg == CURLMSG_DONE) {
+                curl = msg->easy_handle;
+
+                res = msg->data.result;
+                if (res != CURLE_OK) {
+                    fprintf(stderr, "CURL error code: %d\n", msg->data.result);
+                    continue;
+                }
+
+                // Get HTTP status code
+                http_status_code=0;
+                std::string buffer = "";
+
+                curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_status_code);
+                curl_easy_getinfo(curl, CURLINFO_PRIVATE, &result);
+
+                if(http_status_code==200) {
+                    printf("200 OK for %s\n", buffer);
+                    result.push_back(buffer);
+                } else {
+                    fprintf(stderr, "GET of %s returned http status code %d\n", buffer, http_status_code);
+                }
+
+                curl_multi_remove_handle(curlm, curl);
+                curl_easy_cleanup(curl);
+            }
+            else {
+                fprintf(stderr, "error: after curl_multi_info_read(), CURLMsg=%d\n", msg->msg);
+            }
+        }
+
+        curl_multi_cleanup(curlm);
+    }else{
+        std::cerr << "Curl init failed" << std::endl;
+    }
+
+    return result;
+}
+
 inline std::string get_env_var( std::string const & key ) {                                 
     char * val;                                                                        
     val = getenv( key.c_str() );                                                       
