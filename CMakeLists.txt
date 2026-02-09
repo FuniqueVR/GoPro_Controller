@@ -2,6 +2,16 @@ cmake_minimum_required(VERSION 3.14)
 project(GoPro_Controller)
 set(CMAKE_CXX_STANDARD 17)
 
+# --- NUCLEAR STATIC OVERRIDES (MUST BE AT THE TOP) ---
+# These must run before ANY include(FetchContent)
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "Global Static" FORCE)
+set(BUILD_STATIC_LIBS ON CACHE BOOL "Global Static" FORCE)
+
+# libhv specific overrides
+set(HV_BUILD_STATIC ON CACHE BOOL "Build libhv static" FORCE)
+set(HV_BUILD_SHARED OFF CACHE BOOL "NO Shared libhv" FORCE)
+set(HV_WITH_MQTT OFF CACHE BOOL "Disable MQTT" FORCE) # Optional: Faster build
+
 # Options
 option(BUILD_SERVER "Build the server (RPi) executable" ON)
 option(BUILD_MASTER "Build the master (PC) executable" ON)
@@ -9,6 +19,11 @@ option(BUILD_MASTER "Build the master (PC) executable" ON)
 
 # libhv (Required for Server, used in Master too if needed, but primarily Server)
 if(BUILD_SERVER OR BUILD_MASTER)
+    # Curl Configuration for Static Builds
+    set(BUILD_CURL_EXE OFF CACHE INTERNAL "")
+    set(BUILD_TESTING OFF CACHE INTERNAL "")
+    set(CURL_USE_OPENSSL OFF CACHE INTERNAL "")
+
     include(FetchContent)
     FetchContent_Declare(
         libhv
@@ -46,29 +61,22 @@ if(BUILD_SERVER OR BUILD_MASTER)
         curl
         URL https://github.com/curl/curl/releases/download/curl-8_5_0/curl-8.5.0.tar.gz
     )
-    FetchContent_MakeAvailable(curl)
-    
+    FetchContent_MakeAvailable(curl) 
 endif()
 
 if(BUILD_MASTER)
     # OpenGL
     find_package(OpenGL REQUIRED)
 
-    # OpenCV
-    find_package(OpenCV REQUIRED)
-    if(OpenCV_FOUND)
-        include_directories(${OpenCV_INCLUDE_DIRS})
-    endif()
-
     # SDL3
-    find_package(SDL3 REQUIRED)
+    find_package(SDL3)
     if (NOT SDL3_FOUND)
-        message(STATUS "Getting SDL3 from Github")
+        message(STATUS "SDL3 not found on system. Getting SDL3 from GitHub...")
         include(FetchContent)
         FetchContent_Declare(
             SDL3
             GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-            GIT_TAG        release-3.2.18
+            GIT_TAG        release-3.2.0  # Use a stable release tag
         )
         FetchContent_MakeAvailable(SDL3)
     endif()
@@ -98,7 +106,7 @@ if(BUILD_SERVER)
         src/server/UdpProxyServer.cpp
         ${MDNS_SOURCES}
     )
-    target_link_libraries(server hv libcurl)
+    target_link_libraries(server hv_static libcurl)
     # Ensure json include is available for server too if it uses nlohmann/json
     target_include_directories(server PRIVATE lib/json/include) 
 endif()
@@ -117,8 +125,14 @@ if(BUILD_MASTER)
     target_link_libraries(master PRIVATE
         OpenGL::GL
         SDL3::SDL3
-        ${OpenCV_LIBS}
-        hv
+        hv_static
         libcurl
+        winpthread
     )
+
+    if(WIN32)
+        # This pulls in the missing __gthr symbols directly into your exe
+        target_link_options(master PRIVATE "-static-libgcc" "-static-libstdc++" "-static")
+        target_link_libraries(master PRIVATE ws2_32 wsock32)
+    endif()
 endif()

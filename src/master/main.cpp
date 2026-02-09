@@ -23,10 +23,6 @@
 #include "IO.h"
 #include "../common/camera_code.h"
 
-// Simple Video Placeholder
-// TODO: Real Implementation
-#include <opencv2/opencv.hpp>
-
 bool done = false;
 GoProMaster master;
 json gui;
