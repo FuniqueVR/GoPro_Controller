@@ -51,6 +51,8 @@ std::string GoProMaster::addServer(const std::string& ip) {
             conn->connected = false;
             std::lock_guard<std::mutex> lock(camera_mtx);
             cleanCameraFromServer(conn->ip);
+            stateQueryFinish.insert_or_assign(conn->ip, false);
+            ipQueryFinish.insert_or_assign(conn->ip, false);
         }
     };
 
@@ -352,12 +354,12 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
              *     * status <- Where all the go pro status keeps
              */
             std::lock_guard<std::mutex> lock(camera_mtx);
+            int32_t count = 0;
             for(auto ip = data["value"]["data"].begin(); ip != data["value"]["data"].end(); ++ip){
                 if(!ip.value()["ip"].is_string() || !ip.value()["status"].is_object()){
                     std::cerr << "query:get error: Require ip and status in value.data" << std::endl;
                     continue;
                 }
-
                 std::string ip_ref = ip.value()["ip"].get<std::string>();
                 int32_t found = findCamera(ip_ref);
                 CameraInfo _cam;
@@ -375,15 +377,16 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
                 if(_camera_setting_feedback != NULL){
                     json buffer_setting = json::object();
                     if(getSettingsFromCamera(_cam, buffer_setting)){
-                        _camera_setting_feedback(buffer_setting);
+                        _camera_setting_feedback(_cam.ip, buffer_setting);
                     }else{
                         std::cout << "Error setting feedback: getSettingsFromCamera failed " << _cam.ip << std::endl;    
                     }
                 }else{
                     std::cout << "Skip setting feedback: Detect function pointer is NULL" << std::endl;
                 }
+                count++;
             }
-            stateQueryFinish.insert_or_assign(server, false);
+            if(count > 1) stateQueryFinish.insert_or_assign(server, false);
         }
         else if(key == "query:set"){
             

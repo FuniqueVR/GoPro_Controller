@@ -19,6 +19,19 @@ option(BUILD_MASTER "Build the master (PC) executable" ON)
 
 # libhv (Required for Server, used in Master too if needed, but primarily Server)
 if(BUILD_SERVER OR BUILD_MASTER)
+    # --- GLOBAL CURL CONFIGURATION (Apply to BOTH Server and Master) ---
+    # Disable protocols we don't need to prevent errors like 'ldapsb_tls'
+    set(CURL_DISABLE_LDAP ON CACHE INTERNAL "" FORCE)
+    set(CURL_DISABLE_LDAPS ON CACHE INTERNAL "" FORCE)
+    set(CURL_DISABLE_RTSP ON CACHE INTERNAL "" FORCE)
+    set(CURL_DISABLE_DICT ON CACHE INTERNAL "" FORCE)
+    set(CURL_DISABLE_TFTP ON CACHE INTERNAL "" FORCE)
+    set(CURL_DISABLE_TELNET ON CACHE INTERNAL "" FORCE)
+    set(CURL_DISABLE_POP3 ON CACHE INTERNAL "" FORCE)
+    set(CURL_DISABLE_IMAP ON CACHE INTERNAL "" FORCE)
+    set(CURL_DISABLE_SMB ON CACHE INTERNAL "" FORCE)
+    set(CURL_DISABLE_SMTP ON CACHE INTERNAL "" FORCE)
+    set(CURL_DISABLE_GOPHER ON CACHE INTERNAL "" FORCE)
     # Curl Configuration for Static Builds
     set(BUILD_CURL_EXE OFF CACHE INTERNAL "")
     set(BUILD_TESTING OFF CACHE INTERNAL "")
@@ -122,13 +135,22 @@ if(BUILD_MASTER)
         ${MDNS_SOURCES}
     )
 
-    target_link_libraries(master PRIVATE
-        OpenGL::GL
-        SDL3::SDL3
-        hv_static
-        libcurl
-        winpthread
-    )
+    if (WIN32)
+        target_link_libraries(master PRIVATE
+            OpenGL::GL
+            SDL3::SDL3
+            hv_static
+            libcurl
+            winpthread
+        )
+    else()
+        target_link_libraries(master PRIVATE
+            OpenGL::GL
+            SDL3::SDL3
+            hv_static
+            libcurl
+        )
+    endif()
 
     if(WIN32)
         # This pulls in the missing __gthr symbols directly into your exe

@@ -235,7 +235,6 @@ std::string GoProController::queryStatus(std::string target){
     std::string address;
     json arr = json::array();
     if(target.size() > 0){
-        json res;
         try{
             std::pair<std::string, std::string> result = _queryStatus(target);
             address = result.first;
@@ -248,29 +247,15 @@ std::string GoProController::queryStatus(std::string target){
         i["status"] = res;
         arr.push_back(i);
     }else{
-        std::vector<std::future<std::pair<std::string, std::string>>> calls = 
-            std::vector<std::future<std::pair<std::string, std::string>>>();
-        
-        for(std::string ip : camera_ips){
-            calls.push_back(std::async(std::launch::async, [this, ip, arr]() {
-                return _queryStatus(ip);
-            }));
-
-            for(auto& call : calls){
-                try{
-                    std::pair<std::string, std::string> result = call.get();
-                    address = result.first;
-                    res = json::parse(result.second);
-                }catch(const std::exception& ex){
-                    res = json::object();
-                }
-                json i;
-                i["ip"] = address;
-                i["status"] = res;
-                std::cout << "Group query finish: " << address << std::endl;
-                arr.push_back(i);
-            }
-            calls.clear();
+        json res;
+        std::vector<std::pair<std::string, std::string>> results = _queryAllStatus(camera_ips);
+        for(int32_t i = 0; i < results.size(); i++){
+            address = results[i].first;
+            res = json::parse(results[i].second);
+            json b;
+            b["ip"] = address;
+            b["status"] = res;
+            arr.push_back(b);
         }
     }
     return arr.dump();
@@ -612,6 +597,26 @@ void GoProController::_shutter(std::string target, bool ison){
 std::pair<std::string, std::string> GoProController::_queryStatus(std::string target){
     std::string url = GetRemoteURLByIP(target) + "/gopro/camera/state";
     return std::pair<std::string, std::string>(target, exec(getCommand(url)));
+}
+
+std::vector<std::pair<std::string, std::string>> GoProController::_queryAllStatus(std::vector<std::string> targets){
+    std::vector<std::string> urls = std::vector<std::string>();
+    std::vector<std::pair<std::string, std::string>> result = std::vector<std::pair<std::string, std::string>>();
+    for(int32_t i = 0; i < targets.size(); i++){
+        urls.push_back(GetRemoteURLByIP(targets[i]) + "/gopro/camera/state");
+    }
+    std::vector<std::string> res = execs(urls);
+    std::cout << "query all: " << res.size() << "/" << targets.size() << std::endl;;
+    for(int32_t i = 0; i < targets.size(); i++){
+        if(res[i].size() == 0){
+            res[i] = "{}";
+        }
+        result.push_back(std::pair<std::string, std::string>(
+            targets[i],
+            res[i]
+        ));
+    }
+    return result;
 }
 
 std::pair<std::string, std::string> GoProController::_setSetting(std::string target, int ID, std::string value){

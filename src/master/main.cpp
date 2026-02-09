@@ -90,9 +90,11 @@ void assign_log(std::string key, std::string value){
     }
 }
 
-void settingGetterFeedback(json setting){
-    current_setting_items = setting;
-    current_setting_items_bind = true;
+void settingGetterFeedback(std::string ip, json setting){
+    if(current_camera_item == ip){
+        current_setting_items = setting;
+        current_setting_items_bind = true;
+    }
 }
 
 void setup_catppuccin_mocha_theme() {

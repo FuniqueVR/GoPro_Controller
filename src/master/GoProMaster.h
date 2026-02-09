@@ -38,7 +38,7 @@ struct CameraInfo {
     json state;
 };
 
-typedef void (*camera_setting_feedback)(json setting);
+typedef void (*camera_setting_feedback)(std::string ip, json setting);
 typedef void (*camera_status_feedback)(json status);
 typedef void (*camera_log_feedback)(std::string key, std::string value);
 

@@ -59,7 +59,7 @@ inline std::string exec(std::string cmd) {
         curl_easy_setopt(curl, CURLOPT_URL, cmd.c_str());
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &result);
-        curl_easy_setopt(curl, CURLOPT_TIMEOUT, 1500L);
+        curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, 1500L);
 
         res = curl_easy_perform(curl);
 
@@ -86,15 +86,16 @@ inline std::vector<std::string> execs(std::vector<std::string> cmds) {
     CURLMcode resm;
     CURLcode res;
     CURLMsg *msg=NULL;
-    std::vector<std::string> result = std::vector<std::string>();
+    std::vector<std::string> result = std::vector<std::string>(cmds.size(), "");
 
     if(curlm) {
+        curl_multi_setopt(curlm, CURLMOPT_MAX_TOTAL_CONNECTIONS, 64L);
         for(int32_t i = 0; i < cmds.size(); i++){
             CURL* curlb = curl_easy_init();
             curl_easy_setopt(curlb, CURLOPT_URL, cmds[i].c_str());
             curl_easy_setopt(curlb, CURLOPT_WRITEFUNCTION, WriteCallback);
-            curl_easy_setopt(curlb, CURLOPT_WRITEDATA, &result);
-            curl_easy_setopt(curlb, CURLOPT_TIMEOUT, 1500L);
+            curl_easy_setopt(curlb, CURLOPT_WRITEDATA, &result[i]);
+            curl_easy_setopt(curlb, CURLOPT_TIMEOUT_MS, 1500L);
             curl_multi_add_handle(curlm, curlb);
         }
 
@@ -102,11 +103,10 @@ inline std::vector<std::string> execs(std::vector<std::string> cmds) {
 
         do {
             int32_t numfds = 0;
-            resm = curl_multi_wait(curlm, NULL, 0, 1500L, &numfds);
+            resm = curl_multi_wait(curlm, NULL, 0, 1500, &numfds);
 
             if(res != CURLE_OK) {
-                std::cerr << "GET failed curl_multi_wait: " << std::endl;
-                result.clear();
+                //std::cerr << "GET failed curl_multi_wait: " << numfds << "/" << cmds.size() << std::endl;
             }
 
             curl_multi_perform(curlm, &still_running);
@@ -118,7 +118,7 @@ inline std::vector<std::string> execs(std::vector<std::string> cmds) {
 
                 res = msg->data.result;
                 if (res != CURLE_OK) {
-                    fprintf(stderr, "CURL error code: %d\n", msg->data.result);
+                    //fprintf(stderr, "CURL error code: %d\n", msg->data.result);
                     continue;
                 }
 
@@ -127,11 +127,10 @@ inline std::vector<std::string> execs(std::vector<std::string> cmds) {
                 std::string buffer = "";
 
                 curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_status_code);
-                curl_easy_getinfo(curl, CURLINFO_PRIVATE, &result);
+                curl_easy_getinfo(curl, CURLINFO_PRIVATE, buffer);
 
                 if(http_status_code==200) {
                     printf("200 OK for %s\n", buffer);
-                    result.push_back(buffer);
                 } else {
                     fprintf(stderr, "GET of %s returned http status code %d\n", buffer, http_status_code);
                 }

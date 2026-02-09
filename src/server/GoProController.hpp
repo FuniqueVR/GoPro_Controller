@@ -76,6 +76,7 @@ protected:
     void _shutter(std::string target, bool isstart);
 
     std::pair<std::string, std::string> _queryStatus(std::string target);
+    std::vector<std::pair<std::string, std::string>> _queryAllStatus(std::vector<std::string> targets);
     std::pair<std::string, std::string> _setSetting(std::string target, int ID, std::string value);
 
     void _webcamMode(std::string target);
