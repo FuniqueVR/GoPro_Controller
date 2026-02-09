@@ -24,6 +24,9 @@ using json = nlohmann::json;
  * And which websocket server its from
  */
 struct CameraInfo {
+    std::string name;
+    std::string last_media;
+    std::string serial;
     /**
      * Camera IP
      */
@@ -120,11 +123,14 @@ public:
     // ----------------------------------------------------------
     void command_only(const std::string command, std::string target = "");
     void command_only(const std::string server, const std::string command, std::string target = "");
+    void command_with_value(const std::string command, std::string target, std::string value);
     void query_only(const std::string command, std::string target = "");
     void query_only(const std::string server, const std::string command, std::string target = "");
     void webcam_only(const std::string command, std::string target = "");
     void webcam_only(const std::string server, const std::string command, std::string target = "");
     void webcam_start(const std::string server);
+    void media_only(const std::string command, std::string target = "");
+    void download_last_media(const std::string dir);
 
     void presetSwitch(const std::string server, int32_t mode);
     void apply(const std::string& ip, const int32_t id, const int32_t value);
@@ -218,7 +224,7 @@ public:
      */
     bool getSettingsFromCamera(CameraInfo target, json& res);
     bool getStatusFromCamera(CameraInfo target, json&& res);
-    std::string getBarInfo(const std::string camera_ip);
+    std::string getBarInfo(const std::shared_ptr<CameraInfo> &c);
 
     int32_t findCamera(const std::string ip);
     int32_t findServer(const std::string ip);

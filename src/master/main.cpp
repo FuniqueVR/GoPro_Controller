@@ -48,6 +48,8 @@ std::string current_mode_item_string = "Video";
 int32_t current_mode_item = 0;
 
 // Current select camera setting
+std::string current_camera_name = "";
+std::string current_download_location = "";
 json current_setting_items;
 bool current_setting_items_bind = false;
 // Current select camera IP address
@@ -332,7 +334,7 @@ int main(int, char**)
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     io.Fonts->AddFontFromFileTTF("Roboto-Medium.ttf");
     io.FontGlobalScale = 1.3f;
-    io.DisplayFramebufferScale = ImVec2(1.5f, 1.5f);
+    io.DisplayFramebufferScale = ImVec2(1.3f, 1.3f);
     io.ConfigErrorRecovery = true;
     io.ConfigErrorRecoveryEnableAssert = true;
     io.ConfigErrorRecoveryEnableDebugLog = true;
@@ -531,12 +533,13 @@ int main(int, char**)
                     if(c){
                         try{
                             bool selected = c->ip == current_camera_item;
-                            std::string plusStatus = master.getBarInfo(c->ip);
-                            std::string plusID = plusStatus + "##CameraList";
+                            std::string plusStatus = master.getBarInfo(c);
+                            std::string plusID = plusStatus + "##CameraList_" + c->ip;
                             if(ImGui::Selectable(plusID.c_str(), selected)){
                                 // User select interaction
                                 current_setting_items_bind = false;
                                 current_camera_item = c->ip;
+                                current_camera_name = c->name;
                                 std::cout << "Select camera: " << c->ip << std::endl;
                                 master.query_only(c->server, "get", c->ip);
                                 //current_setting_items_bind = master.getSettingsFromCamera(*c, current_setting_items);
@@ -585,7 +588,10 @@ int main(int, char**)
                 if(ImGui::Button("Enter Webcam")) master.webcam_only("preview"); ImGui::SameLine();
                 if(ImGui::Button("Exit Webcam")) master.webcam_only("exit");
 
-                if(ImGui::Button("Start Webcam")) popup_start_webcam_win = true;
+                if(ImGui::Button("Start Webcam")) popup_start_webcam_win = true; ImGui::SameLine();
+                if(ImGui::Button("Sync Time")) master.command_only("datetime");
+
+                if(ImGui::Button("Last Media")) master.media_only("lastmedia");
             }
             ImGui::End();
 
@@ -690,6 +696,24 @@ int main(int, char**)
                 bool should_disabled = current_camera_item.size() < 10 || camera_ip == -1 || !current_setting_items_bind;
                 ImGui::BeginDisabled(should_disabled);
 
+                ImGui::InputText("Camera Name", &current_camera_name);
+                if(ImGui::Button("Rename Camera")){
+                    master.command_with_value("rename", current_camera_item, current_camera_name);
+                }
+                ImGui::InputText("Media Download", &current_download_location);
+                if(ImGui::Button("All Download")){
+                    master.download_last_media(current_download_location);
+                }
+                ImGui::SameLine();
+                if(ImGui::Button("Single Download")){
+                    
+                }
+                if(camera_ip >= 0){
+                    std::shared_ptr<CameraInfo> t = master.getCameras()[camera_ip];
+                    ImGui::LabelText("Server", "%s", t->server.c_str());
+                    ImGui::LabelText("Last Media", "%s", t->last_media.c_str());
+                }
+                ImGui::Separator();
                 for(int32_t i = 0; i < GOPRO_SETTING_SIZE; i++){
                     int32_t id = GOPRO_SETTING_IDS[i];
                     std::string name = GET_SETTING_NAME_BY_ID(id);

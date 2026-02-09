@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 project(GoPro_Controller)
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_C_STANDARD 17)
 
 # --- NUCLEAR STATIC OVERRIDES (MUST BE AT THE TOP) ---
 # These must run before ANY include(FetchContent)

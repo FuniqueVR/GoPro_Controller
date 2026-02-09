@@ -36,6 +36,7 @@ public:
 
     void scanCameras();
     void cleanCameras();
+    void renameCameras(std::string ip, std::string name);
     void addCameras(std::string serial);
     void setPreset(std::string target, int32_t mode);
 
@@ -59,6 +60,7 @@ public:
     std::string webcamVersion(std::string target);
 
     std::string getMediaList(std::string target);
+    std::string getLastMedia(std::string target);
 
     std::string getAllIP();
 
@@ -87,12 +89,15 @@ protected:
     std::pair<std::string, std::string> _webcamVersion(std::string target);
 
     std::pair<std::string, std::string> _getMediaList(std::string target);
+    std::vector<std::pair<std::string, std::string>> _getAllLastMedia(std::vector<std::string> targets);
+    std::pair<std::string, std::string> _getLastMedia(std::string target);
 
 private:
     mdns_cpp::mDNS mdns;
     bool mdns_scaned = false;
     std::vector<std::thread> scan_workers;
     std::vector<std::string> camera_ips;
+    std::unordered_map<std::string, std::string> camera_name;
     std::mutex ips_mutex;
     std::atomic<bool> scanning{false}; // To track scanning state if needed
 };
