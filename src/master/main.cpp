@@ -233,7 +233,7 @@ int main(int, char**)
             }
 
             for(const auto& w : windows_array){
-                if(w->enable){
+                if(w && w->enable){
                     w->update();
                 }
             }
@@ -259,7 +259,7 @@ int main(int, char**)
         ImGui::EndMainMenuBar();
 
         for(const auto& w : windows_array){
-            if(w->enable){
+            if(w && w->enable){
                 w->render();
                 if(w->is_close()){
                     updateGUIList();
@@ -268,13 +268,13 @@ int main(int, char**)
         }
 
         for(const auto& w : pop_windows_array){
-            if(w->enable){
+            if(w && w->enable){
                 w->detect();
             }
         }
 
         for(const auto& w : pop_windows_array){
-            if(w->enable){
+            if(w && w->enable){
                 w->render();
             }
         }
