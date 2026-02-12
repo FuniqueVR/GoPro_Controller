@@ -58,7 +58,20 @@ std::unordered_map<std::string, std::string> execution_logs = std::unordered_map
 // This will automatically retry connect to server every 10 seconds.
 void background_worker(){
     while(global_state->done){
-        std::this_thread::sleep_for(std::chrono::seconds(10));
+        while(!command_queue.empty()){
+            std::string cmd = command_queue.front();
+            command_queue.pop();
+            if(cmd == "add_camera"){
+                add_camera_popwin->enable = true;
+            }
+            else if(cmd == "scan_camera"){
+                scan_camera_popwin->enable = true;
+            }
+            else if(cmd == "start_webcam"){
+                start_webcam_popwin->enable = true;
+            }
+        }
+        std::this_thread::sleep_for(std::chrono::seconds(1));
     }
 }
 
@@ -261,25 +274,6 @@ int main(int, char**)
             if(w->enable){
                 w->render();
             }
-        }
-        
-        if(ImGui::BeginPopupModal("Execute Command##Popup", NULL, wp_flag)){
-            int32_t index = 0;
-            for(auto i = execution_logs.begin(); i != execution_logs.end(); ++i){
-                std::string label = i->first;
-                std::string data = i->second;
-                label += "##Log_TreeNode_" + std::to_string(index);
-                if(ImGui::TreeNodeEx(label.c_str(), ImGuiTreeNodeFlags_DefaultOpen)){
-                    ImGui::Text("%s", data.c_str());
-                    ImGui::TreePop();
-                }
-                index++;
-            }
-
-            if(ImGui::Button("Confirm")){
-                ImGui::CloseCurrentPopup();
-            }
-            ImGui::EndPopup();
         }
         // Rendering
         ImGui::Render();
