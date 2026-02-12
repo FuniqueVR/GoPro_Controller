@@ -218,13 +218,16 @@ int main(int, char**)
                     updateGUIList();
                 }
             }
+
+            for(const auto& w : windows_array){
+                if(w->enable){
+                    w->update();
+                }
+            }
         }
 
         // Start the Dear ImGui frame
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplSDL3_NewFrame();
-        ImGui::NewFrame();
-        ImGui::DockSpaceOverViewport();
+        begin_loop();
 
         ImGui::BeginMainMenuBar();
         if (ImGui::BeginMenu("Windows")) {
@@ -242,35 +245,12 @@ int main(int, char**)
         }
         ImGui::EndMainMenuBar();
 
-        if(websocket_win->enable){
-            websocket_win->update();
-            websocket_win->render();
-            if(websocket_win->is_close()){
-                updateGUIList();
-            }
-        }
-
-        if(commands_win->enable){
-            commands_win->update();
-            commands_win->render();
-            if(commands_win->is_close()){
-                updateGUIList();
-            }
-        }
-
-        if(camera_list_win->enable){
-            camera_list_win->update();
-            camera_list_win->render();
-            if(camera_list_win->is_close()){
-                updateGUIList();
-            }
-        }
-
-        if(inspector_win->enable){
-            inspector_win->update();
-            inspector_win->render();
-            if(inspector_win->is_close()){
-                updateGUIList();
+        for(const auto& w : windows_array){
+            if(w->enable){
+                w->render();
+                if(w->is_close()){
+                    updateGUIList();
+                }
             }
         }
 
@@ -432,22 +412,7 @@ int main(int, char**)
         // Rendering
         ImGui::Render();
 
-        glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
-        ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-        glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
-        glClear(GL_COLOR_BUFFER_BIT);
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-        {
-            SDL_Window* backup_current_window = SDL_GL_GetCurrentWindow();
-            SDL_GLContext backup_current_context = SDL_GL_GetCurrentContext();
-            ImGui::UpdatePlatformWindows();
-            ImGui::RenderPlatformWindowsDefault();
-            SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
-        }
-
-        SDL_GL_SwapWindow(window);
+        end_loop(window, io);
     }
 
     master->setdone();

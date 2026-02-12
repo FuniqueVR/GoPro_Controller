@@ -28,3 +28,5 @@ extern "C" inline void begin_imgui(SDL_Window *window, SDL_GLContext sdl_gl_cont
 extern "C" inline void end_imgui();
 extern "C" inline std::tuple<SDL_Window*, SDL_GLContext, const char*> begin_sdl();
 extern "C" inline void end_sdl(SDL_Window *window, SDL_GLContext sdl_gl_context);
+extern "C" inline void begin_loop();
+extern "C" inline void end_loop(SDL_Window* window, ImGuiIO &io);
