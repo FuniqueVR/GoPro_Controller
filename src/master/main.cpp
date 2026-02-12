@@ -14,7 +14,7 @@
 #include "IO.h"
 #include "state.h"
 #include "../common/camera_code.h"
-#include "windows/camera_list.h"
+#include "windows/wins.h"
 #include "imgui_helper.h"
 
 std::shared_ptr<GoProMaster> master;
@@ -23,6 +23,16 @@ std::shared_ptr<json> servers;
 std::shared_ptr<GlobalState> global_state;
 
 std::shared_ptr<CameraListWindow> camera_list_win;
+std::shared_ptr<CommandWindow> commands_win;
+std::shared_ptr<InspectorWindow> inspector_win;
+std::shared_ptr<WebsocketWindow> websocket_win;
+
+std::shared_ptr<BaseWindow> windows_array[] = {
+    camera_list_win,
+    commands_win,
+    inspector_win,
+    websocket_win,
+};
 
 std::string server_ip_buf = "127.0.0.1";
 std::string popup1_server_ip_buf = "127.0.0.1";
@@ -40,15 +50,6 @@ bool popup3_ts_buf = true;
 std::string popup3_error = "";
 
 // All the window flags
-bool system_style_win = false;
-
-bool websocket_server_window = false;
-bool camera_list_win = false;
-bool global_command_win = false;
-bool local_command_win = false;
-bool inspector_win = false;
-bool record_win = false;
-
 bool popup_add_camera_win = false;
 bool popup_scan_camera_win = false;
 bool popup_start_webcam_win = false;
@@ -338,139 +339,14 @@ int main(int, char**)
             camera_list_win->update();
             camera_list_win->render();
             if(camera_list_win->is_close()){
-                camera_list_win->enable = false;
                 updateGUIList();
             }
         }
 
-        if(global_command_win) {
-            ImGui::Begin("Global Command", &global_command_win, w_flag);
-            {
-                ImGui::Text("Global Controls");
-                ImGui::Text("Commands applied to all connected cameras");
-
-                if(ImGui::Button("Scan All")) master.command_only("scan"); ImGui::SameLine();
-                ImGui::SetItemTooltip("Scan all websocket server for cameras");
-                if(ImGui::Button("Scan Server")) popup_scan_camera_win = true;
-                ImGui::SetItemTooltip("Scan one websocket server for cameras\nThis will popup a window for you to enter websocket server address to targeting");
-
-                if(ImGui::Button("Add Camera")) popup_add_camera_win = true; ImGui::SameLine();
-                ImGui::SetItemTooltip("Menually add camera address to one websocket server list");
-                if(ImGui::Button("Clean Camera")) master.command_only("clean");
-                ImGui::SetItemTooltip("Clean all websocket server camera record");
-
-                if(ImGui::Button("Connect All")) master.command_only("usb_on"); ImGui::SameLine();
-                ImGui::SetItemTooltip("Tells all cameras usb control on");
-                if(ImGui::Button("Disconnect All")) master.command_only("usb_off");
-                ImGui::SetItemTooltip("Tells all cameras usb control off");
-
-                if(ImGui::Button("Reboot All")) master.command_only("reboot"); ImGui::SameLine();
-                ImGui::SetItemTooltip("Tells all cameras reboot right now");
-                if(ImGui::Button("Shutdown All")) master.command_only("shutdown");
-                ImGui::SetItemTooltip("Tells all cameras shutdown right now");
-
-                if(ImGui::Button("Record All")) master.command_only("shutter_on"); ImGui::SameLine();
-                if(ImGui::Button("Stop All")) master.command_only("shutter_off");
-
-                if(ImGui::Button("Enter Webcam")) master.webcam_only("preview"); ImGui::SameLine();
-                if(ImGui::Button("Exit Webcam")) master.webcam_only("exit");
-
-                if(ImGui::Button("Start Webcam")) popup_start_webcam_win = true; ImGui::SameLine();
-                if(ImGui::Button("Sync Time")) master.command_only("datetime");
-
-                if(ImGui::Button("Last Media")) master.media_only("lastmedia");
-            }
-            ImGui::End();
-
-            if(!global_command_win){
-                updateGUIList();
-            }
-        }
-
-        if(local_command_win) {
-            ImGui::Begin("Camera Command##SCC", &local_command_win, w_flag);
-            {
-                std::lock_guard<std::mutex> lock(master.camera_mtx);
-                ImGui::LabelText("Single Camera Control", "Commands applied to selected camera");
-
-                bool should_disabled = current_camera_item.size() < 10 || master.findCamera(current_camera_item) == -1;
-                ImGui::BeginDisabled(should_disabled);
-
-                if(ImGui::Button("Record")) master.command_only("", "shutter_on", current_camera_item); ImGui::SameLine();
-                if(ImGui::Button("Stop")) master.command_only("", "shutter_off", current_camera_item);
-
-                if(ImGui::Button("Connect")) master.command_only("", "usb_on", current_camera_item); ImGui::SameLine();
-                if(ImGui::Button("Disconnect")) master.command_only("", "usb_off", current_camera_item); ImGui::SameLine();
-                if(ImGui::Button("Shutdown")) master.command_only("", "usb_on", current_camera_item); ImGui::SameLine();
-                if(ImGui::Button("Locate")) master.command_only("", "usb_on", current_camera_item);
-
-                if(ImGui::BeginCombo("Mode##SCC", current_mode_item_string.c_str())){
-                    for (int n = 0; n < GOPRO_MODE_SIZE; n++)
-                    {
-                        std::string curr = GOPRO_MODE_STRING[n];
-                        std::string curr_b = curr + "##SCC_Option";
-                        bool is_selected = (current_mode_item_string == curr); // You can store your selection however you want, outside or inside your objects
-                        if (ImGui::Selectable(curr_b.c_str(), is_selected)){
-                            current_mode_item_string = curr;
-                            current_mode_item = n;
-                        }
-                        if (is_selected)
-                            ImGui::SetItemDefaultFocus();   // You may set the initial focus when opening the combo (scrolling + for keyboard navigation support)
-                    }
-                    ImGui::EndCombo();
-                }
-
-                ImGui::Separator();
-
-                if(ImGui::Button("Setting Apply All")) {
-                    popup_execute_win = true;
-                    execution_type = ExecutionType::SetAll;
-                    execution_logs.clear();
-
-                    for(const auto& i : master.getCameras()){
-                        execution_logs.insert_or_assign(i->ip, "");
-                    }
-
-                    master.applyAll("", current_setting_items);
-                } 
-                ImGui::SameLine();
-                if(ImGui::Button("Setting Apply All By ID")) {
-                    popup_execute_win = true;
-                    execution_type = ExecutionType::Set;
-                    execution_logs.clear();
-                    json buffer = json::object();
-                    int32_t v = current_setting_items[std::to_string(apply_all_item)].get<int32_t>();
-                    buffer[std::to_string(apply_all_item)] = GET_SETTING_VALUE_BY_ID(apply_all_item)[v];
-                    
-                    for(const auto& i : master.getCameras()){
-                        execution_logs.insert_or_assign(i->ip, "");
-                    }
-
-                    master.applyAll("", buffer);
-                }
-
-                if(ImGui::BeginCombo("ID", apply_all_item_string.c_str())){
-                    for (int n = 0; n < GOPRO_SETTING_SIZE; n++)
-                    {
-                        int32_t id = GOPRO_SETTING_IDS[n];
-                        std::string curr = GET_SETTING_NAME_BY_ID(id);
-                        bool is_selected = (current_mode_item_string == curr); // You can store your selection however you want, outside or inside your objects
-                        std::string curr_b = curr + "##Setting_ID_Option";
-                        if (ImGui::Selectable(curr_b.c_str(), is_selected)){
-                            apply_all_item_string = curr;
-                            apply_all_item = GOPRO_SETTING_IDS[n];
-                        }
-                        if (is_selected)
-                            ImGui::SetItemDefaultFocus();   // You may set the initial focus when opening the combo (scrolling + for keyboard navigation support)
-                    }
-                    ImGui::EndCombo();
-                }
-
-                ImGui::EndDisabled();
-            }
-            ImGui::End();
-
-            if(!local_command_win){
+        if(camera_list_win->enable){
+            camera_list_win->update();
+            camera_list_win->render();
+            if(camera_list_win->is_close()){
                 updateGUIList();
             }
         }
