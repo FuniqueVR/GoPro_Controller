@@ -5,6 +5,7 @@
  * See the LICENSE file in the project root for more information.
 */
 #pragma once
+#include <memory>
 #include <utility>
 #include <stdlib.h>
 #include <stdio.h>
@@ -19,6 +20,7 @@
 #include "imgui.h"
 #include "imgui_impl_sdl3.h"
 #include "imgui_impl_opengl3.h"
+#include "../windows/base_window.h"
 
 extern "C" inline void setup_imgui();
 extern "C" inline void setup_catppuccin_mocha_theme();

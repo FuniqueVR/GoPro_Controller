@@ -14,5 +14,78 @@ InspectorWindow::~InspectorWindow(){
 }
 
 void InspectorWindow::render(){
+    ImGui::Begin("Inspector", &enable, w_flag);
+    {
+        std::lock_guard<std::mutex> lock(master->camera_mtx);
+        int32_t camera_ip = master->findCamera(state->current_camera_item);
+        bool should_disabled = state->current_camera_item.size() < 10 || camera_ip == -1 || !state->current_setting_items_bind;
+        ImGui::BeginDisabled(should_disabled);
 
+        ImGui::InputText("Camera Name", &state->current_camera_name);
+        if(ImGui::Button("Rename Camera")){
+            master->command_with_value("rename", state->current_camera_item, state->current_camera_name);
+        }
+        ImGui::InputText("Media Download", &state->current_download_location);
+        if(ImGui::Button("All Download")){
+            master->download_last_media(state->current_download_location);
+        }
+        ImGui::SameLine();
+        if(ImGui::Button("Single Download")){
+            
+        }
+        if(camera_ip >= 0){
+            std::shared_ptr<CameraInfo> t = master->getCameras()[camera_ip];
+            ImGui::LabelText("Server", "%s", t->server.c_str());
+            ImGui::LabelText("Last Media", "%s", t->last_media.c_str());
+        }
+        ImGui::Separator();
+        for(int32_t i = 0; i < GOPRO_SETTING_SIZE; i++){
+            int32_t id = GOPRO_SETTING_IDS[i];
+            std::string name = GET_SETTING_NAME_BY_ID(id);
+            size_t size = GET_SETTING_SIZE_BY_ID(id);
+            if (!state->current_setting_items[std::to_string(id)].is_number()) {
+                continue;
+            }
+            if (name.size() == 0) {
+                std::cerr << "Inspector ID: " << id << " name.size() == 0" << std::endl;
+                continue;
+            }
+
+            name += "##InspectorTitle";
+            int32_t select_index = state->current_setting_items[std::to_string(id)].get<int32_t>();
+            const char** select_string_list = GET_SETTING_STRING_BY_ID(id);
+            if(select_string_list == nullptr) {
+                std::cerr << "Inspector: select_string_list == nullptr" << std::endl;
+                continue;
+            }
+            if(select_index >= size) {
+                std::cerr << "Inspector: select_index >= size..." << id << "..." << select_index << "..." << size << std::endl;
+                continue;
+            }
+            const char* select_string = select_string_list[select_index];
+            if(select_string == nullptr) continue;
+
+            const int32_t* values_id = GET_SETTING_VALUE_BY_ID(id);
+
+            if(ImGui::BeginCombo(name.c_str(), select_string)){
+                for (int n = 0; n < size; n++)
+                {
+                    std::string option = GET_SETTING_STRING_BY_ID(id)[n];
+                    if(option.size() == 0) continue;
+                    bool is_selected = (state->current_setting_items[std::to_string(id)] == n); // You can store your selection however you want, outside or inside your objects
+                    option += ("##InspectorOption_" + name); 
+                    if (ImGui::Selectable(option.c_str(), is_selected))
+                    {
+                        state->current_setting_items[std::to_string(id)] = n; // Change index
+                        master->apply(state->current_camera_item, id, values_id[n]);
+                    }
+                    if (is_selected)
+                        ImGui::SetItemDefaultFocus();   // You may set the initial focus when opening the combo (scrolling + for keyboard navigation support)
+                }
+                ImGui::EndCombo();
+            }
+        }
+        ImGui::EndDisabled();
+    }
+    ImGui::End();
 }

@@ -17,6 +17,7 @@
 #include "windows/wins.h"
 #include "imgui_helper.h"
 
+std::queue<std::string> command_queue;
 std::shared_ptr<GoProMaster> master;
 std::shared_ptr<json> gui;
 std::shared_ptr<json> servers;
@@ -28,13 +29,12 @@ std::shared_ptr<InspectorWindow> inspector_win;
 std::shared_ptr<WebsocketWindow> websocket_win;
 
 std::shared_ptr<BaseWindow> windows_array[] = {
-    camera_list_win,
-    commands_win,
-    inspector_win,
     websocket_win,
+    commands_win,
+    camera_list_win,
+    inspector_win,
 };
 
-std::string server_ip_buf = "127.0.0.1";
 std::string popup1_server_ip_buf = "127.0.0.1";
 std::string popup1_camera_serial_buf = "1234";
 std::string popup1_error = "";
@@ -60,7 +60,7 @@ std::unordered_map<std::string, std::string> execution_logs = std::unordered_map
 // The secondary thread handle the background update
 // This will automatically retry connect to server every 10 seconds.
 void background_worker(){
-    while(done){
+    while(global_state->done){
         std::this_thread::sleep_for(std::chrono::seconds(10));
     }
 }
@@ -94,14 +94,16 @@ void updateServerList(){
 }
 
 void updateGUIList(){
-    (*gui)["websocket_server_window"] = websocket_server_window;
+    (*gui)["websocket_server_window"] = websocket_win->enable;
     (*gui)["camera_list_win"] = camera_list_win->enable;
-    (*gui)["global_command_win"] = global_command_win;
-    (*gui)["local_command_win"] = local_command_win;
-    (*gui)["inspector_win"] = inspector_win;
-    (*gui)["record_win"] = record_win;
+    (*gui)["commands_win"] = commands_win->enable;
+    (*gui)["inspector_win"] = inspector_win->enable;
     saveGUI(*gui);
     ImGui::SaveIniSettingsToDisk("imgui.ini");
+}
+
+void pushCommand(std::string command){
+    command_queue.push(command);
 }
 
 int main(int, char**)
@@ -126,6 +128,7 @@ int main(int, char**)
     camera_list_win = std::make_shared<CameraListWindow>(gui, global_state, master);
     master->registerCameraSettingFeedback(settingGetterFeedback);
     master->registerCameraLogFeedback(assign_log);
+    global_state->update_server = updateServerList;
 
     if((*servers)["data"].is_array()){
         for(int i = 0; i < (*servers)["data"].size(); i++){
@@ -137,26 +140,17 @@ int main(int, char**)
         }
     }
 
-    if((*gui)["system_style_win"].is_boolean() && (*gui)["system_style_win"].get<bool>()){
-        system_style_win = true;
-    }
     if((*gui)["websocket_server_window"].is_boolean() && (*gui)["websocket_server_window"].get<bool>()){
-        websocket_server_window = true;
+        websocket_win->enable = true;
     }
     if((*gui)["camera_list_win"].is_boolean() && (*gui)["camera_list_win"].get<bool>()){
         camera_list_win->enable = true;
     }
     if((*gui)["global_command_win"].is_boolean() && (*gui)["global_command_win"].get<bool>()){
-        global_command_win = true;
-    }
-    if((*gui)["local_command_win"].is_boolean() && (*gui)["local_command_win"].get<bool>()){
-        local_command_win = true;
+        commands_win->enable = true;
     }
     if((*gui)["inspector_win"].is_boolean() && (*gui)["inspector_win"].get<bool>()){
-        inspector_win = true;
-    }
-    if((*gui)["record_win"].is_boolean() && (*gui)["record_win"].get<bool>()){
-        record_win = true;
+        inspector_win->enable = true;
     }
 
     setup_imgui();
@@ -207,6 +201,22 @@ int main(int, char**)
                         printf("Window in windowed mode\n");
                     }
                 }
+                if (event.key.key == SDLK_Q && !websocket_win->enable) {
+                    websocket_win->enable = true;
+                    updateGUIList();
+                }
+                if (event.key.key == SDLK_W && !commands_win->enable) {
+                    commands_win->enable = true;
+                    updateGUIList();
+                }
+                if (event.key.key == SDLK_E && !camera_list_win->enable) {
+                    camera_list_win->enable = true;
+                    updateGUIList();
+                }
+                if (event.key.key == SDLK_R && !inspector_win->enable) {
+                    inspector_win->enable = true;
+                    updateGUIList();
+                }
             }
         }
 
@@ -219,14 +229,12 @@ int main(int, char**)
         ImGui::BeginMainMenuBar();
         if (ImGui::BeginMenu("Windows")) {
             bool update_menu = false;
-            update_menu = ImGui::MenuItem("Websocket Dashboard", NULL, &websocket_server_window);
-            update_menu = update_menu || ImGui::MenuItem("Camera List", NULL, &camera_list_win);
-            update_menu = update_menu || ImGui::MenuItem("Global Command", NULL, &global_command_win);
-            update_menu = update_menu || ImGui::MenuItem("Local Command", NULL, &local_command_win);
-            update_menu = update_menu || ImGui::MenuItem("Inspector", NULL, &inspector_win);
-            update_menu = update_menu || ImGui::MenuItem("Record", NULL, &record_win);
+            update_menu = ImGui::MenuItem("Websocket Dashboard (Q)", NULL, &websocket_win->enable);
+            update_menu = update_menu || ImGui::MenuItem("Command Sender (W)", NULL, &commands_win->enable);
+            update_menu = update_menu || ImGui::MenuItem("Camera List (E)", NULL, &camera_list_win->enable);
+            update_menu = update_menu || ImGui::MenuItem("Inspector (R)", NULL, &inspector_win->enable);
             ImGui::Separator();
-            update_menu = update_menu || ImGui::MenuItem("System Style", NULL, &system_style_win);
+            //update_menu = update_menu || ImGui::MenuItem("System Style", NULL, &system_style_win);
             ImGui::EndMenu();
             if(update_menu){
                 updateGUIList();
@@ -234,103 +242,18 @@ int main(int, char**)
         }
         ImGui::EndMainMenuBar();
 
-        // 1. Dashboard Window
-        if(websocket_server_window) {
-            ImGui::Begin("Websocket Dashboard", &websocket_server_window, w_flag);
-            {
-                ImGui::Text("Hotkeys:");
-                ImGui::BulletText("F2: Start Recording");
-                ImGui::BulletText("F3: Stop Recording");
-                ImGui::BulletText("F4: Switch to Photo Mode");
-                ImGui::BulletText("F5: Switch to Video Mode");
-
-                ImGui::Separator();
-
-                ImGui::Text("Manual Control:");
-                if (ImGui::Button("Start Rec (F2)")) master.command_only("shutter_on"); ImGui::SameLine();
-                ImGui::SetItemTooltip("Keyboard shortcut for broadcasting record signal to all connected cameras");
-                if (ImGui::Button("Stop Rec (F3)")) master.command_only("shutter_off");
-                ImGui::SetItemTooltip("Keyboard shortcut for broadcasting stop signal to all connected cameras");
-                if (ImGui::Button("Photo Mode (F4)")) master.presetSwitch("", 65536);  ImGui::SameLine();
-                ImGui::SetItemTooltip("Keyboard shortcut for broadcasting switch to photo mode signal to all connected cameras");
-                if (ImGui::Button("Video Mode (F5)")) master.presetSwitch("", 0);
-                ImGui::SetItemTooltip("Keyboard shortcut for broadcasting switch to video mode signal to all connected cameras");
-
-                ImGui::Separator();
-
-                ImGui::Text("Server Connections:");
-                ImGui::InputText("Server IP", &server_ip_buf);
-                ImGui::SetItemTooltip("Enter the server ip address here, example will be 127.0.0.1 or 192.168.61.123");
-                if (ImGui::Button("Add Server")) {
-                    std::string ip = master.addServer(server_ip_buf);
-                    master.reconnect(ip);
-                    updateServerList();
-                }
-                ImGui::SetItemTooltip("Trying to connect server base on address you enter");
-
-                ImGui::SameLine();
-                if (ImGui::Button("Remove Server")) {
-                    master.clean(std::string(server_ip_buf));
-                    updateServerList();
-                }
-                ImGui::SetItemTooltip("Trying to remove server base on address you enter, You must disconnect the server before hit remove by the way.");
-
-                ImGui::SameLine();
-                if (ImGui::Button("Disconnect Server")) {
-                    master.disconnect(std::string(server_ip_buf));
-                }
-                ImGui::SetItemTooltip("Trying to disconnect server base on address you enter");
-
-                if (ImGui::Button("Reconnect All")) {
-                    master.reconnectAll();
-                }
-                ImGui::SameLine();
-                if (ImGui::Button("Disconnect All")) {
-                    master.disconnectAll();
-                }
-                ImGui::SameLine();
-                if (ImGui::Button("Clean")) {
-                    master.cleanAll();
-                    updateServerList();
-                }
-
-                // Server List Table
-                if (ImGui::BeginTable("Servers", 3, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg)) {
-                    ImGui::TableSetupColumn("IP Address");
-                    ImGui::TableSetupColumn("Status");
-                    ImGui::TableSetupColumn("Last Message");
-                    ImGui::TableHeadersRow();
-
-                    for (const auto& s : master.getServers()) {
-                        ImGui::TableNextRow();
-                        ImGui::TableSetColumnIndex(0);
-                        ImGui::Text("%s", s->ip.c_str());
-                        ImGui::TableSetColumnIndex(1);
-                        if (s->connected) 
-                            ImGui::TextColored(ImVec4(0,1,0,1), "Connected");
-                        else 
-                            ImGui::TextColored(ImVec4(1,0,0,1), "Disconnected");
-                        ImGui::TableSetColumnIndex(2);
-                        ImGui::Text("%s", s->last_message.c_str());
-                    }
-                    ImGui::EndTable();
-                }
-            }
-            ImGui::End();
-
-            if(!websocket_server_window){
+        if(websocket_win->enable){
+            websocket_win->update();
+            websocket_win->render();
+            if(websocket_win->is_close()){
                 updateGUIList();
             }
         }
 
-        if(system_style_win){
-            ImGui::Begin("System Style Window", &system_style_win, w_flag);
-            {
-                //ImGui::ShowStyleEditor(&style);
-            }
-            ImGui::End();
-
-            if(system_style_win){
+        if(commands_win->enable){
+            commands_win->update();
+            commands_win->render();
+            if(commands_win->is_close()){
                 updateGUIList();
             }
         }
@@ -343,103 +266,10 @@ int main(int, char**)
             }
         }
 
-        if(camera_list_win->enable){
-            camera_list_win->update();
-            camera_list_win->render();
-            if(camera_list_win->is_close()){
-                updateGUIList();
-            }
-        }
-
-        if(inspector_win) {
-            ImGui::Begin("Inspector", &inspector_win, w_flag);
-            {
-                std::lock_guard<std::mutex> lock(master.camera_mtx);
-                int32_t camera_ip = master.findCamera(current_camera_item);
-                bool should_disabled = current_camera_item.size() < 10 || camera_ip == -1 || !current_setting_items_bind;
-                ImGui::BeginDisabled(should_disabled);
-
-                ImGui::InputText("Camera Name", &current_camera_name);
-                if(ImGui::Button("Rename Camera")){
-                    master.command_with_value("rename", current_camera_item, current_camera_name);
-                }
-                ImGui::InputText("Media Download", &current_download_location);
-                if(ImGui::Button("All Download")){
-                    master.download_last_media(current_download_location);
-                }
-                ImGui::SameLine();
-                if(ImGui::Button("Single Download")){
-                    
-                }
-                if(camera_ip >= 0){
-                    std::shared_ptr<CameraInfo> t = master.getCameras()[camera_ip];
-                    ImGui::LabelText("Server", "%s", t->server.c_str());
-                    ImGui::LabelText("Last Media", "%s", t->last_media.c_str());
-                }
-                ImGui::Separator();
-                for(int32_t i = 0; i < GOPRO_SETTING_SIZE; i++){
-                    int32_t id = GOPRO_SETTING_IDS[i];
-                    std::string name = GET_SETTING_NAME_BY_ID(id);
-                    size_t size = GET_SETTING_SIZE_BY_ID(id);
-                    if (!current_setting_items[std::to_string(id)].is_number()) {
-                        continue;
-                    }
-                    if (name.size() == 0) {
-                        std::cerr << "Inspector ID: " << id << " name.size() == 0" << std::endl;
-                        continue;
-                    }
-
-                    name += "##InspectorTitle";
-                    int32_t select_index = current_setting_items[std::to_string(id)].get<int32_t>();
-                    const char** select_string_list = GET_SETTING_STRING_BY_ID(id);
-                    if(select_string_list == nullptr) {
-                        std::cerr << "Inspector: select_string_list == nullptr" << std::endl;
-                        continue;
-                    }
-                    if(select_index >= size) {
-                        std::cerr << "Inspector: select_index >= size..." << id << "..." << select_index << "..." << size << std::endl;
-                        continue;
-                    }
-                    const char* select_string = select_string_list[select_index];
-                    if(select_string == nullptr) continue;
-
-                    const int32_t* values_id = GET_SETTING_VALUE_BY_ID(id);
-
-                    if(ImGui::BeginCombo(name.c_str(), select_string)){
-                        for (int n = 0; n < size; n++)
-                        {
-                            std::string option = GET_SETTING_STRING_BY_ID(id)[n];
-                            if(option.size() == 0) continue;
-                            bool is_selected = (current_setting_items[std::to_string(id)] == n); // You can store your selection however you want, outside or inside your objects
-                            option += ("##InspectorOption_" + name); 
-                            if (ImGui::Selectable(option.c_str(), is_selected))
-                            {
-                                current_setting_items[std::to_string(id)] = n; // Change index
-                                master.apply(current_camera_item, id, values_id[n]);
-                            }
-                            if (is_selected)
-                                ImGui::SetItemDefaultFocus();   // You may set the initial focus when opening the combo (scrolling + for keyboard navigation support)
-                        }
-                        ImGui::EndCombo();
-                    }
-                }
-                ImGui::EndDisabled();
-            }
-            ImGui::End();
-
-            if(!inspector_win){
-                updateGUIList();
-            }
-        }
-
-        if(record_win){
-            ImGui::Begin("Record", &record_win, w_flag);
-            {
-
-            }
-            ImGui::End();
-
-            if(!record_win){
+        if(inspector_win->enable){
+            inspector_win->update();
+            inspector_win->render();
+            if(inspector_win->is_close()){
                 updateGUIList();
             }
         }
@@ -480,17 +310,17 @@ int main(int, char**)
             }
             if (ImGui::Button("Confirm")) {
                 bool pass = true;
-                if(master.findServer(popup1_server_ip_buf) == -1){
+                if(master->findServer(popup1_server_ip_buf) == -1){
                     popup1_error = "Server does not exist.";
                     pass = false;
                 }
-                if(master.findCamera(GetRemoteIPBySerial(popup1_camera_serial_buf)) != -1){
+                if(master->findCamera(GetRemoteIPBySerial(popup1_camera_serial_buf)) != -1){
                     popup1_error = "Camera already added.";
                     pass = false;
                 }
 
                 if(pass){
-                    master.command_only(popup1_server_ip_buf, "add", std::string(popup1_camera_serial_buf));
+                    master->command_only(popup1_server_ip_buf, "add", std::string(popup1_camera_serial_buf));
                 }
             }
             ImGui::SameLine();
@@ -509,16 +339,16 @@ int main(int, char**)
             }
             if (ImGui::Button("Confirm")) {
                 bool pass = true;
-                if(master.findServer(popup2_server_ip_buf) == -1 && sizeof(popup2_server_ip_buf) == 0){
+                if(master->findServer(popup2_server_ip_buf) == -1 && sizeof(popup2_server_ip_buf) == 0){
                     popup2_error = "Server does not exist.";
                     pass = false;
                 }
 
                 if(pass){
                     if(sizeof(popup2_server_ip_buf) == 0){
-                        master.command_only("scan");
+                        master->command_only("scan");
                     }else{
-                        master.command_only(popup2_server_ip_buf, "scan", "");
+                        master->command_only(popup2_server_ip_buf, "scan", "");
                     }
                 }
             }

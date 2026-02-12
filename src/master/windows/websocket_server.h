@@ -12,5 +12,5 @@ public:
     virtual void render() override;
 
 private:
-
+    std::string server_ip_buf = "127.0.0.1";
 };

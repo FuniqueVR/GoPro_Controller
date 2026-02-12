@@ -11,6 +11,7 @@
 using json = nlohmann::json;
 
 typedef void(*CommandSenderFunc)(const char* cmd);
+typedef void(*ActionFunc)();
 
 struct GlobalState {
     bool done;
@@ -33,4 +34,5 @@ struct GlobalState {
     int32_t apply_all_item = 2;
     // Caller
     CommandSenderFunc command_sender = NULL; 
+    ActionFunc update_server = NULL;
 };

@@ -4,6 +4,7 @@
 #include <thread>
 #include <nlohmann/json.hpp>
 #include "imgui.h"
+#include "misc/cpp/imgui_stdlib.h"
 #include "../GoProMaster.h"
 #include "../state.h"
 
