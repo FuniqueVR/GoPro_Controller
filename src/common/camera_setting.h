@@ -3,6 +3,7 @@
 #define CAMERA_SETTING
 #include <cinttypes>
 
+#define VIDEO_RESOLUTION_ID 2
 #define VIDEO_RESOLUTION_SIZE 27
 #define VIDEO_RESOLUTION_NAME "Video Resolution"
 
@@ -42,6 +43,7 @@ const static int32_t VIDEO_RESOLUTION_VALUE[] = {
     107, 108, 109, 110, 111, 112, 113
 };
 
+#define FRAMES_PER_SECOND_ID 3
 #define FRAMES_PER_SECOND_SIZE 13
 #define FRAMES_PER_SECOND_NAME "Frames Per Second"
 
@@ -66,6 +68,7 @@ const static int32_t FRAMES_PER_SECOND_VALUE[] = {
     15, 16, 17
 };
 
+#define VIDEO_TIMELAPSE_RATE_ID 5
 #define VIDEO_TIMELAPSE_RATE_SIZE 12
 #define VIDEO_TIMELAPSE_RATE_NAME "Video Timelapse Rate"
 
@@ -88,6 +91,28 @@ const static int32_t VIDEO_TIMELAPSE_RATE_VALUE[] = {
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
 };
 
+#define ISO_MIN_ID 102
+#define ISO_MAX_ID 13
+#define ISO_SIZE 8
+#define ISO_MIN_NAME "ISO Minimum"
+#define ISO_MAX_NAME "ISO Maximum"
+
+const static char* ISO_STRING[] = {
+    "Auto",
+    "6400",
+    "3200",
+    "1600",
+    "800",
+    "400",
+    "200",
+    "100",
+};
+
+const static int32_t ISO_VALUE[] = {
+    9, 0, 3, 1, 4, 2, 7, 8
+};
+
+#define PHOTO_TIMELAPSE_RATE_ID 30
 #define PHOTO_TIMELAPSE_RATE_SIZE 12
 #define PHOTO_TIMELAPSE_RATE_NAME "Photo Timelapse Rate"
 
@@ -110,6 +135,7 @@ const static int32_t PHOTO_TIMELAPSE_RATE_VALUE[] = {
     11, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110
 };
 
+#define NIGHTLAPSE_RATE_ID 32
 #define NIGHTLAPSE_RATE_SIZE 12
 #define NIGHTLAPSE_RATE_NAME "Nightlapse Rate"
 
@@ -132,6 +158,7 @@ const static int32_t NIGHTLAPSE_RATE_VALUE[] = {
     4, 5, 10, 15, 20, 30, 100, 120, 300, 1800, 3600, 3601
 };
 
+#define WEBCAM_DIGITAL_LENSES_ID 43
 #define WEBCAM_DIGITAL_LENSES_SIZE 4
 #define WEBCAM_DIGITAL_LENSES_NAME "Webcam Digital Lenses"
 
@@ -146,6 +173,7 @@ const static int32_t WEBCAM_DIGITAL_LENSES_VALUE[] = {
     0, 2, 3, 4
 };
 
+#define AUTO_POWER_DOWN_ID 59
 #define AUTO_POWER_DOWN_SIZE 7
 #define AUTO_POWER_DOWN_NAME "Auto Power Down"
 
@@ -163,6 +191,7 @@ const static int32_t AUTO_POWER_DOWN_VALUE[] = {
     0, 1, 4, 6, 7, 11, 12
 };
 
+#define GPS_ID 83
 #define GPS_SIZE 2
 #define GPS_NAME "GPS"
 
@@ -175,6 +204,7 @@ const static int32_t GPS_VALUE[] = {
     0, 1
 };
 
+#define LCD_BRIGHTNESS_ID 88
 #define LCD_BRIGHTNESS_SIZE 10
 #define LCD_BRIGHTNESS_NAME "LCD Brightness"
 
@@ -195,6 +225,7 @@ const static int32_t LCD_BRIGHTNESS_VALUE[] = {
     10, 20, 30, 40, 50, 60, 70, 80, 90, 100
 };
 
+#define LED_ID 91
 #define LED_SIZE 6
 #define LED_NAME "LED"
 
@@ -211,6 +242,7 @@ const static int32_t LED_VALUE[] = {
     0, 2, 3, 4, 5, 100
 };
 
+#define VIDEO_ASPECT_RATIO_ID 108
 #define VIDEO_ASPECT_RATIO_SIZE 6
 #define VIDEO_ASPECT_RATIO_NAME "Video Aspect Ratio"
 
@@ -227,6 +259,29 @@ const static int32_t VIDEO_ASPECT_RATIO_VALUE[] = {
     0, 1, 3, 4, 5, 6
 };
 
+#define WHITE_BALANCE_ID 115
+#define WHITE_BALANCE_SIZE 11
+#define WHITE_BALANCE_NAME "White Balance"
+
+const static char* WHITE_BALANCE_STRING[] = {
+    "6500K",
+    "6000K",
+    "5500K",
+    "5000K",
+    "4500K",
+    "Auto",
+    "Native",
+    "4000K",
+    "3200K",
+    "2800K",
+    "2300K",
+};
+
+const static int32_t WHITE_BALANCE_VALUE[] = {
+    3, 7, 2, 12, 11, 0, 4, 5, 10, 9, 8,
+};
+
+#define VIDEO_LENS_ID 121
 #define VIDEO_LENS_SIZE 13
 #define VIDEO_LENS_NAME "Video Lens"
 
@@ -250,6 +305,7 @@ const static int32_t VIDEO_LENS_VALUE[] = {
     0, 2, 3, 4, 7, 8, 9, 10, 11, 12, 13, 14, 104
 };
 
+#define PHOTO_LENS_ID 122
 #define PHOTO_LENS_SIZE 17
 #define PHOTO_LENS_NAME "Photo Lens"
 
@@ -278,6 +334,7 @@ const static int32_t PHOTO_LENS_VALUE[] = {
     100, 101, 102
 };
 
+#define TIME_LAPSE_DIGITAL_LENSES_ID 123
 #define TIME_LAPSE_DIGITAL_LENSES_SIZE 6
 #define TIME_LAPSE_DIGITAL_LENSES_NAME "Time Lapse Digital Lenses"
 
@@ -294,6 +351,7 @@ const static int32_t TIME_LAPSE_DIGITAL_LENSES_VALUE[] = {
     19, 31, 32, 100, 101, 102
 };
 
+#define PHOTO_OUTPUT_ID 125
 #define PHOTO_OUTPUT_SIZE 4
 #define PHOTO_OUTPUT_NAME "Photo Output"
 
@@ -308,6 +366,7 @@ const static int32_t PHOTO_OUTPUT_VALUE[] = {
     0, 1, 2, 3
 };
 
+#define MEDIA_FORMAT_ID 128
 #define MEDIA_FORMAT_SIZE 4
 #define MEDIA_FORMAT_NAME "Media Format"
 
@@ -322,6 +381,7 @@ const static int32_t MEDIA_FORMAT_VALUE[] = {
     13, 20, 21, 26
 };
 
+#define ANTI_FLICKER_ID 134
 #define ANTI_FLICKER_SIZE 4
 #define ANTI_FLICKER_NAME "Anti-Flicker"
 
@@ -336,6 +396,7 @@ const static int32_t ANTI_FLICKER_VALUE[] = {
     0, 1, 2, 3
 };
 
+#define HYPERSMOOTH_ID 135
 #define HYPERSMOOTH_SIZE 6
 #define HYPERSMOOTH_NAME "Hypersmooth"
 
@@ -352,6 +413,7 @@ const static int32_t HYPERSMOOTH_VALUE[] = {
     0, 1, 2, 3, 4, 100
 };
 
+#define VIDEO_HORIZON_LEVELING_ID 150
 #define VIDEO_HORIZON_LEVELING_SIZE 3
 #define VIDEO_HORIZON_LEVELING_NAME "Video Horizon Leveling"
 
@@ -365,6 +427,7 @@ const static int32_t VIDEO_HORIZON_LEVELING_VALUE[] = {
     0, 1, 2
 };
 
+#define PHOTO_HORIZON_LEVELING_ID 151
 #define PHOTO_HORIZON_LEVELING_SIZE 3
 #define PHOTO_HORIZON_LEVELING_NAME "Photo Horizon Leveling"
 
@@ -378,6 +441,7 @@ const static int32_t PHOTO_HORIZON_LEVELING_VALUE[] = {
     0, 1, 2
 };
 
+#define VIDEO_DURATION_ID 156
 #define VIDEO_DURATION_SIZE 11
 #define VIDEO_DURATION_NAME "Video Duration"
 
@@ -399,6 +463,7 @@ const static int32_t VIDEO_DURATION_VALUE[] = {
     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 100
 };
 
+#define MULTISHOT_DURATION_ID 157
 #define MULTISHOT_DURATION_SIZE 11
 #define MULTISHOT_DURATION_NAME "Multi Shot Duration"
 
@@ -420,6 +485,7 @@ const static int32_t MULTISHOT_DURATION_VALUE[] = {
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 100
 };
 
+#define MAX_LENS_ID 162
 #define MAX_LENS_SIZE 2
 #define MAX_LENS_NAME "Max Lens"
 
@@ -432,6 +498,7 @@ const static int32_t MAX_LENS_VALUE[] = {
     0, 1
 };
 
+#define HINDSIGHT_ID 167
 #define HINDSIGHT_SIZE 3
 #define HINDSIGHT_NAME "HindSight"
 
@@ -445,6 +512,7 @@ const static int32_t HINDSIGHT_VALUE[] = {
     2, 3, 4
 };
 
+#define SCHEDULED_CAPTURE_ID 168
 #define SCHEDULED_CAPTURE_SIZE 2
 #define SCHEDULED_CAPTURE_NAME "Scheduled Capture"
 
@@ -457,6 +525,7 @@ const static int32_t SCHEDULED_CAPTURE_VALUE[] = {
     0, 1
 };
 
+#define PHOTO_SINGLE_INTERVAL_ID 171
 #define PHOTO_SINGLE_INTERVAL_SIZE 10
 #define PHOTO_SINGLE_INTERVAL_NAME "Photo Single Interval"
 
@@ -477,6 +546,7 @@ const static int32_t PHOTO_SINGLE_INTERVAL_VALUE[] = {
     0, 2, 3, 4, 5, 6, 7, 8, 9, 10
 };
 
+#define PHOTO_SINGLE_DURATION_ID 172
 #define PHOTO_SINGLE_DURATION_SIZE 10
 #define PHOTO_SINGLE_DURATION_NAME "Photo Single Duration"
 
@@ -497,6 +567,7 @@ const static int32_t PHOTO_SINGLE_DURATION_VALUE[] = {
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9
 };
 
+#define VIDEO_PERFORMANCE_MODE_ID 173
 #define VIDEO_PERFORMANCE_MODE_SIZE 3
 #define VIDEO_PERFORMANCE_MODE_NAME "Video Performance Mode"
 
@@ -510,6 +581,7 @@ const static int32_t VIDEO_PERFORMANCE_MODE_VALUE[] = {
     0, 1, 2
 };
 
+#define CONTROL_MODE_ID 175
 #define CONTROL_MODE_SIZE 2
 #define CONTROL_MODE_NAME "Control Mode"
 
@@ -522,6 +594,7 @@ const static int32_t CONTROL_MODE_VALUE[] = {
     0, 1
 };
 
+#define EASY_MODE_SPEED_ID 176
 #define EASY_MODE_SPEED_SIZE 88
 #define EASY_MODE_SPEED_NAME "Easy Mode Speed"
 
@@ -624,6 +697,7 @@ const static int32_t EASY_MODE_SPEED_VALUE[] = {
     146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159
 };
 
+#define ENABLE_NIGHT_PHOTO_ID 177
 #define ENABLE_NIGHT_PHOTO_SIZE 2
 #define ENABLE_NIGHT_PHOTO_NAME "Enable Night Photo"
 
@@ -636,6 +710,7 @@ const static int32_t ENABLE_NIGHT_PHOTO_VALUE[] = {
     0, 1
 };
 
+#define WIRELESS_BAND_ID 178
 #define WIRELESS_BAND_SIZE 2
 #define WIRELESS_BAND_NAME "Wireless Band"
 
@@ -648,6 +723,7 @@ const static int32_t WIRELESS_BAND_VALUE[] = {
     0, 1
 };
 
+#define STAR_TRAILS_LENGTH_ID 179
 #define STAR_TRAILS_LENGTH_SIZE 3
 #define STAR_TRAILS_LENGTH_NAME "Star Trails Length"
 
@@ -661,6 +737,7 @@ const static int32_t STAR_TRAILS_LENGTH_VALUE[] = {
     1, 2, 3
 };
 
+#define SYSTEM_VIDEO_MODE_ID 180
 #define SYSTEM_VIDEO_MODE_SIZE 5
 #define SYSTEM_VIDEO_MODE_NAME "System Video Mode"
 
@@ -676,6 +753,7 @@ const static int32_t SYSTEM_VIDEO_MODE_VALUE[] = {
     0, 101, 102, 111, 112
 };
 
+#define VIDEO_BIT_RATE_ID 182
 #define VIDEO_BIT_RATE_SIZE 2
 #define VIDEO_BIT_RATE_NAME "Video Bit Rate"
 
@@ -688,6 +766,7 @@ const static int32_t VIDEO_BIT_RATE_VALUE[] = {
     0, 1
 };
 
+#define BIT_DEPTH_ID 183
 #define BIT_DEPTH_SIZE 2
 #define BIT_DEPTH_NAME "Bit Depth"
 
@@ -700,6 +779,7 @@ const static int32_t BIT_DEPTH_VALUE[] = {
     0, 2
 };
 
+#define PROFILES_ID 184
 #define PROFILES_SIZE 3
 #define PROFILES_NAME "Profiles"
 
@@ -714,6 +794,7 @@ const static int32_t PROFILES_VALUE[] = {
     0, 1, 2, 101
 };
 
+#define VIDEO_EASY_MODE_ID 186
 #define VIDEO_EASY_MODE_SIZE 5
 #define VIDEO_EASY_MODE_NAME "Video Easy Mode"
 
@@ -729,6 +810,7 @@ const static int32_t VIDEO_EASY_MODE_VALUE[] = {
     0, 1, 2, 3, 4
 };
 
+#define LAPSE_MODE_ID 187
 #define LAPSE_MODE_SIZE 5
 #define LAPSE_MODE_NAME "Lapse Mode"
 
@@ -749,6 +831,7 @@ const static int32_t LAPSE_MODE_VALUE[] = {
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9
 };
 
+#define MAX_LENS_MOD_ID 189
 #define MAX_LENS_MOD_SIZE 12
 #define MAX_LENS_MOD_NAME "Max Lens Mod"
 
@@ -771,6 +854,7 @@ const static int32_t MAX_LENS_MOD_VALUE[] = {
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 100
 };
 
+#define MAX_LENS_MOD_ENABLE_ID 190
 #define MAX_LENS_MOD_ENABLE_SIZE 2
 #define MAX_LENS_MOD_ENABLE_NAME "Max Lens Mod Enable"
 
@@ -788,6 +872,7 @@ const static int32_t MAX_LENS_MOD_ENABLE_VALUE[] = {
     0, 1
 };
 
+#define EASY_NIGHT_PHOTO_ID 191
 #define EASY_NIGHT_PHOTO_SIZE 2
 #define EASY_NIGHT_PHOTO_NAME "Easy Night Photo"
 
@@ -800,6 +885,7 @@ const static int32_t EASY_NIGHT_PHOTO_VALUE[] = {
     0, 1
 };
 
+#define MULTI_SHOT_ASPECT_RATIO_ID 192
 #define MULTI_SHOT_ASPECT_RATIO_SIZE 4
 #define MULTI_SHOT_ASPECT_RATIO_NAME "Multi Shot Aspect Ratio"
 
@@ -814,13 +900,12 @@ const static int32_t MULTI_SHOT_ASPECT_RATIO_VALUE[] = {
     0, 1, 3, 4
 };
 
+#define FRAMING_ID 193
 #define FRAMING_SIZE 3
 #define FRAMING_NAME "Framing"
 
-enum class FRAMING_ {
-    WIDESCREEN,
-    VERTICAL,
-    FULL_FRAME
+const static int32_t FRAMING_VALUE[] = {
+    0, 1, 2
 };
 
 const static char* FRAMING_STRING[] = {
@@ -829,17 +914,22 @@ const static char* FRAMING_STRING[] = {
     "Full Frame"
 };
 
-const static int32_t FRAMING_VALUE[] = {
-    0, 1, 3
+#define CAMERA_MODE_ID 194
+#define CAMERA_MODE_SIZE 2
+#define CAMERA_MODE_NAME "Camera Mode"
+
+const static char* CAMERA_MODE_STRING[] = {
+    "Single Lens",
+    "360"
 };
 
+const static int32_t CAMERA_MODE_VALUE[] = {
+    0, 1
+};
+
+#define _360_PHOTO_FILES_EXTENSION_ID 196
 #define _360_PHOTO_FILES_EXTENSION_SIZE 2
 #define _360_PHOTO_FILES_EXTENSION_NAME "360 Photo Files Extension"
-
-enum class _360_PHOTO_FILES_EXTENSION_ {
-    _360,
-    _JPG
-};
 
 const static char* _360_PHOTO_FILES_EXTENSION_STRING[] = {
     ".360",
@@ -850,15 +940,9 @@ const static int32_t _360_PHOTO_FILES_EXTENSION_VALUE[] = {
     0, 1
 };
 
+#define BEEP_VOLUME_ID 216
 #define BEEP_VOLUME_SIZE 4
 #define BEEP_VOLUME_NAME "Beep Volume"
-
-enum class BEEP_VOLUME_ {
-    OFF,
-    LOW,
-    MEDIUM,
-    HIGH
-};
 
 const static char* BEEP_VOLUME_STRING[] = {
     "Off",
@@ -871,16 +955,9 @@ const static int32_t BEEP_VOLUME_VALUE[] = {
     0, 1, 2, 3
 };
 
+#define SETUP_SCREEN_SAVER_ID 219
 #define SETUP_SCREEN_SAVER_SIZE 5
 #define SETUP_SCREEN_SAVER_NAME "Setup Screen Saver"
-
-enum class SETUP_SCREEN_SAVER_ {
-    NEVER,
-    V1_MIN,
-    V2_MIN,
-    V3_MIN,
-    V5_MIN
-};
 
 const static char* SETUP_SCREEN_SAVER_STRING[] = {
     "Never",
@@ -894,14 +971,9 @@ const static int32_t SETUP_SCREEN_SAVER_VALUE[] = {
     0, 1, 2, 3, 4
 };
 
+#define VIDEO_FRAMING_ID 232
 #define VIDEO_FRAMING_SIZE 3
 #define VIDEO_FRAMING_NAME "Video Framing"
-
-enum class VIDEO_FRAMING_ {
-    WIDESCREEN,
-    VERTICAL,
-    FULL_FRAME
-};
 
 const static char* VIDEO_FRAMING_STRING[] = {
     "Widescreen",
@@ -913,13 +985,9 @@ const static int32_t VIDEO_FRAMING_VALUE[] = {
     0, 1, 3
 };
 
+#define AUTOMATIC_WI_FI_ACCESS_POINT_ID 236
 #define AUTOMATIC_WI_FI_ACCESS_POINT_SIZE 2
 #define AUTOMATIC_WI_FI_ACCESS_POINT_NAME "Automatic Wi-Fi Access Point"
-
-enum class AUTOMATIC_WI_FI_ACCESS_POINT_ {
-    OFF,
-    ON
-};
 
 const static char* AUTOMATIC_WI_FI_ACCESS_POINT_STRING[] = {
     "Off",
@@ -928,46 +996,6 @@ const static char* AUTOMATIC_WI_FI_ACCESS_POINT_STRING[] = {
 
 const static int32_t AUTOMATIC_WI_FI_ACCESS_POINT_VALUE[] = {
     0, 1
-};
-
-#define ISO_SIZE 8
-#define ISO_MIN_NAME "ISO Minimum"
-#define ISO_MAX_NAME "ISO Maximum"
-
-const static char* ISO_STRING[] = {
-    "Auto",
-    "6400",
-    "3200",
-    "1600",
-    "800",
-    "400",
-    "200",
-    "100",
-};
-
-const static int32_t ISO_VALUE[] = {
-    9, 0, 3, 1, 4, 2, 7, 8
-};
-
-#define WHITE_BALANCE_SIZE 11
-#define WHITE_BALANCE_NAME "White Balance"
-
-const static char* WHITE_BALANCE_STRING[] = {
-    "6500K",
-    "6000K",
-    "5500K",
-    "5000K",
-    "4500K",
-    "Auto",
-    "Native",
-    "4000K",
-    "3200K",
-    "2800K",
-    "2300K",
-};
-
-const static int32_t WHITE_BALANCE_VALUE[] = {
-    3, 7, 2, 12, 11, 0, 4, 5, 10, 9, 8,
 };
 
 #endif
