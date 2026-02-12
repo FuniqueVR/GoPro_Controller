@@ -129,11 +129,19 @@ int main(int, char**)
 
     servers = std::make_shared<json>(loadServerList());
     gui = std::make_shared<json>(loadGUI());
-    std::thread bg_thread(background_worker);
-    camera_list_win.reset(new CameraListWindow(gui, global_state, master));
+    // Win
+    websocket_win = std::make_shared<WebsocketWindow>(gui, global_state, master);
+    commands_win = std::make_shared<CommandWindow>(gui, global_state, master);
+    camera_list_win = std::make_shared<CameraListWindow>(gui, global_state, master);
+    inspector_win = std::make_shared<InspectorWindow>(gui, global_state, master);
+    // Popup
+    add_camera_popwin = std::make_shared<AddCameraPopup>(gui, global_state, master);
+    scan_camera_popwin = std::make_shared<ScanCameraPopup>(gui, global_state, master);
+    start_webcam_popwin = std::make_shared<StartWebcamPopup>(gui, global_state, master);
     master->registerCameraSettingFeedback(settingGetterFeedback);
     master->registerCameraLogFeedback(assign_log);
     global_state->update_server = updateServerList;
+    std::thread bg_thread(background_worker);
 
     if((*servers)["data"].is_array()){
         for(int i = 0; i < (*servers)["data"].size(); i++){
