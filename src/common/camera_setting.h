@@ -281,6 +281,40 @@ const static int32_t WHITE_BALANCE_VALUE[] = {
     3, 7, 2, 12, 11, 0, 4, 5, 10, 9, 8,
 };
 
+#define SHARPNESS_ID 117
+#define SHARPNESS_SIZE 3
+#define SHARPNESS_NAME "Sharpness"
+
+const static char* SHARPNESS_STRING[] = {
+    "High",
+    "Midium",
+    "Low"
+};
+
+const static int32_t SHARPNESS_VALUE[] = {
+    0, 1, 2
+};
+
+#define EXPOSURE_ID 118
+#define EXPOSURE_SIZE 9
+#define EXPOSURE_NAME "Exposure"
+
+const static char* EXPOSURE_STRING[] = {
+    "-2.0",
+    "-1.5",
+    "-1.0",
+    "-0.5",
+    "0.0",
+    "0.5",
+    "1.0",
+    "1.5",
+    "2.0",
+};
+
+const static int32_t EXPOSURE_VALUE[] = {
+    8, 7, 6, 5, 4, 3, 2, 1, 0
+};
+
 #define VIDEO_LENS_ID 121
 #define VIDEO_LENS_SIZE 13
 #define VIDEO_LENS_NAME "Video Lens"
@@ -411,6 +445,40 @@ const static char* HYPERSMOOTH_STRING[] = {
 
 const static int32_t HYPERSMOOTH_VALUE[] = {
     0, 1, 2, 3, 4, 100
+};
+
+#define SHUTTER_SPEED_ID 145
+#define SHUTTER_SPEED_SIZE 22
+#define SHUTTER_SPEED_NAME "Shutter Speed"
+
+const static char* SHUTTER_SPEED_STRING[] = {
+    "Auto",
+    "1/24",
+    "1/25",
+    "1/30",
+    "1/48",
+    "1/50",
+    "1/60",
+    "1/96",
+    "1/100",
+    "1/120",
+    "1/192",
+    "1/200",
+    "1/240",
+    "1/384",
+    "1/400",
+    "1/480",
+    "1/800",
+    "1/900",
+    "1/1600",
+    "1/1920",
+    "1/3200",
+    "1/3840",
+};
+
+const static int32_t SHUTTER_SPEED_VALUE[] = {
+    0, 3, 4, 5, 6, 7, 8, 11, 12, 13, 16, 17, 18, 25, 21, 22, 28,
+    23, 29, 24, 30, 31
 };
 
 #define VIDEO_HORIZON_LEVELING_ID 150
@@ -997,5 +1065,10 @@ const static char* AUTOMATIC_WI_FI_ACCESS_POINT_STRING[] = {
 const static int32_t AUTOMATIC_WI_FI_ACCESS_POINT_VALUE[] = {
     0, 1
 };
+
+#define COLOR_ID 116
+
+#define LENS_ID 121
+#define BITRATE_ID 124
 
 #endif

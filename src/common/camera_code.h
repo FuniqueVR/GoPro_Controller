@@ -16,10 +16,11 @@
 #include "camera_status.h"
 #include "camera_other.h"
 
-#define GOPRO_SETTING_SIZE 53
+#define GOPRO_SETTING_SIZE 56
 const static int32_t GOPRO_SETTING_IDS[] = {
     VIDEO_RESOLUTION_ID,
     FRAMES_PER_SECOND_ID,
+    SHUTTER_SPEED_ID,
     ISO_MAX_ID,
     ISO_MIN_ID,
     VIDEO_LENS_ID,
@@ -27,6 +28,8 @@ const static int32_t GOPRO_SETTING_IDS[] = {
     BIT_DEPTH_ID,
     VIDEO_BIT_RATE_ID,
     WHITE_BALANCE_ID,
+    SHARPNESS_ID,
+    EXPOSURE_ID,
     PHOTO_LENS_ID,
     PHOTO_OUTPUT_ID,
     VIDEO_TIMELAPSE_RATE_ID,
