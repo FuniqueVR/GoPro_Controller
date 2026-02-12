@@ -15,6 +15,7 @@
 #include "state.h"
 #include "../common/camera_code.h"
 #include "windows/wins.h"
+#include "popup/popwins.h"
 #include "imgui_helper.h"
 
 std::queue<std::string> command_queue;
@@ -33,6 +34,12 @@ std::shared_ptr<BaseWindow> windows_array[] = {
     commands_win,
     camera_list_win,
     inspector_win,
+};
+
+std::shared_ptr<AddCameraPopup> add_camera_popwin;
+
+std::shared_ptr<BasePopWindow> pop_windows_array[] = {
+    add_camera_popwin,
 };
 
 std::string popup1_server_ip_buf = "127.0.0.1";
@@ -251,6 +258,12 @@ int main(int, char**)
                 if(w->is_close()){
                     updateGUIList();
                 }
+            }
+        }
+
+        for(const auto& w : pop_windows_array){
+            if(w->enable){
+                w->detect();
             }
         }
 

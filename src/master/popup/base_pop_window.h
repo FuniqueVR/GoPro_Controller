@@ -25,8 +25,7 @@ public:
 
     virtual void update();
     virtual void render();
-    virtual bool is_close();
-    virtual void save_setting();
+    virtual void detect();
 protected:
     std::shared_ptr<json> setting;
     std::shared_ptr<GlobalState> state;

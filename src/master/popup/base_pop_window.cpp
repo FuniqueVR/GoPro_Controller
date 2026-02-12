@@ -28,10 +28,11 @@ void BasePopWindow::render(){
 
 }
 
-bool BasePopWindow::is_close(){
-    return enable;
-}
-
-void BasePopWindow::save_setting(){
-
+void BasePopWindow::detect(){
+    if(enable){
+        enable = false;
+        ImGui::OpenPopup(title.c_str());
+        ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+        ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+    }
 }

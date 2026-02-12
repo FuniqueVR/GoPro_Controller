@@ -74,29 +74,29 @@ void CommandWindow::render_global(){
 }
 
 void CommandWindow::render_local(){
-    std::lock_guard<std::mutex> lock(master.camera_mtx);
+    std::lock_guard<std::mutex> lock(master->camera_mtx);
     ImGui::LabelText("Single Camera Control", "Commands applied to selected camera");
 
-    bool should_disabled = current_camera_item.size() < 10 || master.findCamera(current_camera_item) == -1;
+    bool should_disabled = state->current_camera_item.size() < 10 || master->findCamera(current_camera_item) == -1;
     ImGui::BeginDisabled(should_disabled);
 
-    if(ImGui::Button("Record")) master.command_only("", "shutter_on", current_camera_item); ImGui::SameLine();
-    if(ImGui::Button("Stop")) master.command_only("", "shutter_off", current_camera_item);
+    if(ImGui::Button("Record")) master->command_only("", "shutter_on", current_camera_item); ImGui::SameLine();
+    if(ImGui::Button("Stop")) master->command_only("", "shutter_off", current_camera_item);
 
-    if(ImGui::Button("Connect")) master.command_only("", "usb_on", current_camera_item); ImGui::SameLine();
-    if(ImGui::Button("Disconnect")) master.command_only("", "usb_off", current_camera_item); ImGui::SameLine();
-    if(ImGui::Button("Shutdown")) master.command_only("", "usb_on", current_camera_item); ImGui::SameLine();
-    if(ImGui::Button("Locate")) master.command_only("", "usb_on", current_camera_item);
+    if(ImGui::Button("Connect")) master->command_only("", "usb_on", current_camera_item); ImGui::SameLine();
+    if(ImGui::Button("Disconnect")) master->command_only("", "usb_off", current_camera_item); ImGui::SameLine();
+    if(ImGui::Button("Shutdown")) master->command_only("", "usb_on", current_camera_item); ImGui::SameLine();
+    if(ImGui::Button("Locate")) master->command_only("", "usb_on", current_camera_item);
 
-    if(ImGui::BeginCombo("Mode##SCC", current_mode_item_string.c_str())){
+    if(ImGui::BeginCombo("Mode##SCC", state->current_mode_item_string.c_str())){
         for (int n = 0; n < GOPRO_MODE_SIZE; n++)
         {
             std::string curr = GOPRO_MODE_STRING[n];
             std::string curr_b = curr + "##SCC_Option";
-            bool is_selected = (current_mode_item_string == curr); // You can store your selection however you want, outside or inside your objects
+            bool is_selected = (state->current_mode_item_string == curr); // You can store your selection however you want, outside or inside your objects
             if (ImGui::Selectable(curr_b.c_str(), is_selected)){
-                current_mode_item_string = curr;
-                current_mode_item = n;
+                state->current_mode_item_string = curr;
+                state->current_mode_item = n;
             }
             if (is_selected)
                 ImGui::SetItemDefaultFocus();   // You may set the initial focus when opening the combo (scrolling + for keyboard navigation support)
@@ -111,11 +111,11 @@ void CommandWindow::render_local(){
         execution_type = ExecutionType::SetAll;
         execution_logs.clear();
 
-        for(const auto& i : master.getCameras()){
+        for(const auto& i : master->getCameras()){
             execution_logs.insert_or_assign(i->ip, "");
         }
 
-        master.applyAll("", current_setting_items);
+        master->applyAll("", state->current_setting_items);
     } 
     ImGui::SameLine();
     if(ImGui::Button("Setting Apply All By ID")) {
