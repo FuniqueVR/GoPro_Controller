@@ -21,7 +21,9 @@
 #include "misc/cpp/imgui_stdlib.h"
 #include "GoProMaster.h"
 #include "IO.h"
+#include "state.h"
 #include "../common/camera_code.h"
+#include "windows/camera_list.h"
 
 bool done = false;
 GoProMaster master;
@@ -42,18 +44,7 @@ std::string popup3_fov_string_buf = "Wide";
 bool popup3_ts_buf = true;
 std::string popup3_error = "";
 
-std::string websocket_server_selection = "";
-std::string camera_selection = "";
-std::string current_mode_item_string = "Video";
-int32_t current_mode_item = 0;
-
-// Current select camera setting
-std::string current_camera_name = "";
-std::string current_download_location = "";
-json current_setting_items;
-bool current_setting_items_bind = false;
-// Current select camera IP address
-std::string current_camera_item = "";
+GlobalState global_state;
 
 std::string apply_all_item_string = "Video Resolution";
 int32_t apply_all_item = 2;
@@ -295,6 +286,7 @@ int main(int, char**)
     std::thread bg_thread(background_worker);
     master.registerCameraSettingFeedback(settingGetterFeedback);
     master.registerCameraLogFeedback(assign_log);
+    CameraListWindow camera_list_win(gui);
 
     if(servers["data"].is_array()){
         for(int i = 0; i < servers["data"].size(); i++){
@@ -313,7 +305,7 @@ int main(int, char**)
         websocket_server_window = true;
     }
     if(gui["camera_list_win"].is_boolean() && gui["camera_list_win"].get<bool>()){
-        camera_list_win = true;
+        camera_list_win.enable = true;
     }
     if(gui["global_command_win"].is_boolean() && gui["global_command_win"].get<bool>()){
         global_command_win = true;

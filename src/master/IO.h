@@ -9,7 +9,7 @@
 
 using json = nlohmann::json;
 
-extern "C" void saveServerList(json data);
-extern "C" void saveGUI(json data);
-extern "C" json loadServerList();
-extern "C" json loadGUI();
+extern "C" inline void saveServerList(json data);
+extern "C" inline void saveGUI(json data);
+extern "C" inline json loadServerList();
+extern "C" inline json loadGUI();
