@@ -20,4 +20,7 @@ struct GlobalState {
     bool current_status_items_bind = false;
     // Current select camera IP address
     std::string current_camera_item = "";
+    // Apply state
+    std::string apply_all_item_string = "Video Resolution";
+    int32_t apply_all_item = 2;
 };

@@ -5,15 +5,21 @@
 #include <nlohmann/json.hpp>
 #include "imgui.h"
 #include "../GoProMaster.h"
+#include "../state.h"
 
 using json = nlohmann::json;
 
 #define w_flag ImGuiWindowFlags_NoCollapse
 #define wp_flag ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize
 
+extern "C" inline void setup_catppuccin_mocha_theme();
+
 class BaseWindow {
 public:
-    BaseWindow(json* _setting, std::shared_ptr<GoProMaster> _master);
+    BaseWindow(
+        std::shared_ptr<json> _setting, 
+        std::shared_ptr<GlobalState> _state, 
+        std::shared_ptr<GoProMaster> _master);
     ~BaseWindow();
 
     bool enable;
@@ -22,7 +28,8 @@ public:
     virtual void render();
     virtual bool is_close();
 protected:
-    json* setting;
+    std::shared_ptr<json> setting;
+    std::shared_ptr<GlobalState> state;
     std::shared_ptr<GoProMaster> master;
     std::string title = "";
 };

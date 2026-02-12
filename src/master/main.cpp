@@ -25,10 +25,13 @@
 #include "../common/camera_code.h"
 #include "windows/camera_list.h"
 
-bool done = false;
-GoProMaster master;
-json gui;
-json servers;
+std::shared_ptr<GoProMaster> master;
+std::shared_ptr<json> gui;
+std::shared_ptr<json> servers;
+std::shared_ptr<GlobalState> global_state;
+
+std::shared_ptr<CameraListWindow> camera_list_win;
+
 std::string server_ip_buf = "127.0.0.1";
 std::string popup1_server_ip_buf = "127.0.0.1";
 std::string popup1_camera_serial_buf = "1234";
@@ -43,11 +46,6 @@ int32_t popup3_fov_buf = 0;
 std::string popup3_fov_string_buf = "Wide";
 bool popup3_ts_buf = true;
 std::string popup3_error = "";
-
-GlobalState global_state;
-
-std::string apply_all_item_string = "Video Resolution";
-int32_t apply_all_item = 2;
 
 // All the window flags
 bool system_style_win = false;
@@ -88,114 +86,6 @@ void settingGetterFeedback(std::string ip, json setting){
         current_setting_items = setting;
         current_setting_items_bind = true;
     }
-}
-
-void setup_catppuccin_mocha_theme() {
-    ImGuiStyle& style = ImGui::GetStyle();
-    ImVec4* colors = style.Colors;
-
-    // Catppuccin Mocha Palette
-    // --------------------------------------------------------
-    const ImVec4 base       = ImVec4(0.117f, 0.117f, 0.172f, 1.0f); // #1e1e2e
-    const ImVec4 mantle     = ImVec4(0.109f, 0.109f, 0.156f, 1.0f); // #181825
-    const ImVec4 surface0   = ImVec4(0.200f, 0.207f, 0.286f, 1.0f); // #313244
-    const ImVec4 surface1   = ImVec4(0.247f, 0.254f, 0.337f, 1.0f); // #3f4056
-    const ImVec4 surface2   = ImVec4(0.290f, 0.301f, 0.388f, 1.0f); // #4a4d63
-    const ImVec4 overlay0   = ImVec4(0.396f, 0.403f, 0.486f, 1.0f); // #65677c
-    const ImVec4 overlay2   = ImVec4(0.576f, 0.584f, 0.654f, 1.0f); // #9399b2
-    const ImVec4 text       = ImVec4(0.803f, 0.815f, 0.878f, 1.0f); // #cdd6f4
-    const ImVec4 subtext0   = ImVec4(0.639f, 0.658f, 0.764f, 1.0f); // #a3a8c3
-    const ImVec4 mauve      = ImVec4(0.796f, 0.698f, 0.972f, 1.0f); // #cba6f7
-    const ImVec4 peach      = ImVec4(0.980f, 0.709f, 0.572f, 1.0f); // #fab387
-    const ImVec4 yellow     = ImVec4(0.980f, 0.913f, 0.596f, 1.0f); // #f9e2af
-    const ImVec4 green      = ImVec4(0.650f, 0.890f, 0.631f, 1.0f); // #a6e3a1
-    const ImVec4 teal       = ImVec4(0.580f, 0.886f, 0.819f, 1.0f); // #94e2d5
-    const ImVec4 sapphire   = ImVec4(0.458f, 0.784f, 0.878f, 1.0f); // #74c7ec
-    const ImVec4 blue       = ImVec4(0.533f, 0.698f, 0.976f, 1.0f); // #89b4fa
-    const ImVec4 lavender   = ImVec4(0.709f, 0.764f, 0.980f, 1.0f); // #b4befe
-
-    // Main window and backgrounds
-    colors[ImGuiCol_WindowBg]             = base;
-    colors[ImGuiCol_ChildBg]              = base;
-    colors[ImGuiCol_PopupBg]              = surface0;
-    colors[ImGuiCol_Border]               = surface1;
-    colors[ImGuiCol_BorderShadow]         = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
-    colors[ImGuiCol_FrameBg]              = surface0;
-    colors[ImGuiCol_FrameBgHovered]       = surface1;
-    colors[ImGuiCol_FrameBgActive]        = surface2;
-    colors[ImGuiCol_TitleBg]              = mantle;
-    colors[ImGuiCol_TitleBgActive]        = surface0;
-    colors[ImGuiCol_TitleBgCollapsed]     = mantle;
-    colors[ImGuiCol_MenuBarBg]            = mantle;
-    colors[ImGuiCol_ScrollbarBg]          = surface0;
-    colors[ImGuiCol_ScrollbarGrab]        = surface2;
-    colors[ImGuiCol_ScrollbarGrabHovered] = overlay0;
-    colors[ImGuiCol_ScrollbarGrabActive]  = overlay2;
-    colors[ImGuiCol_CheckMark]            = green;
-    colors[ImGuiCol_SliderGrab]           = sapphire;
-    colors[ImGuiCol_SliderGrabActive]     = blue;
-    colors[ImGuiCol_Button]               = surface0;
-    colors[ImGuiCol_ButtonHovered]        = surface1;
-    colors[ImGuiCol_ButtonActive]         = surface2;
-    colors[ImGuiCol_Header]               = surface0;
-    colors[ImGuiCol_HeaderHovered]        = surface1;
-    colors[ImGuiCol_HeaderActive]         = surface2;
-    colors[ImGuiCol_Separator]            = surface1;
-    colors[ImGuiCol_SeparatorHovered]     = mauve;
-    colors[ImGuiCol_SeparatorActive]      = mauve;
-    colors[ImGuiCol_ResizeGrip]           = surface2;
-    colors[ImGuiCol_ResizeGripHovered]    = mauve;
-    colors[ImGuiCol_ResizeGripActive]     = mauve;
-    colors[ImGuiCol_Tab]                  = surface0;
-    colors[ImGuiCol_TabHovered]           = surface2;
-    colors[ImGuiCol_TabActive]            = surface1;
-    colors[ImGuiCol_TabUnfocused]         = surface0;
-    colors[ImGuiCol_TabUnfocusedActive]   = surface1;
-    colors[ImGuiCol_DockingPreview]       = sapphire;
-    colors[ImGuiCol_DockingEmptyBg]       = base;
-    colors[ImGuiCol_PlotLines]            = blue;
-    colors[ImGuiCol_PlotLinesHovered]     = peach;
-    colors[ImGuiCol_PlotHistogram]        = teal;
-    colors[ImGuiCol_PlotHistogramHovered] = green;
-    colors[ImGuiCol_TableHeaderBg]        = surface0;
-    colors[ImGuiCol_TableBorderStrong]    = surface1;
-    colors[ImGuiCol_TableBorderLight]     = surface0;
-    colors[ImGuiCol_TableRowBg]           = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
-    colors[ImGuiCol_TableRowBgAlt]        = ImVec4(1.0f, 1.0f, 1.0f, 0.06f);
-    colors[ImGuiCol_TextSelectedBg]       = surface2;
-    colors[ImGuiCol_DragDropTarget]       = yellow;
-    colors[ImGuiCol_NavHighlight]         = lavender;
-    colors[ImGuiCol_NavWindowingHighlight]= ImVec4(1.0f, 1.0f, 1.0f, 0.7f);
-    colors[ImGuiCol_NavWindowingDimBg]    = ImVec4(0.8f, 0.8f, 0.8f, 0.2f);
-    colors[ImGuiCol_ModalWindowDimBg]     = ImVec4(0.0f, 0.0f, 0.0f, 0.35f);
-    colors[ImGuiCol_Text]                 = text;
-    colors[ImGuiCol_TextDisabled]         = subtext0;
-
-    // Rounded corners
-    style.WindowRounding    = 6.0f;
-    style.ChildRounding     = 6.0f;
-    style.FrameRounding     = 4.0f;
-    style.PopupRounding     = 4.0f;
-    style.ScrollbarRounding = 9.0f;
-    style.GrabRounding      = 4.0f;
-    style.TabRounding       = 4.0f;
-
-    // Padding and spacing
-    style.WindowPadding     = ImVec2(8.0f, 8.0f);
-    style.FramePadding      = ImVec2(16.0f, 5.0f);
-    style.ItemSpacing       = ImVec2(8.0f, 4.0f);
-    style.ItemInnerSpacing  = ImVec2(4.0f, 4.0f);
-    style.IndentSpacing     = 21.0f;
-    style.ScrollbarSize     = 20.0f;
-    style.GrabMinSize       = 10.0f;
-
-    // Borders
-    style.WindowBorderSize  = 1.0f;
-    style.ChildBorderSize   = 1.0f;
-    style.PopupBorderSize   = 1.0f;
-    style.FrameBorderSize   = 1.0f;
-    style.TabBorderSize     = 0.0f;
-    style.TabRounding       = 12.0f;
 }
 
 void updateServerList(){
@@ -281,12 +171,12 @@ int main(int, char**)
     SDL_GL_SetSwapInterval(1); // Enable vsync
     SDL_ShowWindow(window);
 
-    servers = loadServerList();
-    gui = loadGUI();
+    servers = std::make_shared<json>(loadServerList());
+    gui = std::make_shared<json>(loadGUI());
     std::thread bg_thread(background_worker);
-    master.registerCameraSettingFeedback(settingGetterFeedback);
-    master.registerCameraLogFeedback(assign_log);
-    CameraListWindow camera_list_win(gui);
+    camera_list_win = std::make_shared<CameraListWindow>(gui, global_state, master);
+    master->registerCameraSettingFeedback(settingGetterFeedback);
+    master->registerCameraLogFeedback(assign_log);
 
     if(servers["data"].is_array()){
         for(int i = 0; i < servers["data"].size(); i++){
@@ -298,25 +188,25 @@ int main(int, char**)
         }
     }
 
-    if(gui["system_style_win"].is_boolean() && gui["system_style_win"].get<bool>()){
+    if((*gui)["system_style_win"].is_boolean() && (*gui)["system_style_win"].get<bool>()){
         system_style_win = true;
     }
-    if(gui["websocket_server_window"].is_boolean() && gui["websocket_server_window"].get<bool>()){
+    if((*gui)["websocket_server_window"].is_boolean() && (*gui)["websocket_server_window"].get<bool>()){
         websocket_server_window = true;
     }
-    if(gui["camera_list_win"].is_boolean() && gui["camera_list_win"].get<bool>()){
-        camera_list_win.enable = true;
+    if((*gui)["camera_list_win"].is_boolean() && (*gui)["camera_list_win"].get<bool>()){
+        camera_list_win->enable = true;
     }
-    if(gui["global_command_win"].is_boolean() && gui["global_command_win"].get<bool>()){
+    if((*gui)["global_command_win"].is_boolean() && (*gui)["global_command_win"].get<bool>()){
         global_command_win = true;
     }
-    if(gui["local_command_win"].is_boolean() && gui["local_command_win"].get<bool>()){
+    if((*gui)["local_command_win"].is_boolean() && (*gui)["local_command_win"].get<bool>()){
         local_command_win = true;
     }
-    if(gui["inspector_win"].is_boolean() && gui["inspector_win"].get<bool>()){
+    if((*gui)["inspector_win"].is_boolean() && (*gui)["inspector_win"].get<bool>()){
         inspector_win = true;
     }
-    if(gui["record_win"].is_boolean() && gui["record_win"].get<bool>()){
+    if((*gui)["record_win"].is_boolean() && (*gui)["record_win"].get<bool>()){
         record_win = true;
     }
 
@@ -355,11 +245,8 @@ int main(int, char**)
     ImGui_ImplSDL3_InitForOpenGL(window, gl_context);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
-    ImGuiWindowFlags w_flag = ImGuiWindowFlags_NoCollapse;
-    ImGuiWindowFlags wp_flag = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize;
-
     // Main loop
-    while (!done)
+    while (!global_state->done)
     {
         // Poll and handle events
         SDL_Event event;
@@ -367,27 +254,37 @@ int main(int, char**)
         {
             ImGui_ImplSDL3_ProcessEvent(&event);
             if (event.type == SDL_EVENT_QUIT)
-                done = true;
+                global_state->done = true;
             if (event.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED && event.window.windowID == SDL_GetWindowID(window))
-                done = true;
+                global_state->done = true;
             
             // Hotkeys
             if (event.type == SDL_EVENT_KEY_DOWN) {
                 if (event.key.key == SDLK_F2) {
-                    master.command_only("shutter_on");
+                    master->command_only("shutter_on");
                     printf("Hotkey F2: Start Recording\n");
                 }
                 if (event.key.key == SDLK_F3) {
-                    master.command_only("shutter_off");
+                    master->command_only("shutter_off");
                     printf("Hotkey F3: Stop Recording\n");
                 }
                 if (event.key.key == SDLK_F4) {
-                    master.presetSwitch("", 65536);
+                    master->presetSwitch("", 65536);
                     printf("Hotkey F4: Photo Mode\n");
                 }
                 if (event.key.key == SDLK_F5) {
-                    master.presetSwitch("", 0);
+                    master->presetSwitch("", 0);
                     printf("Hotkey F5: Video Mode\n");
+                }
+                if (event.key.key == SDLK_F11) {
+                    uint32_t flag = SDL_GetWindowFlags(window);
+                    if ((flag & SDL_WINDOW_FULLSCREEN) == SDL_WINDOW_FULLSCREEN) {
+                        SDL_SetWindowFullscreen(window, false);
+                        printf("Window using exclusive (true) fullscreen mode\n");
+                    } else {
+                        SDL_SetWindowFullscreen(window, true);
+                        printf("Window in windowed mode\n");
+                    }
                 }
             }
         }
