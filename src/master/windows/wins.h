@@ -5,7 +5,7 @@
  * See the LICENSE file in the project root for more information.
 */
 #pragma once
-#include "windows/camera_list.h"
-#include "windows/commands.h"
-#include "windows/inspector.h"
-#include "windows/websocket_server.h"
+#include "camera_list.h"
+#include "commands.h"
+#include "inspector.h"
+#include "websocket_server.h"

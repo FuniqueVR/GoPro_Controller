@@ -9,7 +9,6 @@
 #include <chrono>
 #include <vector>
 #include <thread>
-#include "misc/cpp/imgui_stdlib.h"
 #include "GoProMaster.h"
 #include "IO.h"
 #include "state.h"
@@ -18,11 +17,11 @@
 #include "popup/popwins.h"
 #include "imgui_helper.h"
 
-std::queue<std::string> command_queue;
-std::shared_ptr<GoProMaster> master;
+std::queue<std::string> command_queue = std::queue<std::string>();
+std::shared_ptr<GoProMaster> master = std::make_shared<GoProMaster>();
 std::shared_ptr<json> gui;
 std::shared_ptr<json> servers;
-std::shared_ptr<GlobalState> global_state;
+std::shared_ptr<GlobalState> global_state = std::make_shared<GlobalState>();
 
 std::shared_ptr<CameraListWindow> camera_list_win;
 std::shared_ptr<CommandWindow> commands_win;
@@ -47,10 +46,6 @@ std::shared_ptr<BasePopWindow> pop_windows_array[] = {
 };
 
 // All the window flags
-bool popup_add_camera_win = false;
-bool popup_scan_camera_win = false;
-bool popup_start_webcam_win = false;
-bool popup_execute_win = false;
 ExecutionType execution_type = ExecutionType::SetAll;
 std::unordered_map<std::string, std::string> execution_logs = std::unordered_map<std::string, std::string>();
 
@@ -135,7 +130,7 @@ int main(int, char**)
     servers = std::make_shared<json>(loadServerList());
     gui = std::make_shared<json>(loadGUI());
     std::thread bg_thread(background_worker);
-    camera_list_win = std::make_shared<CameraListWindow>(gui, global_state, master);
+    camera_list_win.reset(new CameraListWindow(gui, global_state, master));
     master->registerCameraSettingFeedback(settingGetterFeedback);
     master->registerCameraLogFeedback(assign_log);
     global_state->update_server = updateServerList;
@@ -168,7 +163,7 @@ int main(int, char**)
     ImGuiIO& io = ImGui::GetIO(); (void)io;
 
     // Setup Platform/Renderer backends
-    begin_imgui(window, gl_context);
+    begin_imgui(window, gl_context, glsl_version);
 
     // Main loop
     while (!global_state->done)
@@ -289,4 +284,6 @@ int main(int, char**)
     // Cleanup
     end_imgui();
     end_sdl(window, gl_context);
+
+    return 0;
 }

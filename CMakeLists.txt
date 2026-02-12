@@ -113,11 +113,15 @@ endif()
 
 # --- Server Executable ---
 if(BUILD_SERVER)
+    file(GLOB_RECURSE SERVER_SOURCE CONFIGURE_DEPENDS
+        "${CMAKE_SOURCE_DIR}/src/server/*.h"
+        "${CMAKE_SOURCE_DIR}/src/server/*.hpp"
+        "${CMAKE_SOURCE_DIR}/src/server/*.c"
+        "${CMAKE_SOURCE_DIR}/src/server/*.cpp"
+    )
     link_directories(/usr/lib/aarch64-linux-gnu)
     add_executable(server
-        src/server/main.cpp
-        src/server/GoProController.cpp
-        src/server/UdpProxyServer.cpp
+        ${SERVER_SOURCE}
         ${MDNS_SOURCES}
     )
     target_link_libraries(server hv_static libcurl)
@@ -127,10 +131,14 @@ endif()
 
 # --- Master Executable ---
 if(BUILD_MASTER)
+    file(GLOB_RECURSE MASTER_SOURCE CONFIGURE_DEPENDS
+        "${CMAKE_SOURCE_DIR}/src/master/*.h"
+        "${CMAKE_SOURCE_DIR}/src/master/*.hpp"
+        "${CMAKE_SOURCE_DIR}/src/master/*.c"
+        "${CMAKE_SOURCE_DIR}/src/master/*.cpp"
+    )
     add_executable(master
-        src/master/main.cpp
-        src/master/GoProMaster.cpp
-        src/master/IO.cpp
+        ${MASTER_SOURCE}
         lib/imgui/misc/cpp/imgui_stdlib.cpp
         ${IMGUI_SOURCES}
         ${MDNS_SOURCES}
