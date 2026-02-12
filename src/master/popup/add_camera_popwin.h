@@ -10,6 +10,8 @@ public:
     ~AddCameraPopup();
 
     virtual void render() override;
-    virtual void detect() override;
 private:
+    std::string server_ip_buf = "127.0.0.1";
+    std::string camera_serial_buf = "1234";
+    std::string error = "";
 };

@@ -23,7 +23,6 @@ public:
 
     bool enable;
 
-    virtual void update();
     virtual void render();
     virtual void detect();
 protected:

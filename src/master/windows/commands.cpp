@@ -130,7 +130,7 @@ void CommandWindow::render_local(){
             execution_logs.insert_or_assign(i->ip, "");
         }
 
-        master.applyAll("", buffer);
+        master->applyAll("", buffer);
     }
 
     if(ImGui::BeginCombo("ID", apply_all_item_string.c_str())){

@@ -37,24 +37,14 @@ std::shared_ptr<BaseWindow> windows_array[] = {
 };
 
 std::shared_ptr<AddCameraPopup> add_camera_popwin;
+std::shared_ptr<ScanCameraPopup> scan_camera_popwin;
+std::shared_ptr<StartWebcamPopup> start_webcam_popwin;
 
 std::shared_ptr<BasePopWindow> pop_windows_array[] = {
     add_camera_popwin,
+    scan_camera_popwin,
+    start_webcam_popwin,
 };
-
-std::string popup1_server_ip_buf = "127.0.0.1";
-std::string popup1_camera_serial_buf = "1234";
-std::string popup1_error = "";
-std::string popup2_server_ip_buf = "127.0.0.1";
-std::string popup2_error = "";
-std::string popup3_server_ip_buf = "127.0.0.1";
-std::string popup3_port_buf = "7000";
-int32_t popup3_res_buf = 0;
-std::string popup3_res_string_buf = "480p";
-int32_t popup3_fov_buf = 0;
-std::string popup3_fov_string_buf = "Wide";
-bool popup3_ts_buf = true;
-std::string popup3_error = "";
 
 // All the window flags
 bool popup_add_camera_win = false;
@@ -267,143 +257,12 @@ int main(int, char**)
             }
         }
 
-        ImVec2 center = ImVec2(0, 0);
-        if(popup_add_camera_win){
-            popup_add_camera_win = false;
-            ImGui::OpenPopup("Add Camera##Popup");
-            center = ImGui::GetMainViewport()->GetCenter();
-            ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+        for(const auto& w : pop_windows_array){
+            if(w->enable){
+                w->render();
+            }
         }
-        if(popup_scan_camera_win){
-            popup_scan_camera_win = false;
-            ImGui::OpenPopup("Scan Camera##Popup");
-            center = ImGui::GetMainViewport()->GetCenter();
-            ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
-        }
-        if(popup_start_webcam_win){
-            popup_start_webcam_win = false;
-            ImGui::OpenPopup("Start Webcam##Popup");
-            center = ImGui::GetMainViewport()->GetCenter();
-            ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
-        }
-        if(popup_execute_win){
-            popup_execute_win = false;
-            ImGui::OpenPopup("Execute Command##Popup");
-            center = ImGui::GetMainViewport()->GetCenter();
-            ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
-        }
-
-        if(ImGui::BeginPopupModal("Add Camera##Popup", NULL, wp_flag)){
-            bool updated = false;
-            updated = ImGui::InputText("Server IP", &popup1_server_ip_buf);
-            updated = ImGui::InputText("Camera IP", &popup1_camera_serial_buf);
-            ImGui::TextColored(ImVec4(1, 0, 0, 1), "%s", popup1_error.c_str());
-            if(updated){
-                popup1_error.clear();
-            }
-            if (ImGui::Button("Confirm")) {
-                bool pass = true;
-                if(master->findServer(popup1_server_ip_buf) == -1){
-                    popup1_error = "Server does not exist.";
-                    pass = false;
-                }
-                if(master->findCamera(GetRemoteIPBySerial(popup1_camera_serial_buf)) != -1){
-                    popup1_error = "Camera already added.";
-                    pass = false;
-                }
-
-                if(pass){
-                    master->command_only(popup1_server_ip_buf, "add", std::string(popup1_camera_serial_buf));
-                }
-            }
-            ImGui::SameLine();
-            if(ImGui::Button("Cancel")){
-                ImGui::CloseCurrentPopup();
-            }
-            ImGui::EndPopup();
-        }
-        if(ImGui::BeginPopupModal("Scan Camera##Popup", NULL, wp_flag)){
-            bool updated = false;
-            updated = ImGui::InputText("Server IP", &popup2_server_ip_buf);
-            ImGui::Text("You can leave it empty for broadcast to all websocket server");
-            ImGui::TextColored(ImVec4(1, 0, 0, 1), "%s", popup2_error.c_str());
-            if(updated){
-                popup2_error.clear();
-            }
-            if (ImGui::Button("Confirm")) {
-                bool pass = true;
-                if(master->findServer(popup2_server_ip_buf) == -1 && sizeof(popup2_server_ip_buf) == 0){
-                    popup2_error = "Server does not exist.";
-                    pass = false;
-                }
-
-                if(pass){
-                    if(sizeof(popup2_server_ip_buf) == 0){
-                        master->command_only("scan");
-                    }else{
-                        master->command_only(popup2_server_ip_buf, "scan", "");
-                    }
-                }
-            }
-            ImGui::SameLine();
-            if(ImGui::Button("Cancel")){
-                ImGui::CloseCurrentPopup();
-            }
-            ImGui::EndPopup();               
-        }
-        if(ImGui::BeginPopupModal("Start Webcam##Popup", NULL, wp_flag)){
-            bool updated = false;
-            updated = ImGui::InputText("Server IP", &popup3_server_ip_buf);
-            updated = ImGui::InputText("Port Start", &popup3_port_buf);
-            updated = ImGui::Checkbox("Use TS", &popup3_ts_buf);
-            if(ImGui::BeginCombo("Res", popup3_res_string_buf.c_str())){
-                for(int32_t n = 0; n < WEBCAM_START_RES_SIZE; n++){
-                    std::string option = WEBCAM_START_RES_STRING[n];
-                    if(option.size() == 0) continue;
-                    bool is_selected = (popup3_res_string_buf == option); // You can store your selection however you want, outside or inside your objects
-                    std::string option_r = option + ("##WebcamOption_" + std::string(WEBCAM_START_RES_NAME)); 
-                    if (ImGui::Selectable(option_r.c_str(), is_selected))
-                    {
-                        updated = true;
-                        popup3_res_buf = n; // Change index
-                        popup3_res_string_buf = option;
-                    }
-                    if (is_selected)
-                        ImGui::SetItemDefaultFocus(); 
-                }
-                ImGui::EndCombo();
-            }
-            if(ImGui::BeginCombo("Fov", popup3_fov_string_buf.c_str())){
-                for(int32_t n = 0; n < WEBCAM_START_FOV_SIZE; n++){
-                    std::string option = WEBCAM_START_FOV_STRING[n];
-                    if(option.size() == 0) continue;
-                    bool is_selected = (popup3_fov_string_buf == option); // You can store your selection however you want, outside or inside your objects
-                    std::string option_r = option + ("##WebcamOption_" + std::string(WEBCAM_START_FOV_NAME)); 
-                    if (ImGui::Selectable(option.c_str(), is_selected))
-                    {
-                        updated = true;
-                        popup3_fov_buf = n; // Change index
-                        popup3_fov_string_buf = option;
-                    }
-                    if (is_selected)
-                        ImGui::SetItemDefaultFocus(); 
-                }
-                ImGui::EndCombo();
-            }
-            
-            ImGui::TextColored(ImVec4(1, 0, 0, 1), "%s", popup3_error.c_str());
-            if(updated){
-                popup3_error.clear();
-            }
-            if(ImGui::Button("Confirm")){
-                
-            }
-            ImGui::SameLine();
-            if(ImGui::Button("Cancel")){
-                ImGui::CloseCurrentPopup();
-            }
-            ImGui::EndPopup();
-        }
+        
         if(ImGui::BeginPopupModal("Execute Command##Popup", NULL, wp_flag)){
             int32_t index = 0;
             for(auto i = execution_logs.begin(); i != execution_logs.end(); ++i){

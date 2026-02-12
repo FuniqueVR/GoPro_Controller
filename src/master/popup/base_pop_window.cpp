@@ -20,10 +20,6 @@ BasePopWindow::~BasePopWindow(){
 
 }
 
-void BasePopWindow::update(){
-
-}
-
 void BasePopWindow::render(){
 
 }
