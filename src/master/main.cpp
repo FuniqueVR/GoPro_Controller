@@ -9,21 +9,13 @@
 #include <chrono>
 #include <vector>
 #include <thread>
-#include <SDL3/SDL.h>
-#if defined(IMGUI_IMPL_OPENGL_ES2)
-#include <SDL3/SDL_opengles2.h>
-#else
-#include <SDL3/SDL_opengl.h>
-#endif
-#include "imgui.h"
-#include "imgui_impl_sdl3.h"
-#include "imgui_impl_opengl3.h"
 #include "misc/cpp/imgui_stdlib.h"
 #include "GoProMaster.h"
 #include "IO.h"
 #include "state.h"
 #include "../common/camera_code.h"
 #include "windows/camera_list.h"
+#include "imgui_helper.h"
 
 std::shared_ptr<GoProMaster> master;
 std::shared_ptr<json> gui;
@@ -82,32 +74,32 @@ void assign_log(std::string key, std::string value){
 }
 
 void settingGetterFeedback(std::string ip, json setting){
-    if(current_camera_item == ip){
-        current_setting_items = setting;
-        current_setting_items_bind = true;
+    if(global_state->current_camera_item == ip){
+        global_state->current_setting_items = setting;
+        global_state->current_setting_items_bind = true;
     }
 }
 
 void updateServerList(){
     json data = json::object();
     data["data"] = json::array();
-    for(const auto s : master.getServers()){
+    for(const auto s : master->getServers()){
         if(s){
             data["data"].push_back(s->ip);
         }
     }
-    servers = data;
+    servers->swap(data);
     saveServerList(data);
 }
 
 void updateGUIList(){
-    gui["websocket_server_window"] = websocket_server_window;
-    gui["camera_list_win"] = camera_list_win;
-    gui["global_command_win"] = global_command_win;
-    gui["local_command_win"] = local_command_win;
-    gui["inspector_win"] = inspector_win;
-    gui["record_win"] = record_win;
-    saveGUI(gui);
+    (*gui)["websocket_server_window"] = websocket_server_window;
+    (*gui)["camera_list_win"] = camera_list_win->enable;
+    (*gui)["global_command_win"] = global_command_win;
+    (*gui)["local_command_win"] = local_command_win;
+    (*gui)["inspector_win"] = inspector_win;
+    (*gui)["record_win"] = record_win;
+    saveGUI(*gui);
     ImGui::SaveIniSettingsToDisk("imgui.ini");
 }
 
@@ -117,59 +109,15 @@ int main(int, char**)
     setvbuf(stderr, NULL, _IONBF, 0);
     
     // Setup SDL
-    if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD))
+    SDL_Window* window;
+    SDL_GLContext gl_context;
+    const char* glsl_version;
     {
-        printf("Error: SDL_Init(): %s\n", SDL_GetError());
-        return 1;
+        std::tuple<SDL_Window*, SDL_GLContext, const char*> sdl_ctx = begin_sdl();
+        window = std::get<0>(sdl_ctx);
+        gl_context = std::get<1>(sdl_ctx);
+        glsl_version = std::get<2>(sdl_ctx);
     }
-
-    // Decide GL+GLSL versions
-#if defined(IMGUI_IMPL_OPENGL_ES2)
-    // GL ES 2.0 + GLSL 100 (WebGL 1.0)
-    const char* glsl_version = "#version 100";
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-#elif defined(IMGUI_IMPL_OPENGL_ES3)
-    // GL ES 3.0 + GLSL 300 es (WebGL 2.0)
-    const char* glsl_version = "#version 300 es";
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-#elif defined(__APPLE__)
-    // GL 3.2 Core + GLSL 150
-    const char* glsl_version = "#version 150";
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG); // Always required on Mac
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
-#else
-    // GL 3.0 + GLSL 130
-    const char* glsl_version = "#version 130";
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-#endif
-
-    // Create window
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
-    float main_scale = SDL_GetDisplayContentScale(SDL_GetPrimaryDisplay());
-    SDL_WindowFlags window_flags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN | SDL_WINDOW_HIGH_PIXEL_DENSITY;
-    SDL_Window* window = SDL_CreateWindow("GoPro Controller Master", (int)(1280 * main_scale), (int)(800 * main_scale), window_flags);
-    if (window == nullptr)
-    {
-        printf("Error: SDL_CreateWindow(): %s\n", SDL_GetError());
-        return 1;
-    }
-    SDL_GLContext gl_context = SDL_GL_CreateContext(window);
-    SDL_GL_MakeCurrent(window, gl_context);
-    SDL_GL_SetSwapInterval(1); // Enable vsync
-    SDL_ShowWindow(window);
 
     servers = std::make_shared<json>(loadServerList());
     gui = std::make_shared<json>(loadGUI());
@@ -178,12 +126,12 @@ int main(int, char**)
     master->registerCameraSettingFeedback(settingGetterFeedback);
     master->registerCameraLogFeedback(assign_log);
 
-    if(servers["data"].is_array()){
-        for(int i = 0; i < servers["data"].size(); i++){
-            if(servers["data"].at(i).is_string()){
-                std::string buffer_ip = servers["data"].at(i).get<std::string>();
-                std::string ip = master.addServer(buffer_ip);
-                master.reconnect(ip);
+    if((*servers)["data"].is_array()){
+        for(int i = 0; i < (*servers)["data"].size(); i++){
+            if((*servers)["data"].at(i).is_string()){
+                std::string buffer_ip = (*servers)["data"].at(i).get<std::string>();
+                std::string ip = master->addServer(buffer_ip);
+                master->reconnect(ip);
             }
         }
     }
@@ -210,40 +158,12 @@ int main(int, char**)
         record_win = true;
     }
 
-    // Setup Dear ImGui context
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
-    io.Fonts->AddFontFromFileTTF("Roboto-Medium.ttf");
-    io.FontGlobalScale = 1.3f;
-    io.DisplayFramebufferScale = ImVec2(1.3f, 1.3f);
-    io.ConfigErrorRecovery = true;
-    io.ConfigErrorRecoveryEnableAssert = true;
-    io.ConfigErrorRecoveryEnableDebugLog = true;
-    io.ConfigErrorRecoveryEnableTooltip = true;
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-    io.ConfigDockingAlwaysTabBar = true;
-    io.ConfigDpiScaleFonts = true;
-    io.ConfigDpiScaleViewports = true;
-
-    // Setup Dear ImGui style
-    ImGui::StyleColorsDark();
-    ImGuiStyle& style = ImGui::GetStyle();
-    style.ScaleAllSizes(main_scale);
+    setup_imgui();
     setup_catppuccin_mocha_theme();
-
-    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-    {
-        style.WindowRounding = 0.0f;
-        style.Colors[ImGuiCol_WindowBg].w = 1.0f;
-    }
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
 
     // Setup Platform/Renderer backends
-    ImGui_ImplSDL3_InitForOpenGL(window, gl_context);
-    ImGui_ImplOpenGL3_Init(glsl_version);
+    begin_imgui(window, gl_context);
 
     // Main loop
     while (!global_state->done)
@@ -414,33 +334,11 @@ int main(int, char**)
             }
         }
 
-        if(camera_list_win) {
-            ImGui::Begin("GoPro Dashboard", &camera_list_win, w_flag);
-            {
-                std::lock_guard<std::mutex> lock(master.camera_mtx);
-                for(const auto& c : master.getCameras()){
-                    if(c){
-                        try{
-                            bool selected = c->ip == current_camera_item;
-                            std::string plusStatus = master.getBarInfo(c);
-                            std::string plusID = plusStatus + "##CameraList_" + c->ip;
-                            if(ImGui::Selectable(plusID.c_str(), selected)){
-                                // User select interaction
-                                current_setting_items_bind = false;
-                                current_camera_item = c->ip;
-                                current_camera_name = c->name;
-                                std::cout << "Select camera: " << c->ip << std::endl;
-                                master.query_only(c->server, "get", c->ip);
-                                //current_setting_items_bind = master.getSettingsFromCamera(*c, current_setting_items);
-                            }
-                        }catch(const std::exception& ex){
-                            std::cerr << ex.what() << std::endl;
-                        }
-                    }
-                }
-            }
-            ImGui::End();
-            if(!camera_list_win){
+        if(camera_list_win->enable){
+            camera_list_win->update();
+            camera_list_win->render();
+            if(camera_list_win->is_close()){
+                camera_list_win->enable = false;
                 updateGUIList();
             }
         }
@@ -846,19 +744,12 @@ int main(int, char**)
         SDL_GL_SwapWindow(window);
     }
 
-    master.setdone();
-    master.disconnectAll();
+    master->setdone();
+    master->disconnectAll();
     if(bg_thread.joinable()){
         bg_thread.join();
     }
     // Cleanup
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplSDL3_Shutdown();
-    ImGui::DestroyContext();
-
-    SDL_GL_DestroyContext(gl_context);
-    SDL_DestroyWindow(window);
-    SDL_Quit();
-
-    return 0;
+    end_imgui();
+    end_sdl(window, gl_context);
 }

@@ -3,7 +3,10 @@
 
 class CameraListWindow : public BaseWindow {
 public:
-    CameraListWindow(json* _setting, GoProMaster* _master);
+    CameraListWindow(
+        std::shared_ptr<json> _setting, 
+        std::shared_ptr<GlobalState> _state, 
+        std::shared_ptr<GoProMaster> _master);
     virtual ~CameraListWindow();
 
     virtual void render() override;

@@ -4,6 +4,8 @@
 
 using json = nlohmann::json;
 
+typedef void(*CommandSenderFunc)(const char* cmd);
+
 struct GlobalState {
     bool done;
     // Selection
@@ -23,4 +25,6 @@ struct GlobalState {
     // Apply state
     std::string apply_all_item_string = "Video Resolution";
     int32_t apply_all_item = 2;
+    // Caller
+    CommandSenderFunc command_sender = NULL; 
 };

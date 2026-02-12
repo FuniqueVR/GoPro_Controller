@@ -12,8 +12,6 @@ using json = nlohmann::json;
 #define w_flag ImGuiWindowFlags_NoCollapse
 #define wp_flag ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize
 
-extern "C" inline void setup_catppuccin_mocha_theme();
-
 class BaseWindow {
 public:
     BaseWindow(
@@ -27,6 +25,7 @@ public:
     virtual void update();
     virtual void render();
     virtual bool is_close();
+    virtual void save_setting();
 protected:
     std::shared_ptr<json> setting;
     std::shared_ptr<GlobalState> state;
