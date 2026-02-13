@@ -26,6 +26,13 @@ void CameraListWindow::render(){
         for(const auto& c : master->getCameras()){
             if(c){
                 try{
+                    ImGui::BeginGroup();
+                    ImDrawList* draw_list = ImGui::GetWindowDrawList();
+                    ImVec2 image_pos = ImGui::GetCursorScreenPos();
+                    ImVec2 image_pos_max = image_pos + ImVec2(10, 10);
+                    draw_list->AddRectFilled(image_pos, image_pos_max, IM_COL32(255, 255, 255, 255));
+                    ImGui::EndGroup();
+                    /**
                     bool selected = c->ip == state->current_camera_item;
                     std::string plusStatus = master->getBarInfo(c);
                     std::string plusID = plusStatus + "##CameraList_" + c->ip;
@@ -38,6 +45,7 @@ void CameraListWindow::render(){
                         master->query_only(c->server, "get", c->ip);
                         //current_setting_items_bind = master.getSettingsFromCamera(*c, current_setting_items);
                     }
+                    */
                 }catch(const std::exception& ex){
                     std::cerr << ex.what() << std::endl;
                 }
