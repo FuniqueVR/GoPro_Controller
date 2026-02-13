@@ -30,9 +30,16 @@ public:
         std::shared_ptr<GoProMaster> _master);
     ~BaseWindow();
 
+    /**
+     * Current window visibility
+     */
     bool enable = false;
     std::string get_title();
 
+    /**
+     * Is enable being triiger right now
+     */
+    virtual void trigger(bool value);
     virtual void update();
     virtual void render();
     virtual bool is_close();

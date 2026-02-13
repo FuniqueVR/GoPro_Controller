@@ -23,9 +23,22 @@ public:
         std::shared_ptr<GoProMaster> _master);
     ~BasePopWindow();
 
+    /**
+     * Does anyone call open popup right at this frame
+     */
     bool enable = false;
-
+    std::string get_title();
+    /**
+     * Is enable being triiger right now
+     */
+    virtual void trigger(bool value);
+    /**
+     * Render the imgui window
+     */
     virtual void render();
+    /**
+     * 
+     */
     virtual void detect();
 protected:
     std::shared_ptr<json> setting;

@@ -24,6 +24,10 @@ std::string BaseWindow::get_title(){
     return title;
 }
 
+void BaseWindow::trigger(bool value){
+
+}
+
 void BaseWindow::update(){
 
 }

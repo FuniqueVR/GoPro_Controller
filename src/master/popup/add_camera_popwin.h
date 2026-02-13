@@ -9,9 +9,10 @@ public:
         std::shared_ptr<GoProMaster> _master);
     ~AddCameraPopup();
 
+    virtual void trigger(bool v) override;
     virtual void render() override;
 private:
     std::string server_ip_buf = "127.0.0.1";
-    std::string camera_serial_buf = "1234";
+    std::string camera_serial_buf = "123";
     std::string error = "";
 };

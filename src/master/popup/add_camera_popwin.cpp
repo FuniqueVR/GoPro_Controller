@@ -13,10 +13,36 @@ AddCameraPopup::~AddCameraPopup(){
     
 }
 
+void AddCameraPopup::trigger(bool v){
+    if(v){
+        std::lock_guard<std::mutex> lock(master->camera_mtx);
+        const std::vector<std::shared_ptr<ServerConnection>>& refs = master->getServers();
+        if(refs.size() > 0){
+            server_ip_buf = refs[0]->ip;
+        }
+    }
+}
+
 void AddCameraPopup::render(){
     if(ImGui::BeginPopupModal(title.c_str(), NULL, wp_flag)){
+        std::lock_guard<std::mutex> lock(master->camera_mtx);
+        const std::vector<std::shared_ptr<ServerConnection>>& all_servers = master->getServers();
         bool updated = false;
-        updated = ImGui::InputText("Server IP", &server_ip_buf);
+        if(ImGui::BeginCombo("Server IP", server_ip_buf.c_str())){
+            for (int n = 0; n < all_servers.size(); n++)
+            {
+                std::string option = all_servers.at(n)->ip;
+                bool is_selected = all_servers[n]->ip == server_ip_buf;
+                option += "##PopupServerOption"; 
+                if (ImGui::Selectable(option.c_str(), is_selected))
+                {
+                    server_ip_buf = all_servers.at(n)->ip;
+                }
+                if (is_selected)
+                    ImGui::SetItemDefaultFocus();   // You may set the initial focus when opening the combo (scrolling + for keyboard navigation support)
+            }
+            ImGui::EndCombo();
+        }
         updated = ImGui::InputText("Camera IP", &camera_serial_buf);
         ImGui::TextColored(ImVec4(1, 0, 0, 1), "%s", error.c_str());
         if(updated){
@@ -30,6 +56,10 @@ void AddCameraPopup::render(){
             }
             if(master->findCamera(GetRemoteIPBySerial(camera_serial_buf)) != -1){
                 error = "Camera already added.";
+                pass = false;
+            }
+            if(camera_serial_buf.size() != 3){
+                error = "Serial must be 3 number";
                 pass = false;
             }
 

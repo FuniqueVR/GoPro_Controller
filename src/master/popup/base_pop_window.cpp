@@ -20,6 +20,14 @@ BasePopWindow::~BasePopWindow(){
 
 }
 
+std::string BasePopWindow::get_title(){
+    return title;
+}
+
+void BasePopWindow::trigger(bool value){
+
+}
+
 void BasePopWindow::render(){
 
 }

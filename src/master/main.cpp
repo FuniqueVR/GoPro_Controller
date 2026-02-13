@@ -156,16 +156,20 @@ int main(int, char**)
 
     if((*gui)["websocket_server_window"].is_boolean() && (*gui)["websocket_server_window"].get<bool>()){
         websocket_win->enable = true;
+        websocket_win->trigger(true);
         std::cout << "Detect websocket_server_window gui is on" << std::endl;
     }
     if((*gui)["camera_list_win"].is_boolean() && (*gui)["camera_list_win"].get<bool>()){
         camera_list_win->enable = true;
+        camera_list_win->trigger(true);
     }
     if((*gui)["commands_win"].is_boolean() && (*gui)["commands_win"].get<bool>()){
         commands_win->enable = true;
+        commands_win->trigger(true);
     }
     if((*gui)["inspector_win"].is_boolean() && (*gui)["inspector_win"].get<bool>()){
         inspector_win->enable = true;
+        inspector_win->trigger(true);
     }
 
     setup_imgui();
@@ -218,18 +222,22 @@ int main(int, char**)
                 }
                 if (event.key.key == SDLK_Q) {
                     websocket_win->enable = !websocket_win->enable;
+                    websocket_win->trigger(websocket_win->enable);
                     updateGUIList();
                 }
                 if (event.key.key == SDLK_W) {
                     commands_win->enable = !commands_win->enable;
+                    commands_win->trigger(commands_win->enable);
                     updateGUIList();
                 }
                 if (event.key.key == SDLK_E) {
                     camera_list_win->enable = !camera_list_win->enable;
+                    camera_list_win->trigger(camera_list_win->enable);
                     updateGUIList();
                 }
                 if (event.key.key == SDLK_R) {
                     inspector_win->enable = !inspector_win->enable;
+                    inspector_win->trigger(inspector_win->enable);
                     updateGUIList();
                 }
             }
@@ -264,6 +272,7 @@ int main(int, char**)
             if(w && w->enable){
                 w->render();
                 if(w->is_close()){
+                    w->trigger(false);
                     updateGUIList();
                 }
             }
