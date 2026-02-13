@@ -23,7 +23,7 @@ public:
         std::shared_ptr<GoProMaster> _master);
     ~BasePopWindow();
 
-    bool enable;
+    bool enable = false;
 
     virtual void render();
     virtual void detect();

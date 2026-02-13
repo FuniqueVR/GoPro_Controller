@@ -27,23 +27,12 @@ std::shared_ptr<CameraListWindow> camera_list_win;
 std::shared_ptr<CommandWindow> commands_win;
 std::shared_ptr<InspectorWindow> inspector_win;
 std::shared_ptr<WebsocketWindow> websocket_win;
-
-std::shared_ptr<BaseWindow> windows_array[] = {
-    websocket_win,
-    commands_win,
-    camera_list_win,
-    inspector_win,
-};
+std::shared_ptr<BaseWindow> windows_array[4];
 
 std::shared_ptr<AddCameraPopup> add_camera_popwin;
 std::shared_ptr<ScanCameraPopup> scan_camera_popwin;
 std::shared_ptr<StartWebcamPopup> start_webcam_popwin;
-
-std::shared_ptr<BasePopWindow> pop_windows_array[] = {
-    add_camera_popwin,
-    scan_camera_popwin,
-    start_webcam_popwin,
-};
+std::shared_ptr<BasePopWindow> pop_windows_array[3];
 
 // All the window flags
 ExecutionType execution_type = ExecutionType::SetAll;
@@ -52,21 +41,24 @@ std::unordered_map<std::string, std::string> execution_logs = std::unordered_map
 // The secondary thread handle the background update
 // This will automatically retry connect to server every 10 seconds.
 void background_worker(){
-    while(global_state->done){
+    while(!global_state->done){
         while(!command_queue.empty()){
             std::string cmd = command_queue.front();
             command_queue.pop();
             if(cmd == "add_camera"){
                 add_camera_popwin->enable = true;
+                std::cout << "Detect add_camera popup" << std::endl;
             }
             else if(cmd == "scan_camera"){
                 scan_camera_popwin->enable = true;
+                std::cout << "Detect scan_camera popup" << std::endl;
             }
             else if(cmd == "start_webcam"){
                 start_webcam_popwin->enable = true;
+                std::cout << "Detect start_webcam popup" << std::endl;
             }
         }
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 }
 
@@ -89,13 +81,13 @@ void settingGetterFeedback(std::string ip, json setting){
 void updateServerList(){
     json data = json::object();
     data["data"] = json::array();
-    for(const auto s : master->getServers()){
+    for(const auto& s : master->getServers()){
         if(s){
             data["data"].push_back(s->ip);
         }
     }
-    servers->swap(data);
     saveServerList(data);
+    servers->swap(data);
 }
 
 void updateGUIList(){
@@ -107,8 +99,8 @@ void updateGUIList(){
     ImGui::SaveIniSettingsToDisk("imgui.ini");
 }
 
-void pushCommand(std::string command){
-    command_queue.push(command);
+void pushCommand(const char* cmd){
+    command_queue.push(cmd);
 }
 
 int main(int, char**)
@@ -134,13 +126,22 @@ int main(int, char**)
     commands_win = std::make_shared<CommandWindow>(gui, global_state, master);
     camera_list_win = std::make_shared<CameraListWindow>(gui, global_state, master);
     inspector_win = std::make_shared<InspectorWindow>(gui, global_state, master);
+    windows_array[0] = websocket_win;
+    windows_array[1] = commands_win;
+    windows_array[2] = camera_list_win;
+    windows_array[3] = inspector_win;
     // Popup
     add_camera_popwin = std::make_shared<AddCameraPopup>(gui, global_state, master);
     scan_camera_popwin = std::make_shared<ScanCameraPopup>(gui, global_state, master);
     start_webcam_popwin = std::make_shared<StartWebcamPopup>(gui, global_state, master);
+    pop_windows_array[0] = add_camera_popwin;
+    pop_windows_array[1] = scan_camera_popwin;
+    pop_windows_array[2] = start_webcam_popwin;
+    // Register event for master
     master->registerCameraSettingFeedback(settingGetterFeedback);
     master->registerCameraLogFeedback(assign_log);
     global_state->update_server = updateServerList;
+    global_state->command_sender = pushCommand;
     std::thread bg_thread(background_worker);
 
     if((*servers)["data"].is_array()){
@@ -155,11 +156,12 @@ int main(int, char**)
 
     if((*gui)["websocket_server_window"].is_boolean() && (*gui)["websocket_server_window"].get<bool>()){
         websocket_win->enable = true;
+        std::cout << "Detect websocket_server_window gui is on" << std::endl;
     }
     if((*gui)["camera_list_win"].is_boolean() && (*gui)["camera_list_win"].get<bool>()){
         camera_list_win->enable = true;
     }
-    if((*gui)["global_command_win"].is_boolean() && (*gui)["global_command_win"].get<bool>()){
+    if((*gui)["commands_win"].is_boolean() && (*gui)["commands_win"].get<bool>()){
         commands_win->enable = true;
     }
     if((*gui)["inspector_win"].is_boolean() && (*gui)["inspector_win"].get<bool>()){
@@ -214,25 +216,25 @@ int main(int, char**)
                         printf("Window in windowed mode\n");
                     }
                 }
-                if (event.key.key == SDLK_Q && !websocket_win->enable) {
-                    websocket_win->enable = true;
+                if (event.key.key == SDLK_Q) {
+                    websocket_win->enable = !websocket_win->enable;
                     updateGUIList();
                 }
-                if (event.key.key == SDLK_W && !commands_win->enable) {
-                    commands_win->enable = true;
+                if (event.key.key == SDLK_W) {
+                    commands_win->enable = !commands_win->enable;
                     updateGUIList();
                 }
-                if (event.key.key == SDLK_E && !camera_list_win->enable) {
-                    camera_list_win->enable = true;
+                if (event.key.key == SDLK_E) {
+                    camera_list_win->enable = !camera_list_win->enable;
                     updateGUIList();
                 }
-                if (event.key.key == SDLK_R && !inspector_win->enable) {
-                    inspector_win->enable = true;
+                if (event.key.key == SDLK_R) {
+                    inspector_win->enable = !inspector_win->enable;
                     updateGUIList();
                 }
             }
 
-            for(const auto& w : windows_array){
+            for(auto& w : windows_array){
                 if(w && w->enable){
                     w->update();
                 }
@@ -258,7 +260,7 @@ int main(int, char**)
         }
         ImGui::EndMainMenuBar();
 
-        for(const auto& w : windows_array){
+        for(auto& w : windows_array){
             if(w && w->enable){
                 w->render();
                 if(w->is_close()){
@@ -267,14 +269,14 @@ int main(int, char**)
             }
         }
 
-        for(const auto& w : pop_windows_array){
+        for(auto& w : pop_windows_array){
             if(w && w->enable){
                 w->detect();
             }
         }
 
-        for(const auto& w : pop_windows_array){
-            if(w && w->enable){
+        for(auto& w : pop_windows_array){
+            if(w){
                 w->render();
             }
         }

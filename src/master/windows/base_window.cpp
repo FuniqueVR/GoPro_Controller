@@ -20,6 +20,10 @@ BaseWindow::~BaseWindow(){
 
 }
 
+std::string BaseWindow::get_title(){
+    return title;
+}
+
 void BaseWindow::update(){
 
 }
@@ -29,7 +33,7 @@ void BaseWindow::render(){
 }
 
 bool BaseWindow::is_close(){
-    return enable;
+    return !enable;
 }
 
 void BaseWindow::save_setting(){

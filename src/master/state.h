@@ -13,6 +13,10 @@ using json = nlohmann::json;
 typedef void(*CommandSenderFunc)(const char* cmd);
 typedef void(*ActionFunc)();
 
+enum class InspectorObjectType {
+    Camera
+};
+
 struct GlobalState {
     bool done;
     // Selection
@@ -35,4 +39,6 @@ struct GlobalState {
     // Caller
     CommandSenderFunc command_sender = NULL; 
     ActionFunc update_server = NULL;
+    // Inspector
+    InspectorObjectType iot = InspectorObjectType::Camera;
 };

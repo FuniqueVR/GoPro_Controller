@@ -32,38 +32,38 @@ void WebsocketWindow::render(){
 
         ImGui::Text("Manual Control:");
         if (ImGui::Button("Start Rec (F2)")) master->command_only("shutter_on"); ImGui::SameLine();
-        ImGui::SetItemTooltip("Keyboard shortcut for broadcasting record signal to all connected cameras");
+        if(ImGui::IsItemHovered()) ImGui::SetTooltip("Keyboard shortcut for broadcasting record signal to all connected cameras");
         if (ImGui::Button("Stop Rec (F3)")) master->command_only("shutter_off");
-        ImGui::SetItemTooltip("Keyboard shortcut for broadcasting stop signal to all connected cameras");
+        if(ImGui::IsItemHovered()) ImGui::SetTooltip("Keyboard shortcut for broadcasting stop signal to all connected cameras");
         if (ImGui::Button("Photo Mode (F4)")) master->presetSwitch("", 65536);  ImGui::SameLine();
-        ImGui::SetItemTooltip("Keyboard shortcut for broadcasting switch to photo mode signal to all connected cameras");
+        if(ImGui::IsItemHovered()) ImGui::SetTooltip("Keyboard shortcut for broadcasting switch to photo mode signal to all connected cameras");
         if (ImGui::Button("Video Mode (F5)")) master->presetSwitch("", 0);
-        ImGui::SetItemTooltip("Keyboard shortcut for broadcasting switch to video mode signal to all connected cameras");
+        if(ImGui::IsItemHovered()) ImGui::SetTooltip("Keyboard shortcut for broadcasting switch to video mode signal to all connected cameras");
 
         ImGui::Separator();
 
         ImGui::Text("Server Connections:");
         ImGui::InputText("Server IP", &server_ip_buf);
-        ImGui::SetItemTooltip("Enter the server ip address here, example will be 127.0.0.1 or 192.168.61.123");
+        if(ImGui::IsItemHovered()) ImGui::SetTooltip("Enter the server ip address here, example will be 127.0.0.1 or 192.168.61.123");
         if (ImGui::Button("Add Server")) {
             std::string ip = master->addServer(server_ip_buf);
             master->reconnect(ip);
             state->update_server();
         }
-        ImGui::SetItemTooltip("Trying to connect server base on address you enter");
+        if(ImGui::IsItemHovered()) ImGui::SetTooltip("Trying to connect server base on address you enter");
 
         ImGui::SameLine();
         if (ImGui::Button("Remove Server")) {
             master->clean(std::string(server_ip_buf));
             state->update_server();
         }
-        ImGui::SetItemTooltip("Trying to remove server base on address you enter, You must disconnect the server before hit remove by the way.");
+        if(ImGui::IsItemHovered()) ImGui::SetTooltip("Trying to remove server base on address you enter, You must disconnect the server before hit remove by the way.");
 
         ImGui::SameLine();
         if (ImGui::Button("Disconnect Server")) {
             master->disconnect(std::string(server_ip_buf));
         }
-        ImGui::SetItemTooltip("Trying to disconnect server base on address you enter");
+        if(ImGui::IsItemHovered()) ImGui::SetTooltip("Trying to disconnect server base on address you enter");
 
         if (ImGui::Button("Reconnect All")) {
             master->reconnectAll();

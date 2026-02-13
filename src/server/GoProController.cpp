@@ -584,7 +584,8 @@ std::string GoProController::getAllIP(){
 
 void GoProController::_loadRecord(){
     std::string homedir = get_env_var("WS_ROOT");
-    homedir += "/record.txt";
+    if(homedir.size() > 0) homedir += "/";
+    homedir += "record.txt";
     std::cout << "Trying load data from: " << homedir << std::endl;
     std::ifstream inFile(homedir.c_str());
     if (!inFile.is_open()) {
@@ -611,7 +612,8 @@ void GoProController::_loadRecord(){
 
 void GoProController::_updateRecord(){
     std::string homedir = get_env_var("WS_ROOT");
-    homedir += "/record.txt";
+    if(homedir.size() > 0) homedir += "/";
+    homedir += "record.txt";
     std::cout << "Trying export data to: " << homedir << std::endl;
     std::ofstream outFile( homedir.c_str() );
     

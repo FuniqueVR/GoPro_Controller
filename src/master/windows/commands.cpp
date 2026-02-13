@@ -42,24 +42,24 @@ void CommandWindow::render_global(){
     ImGui::Text("Commands applied to all connected cameras");
 
     if(ImGui::Button("Scan All")) master->command_only("scan"); ImGui::SameLine();
-    ImGui::SetItemTooltip("Scan all websocket server for cameras");
+    if(ImGui::IsItemHovered()) ImGui::SetTooltip("Scan all websocket server for cameras");
     if(ImGui::Button("Scan Server")) state->command_sender("scan_server");
-    ImGui::SetItemTooltip("Scan one websocket server for cameras\nThis will popup a window for you to enter websocket server address to targeting");
+    if(ImGui::IsItemHovered()) ImGui::SetTooltip("Scan one websocket server for cameras\nThis will popup a window for you to enter websocket server address to targeting");
 
     if(ImGui::Button("Add Camera")) state->command_sender("add_camera"); ImGui::SameLine();
-    ImGui::SetItemTooltip("Menually add camera address to one websocket server list");
+    if(ImGui::IsItemHovered()) ImGui::SetTooltip("Menually add camera address to one websocket server list");
     if(ImGui::Button("Clean Camera")) master->command_only("clean");
-    ImGui::SetItemTooltip("Clean all websocket server camera record");
+    if(ImGui::IsItemHovered()) ImGui::SetTooltip("Clean all websocket server camera record");
 
     if(ImGui::Button("Connect All")) master->command_only("usb_on"); ImGui::SameLine();
-    ImGui::SetItemTooltip("Tells all cameras usb control on");
+    if(ImGui::IsItemHovered()) ImGui::SetTooltip("Tells all cameras usb control on");
     if(ImGui::Button("Disconnect All")) master->command_only("usb_off");
-    ImGui::SetItemTooltip("Tells all cameras usb control off");
+    if(ImGui::IsItemHovered()) ImGui::SetTooltip("Tells all cameras usb control off");
 
     if(ImGui::Button("Reboot All")) master->command_only("reboot"); ImGui::SameLine();
-    ImGui::SetItemTooltip("Tells all cameras reboot right now");
+    if(ImGui::IsItemHovered()) ImGui::SetTooltip("Tells all cameras reboot right now");
     if(ImGui::Button("Shutdown All")) master->command_only("shutdown");
-    ImGui::SetItemTooltip("Tells all cameras shutdown right now");
+    if(ImGui::IsItemHovered()) ImGui::SetTooltip("Tells all cameras shutdown right now");
 
     if(ImGui::Button("Record All")) master->command_only("shutter_on"); ImGui::SameLine();
     if(ImGui::Button("Stop All")) master->command_only("shutter_off");
@@ -75,7 +75,7 @@ void CommandWindow::render_global(){
 
 void CommandWindow::render_local(){
     std::lock_guard<std::mutex> lock(master->camera_mtx);
-    ImGui::LabelText("Single Camera Control", "Commands applied to selected camera");
+    ImGui::Text("Single Camera Control");
 
     bool should_disabled = state->current_camera_item.size() < 10 || master->findCamera(state->current_camera_item) == -1;
     ImGui::BeginDisabled(should_disabled);

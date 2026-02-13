@@ -16,6 +16,9 @@
 #include <random>
 #include <sstream>
 #include <curl/curl.h>
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 // 1. Add this callback outside the function
 inline size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* userp) {
@@ -217,15 +220,15 @@ inline void execs_download(std::vector<std::string> cmds, std::vector<std::strin
     }
 }
 
-inline std::string get_env_var( std::string const & key ) {                                 
-    char * val;                                                                        
-    val = getenv( key.c_str() );                                                       
-    std::string retval = "";                                                           
-    if (val != NULL) {                                                                 
-        retval = val;                                                                    
-    }                                                                                  
-    return retval;                                                                        
-}  
+inline std::string get_env_var( std::string const & key ) {
+    char * val;
+    val = getenv( key.c_str() );
+    std::string retval = fs::current_path().string();
+    if (val != NULL) {
+        retval = val;
+    }
+    return retval;
+}
 
 namespace uuid {
     static std::random_device              rd;

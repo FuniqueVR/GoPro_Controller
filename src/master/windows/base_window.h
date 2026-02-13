@@ -12,6 +12,7 @@
 #include "imgui.h"
 #include "imgui_impl_sdl3.h"
 #include "imgui_impl_opengl3.h"
+#include "imgui_internal.h"
 #include "misc/cpp/imgui_stdlib.h"
 #include "../GoProMaster.h"
 #include "../state.h"
@@ -29,7 +30,8 @@ public:
         std::shared_ptr<GoProMaster> _master);
     ~BaseWindow();
 
-    bool enable;
+    bool enable = false;
+    std::string get_title();
 
     virtual void update();
     virtual void render();

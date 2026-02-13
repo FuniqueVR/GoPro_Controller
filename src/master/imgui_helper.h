@@ -22,6 +22,10 @@
 #include "imgui_impl_opengl3.h"
 #include "windows/base_window.h"
 
+/**
+ * Helping setup the imgui context
+ * Such as style or theme stuff
+ */
 extern "C" inline void setup_imgui(){
     float main_scale = SDL_GetDisplayContentScale(SDL_GetPrimaryDisplay());
     // Setup Dear ImGui context
@@ -46,7 +50,9 @@ extern "C" inline void setup_imgui(){
     ImGuiStyle& style = ImGui::GetStyle();
     style.ScaleAllSizes(main_scale);
 }
-
+/**
+ * Setup build-in theme
+ */
 extern "C" inline void setup_catppuccin_mocha_theme() {
     ImGuiStyle& style = ImGui::GetStyle();
     ImVec4* colors = style.Colors;
@@ -154,18 +160,24 @@ extern "C" inline void setup_catppuccin_mocha_theme() {
     style.TabBorderSize     = 0.0f;
     style.TabRounding       = 12.0f;
 }
-
+/**
+ * Create the imgui context, use it in the begining and out of the loop
+ */
 extern "C" inline void begin_imgui(SDL_Window *window, void *sdl_gl_context, const char *glsl_version){
     ImGui_ImplSDL3_InitForOpenGL(window, sdl_gl_context);
     ImGui_ImplOpenGL3_Init(glsl_version);
 }
-
+/**
+ * Destory the imgui context, use it in the end and out of the loop
+ */
 extern "C" inline void end_imgui(){
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplSDL3_Shutdown();
     ImGui::DestroyContext();
 }
-
+/**
+ * Create the SDL context
+ */
 extern "C" inline std::tuple<SDL_Window*, SDL_GLContext, const char*> begin_sdl(){
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD))
     {
@@ -222,20 +234,27 @@ extern "C" inline std::tuple<SDL_Window*, SDL_GLContext, const char*> begin_sdl(
     SDL_ShowWindow(window);
     return {window, gl_context, glsl_version};
 }
-
+/**
+ * Destory the SDL context
+ */
 extern "C" inline void end_sdl(SDL_Window *window, SDL_GLContext sdl_gl_context){
     SDL_GL_DestroyContext(sdl_gl_context);
     SDL_DestroyWindow(window);
     SDL_Quit();
 }
-
+/**
+ * Loop begin
+ */
 extern "C" inline void begin_loop(){
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplSDL3_NewFrame();
     ImGui::NewFrame();
     ImGui::DockSpaceOverViewport();
 }
-
+/**
+ * Loop end
+ * Clear color and swap the chain and stuff
+ */
 extern "C" inline void end_loop(SDL_Window* window, ImGuiIO &io){
     glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
