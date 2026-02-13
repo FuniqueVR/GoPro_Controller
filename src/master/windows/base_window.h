@@ -40,6 +40,8 @@ public:
     /**
      * Is enable being triiger right now
      */
+    virtual json get_window_data();
+    virtual void set_window_data(json data);
     virtual void trigger(bool value);
     virtual void update();
     virtual void render();

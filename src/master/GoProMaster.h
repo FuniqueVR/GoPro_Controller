@@ -35,6 +35,7 @@ struct CameraInfo {
      * Websocket server ip
      */
     std::string server;
+    bool connected;
     /**
      * The json states
      */

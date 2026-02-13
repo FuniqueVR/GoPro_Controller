@@ -16,7 +16,9 @@ public:
     virtual ~InspectorWindow();
 
     virtual void render() override;
-
+    virtual void draw_setting();
+    virtual void draw_status();
+    virtual void draw_media();
 private:
 
 };

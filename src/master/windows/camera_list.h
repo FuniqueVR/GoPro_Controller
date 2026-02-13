@@ -15,8 +15,16 @@ public:
         std::shared_ptr<GoProMaster> _master);
     virtual ~CameraListWindow();
 
+    json get_window_data() override;
+    void set_window_data(json data) override;
     virtual void render() override;
 
+    virtual void draw_line(const std::shared_ptr<CameraInfo>& c);
+    virtual void draw_group(const std::shared_ptr<CameraInfo>& c);
 private:
+    ImVec2 get_rect_size();
+    
+    int32_t size;
 
+    bool hover_cache;
 };

@@ -20,6 +20,14 @@ BaseWindow::~BaseWindow(){
 
 }
 
+json BaseWindow::get_window_data() {
+    return json::object();
+}
+
+void BaseWindow::set_window_data(json data){
+
+}
+
 std::string BaseWindow::get_title(){
     return title;
 }

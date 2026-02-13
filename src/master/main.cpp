@@ -11,7 +11,7 @@
 #include <thread>
 #include "GoProMaster.h"
 #include "IO.h"
-#include "state.h"
+#include "state_init.h"
 #include "../common/camera_code.h"
 #include "windows/wins.h"
 #include "popup/popwins.h"
@@ -86,6 +86,12 @@ void updateServerList(){
             data["data"].push_back(s->ip);
         }
     }
+    data["global"] = get_global_state_data(*global_state);
+    data["window"] = json::object();
+    data["window"]["camera_list_win"] = camera_list_win->get_window_data();
+    data["window"]["commands_win"] = commands_win->get_window_data();
+    data["window"]["inspector_win"] = inspector_win->get_window_data();
+    data["window"]["websocket_win"] = websocket_win->get_window_data();
     saveServerList(data);
     servers->swap(data);
 }
@@ -143,34 +149,8 @@ int main(int, char**)
     global_state->update_server = updateServerList;
     global_state->command_sender = pushCommand;
     std::thread bg_thread(background_worker);
-
-    if((*servers)["data"].is_array()){
-        for(int i = 0; i < (*servers)["data"].size(); i++){
-            if((*servers)["data"].at(i).is_string()){
-                std::string buffer_ip = (*servers)["data"].at(i).get<std::string>();
-                std::string ip = master->addServer(buffer_ip);
-                master->reconnect(ip);
-            }
-        }
-    }
-
-    if((*gui)["websocket_server_window"].is_boolean() && (*gui)["websocket_server_window"].get<bool>()){
-        websocket_win->enable = true;
-        websocket_win->trigger(true);
-        std::cout << "Detect websocket_server_window gui is on" << std::endl;
-    }
-    if((*gui)["camera_list_win"].is_boolean() && (*gui)["camera_list_win"].get<bool>()){
-        camera_list_win->enable = true;
-        camera_list_win->trigger(true);
-    }
-    if((*gui)["commands_win"].is_boolean() && (*gui)["commands_win"].get<bool>()){
-        commands_win->enable = true;
-        commands_win->trigger(true);
-    }
-    if((*gui)["inspector_win"].is_boolean() && (*gui)["inspector_win"].get<bool>()){
-        inspector_win->enable = true;
-        inspector_win->trigger(true);
-    }
+    // Init the windows
+    init_state_setup(servers, gui, global_state, master, windows_array);
 
     setup_imgui();
     setup_catppuccin_mocha_theme();
