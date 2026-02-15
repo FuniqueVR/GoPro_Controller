@@ -49,15 +49,18 @@ public:
     void shutter(std::string target, bool isstart);
 
     std::string queryStatus(std::string target);
-    std::string setSetting(std::string target, int ID, std::string value);
+    std::string setSetting(std::string target, int32_t ID, std::string value);
     std::string setSettingAll(std::string target, json value);
 
     void webcamMode(std::string target);
     void webcamUnMode(std::string target);
-    void webcamOn(std::string target, int startPort, int res, int fov, bool TS);
+    void webcamOn(std::string target, int32_t startPort, int32_t res, int32_t fov, bool TS);
     void webcamOff(std::string target);
     std::string webcamStatus(std::string target);
     std::string webcamVersion(std::string target);
+
+    void previewOn(std::string target, int32_t port);
+    void previewOff(std::string target);
 
     std::string getMediaList(std::string target);
     std::string getLastMedia(std::string target);
@@ -65,23 +68,32 @@ public:
     std::string getAllIP();
 
 protected:
+    // Config
     void _loadRecord();
     void _updateRecord();
-
+    // Control part of calls
+    void _setAllPreset(std::vector<std::string> targets, int32_t mode);
     void _setPreset(std::string target, int32_t mode);
+    void _rebootAll(std::vector<std::string> targets);
     void _reboot(std::string target);
+    void _shutdownAll(std::vector<std::string> targets);
     void _shutdown(std::string target);
-    void _keep_alive(std::string target);
+    void _keepAliveAll(std::vector<std::string> targets);
+    void _keepAlive(std::string target);
+    void _usbAll(std::vector<std::string> targets, bool ison);
     void _usb(std::string target, bool ison);
+    void _datetimeAll(std::vector<std::string> targets);
     void _datetime(std::string target);
-    void _zoom(std::string target);
+    void _zoomAll(std::vector<std::string> targets, int32_t value);
+    void _zoom(std::string target, int32_t value);
+    void _shutterAll(std::vector<std::string> targets, bool isstart);
     void _shutter(std::string target, bool isstart);
-
+    // Status part of calls
     std::vector<std::pair<std::string, std::string>> _queryAllStatus(std::vector<std::string> targets);
     std::pair<std::string, std::string> _queryStatus(std::string target);
-    std::vector<std::pair<std::string, std::string>> _setAllStatus(std::vector<std::string> targets, int32_t ID, std::string value);
+    std::vector<std::pair<std::string, std::string>> _setAllSetting(std::vector<std::string> targets, int32_t ID, std::string value);
     std::pair<std::string, std::string> _setSetting(std::string target, int32_t ID, std::string value);
-
+    // Webcam part of calls
     void _webcamAllMode(std::vector<std::string> targets);
     void _webcamMode(std::string target);
     void _webcamAllUnMode(std::vector<std::string> targets);
@@ -92,15 +104,19 @@ protected:
     void _webcamOff(std::string target);
     std::pair<std::string, std::string> _webcamStatus(std::string target);
     std::pair<std::string, std::string> _webcamVersion(std::string target);
-
+    // Preview part of calls
+    void _previewAllOn(std::vector<std::string> targets, int32_t port);
+    void _previewOn(std::string target, int32_t port);
+    void _previewAllOff(std::vector<std::string> targets);
+    void _previewOff(std::string target);
+    // Media part of calls
     std::vector<std::pair<std::string, std::string>> _getAllMediaList(std::vector<std::string> targets);
     std::pair<std::string, std::string> _getMediaList(std::string target);
     std::vector<std::pair<std::string, std::string>> _getAllLastMedia(std::vector<std::string> targets);
     std::pair<std::string, std::string> _getLastMedia(std::string target);
-
+    // Utility calls
     std::pair<std::string, std::string> _getSingleResponse(std::string target, std::string suffix);
     std::vector<std::pair<std::string, std::string>> _getAllResponse(std::vector<std::string> targets, std::string suffix);
-
 private:
     mdns_cpp::mDNS mdns;
     bool mdns_scaned = false;

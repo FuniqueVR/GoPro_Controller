@@ -91,32 +91,71 @@ void GoProController::_updateRecord(){
     outFile.close();
 }
 
+void GoProController::_setAllPreset(std::vector<std::string> targets, int32_t mode){
+    _getAllResponse(targets, "/gopro/camera/presets/load?id=" + std::to_string(mode));
+}
+
 void GoProController::_setPreset(std::string target, int32_t mode){
-    std::string url = GetRemoteURLByIP(target) + "/gopro/camera/presets/load?id=" + std::to_string(mode);
-    std::cout << "Set preset: " << url << std::endl;
-    exec(getCommand(url));
+    _getSingleResponse(target, "/gopro/camera/presets/load?id=" + std::to_string(mode));
+}
+
+void GoProController::_rebootAll(std::vector<std::string> targets){
+    _getAllResponse(targets, "/gp/gpControl/command/system/reset");
 }
 
 void GoProController::_reboot(std::string target){
-    std::string url = GetRemoteURLByIP(target) + "/gp/gpControl/command/system/reset";
-    exec(getCommand(url));
+    _getSingleResponse(target, "/gp/gpControl/command/system/reset");
+}
+
+void GoProController::_shutdownAll(std::vector<std::string> targets){
+    _getAllResponse(targets, "/gp/gpControl/command/system/shutdown");
 }
 
 void GoProController::_shutdown(std::string target){
-    std::string url = GetRemoteURLByIP(target) + "/gp/gpControl/command/system/shutdown";
-    exec(getCommand(url));
+    _getSingleResponse(target, "/gp/gpControl/command/system/shutdown");
 }
 
-void GoProController::_keep_alive(std::string target){
-    std::string url = GetRemoteURLByIP(target) + "/gopro/camera/keep_alive";
-    exec(getCommand(url));
+void GoProController::_keepAliveAll(std::vector<std::string> targets){
+    _getAllResponse(targets, "/gopro/camera/keep_alive");
+}
+
+void GoProController::_keepAlive(std::string target){
+    _getSingleResponse(target, "/gopro/camera/keep_alive");
+}
+
+void GoProController::_usbAll(std::vector<std::string> targets, bool ison){
+    std::string url = "/gopro/camera/control/wired_usb?p=";
+    if(ison) url += "1";
+    else url += "0";
+    _getAllResponse(targets, url);
 }
 
 void GoProController::_usb(std::string target, bool ison){
-    std::string url = GetRemoteURLByIP(target) + "/gopro/camera/control/wired_usb?p=";
+    std::string url = "/gopro/camera/control/wired_usb?p=";
     if(ison) url += "1";
     else url += "0";
-    exec(getCommand(url));
+    _getSingleResponse(target, url);
+}
+
+void GoProController::_datetimeAll(std::vector<std::string> targets){
+    const auto now = std::chrono::system_clock::now();
+    const std::time_t t = std::chrono::system_clock::to_time_t(now);
+    std::tm tm = *std::localtime(&t);
+
+    std::ostringstream date;
+    std::ostringstream time;
+    date << std::put_time(&tm, "%Y_%m_%d");
+    time << std::put_time(&tm, "%H_%M_%S");
+    int32_t minutes = get_timezone_offset_minutes();
+
+    std::string url = "/gopro/camera/set_date_time?date=";
+    url += date.str();
+    url += "&time=";
+    url += time.str();
+    url += "&tzone=";
+    url += std::to_string(minutes);
+    url += "&dst=0";
+    _getAllResponse(targets, url);
 }
 
 void GoProController::_datetime(std::string target){
@@ -130,26 +169,40 @@ void GoProController::_datetime(std::string target){
     time << std::put_time(&tm, "%H_%M_%S");
     int32_t minutes = get_timezone_offset_minutes();
 
-    std::string url = GetRemoteURLByIP(target) + "/gopro/camera/set_date_time?date=";
+    std::string url = "/gopro/camera/set_date_time?date=";
     url += date.str();
     url += "&time=";
     url += time.str();
     url += "&tzone=";
     url += std::to_string(minutes);
     url += "&dst=0";
-    exec(getCommand(url));
+    _getSingleResponse(target, url);
 }
 
-void GoProController::_zoom(std::string target){
-    std::string url = GetRemoteURLByIP(target) + "/gopro/camera/control/wired_usb?p=0";
-    exec(getCommand(url));
+void GoProController::_zoomAll(std::vector<std::string> targets, int32_t value){
+    std::string url = "/gopro/camera/digital_zoom?percent="
+    url += std::to_string(value);
+    _getAllResponse(targets, url);
+}
+
+void GoProController::_zoom(std::string target, int32_t value){
+    std::string url = "/gopro/camera/digital_zoom?percent="
+    url += std::to_string(value);
+    _getSingleResponse(target, url);
+}
+
+void GoProController::_shutterAll(std::vector<std::string> targets, bool ison){
+    std::string url = "/gopro/camera/shutter/";
+    if(ison) url += "start";
+    else url += "stop";
+    _getAllResponse(targets, url);
 }
 
 void GoProController::_shutter(std::string target, bool ison){
-    std::string url = GetRemoteURLByIP(target) + "/gopro/camera/shutter/";
+    std::string url = "/gopro/camera/shutter/";
     if(ison) url += "start";
     else url += "stop";
-    exec(getCommand(url));
+    _getSingleResponse(target, url);
 }
 
 std::vector<std::pair<std::string, std::string>> GoProController::_queryAllStatus(std::vector<std::string> targets){
@@ -160,7 +213,7 @@ std::pair<std::string, std::string> GoProController::_queryStatus(std::string ta
     return _getSingleResponse(target, "/gopro/camera/state");
 }
 
-std::vector<std::pair<std::string, std::string>> GoProController::_setAllStatus(std::vector<std::string> targets, int32_t ID, std::string value){
+std::vector<std::pair<std::string, std::string>> GoProController::_setAllSetting(std::vector<std::string> targets, int32_t ID, std::string value){
     std::string url = "/gopro/camera/setting?option=";
     url += value;
     url += "&setting=";
@@ -236,6 +289,22 @@ std::pair<std::string, std::string> GoProController::_webcamStatus(std::string t
 
 std::pair<std::string, std::string> GoProController::_webcamVersion(std::string target){
     return _getSingleResponse(target, "/gopro/webcam/version");
+}
+
+void GoProController::_previewAllOn(std::vector<std::string> targets, int32_t port){
+    _getAllResponse(targets, "/gopro/camera/stream/start?port=" + std::to_string(port));
+}
+
+void GoProController::_previewOn(std::string target, int32_t port){
+    _getSingleResponse(target, "/gopro/camera/stream/start?port=" + std::to_string(port));
+}
+
+void GoProController::_previewAllOff(std::vector<std::string> targets){
+    _getAllResponse(targets, "/gopro/camera/stream/stop");
+}
+
+void GoProController::_previewOff(std::string target){
+    _getSingleResponse(target, "/gopro/camera/stream/stop");
 }
 
 std::vector<std::pair<std::string, std::string>> GoProController::_getAllMediaList(std::vector<std::string> targets){

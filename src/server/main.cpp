@@ -106,16 +106,25 @@ void QueryAction(const WebSocketChannelPtr& channel, json j){
         jvalue = j["value"];
     }
 
+    // The reason we need to seperate the set and setall
+    // It's because we needs to know which one is called by master update loop
+    // And which one is called by UI event
+    //
+    // We don't want to flip the update flag when it's actually the UI event...
     if(name == "get"){
         r["data"] = json::parse(controller.queryStatus(target));
         channel->send(getPacket("query:get", r));
+    }
+    else if(name == "getall"){
+        r["data"] = json::parse(controller.queryStatus(""));
+        channel->send(getPacket("query:getall", r));
     }
     else if(name == "set"){
         r["data"] = json::parse(controller.setSetting(target, id, value));
         channel->send(getPacket("query:set", r));
     }
     else if(name == "setall"){
-        r["data"] = json::parse(controller.setSettingAll(target, jvalue));
+        r["data"] = json::parse(controller.setSetting(target, jvalue));
         channel->send(getPacket("query:setall", r));
     }
     else{
