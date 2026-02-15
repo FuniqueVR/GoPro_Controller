@@ -8,7 +8,7 @@
 #include <vector>
 #include "hv/WebSocketServer.h"
 #include "hv/EventLoop.h"
-#include "GoProController.hpp"
+#include "GoProController.h"
 
 std::vector<const WebSocketChannelPtr*> hosts = std::vector<const WebSocketChannelPtr*>();
 GoProController controller;

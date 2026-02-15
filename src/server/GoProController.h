@@ -77,20 +77,29 @@ protected:
     void _zoom(std::string target);
     void _shutter(std::string target, bool isstart);
 
-    std::pair<std::string, std::string> _queryStatus(std::string target);
     std::vector<std::pair<std::string, std::string>> _queryAllStatus(std::vector<std::string> targets);
-    std::pair<std::string, std::string> _setSetting(std::string target, int ID, std::string value);
+    std::pair<std::string, std::string> _queryStatus(std::string target);
+    std::vector<std::pair<std::string, std::string>> _setAllStatus(std::vector<std::string> targets, int32_t ID, std::string value);
+    std::pair<std::string, std::string> _setSetting(std::string target, int32_t ID, std::string value);
 
+    void _webcamAllMode(std::vector<std::string> targets);
     void _webcamMode(std::string target);
+    void _webcamAllUnMode(std::vector<std::string> targets);
     void _webcamUnMode(std::string target);
-    void _webcamOn(std::string target, int startPort, int res, int fov, bool TS);
+    void _webcamAllOn(std::vector<std::string> targets, int32_t startPort, int32_t res, int32_t fov, bool TS);
+    void _webcamOn(std::string target, int32_t startPort, int32_t res, int32_t fov, bool TS);
+    void _webcamAllOff(std::vector<std::string> targets);
     void _webcamOff(std::string target);
     std::pair<std::string, std::string> _webcamStatus(std::string target);
     std::pair<std::string, std::string> _webcamVersion(std::string target);
 
+    std::vector<std::pair<std::string, std::string>> _getAllMediaList(std::vector<std::string> targets);
     std::pair<std::string, std::string> _getMediaList(std::string target);
     std::vector<std::pair<std::string, std::string>> _getAllLastMedia(std::vector<std::string> targets);
     std::pair<std::string, std::string> _getLastMedia(std::string target);
+
+    std::pair<std::string, std::string> _getSingleResponse(std::string target, std::string suffix);
+    std::vector<std::pair<std::string, std::string>> _getAllResponse(std::vector<std::string> targets, std::string suffix);
 
 private:
     mdns_cpp::mDNS mdns;
