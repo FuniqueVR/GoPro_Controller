@@ -178,6 +178,18 @@ void GoProController::shutter(std::string target, bool isstart){
     }
 }
 
+std::string GoProController::getAllIP(){
+    json result = json::array();
+    for(std::string target : camera_ips){
+        if(camera_name.count(target)){
+            result.push_back(target + " " + camera_name.at(target));
+        }else{
+            result.push_back(target);
+        }
+    }
+    return result.dump();
+}
+
 std::string GoProController::queryStatus(std::string target){
     json arr = json::array();
     json res = json::object();
@@ -455,14 +467,3 @@ std::string GoProController::getLastMedia(std::string target){
     return arr.dump();
 }
 
-std::string GoProController::getAllIP(){
-    json result = json::array();
-    for(std::string target : camera_ips){
-        if(camera_name.count(target)){
-            result.push_back(target + " " + camera_name.at(target));
-        }else{
-            result.push_back(target);
-        }
-    }
-    return result.dump();
-}

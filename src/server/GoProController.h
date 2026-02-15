@@ -33,14 +33,14 @@ class GoProController {
 public:
     GoProController();
     ~GoProController();
-
+    // Camera part of calls
     void scanCameras();
     void cleanCameras();
     void renameCameras(std::string ip, std::string name);
     void addCameras(std::string serial);
     void deleteCameras(std::string ip);
+    // Control part of calls
     void setPreset(std::string target, int32_t mode);
-
     void reboot(std::string target);
     void shutdown(std::string target);
     void keep_alive(std::string target);
@@ -48,26 +48,24 @@ public:
     void datetime(std::string target);
     void zoom(std::string target, int32_t value);
     void shutter(std::string target, bool isstart);
-
+    std::string getAllIP();
+    // Status part of calls
     std::string queryStatus(std::string target);
     std::string setSetting(std::string target, int32_t ID, std::string value);
     std::string setSettingAll(std::string target, json value);
-
+    // Webcam part of calls
     void webcamMode(std::string target);
     void webcamUnMode(std::string target);
     void webcamOn(std::string target, int32_t startPort, int32_t res, int32_t fov, bool TS);
     void webcamOff(std::string target);
     std::string webcamStatus(std::string target);
     std::string webcamVersion(std::string target);
-
+    // Preview part of calls
     void previewOn(std::string target, int32_t port);
     void previewOff(std::string target);
-
+    // Media part of calls
     std::string getMediaList(std::string target);
     std::string getLastMedia(std::string target);
-
-    std::string getAllIP();
-
 protected:
     // Config
     void _loadRecord();
