@@ -90,8 +90,14 @@ void GoProController::addCameras(std::string serial){
     }
 }
 
-void deleteCameras(std::string ip) {
-
+void GoProController::deleteCameras(std::string ip) {
+    std::lock_guard<std::mutex> lock(ips_mutex);
+    for(int32_t i = 0; i < camera_ips.size(); i++){
+        if(camera_ips[i] == ip){
+            camera_ips.erase(camera_ips.begin() + i);
+            return;
+        }
+    }
 }
 
 void GoProController::renameCameras(std::string ip, std::string name){

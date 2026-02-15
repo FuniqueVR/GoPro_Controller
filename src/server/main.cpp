@@ -8,6 +8,9 @@
 #include <vector>
 #include "hv/WebSocketServer.h"
 #include "hv/EventLoop.h"
+#include "hv/UdpServer.h"
+#include "hv/UdpClient.h"
+#include "hv/hsocket.h"
 #include "GoProController.h"
 
 std::vector<const WebSocketChannelPtr*> hosts = std::vector<const WebSocketChannelPtr*>();
@@ -380,6 +383,37 @@ void HttpServer(){
     http_server.run();
 }
 
+void UDPProxyServer(){
+    int32_t listen_port = 8556;
+    int32_t broadcast_port = 8554;
+    std::string broadcast_addr = "255.255.255.255";
+
+    std::cout << "Starting GoPro UDP Proxy Server (RPi)..." << std::endl;
+    hv::UdpServer us;
+    int32_t bindfd = us.createsocket(listen_port);
+    std::cout << "UDP bind on port: " << listen_port << std::endl;
+    
+    int32_t sock_fd = socket(AF_INET, SOCK_DGRAM, 0);
+    int32_t broadcast_enable = 1;
+    setsockopt(sock_fd, SOL_SOCKET, SO_BROADCAST, &broadcast_enable, sizeof(broadcast_enable));
+    std::cout << "UDP Broadcast Relay started:" << std::endl;
+    std::cout << "  Listening on: 0.0.0.0:" << listen_port << " (from GoPro)" << std::endl;
+    std::cout << "  Broadcasting to: " << broadcast_addr << ":" << broadcast_port << " (to all Masters)" << std::endl;
+
+    us.onMessage = [sock_fd, broadcast_addr, broadcast_port](const hv::SocketChannelPtr& channel, hv::Buffer* buf){
+        struct sockaddr_in broadcast_sockaddr;
+        memset(&broadcast_sockaddr, 0, sizeof(broadcast_sockaddr));
+        broadcast_sockaddr.sin_family = AF_INET;
+        broadcast_sockaddr.sin_port = htons(broadcast_port);
+        broadcast_sockaddr.sin_addr.s_addr = inet_addr(broadcast_addr.c_str());
+
+        ssize_t sent = sendto(sock_fd, buf->data(), buf->size(), 0,
+            (struct sockaddr*)&broadcast_sockaddr, 
+            sizeof(broadcast_sockaddr));
+    };
+    us.start();
+}
+
 int main() {
     setvbuf(stdout, NULL, _IONBF, 0);
     setvbuf(stderr, NULL, _IONBF, 0);
@@ -392,6 +426,11 @@ int main() {
         HttpServer();
     });
 
+    std::thread t3 = std::thread([=]() {
+        UDPProxyServer();
+    });
+
+    t3.join();
     t2.join();
     t1.join();
     return 0;
