@@ -38,6 +38,7 @@ public:
     void cleanCameras();
     void renameCameras(std::string ip, std::string name);
     void addCameras(std::string serial);
+    void deleteCameras(std::string ip);
     void setPreset(std::string target, int32_t mode);
 
     void reboot(std::string target);

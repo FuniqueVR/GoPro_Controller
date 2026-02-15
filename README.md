@@ -308,109 +308,51 @@ dwc_otg.fiq_fix_enable=1 dwc_otg.fiq_fsm_enable=1 dwc_otg.nak_holdoff=1,isolcpus
 透過 {IP}:9090/ 進入 websocket server
 
 接著透過這個方式傳輸訊息, websocket server 會有 analysis header 的 key, 把訊息丟到對的 processer.
-```json
-{
-    "key": "string",
-    "value": "object"
-}
-```
-
-#### KEY: command
-
-抓到所有狀態
 
 需求物件結構
 ```json
 {
-    "name": "label",
-    "target": "IP target"
+    "key": "command | query | webcam | media | preview | preset",
+    "value": {
+        "name": "label"
+    }
 }
 ```
 
-回傳物件結構
-```json
-{
-    "name": "coming label",
-    "message": "message"
-}
-```
+需求樹狀圖
 
-##### name: reboot
-
-對象 GoPro 重開機
-
-##### name: shutdown
-
-對象 GoPro 關機
-
-##### name: keep_alive
-
-重新啟動對象 GoPro USB 睡眠倒數
-
-##### name: usb_on
-
-開啟對象 GoPro USB 控制模式
-
-##### name: usb_off
-
-關閉對象 GoPro USB 控制模式
-
-##### name: datetime
-
-改變日期時間
-
-##### name: zoom
-
-##### name: shutter
-
-##### name: ip
-
-這項指令會回傳 ip
-
-```json
-{
-    "data": [
-        "IP.A", "IP.B"
-    ]
-}
-```
-
-#### KEY: query
-
-抓到所有狀態
-
-需求物件結構
-```json
-{
-    "name": "label",
-    "mode": "all | single",
-    "target": "IP target",
-}
-```
-
-回傳物件結構
-```json
-{
-
-}
-```
-
-#### KEY: webcam
-
-網路攝影機方面的動作
-
-需求物件結構
-```json
-{
-    "name": "label",
-    "mode": "all | single",
-    "target": "IP target"
-}
-```
-
-回傳物件結構
-```json
-{
-
-}
-```
+* key: command
+  * value-name: reboot
+  * value-name: shutdown
+  * value-name: keep_alive
+  * value-name: usb_on
+  * value-name: usb_off
+  * value-name: datetime
+  * value-name: zoom
+  * value-name: shutter_on
+  * value-name: shutter_off
+  * value-name: ip
+  * value-name: scan
+  * value-name: clean
+  * value-name: add
+  * value-name: delete
+  * value-name: rename
+* key: query
+  * value-name: get
+  * value-name: getall
+  * value-name: set
+  * value-name: setall
+* key: webcam
+  * value-name: preview
+  * value-name: exit
+  * value-name: start
+  * value-name: stop
+  * value-name: status
+  * value-name: version
+* key: media
+  * value-name: lastmedia
+* key: preview
+  * value-name: start
+  * value-name: stop
+* key: preset
+  * value-name: set

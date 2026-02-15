@@ -77,6 +77,10 @@ void ExecuteCommand(const WebSocketChannelPtr& channel, json j){
         controller.addCameras(target);
         channel->send(getPacket("command:add", r));
     }
+    else if(name == "delete" && target.size() >= 3){
+        controller.deleteCameras(target);
+        channel->send(getPacket("command:delete", r));
+    }
     else if(name == "rename" && target.size() >= 3){
         controller.renameCameras(target, value);
         channel->send(getPacket("command:rename", r));

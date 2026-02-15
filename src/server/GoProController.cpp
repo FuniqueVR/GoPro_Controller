@@ -52,6 +52,7 @@ void GoProController::scanCameras() {
                     }
                 }
                 if(!find){
+                    std::lock_guard<std::mutex> lock(ips_mutex);
                     camera_ips.push_back(p);
                     _updateRecord();
                 }
@@ -66,11 +67,13 @@ void GoProController::scanCameras() {
 }
 
 void GoProController::cleanCameras(){
+    std::lock_guard<std::mutex> lock(ips_mutex);
     camera_ips.clear();
     _updateRecord();
 }
 
 void GoProController::addCameras(std::string serial){
+    std::lock_guard<std::mutex> lock(ips_mutex);
     if(serial.size() >= 3){
         std::string p = GetRemoteIPBySerial(serial);
         bool find = false;
@@ -85,6 +88,10 @@ void GoProController::addCameras(std::string serial){
             _updateRecord();
         }
     }
+}
+
+void deleteCameras(std::string ip) {
+
 }
 
 void GoProController::renameCameras(std::string ip, std::string name){
@@ -111,37 +118,58 @@ void GoProController::setPreset(std::string target, int32_t mode){
 
 void GoProController::reboot(std::string target){
     if(target.size() > 0) _reboot(target); 
-    else _rebootAll(camera_ips);
+    else {
+        std::lock_guard<std::mutex> lock(ips_mutex);
+        _rebootAll(camera_ips);
+    }
 }
 
 void GoProController::shutdown(std::string target){
     if(target.size() > 0) _shutdown(target); 
-    else _shutdownAll(camera_ips);
+    else {
+        std::lock_guard<std::mutex> lock(ips_mutex);
+        _shutdownAll(camera_ips);
+    }
 }
 
 void GoProController::keep_alive(std::string target){
     if(target.size() > 0) _keepAlive(target); 
-    else _keepAliveAll(camera_ips);
+    else {
+        std::lock_guard<std::mutex> lock(ips_mutex);
+        _keepAliveAll(camera_ips);
+    }
 }
 
 void GoProController::usb(std::string target, bool ison){
     if(target.size() > 0) _usb(target, ison); 
-    else _usbAll(camera_ips, ison);
+    else {
+        std::lock_guard<std::mutex> lock(ips_mutex);
+        _usbAll(camera_ips, ison);
+    }
 }
 
 void GoProController::datetime(std::string target){
     if(target.size() > 0) _datetime(target);
-    else _datetimeAll(camera_ips);
+    else {
+        std::lock_guard<std::mutex> lock(ips_mutex);
+        _datetimeAll(camera_ips);
+    }
 }
 
 void GoProController::zoom(std::string target, int32_t value){
     if(target.size() > 0) _zoom(target, value); 
-    else _zoomAll(camera_ips, value);
+    else {
+        std::lock_guard<std::mutex> lock(ips_mutex);
+        _zoomAll(camera_ips, value);
+    }
 }
 
 void GoProController::shutter(std::string target, bool isstart){
     if(target.size() > 0) _shutter(target, isstart); 
-    else _shutterAll(camera_ips, isstart);
+    else {
+        std::lock_guard<std::mutex> lock(ips_mutex);
+        _shutterAll(camera_ips, isstart);
+    }
 }
 
 std::string GoProController::queryStatus(std::string target){
@@ -161,6 +189,7 @@ std::string GoProController::queryStatus(std::string target){
         i["status"] = res;
         arr.push_back(i);
     }else{
+        std::lock_guard<std::mutex> lock(ips_mutex);
         std::vector<std::pair<std::string, std::string>> results = _queryAllStatus(camera_ips);
         for(int32_t i = 0; i < results.size(); i++){
             try{
@@ -196,6 +225,7 @@ std::string GoProController::setSetting(std::string target, int32_t ID, std::str
         i["status"] = res;
         arr.push_back(i);
     }else{
+        std::lock_guard<std::mutex> lock(ips_mutex);
         std::vector<std::pair<std::string, std::string>> results = _setAllSetting(camera_ips, ID, value);
         for(int32_t i = 0; i < results.size(); i++){
             try{
@@ -219,22 +249,34 @@ std::string GoProController::setSettingAll(std::string target, json value){
 
 void GoProController::webcamMode(std::string target){
     if(target.size() > 0) _webcamMode(target); 
-    else _webcamAllMode(camera_ips);
+    else {
+        std::lock_guard<std::mutex> lock(ips_mutex);
+        _webcamAllMode(camera_ips);
+    }
 }
 
 void GoProController::webcamUnMode(std::string target){
     if(target.size() > 0) _webcamUnMode(target); 
-    else _webcamAllUnMode(camera_ips);
+    else {
+        std::lock_guard<std::mutex> lock(ips_mutex);
+        _webcamAllUnMode(camera_ips);
+    }
 }
 
 void GoProController::webcamOn(std::string target, int32_t startPort, int32_t res, int32_t fov, bool TS){
     if(target.size() > 0) _webcamOn(target, startPort, res, fov, TS); 
-    else _webcamAllOn(camera_ips, startPort, res, fov, TS);
+    else {
+        std::lock_guard<std::mutex> lock(ips_mutex);
+        _webcamAllOn(camera_ips, startPort, res, fov, TS);
+    }
 }
 
 void GoProController::webcamOff(std::string target){
     if(target.size() > 0) _webcamOff(target); 
-    else _webcamAllOff(camera_ips);
+    else {
+        std::lock_guard<std::mutex> lock(ips_mutex);
+        _webcamAllOff(camera_ips);
+    }
 }
 
 std::string GoProController::webcamStatus(std::string target){
