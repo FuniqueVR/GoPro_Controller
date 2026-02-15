@@ -134,9 +134,9 @@ void GoProController::datetime(std::string target){
     else _datetimeAll(camera_ips);
 }
 
-void GoProController::zoom(std::string target){
-    if(target.size() > 0) _zoom(target); 
-    else _zoomAll(camera_ips);
+void GoProController::zoom(std::string target, int32_t value){
+    if(target.size() > 0) _zoom(target, value); 
+    else _zoomAll(camera_ips, value);
 }
 
 void GoProController::shutter(std::string target, bool isstart){
@@ -196,7 +196,7 @@ std::string GoProController::setSetting(std::string target, int32_t ID, std::str
         i["status"] = res;
         arr.push_back(i);
     }else{
-        std::vector<std::pair<std::string, std::string>> results = _setAllStatus(camera_ips, ID, value);
+        std::vector<std::pair<std::string, std::string>> results = _setAllSetting(camera_ips, ID, value);
         for(int32_t i = 0; i < results.size(); i++){
             try{
                 address = results[i].first;

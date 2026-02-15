@@ -17,6 +17,7 @@ void ExecuteCommand(const WebSocketChannelPtr& channel, json j){
     std::string name = "";
     std::string target = "";
     std::string value = "";
+    int32_t ivalue = 0;
     json r = json::object();
 
     if(j["name"].is_string()){
@@ -27,6 +28,9 @@ void ExecuteCommand(const WebSocketChannelPtr& channel, json j){
     }
     if(j["value"].is_string()){
         value = j["value"].get<std::string>();
+    }
+    if(j["value"].is_number_integer()){
+        ivalue = j["value"].get<int32_t>();
     }
 
     if(name == "reboot"){
@@ -48,7 +52,7 @@ void ExecuteCommand(const WebSocketChannelPtr& channel, json j){
         controller.datetime(target);
         channel->send(getPacket("command:datetime", r));
     }else if(name == "zoom"){
-        controller.zoom(target);
+        controller.zoom(target, ivalue);
         channel->send(getPacket("command:zoom", r));
     }else if(name == "shutter_on"){
         controller.shutter(target, true);
@@ -124,7 +128,7 @@ void QueryAction(const WebSocketChannelPtr& channel, json j){
         channel->send(getPacket("query:set", r));
     }
     else if(name == "setall"){
-        r["data"] = json::parse(controller.setSetting(target, jvalue));
+        r["data"] = json::parse(controller.setSettingAll(target, jvalue));
         channel->send(getPacket("query:setall", r));
     }
     else{
@@ -232,6 +236,34 @@ void MediaAction(const WebSocketChannelPtr& channel, json j){
     }
 }
 
+void PreviewAction(const WebSocketChannelPtr& channel, json j){
+    std::string target = "";
+    std::string name = "";
+    int32_t port = 8556;
+    json r = json::object();
+    
+    if(j["target"].is_string()){
+        target = j["target"].get<std::string>();
+    }
+    if(j["name"].is_string()){
+        name = j["name"].get<std::string>();
+    }
+    if(j["port"].is_number_integer()){
+        port = j["port"].get<int32_t>();
+    }
+
+    if(name == "start"){
+        controller.previewOn(target, port);
+        channel->send(getPacket("preview:start", r));
+    }else if (name == "stop"){
+        controller.previewOff(target);
+        channel->send(getPacket("preview:stop", r));
+    }
+    else{
+        channel->send(getPacket("preview:unknown", r));
+    }
+}
+
 void WebsocketServer(){
     std::cout << "Starting GoPro Server (RPi)..." << std::endl;
     hv::WebSocketService ws;
@@ -256,6 +288,9 @@ void WebsocketServer(){
                 }
                 else if (j["key"].get<std::string>() == "media") {
                     MediaAction(channel, j["value"]);
+                }
+                else if (j["key"].get<std::string>() == "preview") {
+                    PreviewAction(channel, j["value"]);
                 }
                 else if (j["key"].get<std::string>() == "preset") {
                     ModeAction(channel, j["value"]);

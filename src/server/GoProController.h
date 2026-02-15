@@ -45,7 +45,7 @@ public:
     void keep_alive(std::string target);
     void usb(std::string target, bool ison);
     void datetime(std::string target);
-    void zoom(std::string target);
+    void zoom(std::string target, int32_t value);
     void shutter(std::string target, bool isstart);
 
     std::string queryStatus(std::string target);

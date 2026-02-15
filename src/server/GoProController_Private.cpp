@@ -180,13 +180,13 @@ void GoProController::_datetime(std::string target){
 }
 
 void GoProController::_zoomAll(std::vector<std::string> targets, int32_t value){
-    std::string url = "/gopro/camera/digital_zoom?percent="
+    std::string url = "/gopro/camera/digital_zoom?percent=";
     url += std::to_string(value);
     _getAllResponse(targets, url);
 }
 
 void GoProController::_zoom(std::string target, int32_t value){
-    std::string url = "/gopro/camera/digital_zoom?percent="
+    std::string url = "/gopro/camera/digital_zoom?percent=";
     url += std::to_string(value);
     _getSingleResponse(target, url);
 }
