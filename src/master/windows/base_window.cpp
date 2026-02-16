@@ -32,8 +32,12 @@ std::string BaseWindow::get_title(){
     return title;
 }
 
-void BaseWindow::trigger(bool value){
+bool BaseWindow::is_enable(){
+    return enable;
+}
 
+void BaseWindow::trigger(bool value){
+    enable = value;
 }
 
 void BaseWindow::update(){

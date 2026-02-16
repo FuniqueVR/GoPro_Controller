@@ -45,20 +45,16 @@ void init_state_setup(
     }
 
     if((*gui)["websocket_server_window"].is_boolean() && (*gui)["websocket_server_window"].get<bool>()){
-        windows[0]->enable = true;
         windows[0]->trigger(true);
         std::cout << "Detect websocket_server_window gui is on" << std::endl;
     }
     if((*gui)["commands_win"].is_boolean() && (*gui)["commands_win"].get<bool>()){
-        windows[1]->enable = true;
         windows[1]->trigger(true);
     }
     if((*gui)["camera_list_win"].is_boolean() && (*gui)["camera_list_win"].get<bool>()){
-        windows[2]->enable = true;
         windows[2]->trigger(true);
     }
     if((*gui)["inspector_win"].is_boolean() && (*gui)["inspector_win"].get<bool>()){
-        windows[3]->enable = true;
         windows[3]->trigger(true);
     }
 }

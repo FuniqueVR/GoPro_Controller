@@ -21,10 +21,10 @@ public:
 
     virtual void draw_line(const std::shared_ptr<CameraInfo>& c);
     virtual void draw_group(const std::shared_ptr<CameraInfo>& c);
+    virtual void item_event(const std::shared_ptr<CameraInfo>& c);
 private:
     ImVec2 get_rect_size();
     
     int32_t size;
-
-    bool hover_cache;
+    int32_t size_event;
 };

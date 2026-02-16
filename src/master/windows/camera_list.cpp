@@ -27,7 +27,7 @@ json CameraListWindow::get_window_data() {
 
 void CameraListWindow::set_window_data(json data){
     if(data["size"].is_number_integer()){
-        size = data["size"].get<int32_t>();
+        size_event = data["size"].get<int32_t>();
     }
 }
 
@@ -35,7 +35,7 @@ void CameraListWindow::render(){
     ImGui::Begin(title.c_str(), &enable, w_flag);
     {
         std::lock_guard<std::mutex> lock(master->camera_mtx);
-        if(ImGui::SliderInt("Item Size##Camera_List_Size", &size, 0, 10)){
+        if(ImGui::SliderInt("Item Size##Camera_List_Size", &size_event, 0, 10)){
             state->update_server();
         }
         ImVec2 rect_size = get_rect_size();
@@ -62,6 +62,7 @@ void CameraListWindow::render(){
         }
     }
     ImGui::End();
+    size = size_event;
 }
 
 void CameraListWindow::draw_line(const std::shared_ptr<CameraInfo>& c){
@@ -77,6 +78,7 @@ void CameraListWindow::draw_line(const std::shared_ptr<CameraInfo>& c){
         master->query_only(c->server, "get", c->ip);
         //current_setting_items_bind = master.getSettingsFromCamera(*c, current_setting_items);
     }
+    item_event(c);
 }
 
 void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
@@ -120,28 +122,48 @@ void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
     
     ImGui::PopID();
     ImGui::Dummy(rect_size);
-    hover_cache = ImGui::IsItemHovered();
-    if(hover_cache){
+    if(ImGui::IsItemHovered()){
         ImGui::SetItemTooltip("%s", "Test\nTest");
         draw_list->AddRect(image_pos, image_pos_max, col_grey, 2.0F, 0, 5.0F);
     }
+    item_event( c);
+    ImGui::EndGroup();
+}
+
+void CameraListWindow::item_event(const std::shared_ptr<CameraInfo>& c){
     if(ImGui::IsItemClicked(ImGuiMouseButton_Left)){
         state->camera_selection = c->ip;
     }
     if(ImGui::IsItemClicked(ImGuiMouseButton_Right)){
-        ImGui::OpenPopupOnItemClick(pid.c_str());
+        ImGui::OpenPopupOnItemClick();
     }
-    ImGui::EndGroup();
+    if(ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)){
+        master->preview_start(c->server, c->ip);
+        state->command_sender("preview_start");
+    }
 
-    if(ImGui::BeginPopupContextItem(pid.c_str())){
-        if (ImGui::MenuItem("Delete"))
+    if(ImGui::BeginPopupContextItem((title + "##Popup_Menu").c_str())){
+        if (ImGui::Selectable("Reboot"))
         {
-            
+            master->command_only(c->server, "reboot", c->ip);
         }
-         ImGui::EndPopup();
+        if (ImGui::Selectable("Shutdown"))
+        {
+            master->command_only(c->server, "shutdown", c->ip);
+        }
+        if (ImGui::Selectable("Preview"))
+        {
+            master->preview_start(c->server, c->ip);
+            state->command_sender("preview_start");
+        }
+        if (ImGui::Selectable("Delete"))
+        {
+            master->command_only(c->server, "delete", c->ip);
+        }
+        ImGui::EndPopup();
     }
 }
 
 ImVec2 CameraListWindow::get_rect_size(){
-    return ImVec2(10 * size + 20, 10 * size + 20);
+    return ImVec2(10 * (size + 5) + 20, 10 * (size + 5) + 20);
 }

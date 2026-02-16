@@ -11,3 +11,5 @@ cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=../cmake/windows-toolch
 
 # Build
 cmake --build . -j 8
+
+cp ../build_master/bin/master ../build_master 

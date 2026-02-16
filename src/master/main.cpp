@@ -32,7 +32,8 @@ std::shared_ptr<BaseWindow> windows_array[4];
 std::shared_ptr<AddCameraPopup> add_camera_popwin;
 std::shared_ptr<ScanCameraPopup> scan_camera_popwin;
 std::shared_ptr<StartWebcamPopup> start_webcam_popwin;
-std::shared_ptr<BasePopWindow> pop_windows_array[3];
+std::shared_ptr<PreviewPopup> preview_popwin;
+std::shared_ptr<BasePopWindow> pop_windows_array[4];
 
 // All the window flags
 ExecutionType execution_type = ExecutionType::SetAll;
@@ -46,16 +47,20 @@ void background_worker(){
             std::string cmd = command_queue.front();
             command_queue.pop();
             if(cmd == "add_camera"){
-                add_camera_popwin->enable = true;
+                add_camera_popwin->trigger(true);
                 std::cout << "Detect add_camera popup" << std::endl;
             }
             else if(cmd == "scan_camera"){
-                scan_camera_popwin->enable = true;
+                scan_camera_popwin->trigger(true);
                 std::cout << "Detect scan_camera popup" << std::endl;
             }
             else if(cmd == "start_webcam"){
-                start_webcam_popwin->enable = true;
+                start_webcam_popwin->trigger(true);
                 std::cout << "Detect start_webcam popup" << std::endl;
+            }
+            else if(cmd == "preview_start"){
+                preview_popwin->trigger(true);
+                std::cout << "Detect preview popup" << std::endl;
             }
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -97,10 +102,10 @@ void updateServerList(){
 }
 
 void updateGUIList(){
-    (*gui)["websocket_server_window"] = websocket_win->enable;
-    (*gui)["camera_list_win"] = camera_list_win->enable;
-    (*gui)["commands_win"] = commands_win->enable;
-    (*gui)["inspector_win"] = inspector_win->enable;
+    (*gui)["websocket_server_window"] = websocket_win->is_enable();
+    (*gui)["camera_list_win"] = camera_list_win->is_enable();
+    (*gui)["commands_win"] = commands_win->is_enable();
+    (*gui)["inspector_win"] = inspector_win->is_enable();
     saveGUI(*gui);
     ImGui::SaveIniSettingsToDisk("imgui.ini");
 }
@@ -140,9 +145,11 @@ int main(int, char**)
     add_camera_popwin = std::make_shared<AddCameraPopup>(gui, global_state, master);
     scan_camera_popwin = std::make_shared<ScanCameraPopup>(gui, global_state, master);
     start_webcam_popwin = std::make_shared<StartWebcamPopup>(gui, global_state, master);
+    preview_popwin = std::make_shared<PreviewPopup>(gui, global_state, master);
     pop_windows_array[0] = add_camera_popwin;
     pop_windows_array[1] = scan_camera_popwin;
     pop_windows_array[2] = start_webcam_popwin;
+    pop_windows_array[3] = preview_popwin;
     // Register event for master
     master->registerCameraSettingFeedback(settingGetterFeedback);
     master->registerCameraLogFeedback(assign_log);
@@ -201,29 +208,25 @@ int main(int, char**)
                     }
                 }
                 if (event.key.key == SDLK_Q) {
-                    websocket_win->enable = !websocket_win->enable;
-                    websocket_win->trigger(websocket_win->enable);
+                    websocket_win->trigger(!websocket_win->is_enable());
                     updateGUIList();
                 }
                 if (event.key.key == SDLK_W) {
-                    commands_win->enable = !commands_win->enable;
-                    commands_win->trigger(commands_win->enable);
+                    commands_win->trigger(!commands_win->is_enable());
                     updateGUIList();
                 }
                 if (event.key.key == SDLK_E) {
-                    camera_list_win->enable = !camera_list_win->enable;
-                    camera_list_win->trigger(camera_list_win->enable);
+                    camera_list_win->trigger(!camera_list_win->is_enable());
                     updateGUIList();
                 }
                 if (event.key.key == SDLK_R) {
-                    inspector_win->enable = !inspector_win->enable;
-                    inspector_win->trigger(inspector_win->enable);
+                    inspector_win->trigger(!inspector_win->is_enable());
                     updateGUIList();
                 }
             }
 
             for(auto& w : windows_array){
-                if(w && w->enable){
+                if(w && w->is_enable()){
                     w->update();
                 }
             }
@@ -235,10 +238,10 @@ int main(int, char**)
         ImGui::BeginMainMenuBar();
         if (ImGui::BeginMenu("Windows")) {
             bool update_menu = false;
-            update_menu = ImGui::MenuItem("Websocket Dashboard (Q)", NULL, &websocket_win->enable);
-            update_menu = update_menu || ImGui::MenuItem("Command Sender (W)", NULL, &commands_win->enable);
-            update_menu = update_menu || ImGui::MenuItem("Camera List (E)", NULL, &camera_list_win->enable);
-            update_menu = update_menu || ImGui::MenuItem("Inspector (R)", NULL, &inspector_win->enable);
+            update_menu = ImGui::MenuItem("Websocket Dashboard (Q)", NULL, websocket_win->is_enable());
+            update_menu = update_menu || ImGui::MenuItem("Command Sender (W)", NULL, commands_win->is_enable());
+            update_menu = update_menu || ImGui::MenuItem("Camera List (E)", NULL, camera_list_win->is_enable());
+            update_menu = update_menu || ImGui::MenuItem("Inspector (R)", NULL, inspector_win->is_enable());
             ImGui::Separator();
             //update_menu = update_menu || ImGui::MenuItem("System Style", NULL, &system_style_win);
             ImGui::EndMenu();
@@ -249,7 +252,7 @@ int main(int, char**)
         ImGui::EndMainMenuBar();
 
         for(auto& w : windows_array){
-            if(w && w->enable){
+            if(w && w->is_enable()){
                 w->render();
                 if(w->is_close()){
                     w->trigger(false);
@@ -259,7 +262,7 @@ int main(int, char**)
         }
 
         for(auto& w : pop_windows_array){
-            if(w && w->enable){
+            if(w && w->is_enable()){
                 w->detect();
             }
         }

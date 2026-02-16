@@ -83,6 +83,8 @@ public:
     void webcam_only(const std::string command, std::string target = "");
     void webcam_only(const std::string server, const std::string command, std::string target = "");
     void webcam_start(const std::string server);
+    void preview_start(std::string server, std::string target);
+    void preview_end(std::string server, std::string target);
     void media_only(const std::string command, std::string target = "");
     void download_last_media(const std::string dir);
 

@@ -13,8 +13,7 @@
 
 using json = nlohmann::json;
 
-#define w_flag ImGuiWindowFlags_NoCollapse
-#define wp_flag ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize
+#define wp_flag ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize
 
 class BasePopWindow {
 public:
@@ -27,8 +26,8 @@ public:
     /**
      * Does anyone call open popup right at this frame
      */
-    bool enable = false;
     std::string get_title();
+    bool is_enable();
     /**
      * Is enable being triiger right now
      */
@@ -42,6 +41,7 @@ public:
      */
     virtual void detect();
 protected:
+    bool enable = false;
     std::shared_ptr<json> setting;
     std::shared_ptr<GlobalState> state;
     std::shared_ptr<GoProMaster> master;

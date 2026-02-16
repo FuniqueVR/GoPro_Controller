@@ -95,6 +95,75 @@ if(BUILD_MASTER)
         FetchContent_MakeAvailable(SDL3)
     endif()
 
+    # ============================================================
+    # OpenCV - FetchContent (Minimal Build)
+    # ============================================================
+    message(STATUS "Fetching OpenCV from source...")
+    
+    # Disable ALL OpenCV modules we don't need (MASSIVE speedup)
+    set(BUILD_LIST "core,imgproc,videoio,imgcodecs" CACHE STRING "" FORCE)
+    
+    # Disable examples, tests, apps
+    set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+    set(BUILD_TESTS OFF CACHE BOOL "" FORCE)
+    set(BUILD_PERF_TESTS OFF CACHE BOOL "" FORCE)
+    set(BUILD_opencv_apps OFF CACHE BOOL "" FORCE)
+    set(BUILD_DOCS OFF CACHE BOOL "" FORCE)
+    
+    # Disable extra features we don't need
+    set(WITH_CUDA OFF CACHE BOOL "" FORCE)
+    set(WITH_OPENCL OFF CACHE BOOL "" FORCE)
+    set(WITH_IPP OFF CACHE BOOL "" FORCE)
+    set(WITH_ITT OFF CACHE BOOL "" FORCE)
+    set(WITH_EIGEN OFF CACHE BOOL "" FORCE)
+    set(WITH_OPENVX OFF CACHE BOOL "" FORCE)
+    set(WITH_OPENNI OFF CACHE BOOL "" FORCE)
+    set(WITH_OPENNI2 OFF CACHE BOOL "" FORCE)
+    set(WITH_TBB OFF CACHE BOOL "" FORCE)
+    set(WITH_HPX OFF CACHE BOOL "" FORCE)
+    
+    # Video I/O backends (keep FFMPEG for UDP streams)
+    set(WITH_FFMPEG ON CACHE BOOL "" FORCE)
+    set(WITH_GSTREAMER ON CACHE BOOL "" FORCE)  # For GStreamer pipelines
+    set(WITH_V4L OFF CACHE BOOL "" FORCE)
+    set(WITH_LIBV4L OFF CACHE BOOL "" FORCE)
+    
+    # Image I/O backends
+    set(WITH_JPEG ON CACHE BOOL "" FORCE)
+    set(WITH_PNG ON CACHE BOOL "" FORCE)
+    set(WITH_TIFF OFF CACHE BOOL "" FORCE)
+    set(WITH_WEBP OFF CACHE BOOL "" FORCE)
+    set(WITH_JASPER OFF CACHE BOOL "" FORCE)
+    set(WITH_OPENEXR OFF CACHE BOOL "" FORCE)
+    
+    # GUI (we use SDL/ImGui, don't need OpenCV's)
+    set(WITH_GTK OFF CACHE BOOL "" FORCE)
+    set(WITH_QT OFF CACHE BOOL "" FORCE)
+    set(WITH_WIN32UI OFF CACHE BOOL "" FORCE)
+    
+    # Python bindings (not needed)
+    set(BUILD_opencv_python2 OFF CACHE BOOL "" FORCE)
+    set(BUILD_opencv_python3 OFF CACHE BOOL "" FORCE)
+    
+    # Java bindings (not needed)
+    set(BUILD_opencv_java OFF CACHE BOOL "" FORCE)
+    
+    # Protobuf (not needed for basic video)
+    set(BUILD_PROTOBUF OFF CACHE BOOL "" FORCE)
+    
+    FetchContent_Declare(
+        opencv
+        GIT_REPOSITORY https://github.com/opencv/opencv.git
+        GIT_TAG        4.10.0  # Use stable release
+        GIT_SHALLOW    TRUE
+        GIT_PROGRESS   TRUE
+    )
+    
+    FetchContent_MakeAvailable(opencv)
+    
+    set(HAVE_OPENCV TRUE)
+    message(STATUS "OpenCV will be built from source (this may take a while...)")
+
     # ImGui
     set(IMGUI_DIR "lib/imgui")
     file(GLOB IMGUI_SOURCES
@@ -161,9 +230,38 @@ if(BUILD_MASTER)
         )
     endif()
 
+    # Add OpenCV
+    if(HAVE_OPENCV)
+        target_link_libraries(master PRIVATE 
+            opencv_core 
+            opencv_imgproc 
+            opencv_videoio 
+            opencv_imgcodecs
+        )
+        target_include_directories(master PRIVATE ${opencv_SOURCE_DIR}/include)
+        target_compile_definitions(master PRIVATE HAVE_OPENCV)
+        message(STATUS "Master will be built WITH OpenCV support")
+    endif()
+
     if(WIN32)
-        # This pulls in the missing __gthr symbols directly into your exe
         target_link_options(master PRIVATE "-static-libgcc" "-static-libstdc++" "-static")
         target_link_libraries(master PRIVATE ws2_32 wsock32)
     endif()
 endif()
+
+# ============================================================
+# Summary
+# ============================================================
+message(STATUS "")
+message(STATUS "========================================")
+message(STATUS "GoPro Controller - Configuration")
+message(STATUS "========================================")
+message(STATUS "Build Server:   ${BUILD_SERVER}")
+message(STATUS "Build Master:   ${BUILD_MASTER}")
+if(BUILD_MASTER)
+    message(STATUS "OpenCV:         ${HAVE_OPENCV} (from source)")
+endif()
+message(STATUS "========================================")
+message(STATUS "")
+message(STATUS "NOTE: First build may take 15-30 minutes (OpenCV compilation)")
+message(STATUS "Subsequent builds will be much faster (cached)")

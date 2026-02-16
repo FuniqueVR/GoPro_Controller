@@ -24,8 +24,12 @@ std::string BasePopWindow::get_title(){
     return title;
 }
 
-void BasePopWindow::trigger(bool value){
+bool BasePopWindow::is_enable(){
+    return enable;
+}
 
+void BasePopWindow::trigger(bool value){
+    enable = value;
 }
 
 void BasePopWindow::render(){

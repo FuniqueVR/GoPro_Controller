@@ -238,6 +238,36 @@ void GoProMaster::webcam_start(const std::string server){
 
 }
 
+void GoProMaster::preview_start(std::string server, std::string target){
+    json data = json::object();
+    data["key"] = "preview";
+    data["value"] = json::object();
+    data["value"]["name"] = "start";
+    data["value"]["target"] = target;
+
+    for(auto s : servers){
+        if(s->ip == server && s->connected){
+            s->client.send(data.dump());
+            break;
+        }
+    }
+}
+
+void GoProMaster::preview_end(std::string server, std::string target){
+    json data = json::object();
+    data["key"] = "preview";
+    data["value"] = json::object();
+    data["value"]["name"] = "stop";
+    data["value"]["target"] = target;
+
+    for(auto s : servers){
+        if(s->ip == server && s->connected){
+            s->client.send(data.dump());
+            break;
+        }
+    }
+}
+
 void GoProMaster::media_only(const std::string command, std::string target){
 
 }

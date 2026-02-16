@@ -21,7 +21,6 @@
 using json = nlohmann::json;
 
 #define w_flag ImGuiWindowFlags_NoCollapse
-#define wp_flag ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize
 
 class BaseWindow {
 public:
@@ -34,8 +33,8 @@ public:
     /**
      * Current window visibility
      */
-    bool enable = false;
     std::string get_title();
+    bool is_enable();
 
     /**
      * Is enable being triiger right now
@@ -48,6 +47,7 @@ public:
     virtual bool is_close();
     virtual void save_setting();
 protected:
+    bool enable = false;
     std::shared_ptr<json> setting;
     std::shared_ptr<GlobalState> state;
     std::shared_ptr<GoProMaster> master;
