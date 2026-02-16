@@ -14,6 +14,7 @@ AddCameraPopup::~AddCameraPopup(){
 }
 
 void AddCameraPopup::trigger(bool v){
+    BasePopWindow::trigger(value);
     if(v){
         std::lock_guard<std::mutex> lock(master->camera_mtx);
         const std::vector<std::shared_ptr<ServerConnection>>& refs = master->getServers();

@@ -129,6 +129,7 @@ int main(int, char**)
         gl_context = std::get<1>(sdl_ctx);
         glsl_version = std::get<2>(sdl_ctx);
     }
+    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
     servers = std::make_shared<json>(loadServerList());
     gui = std::make_shared<json>(loadGUI());
@@ -145,7 +146,7 @@ int main(int, char**)
     add_camera_popwin = std::make_shared<AddCameraPopup>(gui, global_state, master);
     scan_camera_popwin = std::make_shared<ScanCameraPopup>(gui, global_state, master);
     start_webcam_popwin = std::make_shared<StartWebcamPopup>(gui, global_state, master);
-    preview_popwin = std::make_shared<PreviewPopup>(gui, global_state, master);
+    preview_popwin = std::make_shared<PreviewPopup>(renderer, gui, global_state, master);
     pop_windows_array[0] = add_camera_popwin;
     pop_windows_array[1] = scan_camera_popwin;
     pop_windows_array[2] = start_webcam_popwin;
