@@ -9,7 +9,7 @@
 #include "imgui_impl_opengl3.h"
 #include "misc/cpp/imgui_stdlib.h"
 #include "../GoProMaster.h"
-#include "../state.h"
+#include "../data/state.h"
 
 using json = nlohmann::json;
 

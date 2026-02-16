@@ -1,7 +1,12 @@
-#pragma once
-#include "windows/base_window.h"
+/*
+ * Copyright (c) [2026] [Elly/Funique]
+ *
+ * This software is licensed under the [MIT License].
+ * See the LICENSE file in the project root for more information.
+*/
+#include "state_action.h"
 
-extern "C" inline void init_state_setup(
+void init_state_setup(
     std::shared_ptr<json> servers,
     std::shared_ptr<json> gui,
     std::shared_ptr<GlobalState> global_state,
@@ -56,4 +61,13 @@ extern "C" inline void init_state_setup(
         windows[3]->enable = true;
         windows[3]->trigger(true);
     }
+}
+
+json get_global_state_data(GlobalState& data){
+    json r = json::object();
+    return r;
+}
+
+void set_global_state_data(GlobalState& data, json refs){
+    
 }

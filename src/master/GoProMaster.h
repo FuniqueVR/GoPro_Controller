@@ -5,7 +5,6 @@
  * See the LICENSE file in the project root for more information.
 */
 #pragma once
-
 #include <vector>
 #include <map>
 #include <string>
@@ -13,60 +12,14 @@
 #include <mutex>
 #include <thread>
 #include <functional>
-#include "hv/WebSocketClient.h"
-#include <nlohmann/json.hpp>
 #include "../common/iphelper.h"
 #include "../common/camera_code.h"
-
-using json = nlohmann::json;
-/**
- * Basically holds the information of the camera
- * And which websocket server its from
- */
-struct CameraInfo {
-    std::string name;
-    std::string last_media;
-    std::string serial;
-    /**
-     * Camera IP
-     */
-    std::string ip;
-    /**
-     * Websocket server ip
-     */
-    std::string server;
-    bool connected;
-    /**
-     * The json states
-     */
-    json state;
-};
+#include "data/camera_info.h"
+#include "data/server_connection.h"
 
 typedef void (*camera_setting_feedback)(std::string ip, json setting);
 typedef void (*camera_status_feedback)(json status);
 typedef void (*camera_log_feedback)(std::string key, std::string value);
-
-/**
- * Basically holds the Websocket instance
- */
-struct ServerConnection {
-    /**
-     * Websocket IP
-     */
-    std::string ip;
-    /**
-     * The libhv websocket client
-     */
-    hv::WebSocketClient client;
-    /**
-     * Current connection state
-     */
-    bool connected = false;
-    /**
-     * last message received from the server
-     */
-    std::string last_message;
-};
 
 
 /**

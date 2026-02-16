@@ -10,8 +10,8 @@
 #include <vector>
 #include <thread>
 #include "GoProMaster.h"
-#include "IO.h"
-#include "state_init.h"
+#include "io.h"
+#include "data/state_action.h"
 #include "../common/camera_code.h"
 #include "windows/wins.h"
 #include "popup/popwins.h"

@@ -22,6 +22,12 @@ WebsocketWindow::~WebsocketWindow(){
 void WebsocketWindow::render(){
     ImGui::Begin("Websocket Dashboard", &enable, w_flag);
     {
+        ImGuiStyle& style = ImGui::GetStyle();
+        ImVec2 size = ImGui::GetWindowSize();
+        ImVec2 button_2size = ImVec2(size.x / 2.0F - (style.ItemSpacing.x * 2), 0);
+        ImVec2 button_3size = ImVec2(size.x / 3.0F - (style.ItemSpacing.x * 3), 0);
+        ImVec2 full_button_size = ImVec2(size.x - (style.ItemSpacing.x * 1), 0);
+
         ImGui::Text("Hotkeys:");
         ImGui::BulletText("F2: Start Recording");
         ImGui::BulletText("F3: Stop Recording");
@@ -31,13 +37,13 @@ void WebsocketWindow::render(){
         ImGui::Separator();
 
         ImGui::Text("Manual Control:");
-        if (ImGui::Button("Start Rec (F2)")) master->command_only("shutter_on"); ImGui::SameLine();
+        if (ImGui::Button("Start Rec (F2)", button_2size)) master->command_only("shutter_on"); ImGui::SameLine();
         if(ImGui::IsItemHovered()) ImGui::SetTooltip("Keyboard shortcut for broadcasting record signal to all connected cameras");
-        if (ImGui::Button("Stop Rec (F3)")) master->command_only("shutter_off");
+        if (ImGui::Button("Stop Rec (F3)", button_2size)) master->command_only("shutter_off");
         if(ImGui::IsItemHovered()) ImGui::SetTooltip("Keyboard shortcut for broadcasting stop signal to all connected cameras");
-        if (ImGui::Button("Photo Mode (F4)")) master->presetSwitch("", 65536);  ImGui::SameLine();
+        if (ImGui::Button("Photo Mode (F4)", button_2size)) master->presetSwitch("", 65536);  ImGui::SameLine();
         if(ImGui::IsItemHovered()) ImGui::SetTooltip("Keyboard shortcut for broadcasting switch to photo mode signal to all connected cameras");
-        if (ImGui::Button("Video Mode (F5)")) master->presetSwitch("", 0);
+        if (ImGui::Button("Video Mode (F5)", button_2size)) master->presetSwitch("", 0);
         if(ImGui::IsItemHovered()) ImGui::SetTooltip("Keyboard shortcut for broadcasting switch to video mode signal to all connected cameras");
 
         ImGui::Separator();
@@ -45,7 +51,7 @@ void WebsocketWindow::render(){
         ImGui::Text("Server Connections:");
         ImGui::InputText("Server IP", &server_ip_buf);
         if(ImGui::IsItemHovered()) ImGui::SetTooltip("Enter the server ip address here, example will be 127.0.0.1 or 192.168.61.123");
-        if (ImGui::Button("Add Server")) {
+        if (ImGui::Button("Add Server", button_3size)) {
             std::string ip = master->addServer(server_ip_buf);
             master->reconnect(ip);
             state->update_server();
@@ -53,27 +59,27 @@ void WebsocketWindow::render(){
         if(ImGui::IsItemHovered()) ImGui::SetTooltip("Trying to connect server base on address you enter");
 
         ImGui::SameLine();
-        if (ImGui::Button("Remove Server")) {
+        if (ImGui::Button("Remove Server", button_3size)) {
             master->clean(std::string(server_ip_buf));
             state->update_server();
         }
         if(ImGui::IsItemHovered()) ImGui::SetTooltip("Trying to remove server base on address you enter, You must disconnect the server before hit remove by the way.");
 
         ImGui::SameLine();
-        if (ImGui::Button("Disconnect Server")) {
+        if (ImGui::Button("Disconnect Server", button_3size)) {
             master->disconnect(std::string(server_ip_buf));
         }
         if(ImGui::IsItemHovered()) ImGui::SetTooltip("Trying to disconnect server base on address you enter");
 
-        if (ImGui::Button("Reconnect All")) {
+        if (ImGui::Button("Reconnect All", button_3size)) {
             master->reconnectAll();
         }
         ImGui::SameLine();
-        if (ImGui::Button("Disconnect All")) {
+        if (ImGui::Button("Disconnect All", button_3size)) {
             master->disconnectAll();
         }
         ImGui::SameLine();
-        if (ImGui::Button("Clean")) {
+        if (ImGui::Button("Clean", button_3size)) {
             master->cleanAll();
             state->update_server();
         }

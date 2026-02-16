@@ -43,12 +43,3 @@ struct GlobalState {
     InspectorObjectType iot = InspectorObjectType::Camera;
 };
 
-extern "C" inline json get_global_state_data(GlobalState& data){
-    json r = json::object();
-    return r;
-}
-
-extern "C" inline void set_global_state_data(GlobalState& data, json refs){
-    
-}
-

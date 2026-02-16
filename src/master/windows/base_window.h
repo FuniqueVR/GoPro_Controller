@@ -16,7 +16,7 @@
 #include "imgui_internal.h"
 #include "misc/cpp/imgui_stdlib.h"
 #include "../GoProMaster.h"
-#include "../state.h"
+#include "../data/state.h"
 
 using json = nlohmann::json;
 

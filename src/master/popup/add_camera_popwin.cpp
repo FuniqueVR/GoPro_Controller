@@ -34,24 +34,39 @@ void AddCameraPopup::render(){
                 std::string option = all_servers.at(n)->ip;
                 bool is_selected = all_servers[n]->ip == server_ip_buf;
                 option += "##PopupServerOption"; 
+                ImGui::BeginDisabled(!all_servers[n]->connected);
                 if (ImGui::Selectable(option.c_str(), is_selected))
                 {
                     server_ip_buf = all_servers.at(n)->ip;
                 }
+                ImGui::EndDisabled();
                 if (is_selected)
                     ImGui::SetItemDefaultFocus();   // You may set the initial focus when opening the combo (scrolling + for keyboard navigation support)
             }
             ImGui::EndCombo();
         }
-        updated = ImGui::InputText("Camera IP", &camera_serial_buf);
+        updated = ImGui::InputText("Camera Serial", &camera_serial_buf);
+        if(ImGui::IsItemHovered()){
+            ImGui::SetItemTooltip("Enter the camera last 3 serial number\nIt will automatically generate ip address for you.");
+        }
         ImGui::TextColored(ImVec4(1, 0, 0, 1), "%s", error.c_str());
         if(updated){
             error.clear();
         }
-        if (ImGui::Button("Confirm")) {
+
+        ImGuiStyle& style = ImGui::GetStyle();
+        ImVec2 size = ImGui::GetWindowSize();
+        ImVec2 button_size = ImVec2(size.x / 2.0F - (style.ItemSpacing.x * 2), 0);
+
+        if (ImGui::Button("Confirm", button_size)) {
             bool pass = true;
-            if(master->findServer(server_ip_buf) == -1){
+            int32_t index = master->findServer(server_ip_buf);
+            if(index == -1){
                 error = "Server does not exist.";
+                pass = false;
+            }
+            if(!all_servers[index]->connected){
+                error = "Server is disconnected.";
                 pass = false;
             }
             if(master->findCamera(GetRemoteIPBySerial(camera_serial_buf)) != -1){
@@ -68,7 +83,7 @@ void AddCameraPopup::render(){
             }
         }
         ImGui::SameLine();
-        if(ImGui::Button("Cancel")){
+        if(ImGui::Button("Cancel", button_size)){
             ImGui::CloseCurrentPopup();
         }
         ImGui::EndPopup();
