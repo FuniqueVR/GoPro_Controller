@@ -43,8 +43,8 @@ void CommandWindow::render_global(){
 
     ImGuiStyle& style = ImGui::GetStyle();
     ImVec2 size = ImGui::GetWindowSize();
-    ImVec2 button_size = ImVec2(size.x / 2.0F - (style.ItemSpacing.x * 2), 0);
-    ImVec2 full_button_size = ImVec2(size.x - (style.ItemSpacing.x * 1), 0);
+    ImVec2 button_size = ImVec2(size.x / 2.0F - style.ItemSpacing.x, 0);
+    ImVec2 full_button_size = ImVec2(size.x - style.ItemSpacing.x, 0);
     
     if(ImGui::Button("Scan All", button_size)) master->command_only("scan"); ImGui::SameLine();
     if(ImGui::IsItemHovered()) ImGui::SetTooltip("Scan all websocket server for cameras");
@@ -87,9 +87,9 @@ void CommandWindow::render_local(){
 
     ImGuiStyle& style = ImGui::GetStyle();
     ImVec2 size = ImGui::GetWindowSize();
-    ImVec2 button_2size = ImVec2(size.x / 2.0F - (style.ItemSpacing.x * 2.0F), 0);
-    ImVec2 button_4size = ImVec2(size.x / 4.0F - (style.ItemSpacing.x * 4), 0);
-    ImVec2 full_button_size = ImVec2(size.x - (style.ItemSpacing.x * 1), 0);
+    ImVec2 button_2size = ImVec2(size.x / 2.0F - style.ItemSpacing.x, 0);
+    ImVec2 button_4size = ImVec2(size.x / 4.0F - style.ItemSpacing.x, 0);
+    ImVec2 full_button_size = ImVec2(size.x - style.ItemSpacing.x, 0);
 
     if(ImGui::Button("Record", button_2size)) master->command_only("", "shutter_on", state->current_camera_item); ImGui::SameLine();
     if(ImGui::Button("Stop", button_2size)) master->command_only("", "shutter_off", state->current_camera_item);

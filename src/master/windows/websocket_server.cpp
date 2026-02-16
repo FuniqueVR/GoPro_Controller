@@ -24,9 +24,9 @@ void WebsocketWindow::render(){
     {
         ImGuiStyle& style = ImGui::GetStyle();
         ImVec2 size = ImGui::GetWindowSize();
-        ImVec2 button_2size = ImVec2(size.x / 2.0F - (style.ItemSpacing.x * 2), 0);
-        ImVec2 button_3size = ImVec2(size.x / 3.0F - (style.ItemSpacing.x * 3), 0);
-        ImVec2 full_button_size = ImVec2(size.x - (style.ItemSpacing.x * 1), 0);
+        ImVec2 button_2size = ImVec2(size.x / 2.0F - style.ItemSpacing.x, 0);
+        ImVec2 button_3size = ImVec2(size.x / 3.0F - style.ItemSpacing.x, 0);
+        ImVec2 full_button_size = ImVec2(size.x - style.ItemSpacing.x, 0);
 
         ImGui::Text("Hotkeys:");
         ImGui::BulletText("F2: Start Recording");

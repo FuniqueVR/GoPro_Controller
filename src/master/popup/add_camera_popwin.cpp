@@ -56,7 +56,7 @@ void AddCameraPopup::render(){
 
         ImGuiStyle& style = ImGui::GetStyle();
         ImVec2 size = ImGui::GetWindowSize();
-        ImVec2 button_size = ImVec2(size.x / 2.0F - (style.ItemSpacing.x * 2), 0);
+        ImVec2 button_size = ImVec2(size.x / 2.0F - style.ItemSpacing.x, 0);
 
         if (ImGui::Button("Confirm", button_size)) {
             bool pass = true;
