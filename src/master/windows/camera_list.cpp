@@ -35,9 +35,7 @@ void CameraListWindow::render(){
     ImGui::Begin(title.c_str(), &enable, w_flag);
     {
         std::lock_guard<std::mutex> lock(master->camera_mtx);
-        if(ImGui::SliderInt("Item Size##Camera_List_Size", &size_event, 0, 10)){
-            state->update_server();
-        }
+        ImGui::SliderInt("Item Size##Camera_List_Size", &size_event, 0, 10);
         ImVec2 rect_size = get_rect_size();
         float width = ImGui::GetWindowWidth();
         int32_t limit = static_cast<int32_t>(width / rect_size.x);
@@ -62,7 +60,10 @@ void CameraListWindow::render(){
         }
     }
     ImGui::End();
-    size = size_event;
+    if(size != size_event){
+        size = size_event;
+        state->update_server();
+    }
 }
 
 void CameraListWindow::draw_line(const std::shared_ptr<CameraInfo>& c){
