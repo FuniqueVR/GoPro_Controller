@@ -32,6 +32,10 @@ void BasePopWindow::trigger(bool value){
     enable = value;
 }
 
+void BasePopWindow::update(){
+
+}
+
 void BasePopWindow::render(){
 
 }

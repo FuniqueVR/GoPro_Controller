@@ -72,12 +72,7 @@ void CameraListWindow::draw_line(const std::shared_ptr<CameraInfo>& c){
     std::string plusID = plusStatus + "##CameraList_" + c->ip;
     if(ImGui::Selectable(plusID.c_str(), selected)){
         // User select interaction
-        state->current_setting_items_bind = false;
-        state->current_camera_item = c->ip;
-        state->current_camera_name = c->name;
-        std::cout << "Select camera: " << c->ip << std::endl;
-        master->query_only(c->server, "get", c->ip);
-        //current_setting_items_bind = master.getSettingsFromCamera(*c, current_setting_items);
+        onClick(c);
     }
     item_event(c);
 }
@@ -133,7 +128,7 @@ void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
 
 void CameraListWindow::item_event(const std::shared_ptr<CameraInfo>& c){
     if(ImGui::IsItemClicked(ImGuiMouseButton_Left)){
-        state->camera_selection = c->ip;
+        onClick(c);
     }
     if(ImGui::IsItemClicked(ImGuiMouseButton_Right)){
         ImGui::OpenPopupOnItemClick();
@@ -144,6 +139,7 @@ void CameraListWindow::item_event(const std::shared_ptr<CameraInfo>& c){
     }
 
     if(ImGui::BeginPopupContextItem((title + "##Popup_Menu").c_str())){
+        ImGui::BeginDisabled(!c->connected);
         if (ImGui::Selectable("Reboot"))
         {
             master->command_only(c->server, "reboot", c->ip);
@@ -157,12 +153,22 @@ void CameraListWindow::item_event(const std::shared_ptr<CameraInfo>& c){
             master->preview_start(c->server, c->ip);
             state->command_sender("preview_start");
         }
+        ImGui::EndDisabled();
         if (ImGui::Selectable("Delete"))
         {
             master->command_only(c->server, "delete", c->ip);
         }
         ImGui::EndPopup();
     }
+}
+
+void CameraListWindow::onClick(const std::shared_ptr<CameraInfo>& c){
+    state->current_setting_items_bind = false;
+    state->current_camera_item = c->ip;
+    state->current_camera_name = c->name;
+    std::cout << "Select camera: " << c->ip << std::endl;
+    master->query_only(c->server, "get", c->ip);
+    //current_setting_items_bind = master.getSettingsFromCamera(*c, current_setting_items);
 }
 
 ImVec2 CameraListWindow::get_rect_size(){

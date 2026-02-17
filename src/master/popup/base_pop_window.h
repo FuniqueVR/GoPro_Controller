@@ -13,7 +13,7 @@
 
 using json = nlohmann::json;
 
-#define wp_flag ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize
+#define wp_flag ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize
 
 class BasePopWindow {
 public:
@@ -32,6 +32,7 @@ public:
      * Is enable being triiger right now
      */
     virtual void trigger(bool value);
+    virtual void update();
     /**
      * Render the imgui window
      */

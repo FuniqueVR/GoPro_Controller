@@ -13,9 +13,9 @@ AddCameraPopup::~AddCameraPopup(){
     
 }
 
-void AddCameraPopup::trigger(bool v){
+void AddCameraPopup::trigger(bool value){
     BasePopWindow::trigger(value);
-    if(v){
+    if(value){
         std::lock_guard<std::mutex> lock(master->camera_mtx);
         const std::vector<std::shared_ptr<ServerConnection>>& refs = master->getServers();
         if(refs.size() > 0){
@@ -55,11 +55,7 @@ void AddCameraPopup::render(){
             error.clear();
         }
 
-        ImGuiStyle& style = ImGui::GetStyle();
-        ImVec2 size = ImGui::GetWindowSize();
-        ImVec2 button_size = ImVec2(size.x / 2.0F - style.ItemSpacing.x, 0);
-
-        if (ImGui::Button("Confirm", button_size)) {
+        if (ImGui::Button("Confirm")) {
             bool pass = true;
             int32_t index = master->findServer(server_ip_buf);
             if(index == -1){
@@ -81,10 +77,11 @@ void AddCameraPopup::render(){
 
             if(pass){
                 master->command_only(server_ip_buf, "add", std::string(camera_serial_buf));
+                trigger(false);
             }
         }
         ImGui::SameLine();
-        if(ImGui::Button("Cancel", button_size)){
+        if(ImGui::Button("Cancel")){
             ImGui::CloseCurrentPopup();
         }
         ImGui::EndPopup();

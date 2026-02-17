@@ -129,7 +129,7 @@ int main(int, char**)
         gl_context = std::get<1>(sdl_ctx);
         glsl_version = std::get<2>(sdl_ctx);
     }
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    SDL_Renderer* renderer = SDL_CreateRenderer(window, NULL);
 
     servers = std::make_shared<json>(loadServerList());
     gui = std::make_shared<json>(loadGUI());
@@ -227,6 +227,11 @@ int main(int, char**)
             }
 
             for(auto& w : windows_array){
+                if(w && w->is_enable()){
+                    w->update();
+                }
+            }
+            for(auto& w : pop_windows_array){
                 if(w && w->is_enable()){
                     w->update();
                 }
