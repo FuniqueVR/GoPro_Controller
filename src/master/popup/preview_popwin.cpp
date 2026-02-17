@@ -12,7 +12,8 @@ PreviewPopup::PreviewPopup(
 }
 
 PreviewPopup::~PreviewPopup(){
-    
+    trigger(false);
+    if(video_texture != NULL) SDL_DestroyTexture(video_texture);
 }
 
 void PreviewPopup::trigger(bool value){
@@ -25,6 +26,10 @@ void PreviewPopup::trigger(bool value){
             "! video/x-raw, format=BGR "
             "! appsink sync=false drop=true max-buffers=1";
         cap.open(pipeline, cv::CAP_GSTREAMER);
+        if (!cap.isOpened()) {
+            std::cerr << "Failed to open pipeline!" << std::endl;
+            return;
+        }
         reader = std::thread([=]() {
             update_decoder();
         });
@@ -42,7 +47,8 @@ void PreviewPopup::trigger(bool value){
 
 void PreviewPopup::update_decoder(){
     cv::Mat frame;
-    while(enable){
+    std::cout << "[Preview Decoder] Update decoder start !" << std::endl;
+    while(isopen){
         if(cap.read(frame)){
             if(!frame.empty()){
                 std::lock_guard<std::mutex> lock(queue_mutex);
@@ -54,19 +60,23 @@ void PreviewPopup::update_decoder(){
                 }
                 
                 frame_queue.push(frame.clone());
+                std::this_thread::sleep_for(std::chrono::milliseconds(10));
             } else {
                 std::this_thread::sleep_for(std::chrono::milliseconds(100));
             }
         }
     }
+    std::cout << "[Preview Decoder] Update decoder end !" << std::endl;
 }
 
 void PreviewPopup::update(){
-    cv::Mat frame = get_latest_frame();
-    ConvertTexture(frame);
+    
 }
 
 void PreviewPopup::render(){
+    cv::Mat frame = get_latest_frame();
+    ConvertTexture(frame);
+
     if(ImGui::BeginPopupModal(title.c_str(), NULL, wp_flag)){
         ImGui::Image(video_texture, ImVec2(800, 600));
         if(ImGui::Button("Cancel")){
@@ -90,23 +100,34 @@ cv::Mat PreviewPopup::get_latest_frame(){
 }
 
 void PreviewPopup::ConvertTexture(cv::Mat& mat){
-    if(mat.empty()) return;
+    if(mat.empty()) {
+        return;
+    }
     if (mat.cols != texture_width || mat.rows != texture_height){
         cv::resize(mat, mat, cv::Size(texture_width, texture_height));
     }
-    if(video_texture != NULL) SDL_DestroyTexture(video_texture);
-    video_texture = SDL_CreateTexture(
-        renderer,
-        SDL_PIXELFORMAT_BGR24,
-        SDL_TEXTUREACCESS_STREAMING,
-        texture_width,
-        texture_height
-    );
+
+    if(video_texture == NULL){
+        video_texture = SDL_CreateTexture(
+            renderer,
+            SDL_PIXELFORMAT_BGR24,
+            SDL_TEXTUREACCESS_STREAMING,
+            texture_width,
+            texture_height
+        );
+    }
     void* pixels;
     int pitch;
     if (SDL_LockTexture(video_texture, nullptr, &pixels, &pitch) == 0) {
         // Copy frame data to texture
-        memcpy(pixels, mat.data, mat.total() * mat.elemSize());
+        int row_bytes = mat.cols * mat.elemSize();
+        for (int y = 0; y < mat.rows; y++) {
+            memcpy(
+                (uint8_t*)pixels + y * pitch,
+                mat.data + y * row_bytes,
+                row_bytes
+            );
+        }
         SDL_UnlockTexture(video_texture);
     }
     std::cout << "[Preview Decoder] Frame converted !" << std::endl;

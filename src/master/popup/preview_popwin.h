@@ -25,7 +25,7 @@ private:
     std::queue<cv::Mat> frame_queue;
     std::mutex queue_mutex;
     std::thread reader;
-    const size_t MAX_QUEUE_SIZE = 10;
+    const size_t MAX_QUEUE_SIZE = 50;
 
     SDL_Texture* video_texture = NULL;
     SDL_Renderer* renderer = NULL;

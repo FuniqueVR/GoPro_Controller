@@ -225,16 +225,16 @@ int main(int, char**)
                     updateGUIList();
                 }
             }
+        }
 
-            for(auto& w : windows_array){
-                if(w && w->is_enable()){
-                    w->update();
-                }
+        for(auto& w : windows_array){
+            if(w && w->is_enable()){
+                w->update();
             }
-            for(auto& w : pop_windows_array){
-                if(w && w->is_enable()){
-                    w->update();
-                }
+        }
+        for(auto& w : pop_windows_array){
+            if(w && w->is_open()){
+                w->update();
             }
         }
 
@@ -268,7 +268,7 @@ int main(int, char**)
         }
 
         for(auto& w : pop_windows_array){
-            if(w && w->is_enable()){
+            if(w){
                 w->detect();
             }
         }

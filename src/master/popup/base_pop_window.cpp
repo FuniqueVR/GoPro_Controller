@@ -28,9 +28,14 @@ bool BasePopWindow::is_enable(){
     return enable;
 }
 
+bool BasePopWindow::is_open(){
+    return isopen;
+}
+
 void BasePopWindow::trigger(bool value){
     enable = value;
     if(!enable){
+        isopen = false;
         ImGui::CloseCurrentPopup();
     }
 }
@@ -46,6 +51,7 @@ void BasePopWindow::render(){
 void BasePopWindow::detect(){
     if(enable){
         enable = false;
+        isopen = true;
         ImGui::OpenPopup(title.c_str());
         ImVec2 center = ImGui::GetMainViewport()->GetCenter();
         ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));

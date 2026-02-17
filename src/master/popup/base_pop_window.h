@@ -28,6 +28,7 @@ public:
      */
     std::string get_title();
     bool is_enable();
+    bool is_open();
     /**
      * Is enable being triiger right now
      */
@@ -43,6 +44,7 @@ public:
     virtual void detect();
 protected:
     bool enable = false;
+    bool isopen = false;
     std::shared_ptr<json> setting;
     std::shared_ptr<GlobalState> state;
     std::shared_ptr<GoProMaster> master;
