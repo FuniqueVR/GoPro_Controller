@@ -18,7 +18,12 @@ PreviewPopup::~PreviewPopup(){
 void PreviewPopup::trigger(bool value){
     BasePopWindow::trigger(value);
     if(value){
-        pipeline = "udpsrc port=8556 ! decodebin ! videoconvert ! appsink sync=false";
+        pipeline = "udpsrc port=8556 "
+            "caps=\"video/mpegts, systemstream=(boolean)true, packetsize=(int)188\" "
+            "! decodebin "
+            "! videoconvert "
+            "! video/x-raw, format=BGR "
+            "! appsink sync=false drop=true max-buffers=1";
         cap.open(pipeline, cv::CAP_GSTREAMER);
         reader = std::thread([=]() {
             update_decoder();

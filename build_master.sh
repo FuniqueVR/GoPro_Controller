@@ -11,5 +11,3 @@ cmake .. -DCMAKE_BUILD_TYPE=Debug -DBUILD_SERVER=OFF -DBUILD_MASTER=ON
 
 # Build
 cmake --build . -j 8
-
-cp ../build_master/bin/master ../build_master 
