@@ -36,6 +36,9 @@ struct GlobalState {
     // Apply state
     std::string apply_all_item_string = "Video Resolution";
     int32_t apply_all_item = 2;
+    // Preview
+    std::string preview_server;
+    std::string preview_ip;
     // Caller
     CommandSenderFunc command_sender = NULL; 
     ActionFunc update_server = NULL;

@@ -27,10 +27,10 @@ private:
     std::thread reader;
     const size_t MAX_QUEUE_SIZE = 10;
 
-    SDL_Texture* video_texture = nullptr;
-    SDL_Renderer* renderer = nullptr;
-    int32_t texture_width = 1280;
-    int32_t texture_height = 720;
+    SDL_Texture* video_texture = NULL;
+    SDL_Renderer* renderer = NULL;
+    int32_t texture_width = 800;
+    int32_t texture_height = 600;
 
     cv::Mat get_latest_frame();
     void ConvertTexture(cv::Mat& mat);

@@ -30,6 +30,9 @@ bool BasePopWindow::is_enable(){
 
 void BasePopWindow::trigger(bool value){
     enable = value;
+    if(!enable){
+        ImGui::CloseCurrentPopup();
+    }
 }
 
 void BasePopWindow::update(){

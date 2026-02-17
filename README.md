@@ -19,7 +19,7 @@ sudo apt install g++-aarch64-linux-gnu
 * Master 解碼器, OpenCV 會用到 ffmpeg, Linux 需要以下的庫
 ```bash
 sudo apt-get update
-sudo apt-get install libavcodec-dev libavformat-dev libswscale-dev libavutil-dev
+sudo apt-get install libopencv-dev libavcodec-dev libavformat-dev libswscale-dev libavutil-dev
 ```
 
 總共有兩個輸出的應用程式

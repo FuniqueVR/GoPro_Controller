@@ -135,6 +135,8 @@ void CameraListWindow::item_event(const std::shared_ptr<CameraInfo>& c){
     }
     if(ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)){
         master->preview_start(c->server, c->ip);
+        state->preview_ip = c->ip;
+        state->preview_server = c->server;
         state->command_sender("preview_start");
     }
 
@@ -148,12 +150,14 @@ void CameraListWindow::item_event(const std::shared_ptr<CameraInfo>& c){
         {
             master->command_only(c->server, "shutdown", c->ip);
         }
-        if (ImGui::Selectable("Preview"))
+        ImGui::EndDisabled();
+        if (ImGui::Selectable("Preview TEST"))
         {
             master->preview_start(c->server, c->ip);
+            state->preview_ip = c->ip;
+            state->preview_server = c->server;
             state->command_sender("preview_start");
         }
-        ImGui::EndDisabled();
         if (ImGui::Selectable("Delete"))
         {
             master->command_only(c->server, "delete", c->ip);
@@ -172,5 +176,5 @@ void CameraListWindow::onClick(const std::shared_ptr<CameraInfo>& c){
 }
 
 ImVec2 CameraListWindow::get_rect_size(){
-    return ImVec2(10 * (size + 5) + 20, 10 * (size + 5) + 20);
+    return ImVec2(10 * (size + 10) + 20, 10 * (size + 10) + 20);
 }

@@ -43,7 +43,6 @@ std::string getCommand(std::string url){
 }
 
 void GoProController::_loadRecord(){
-    std::lock_guard<std::mutex> lock(ips_mutex);
     std::string homedir = get_env_var("WS_ROOT");
     if(homedir.size() > 0) homedir += "/";
     homedir += "record.txt";
@@ -82,12 +81,14 @@ void GoProController::_updateRecord(){
         std::cerr << "Error: Could not open the file." << homedir << std::endl;
         return; // Return with an error code
     }
-    std::lock_guard<std::mutex> lock(ips_mutex);
-    for(auto i : camera_ips){
-        if(camera_name.count(i)){
-            outFile << i << " " << camera_name.at(i)  << "\n";
+    for(int32_t i = 0; i < camera_ips.size(); i++){
+        std::string& c = camera_ips.at(i);
+        if(camera_name.count(c)){
+            outFile << c << " " << camera_name.at(c)  << "\n";
+            std::cout << "  Export " << c << " with name " << camera_name.at(c) << std::endl;
         }else{
-            outFile << i << "\n";
+            outFile << c << "\n";
+            std::cout << "  Export " << c << std::endl;
         }
     }
     outFile.close();

@@ -36,6 +36,7 @@ GoProController::~GoProController() {
 }
 
 void GoProController::scanCameras() {
+    std::lock_guard<std::mutex> lock(ips_mutex);
     if(!mdns_scaned){
         mdns_scaned = true;
             mdns_cpp::Logger::setLoggerSink([&](const std::string& log_msg) {
@@ -52,7 +53,6 @@ void GoProController::scanCameras() {
                     }
                 }
                 if(!find){
-                    std::lock_guard<std::mutex> lock(ips_mutex);
                     camera_ips.push_back(p);
                     _updateRecord();
                 }
