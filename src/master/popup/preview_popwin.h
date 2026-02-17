@@ -3,6 +3,7 @@
 #include <mutex>
 #include <thread>
 #include <SDL3/SDL.h>
+#include <GL/gl.h>
 #include <opencv2/opencv.hpp>
 #include "base_pop_window.h"
 
@@ -25,9 +26,10 @@ private:
     std::queue<cv::Mat> frame_queue;
     std::mutex queue_mutex;
     std::thread reader;
-    const size_t MAX_QUEUE_SIZE = 50;
+    const size_t MAX_QUEUE_SIZE = 10;
 
-    SDL_Texture* video_texture = NULL;
+    bool stream_open = false;
+    GLuint gl_texture = 0;
     SDL_Renderer* renderer = NULL;
     int32_t texture_width = 800;
     int32_t texture_height = 600;

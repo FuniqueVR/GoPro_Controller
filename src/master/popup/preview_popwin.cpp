@@ -13,27 +13,20 @@ PreviewPopup::PreviewPopup(
 
 PreviewPopup::~PreviewPopup(){
     trigger(false);
-    if(video_texture != NULL) SDL_DestroyTexture(video_texture);
+    if(gl_texture != 0){
+        glDeleteTextures(1, &gl_texture);
+        gl_texture = 0;
+    }
 }
 
 void PreviewPopup::trigger(bool value){
     BasePopWindow::trigger(value);
     if(value){
-        pipeline = "udpsrc port=8556 "
-            "caps=\"video/mpegts, systemstream=(boolean)true, packetsize=(int)188\" "
-            "! decodebin "
-            "! videoconvert "
-            "! video/x-raw, format=BGR "
-            "! appsink sync=false drop=true max-buffers=1";
-        cap.open(pipeline, cv::CAP_GSTREAMER);
-        if (!cap.isOpened()) {
-            std::cerr << "Failed to open pipeline!" << std::endl;
-            return;
-        }
         reader = std::thread([=]() {
             update_decoder();
         });
     }else{
+        stream_open = false;
         if (cap.isOpened()) {
             cap.release();
         }
@@ -46,26 +39,74 @@ void PreviewPopup::trigger(bool value){
 }
 
 void PreviewPopup::update_decoder(){
+
+    stream_open = false;
+    int32_t retry = 0;
+    const int32_t MAX_RETRY = 30;
+
+    std::cout << "[Preview Decoder] Update decoder start !" << " " << stream_open << " " << (retry < MAX_RETRY) << std::endl;
+    while(!stream_open && retry < MAX_RETRY){
+        retry++;
+        std::cout << "[Preview Decoder] Attempt " << retry << "/" << MAX_RETRY << " opening pipeline..." << std::endl;
+
+        pipeline =
+            "udpsrc port=8556 buffer-size=2097152 "
+            "! queue max-size-buffers=0 max-size-bytes=0 max-size-time=2000000000 "
+            "! tsparse "
+            "! decodebin "
+            "! videoconvert "
+            "! video/x-raw,format=BGR "
+            "! appsink sync=false drop=true max-buffers=2";
+
+        cap.open(pipeline, cv::CAP_GSTREAMER);
+
+        if(cap.isOpened()){
+            // ✅ Try to grab one frame to confirm it actually works
+            cv::Mat test;
+            cap.grab();
+            if(cap.retrieve(test) && !test.empty()){
+                stream_open = true;
+                std::cout << "[Preview Decoder] Pipeline opened successfully! " << test.cols << "x" << test.rows << std::endl;
+            } else {
+                std::cout << "[Preview Decoder] Pipeline opened but no frames yet, retrying..." << std::endl;
+                cap.release();
+                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            }
+        } else {
+            std::cout << "[Preview Decoder] Failed to open pipeline, retrying in 1s..." << std::endl;
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        }
+    }
+
+    if(!stream_open){
+        std::cerr << "[Preview Decoder] Could not open pipeline after " << MAX_RETRY << " attempts!" << std::endl;
+        return;
+    }
+    
     cv::Mat frame;
-    std::cout << "[Preview Decoder] Update decoder start !" << std::endl;
-    while(isopen){
+    std::cout << "[Preview Decoder] Decoding started!" << std::endl;
+
+    while(stream_open){
+        if(!cap.isOpened()){
+            std::cerr << "[Preview Decoder] Pipeline closed unexpectedly!" << std::endl;
+            break;
+        }
+
         if(cap.read(frame)){
             if(!frame.empty()){
                 std::lock_guard<std::mutex> lock(queue_mutex);
-                std::cout << "[Preview Decoder] Catch frame !" << std::endl;
-                    
-                if (frame_queue.size() >= MAX_QUEUE_SIZE) {
+                if(frame_queue.size() >= MAX_QUEUE_SIZE){
                     frame_queue.pop();
-                    std::cout << "[Preview Decoder] frame_queue reach limit: " << MAX_QUEUE_SIZE << std::endl;
                 }
-                
                 frame_queue.push(frame.clone());
-                std::this_thread::sleep_for(std::chrono::milliseconds(10));
-            } else {
-                std::this_thread::sleep_for(std::chrono::milliseconds(100));
             }
+        } else {
+            // cap.read failed - stream might have dropped
+            std::cerr << "[Preview Decoder] cap.read() failed, stream dropped?" << std::endl;
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
     }
+
     std::cout << "[Preview Decoder] Update decoder end !" << std::endl;
 }
 
@@ -78,7 +119,29 @@ void PreviewPopup::render(){
     ConvertTexture(frame);
 
     if(ImGui::BeginPopupModal(title.c_str(), NULL, wp_flag)){
-        ImGui::Image(video_texture, ImVec2(800, 600));
+        
+        if(gl_texture != 0){
+            ImGui::Image((ImTextureID)(intptr_t)gl_texture, ImVec2(800, 600));
+        } else {
+            ImGui::Dummy(ImVec2(800, 280));
+            float win_width = ImGui::GetContentRegionAvail().x;
+            std::string msg = "Waiting for video stream...";
+            float text_width = ImGui::CalcTextSize(msg.c_str()).x;
+            ImGui::SetCursorPosX((win_width - text_width) * 0.5f);
+            ImGui::Text("%s", msg.c_str());
+            // Animated dots
+            static int dots = 0;
+            static auto last = std::chrono::steady_clock::now();
+            auto now = std::chrono::steady_clock::now();
+            if(std::chrono::duration_cast<std::chrono::milliseconds>(now - last).count() > 500){
+                dots = (dots + 1) % 4;
+                last = now;
+            }
+            std::string dot_str(dots, '.');
+            ImGui::SameLine();
+            ImGui::Text("%s", dot_str.c_str());
+        }
+
         if(ImGui::Button("Cancel")){
             trigger(false);
         }
@@ -100,35 +163,37 @@ cv::Mat PreviewPopup::get_latest_frame(){
 }
 
 void PreviewPopup::ConvertTexture(cv::Mat& mat){
-    if(mat.empty()) {
-        return;
-    }
+    if(mat.empty()) return;
+
+    cv::Mat frame;
     if (mat.cols != texture_width || mat.rows != texture_height){
-        cv::resize(mat, mat, cv::Size(texture_width, texture_height));
+        cv::resize(mat, frame, cv::Size(texture_width, texture_height));
+    } else {
+        frame = mat;
     }
 
-    if(video_texture == NULL){
-        video_texture = SDL_CreateTexture(
-            renderer,
-            SDL_PIXELFORMAT_BGR24,
-            SDL_TEXTUREACCESS_STREAMING,
-            texture_width,
-            texture_height
-        );
+    cv::Mat rgb;
+    cv::cvtColor(frame, rgb, cv::COLOR_BGR2RGB);
+
+    if(gl_texture == 0){
+        glGenTextures(1, &gl_texture);
+        glBindTexture(GL_TEXTURE_2D, gl_texture);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        // Allocate texture
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
+            texture_width, texture_height,
+            0, GL_RGB, GL_UNSIGNED_BYTE, rgb.data);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        std::cout << "[Preview Decoder] Frame converted !" << std::endl;
+    } else {
+        // ✅ Update texture data (fast path)
+        glBindTexture(GL_TEXTURE_2D, gl_texture);
+        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0,
+                        texture_width, texture_height,
+                        GL_RGB, GL_UNSIGNED_BYTE, rgb.data);
+        glBindTexture(GL_TEXTURE_2D, 0);
     }
-    void* pixels;
-    int pitch;
-    if (SDL_LockTexture(video_texture, nullptr, &pixels, &pitch) == 0) {
-        // Copy frame data to texture
-        int row_bytes = mat.cols * mat.elemSize();
-        for (int y = 0; y < mat.rows; y++) {
-            memcpy(
-                (uint8_t*)pixels + y * pitch,
-                mat.data + y * row_bytes,
-                row_bytes
-            );
-        }
-        SDL_UnlockTexture(video_texture);
-    }
-    std::cout << "[Preview Decoder] Frame converted !" << std::endl;
 }
