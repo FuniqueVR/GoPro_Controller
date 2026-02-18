@@ -31,8 +31,8 @@ private:
     bool stream_open = false;
     GLuint gl_texture = 0;
     SDL_Renderer* renderer = NULL;
-    int32_t texture_width = 800;
-    int32_t texture_height = 600;
+    int32_t texture_width = 1920;
+    int32_t texture_height = 1080;
 
     cv::Mat get_latest_frame();
     void ConvertTexture(cv::Mat& mat);

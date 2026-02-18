@@ -1,4 +1,5 @@
 #include "preview_popwin.h"
+#include "../../common/camera_setting.h"
 
 PreviewPopup::PreviewPopup(
     SDL_Renderer* _renderer,
@@ -13,10 +14,6 @@ PreviewPopup::PreviewPopup(
 
 PreviewPopup::~PreviewPopup(){
     trigger(false);
-    if(gl_texture != 0){
-        glDeleteTextures(1, &gl_texture);
-        gl_texture = 0;
-    }
 }
 
 void PreviewPopup::trigger(bool value){
@@ -33,6 +30,10 @@ void PreviewPopup::trigger(bool value){
         if(reader.joinable()){
             reader.join();
         }
+        if(gl_texture != 0){
+            glDeleteTextures(1, &gl_texture);
+            gl_texture = 0;
+        }
         while(frame_queue.size() > 0) frame_queue.pop();
         master->preview_end(state->preview_server, state->preview_ip);
     }
@@ -45,6 +46,35 @@ void PreviewPopup::update_decoder(){
     const int32_t MAX_RETRY = 30;
 
     std::cout << "[Preview Decoder] Update decoder start !" << " " << stream_open << " " << (retry < MAX_RETRY) << std::endl;
+
+    {
+        std::lock_guard<std::mutex> lock(master->camera_mtx);
+        int32_t s = master->findCamera(state->preview_ip);
+        if(s == -1){
+            std::cout << "[Preview Decoder] Cannot find camera: " << state->preview_ip << std::endl;
+            return;
+        }
+        const std::shared_ptr<CameraInfo>& c = master->getCameras().at(s);
+        json buffer_setting = json::object();
+        master->getSettingsFromCamera(c, buffer_setting);
+        if(buffer_setting["2"].is_number_integer()){
+            int32_t res = buffer_setting["2"].get<int32_t>();
+            int32_t detail[2] = VIDEO_RESOLUTION_RES[res];
+            texture_width = detail[0];
+            texture_height = detail[1];
+        }else{
+            std::cout << "[Preview Decoder] Cannot get resolution setting from camera: " << state->preview_ip << std::endl;
+            std::cout << "[Preview Decoder] Fallback to default HD resolution " << std::endl;
+            texture_width = 1920;
+            texture_height = 1080;
+        }
+    }
+
+    if(gl_texture != 0){
+        glDeleteTextures(1, &gl_texture);
+        gl_texture = 0;
+    }
+
     while(!stream_open && retry < MAX_RETRY){
         retry++;
         std::cout << "[Preview Decoder] Attempt " << retry << "/" << MAX_RETRY << " opening pipeline..." << std::endl;

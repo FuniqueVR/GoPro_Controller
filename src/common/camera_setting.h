@@ -2,6 +2,7 @@
 #ifndef CAMERA_SETTING
 #define CAMERA_SETTING
 #include <cinttypes>
+#include <array>
 
 #define VIDEO_RESOLUTION_ID 2
 #define VIDEO_RESOLUTION_SIZE 27
@@ -42,6 +43,36 @@ const static int32_t VIDEO_RESOLUTION_VALUE[] = {
     26, 27, 28, 31, 35, 36, 37, 38, 39, 100,
     107, 108, 109, 110, 111, 112, 113
 };
+
+const static int32_t VIDEO_RESOLUTION_RES[][2] = {
+    {3840, 2160},
+    {2704, 1520},
+    {2704, 2028},
+    {1920, 1440},
+    {1920, 1080},
+    {1280, 720}, 
+    {3840, 2880},
+    {5568, 3128},
+    {5120, 2880},
+    {5120, 3840},
+    {5312, 4648},
+    {5312, 3984},
+    {4000, 3500},
+    {7680, 4320},
+    {5312, 2272},
+    {3840, 1645},
+    {3840, 3840},
+    {1600, 900}, 
+    {3840, 1920},
+    {5312, 2988},
+    {5312, 4648},
+    {4000, 3500},
+    {2160, 3840},
+    {1080, 1920},
+    {2704, 2028},
+    {3840, 2880},
+    {5312, 3984} 
+}
 
 #define FRAMES_PER_SECOND_ID 3
 #define FRAMES_PER_SECOND_SIZE 13
