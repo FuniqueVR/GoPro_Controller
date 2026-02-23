@@ -72,7 +72,7 @@ const static int32_t VIDEO_RESOLUTION_RES[][2] = {
     {2704, 2028},
     {3840, 2880},
     {5312, 3984} 
-}
+};
 
 #define FRAMES_PER_SECOND_ID 3
 #define FRAMES_PER_SECOND_SIZE 13
@@ -91,7 +91,7 @@ const static char* FRAMES_PER_SECOND_STRING[] = {
     "200.0",
     "400.0",
     "360.0",
-    "300.0"
+    "300.0",
 };
 
 const static int32_t FRAMES_PER_SECOND_VALUE[] = {
