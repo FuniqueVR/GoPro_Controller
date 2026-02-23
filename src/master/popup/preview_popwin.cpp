@@ -43,10 +43,9 @@ void PreviewPopup::update_decoder(){
 
     stream_open = false;
     int32_t retry = 0;
-    const int32_t MAX_RETRY = 30;
+    const int32_t MAX_RETRY = 10;
 
     std::cout << "[Preview Decoder] Update decoder start !" << " " << stream_open << " " << (retry < MAX_RETRY) << std::endl;
-
     {
         std::lock_guard<std::mutex> lock(master->camera_mtx);
         int32_t s = master->findCamera(state->preview_ip);
@@ -56,10 +55,10 @@ void PreviewPopup::update_decoder(){
         }
         const std::shared_ptr<CameraInfo>& c = master->getCameras().at(s);
         json buffer_setting = json::object();
-        master->getSettingsFromCamera(c, buffer_setting);
+        master->getSettingsFromCamera(*c, buffer_setting);
         if(buffer_setting["2"].is_number_integer()){
             int32_t res = buffer_setting["2"].get<int32_t>();
-            int32_t detail[2] = VIDEO_RESOLUTION_RES[res];
+            const int32_t* detail = VIDEO_RESOLUTION_RES[res];
             texture_width = detail[0];
             texture_height = detail[1];
         }else{
@@ -80,9 +79,8 @@ void PreviewPopup::update_decoder(){
         std::cout << "[Preview Decoder] Attempt " << retry << "/" << MAX_RETRY << " opening pipeline..." << std::endl;
 
         pipeline =
-            "udpsrc port=8556 buffer-size=2097152 "
+            "udpsrc port=8554 buffer-size=4194304 "
             "! queue max-size-buffers=0 max-size-bytes=0 max-size-time=2000000000 "
-            "! tsparse "
             "! decodebin "
             "! videoconvert "
             "! video/x-raw,format=BGR "
@@ -106,6 +104,8 @@ void PreviewPopup::update_decoder(){
             std::cout << "[Preview Decoder] Failed to open pipeline, retrying in 1s..." << std::endl;
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
+
+        if(!isopen) break;
     }
 
     if(!stream_open){

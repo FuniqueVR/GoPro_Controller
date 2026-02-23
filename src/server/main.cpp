@@ -389,24 +389,36 @@ void UDPProxyServer(){
     std::string broadcast_addr = "255.255.255.255";
 
     std::cout << "Starting GoPro UDP Proxy Server (RPi)..." << std::endl;
-    hv::UdpServer us;
+    static hv::UdpServer us;
     int32_t bindfd = us.createsocket(listen_port);
+    if(bindfd == -1){
+        std::cerr << "Failed to create socket for recevier: " << std::endl;
+        return;
+    }
     std::cout << "UDP bind on port: " << listen_port << std::endl;
-    
+
     int32_t sock_fd = socket(AF_INET, SOCK_DGRAM, 0);
+    if(sock_fd == -1){
+        std::cerr << "Failed to create socket for broadcasting: " << std::endl;
+        return;
+    }
     int32_t broadcast_enable = 1;
-    setsockopt(sock_fd, SOL_SOCKET, SO_BROADCAST, &broadcast_enable, sizeof(broadcast_enable));
+    int32_t err = setsockopt(sock_fd, SOL_SOCKET, SO_BROADCAST, &broadcast_enable, sizeof(broadcast_enable));
+    if(err == -1){
+        std::cerr << "Failed to set socket option for broadcasting: " << std::endl;
+        return;
+    }
     std::cout << "UDP Broadcast Relay started:" << std::endl;
     std::cout << "  Listening on: 0.0.0.0:" << listen_port << " (from GoPro)" << std::endl;
     std::cout << "  Broadcasting to: " << broadcast_addr << ":" << broadcast_port << " (to all Masters)" << std::endl;
 
-    us.onMessage = [sock_fd, broadcast_addr, broadcast_port](const hv::SocketChannelPtr& channel, hv::Buffer* buf){
-        struct sockaddr_in broadcast_sockaddr;
-        memset(&broadcast_sockaddr, 0, sizeof(broadcast_sockaddr));
-        broadcast_sockaddr.sin_family = AF_INET;
-        broadcast_sockaddr.sin_port = htons(broadcast_port);
-        broadcast_sockaddr.sin_addr.s_addr = inet_addr(broadcast_addr.c_str());
+    struct sockaddr_in broadcast_sockaddr;
+    memset(&broadcast_sockaddr, 0, sizeof(broadcast_sockaddr));
+    broadcast_sockaddr.sin_family = AF_INET;
+    broadcast_sockaddr.sin_port = htons(broadcast_port);
+    broadcast_sockaddr.sin_addr.s_addr = inet_addr(broadcast_addr.c_str());
 
+    us.onMessage = [sock_fd, broadcast_addr, broadcast_port, broadcast_sockaddr](const hv::SocketChannelPtr& channel, hv::Buffer* buf){
         ssize_t sent = sendto(sock_fd, buf->data(), buf->size(), 0,
             (struct sockaddr*)&broadcast_sockaddr, 
             sizeof(broadcast_sockaddr));

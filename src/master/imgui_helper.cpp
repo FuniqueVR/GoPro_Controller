@@ -185,6 +185,9 @@ std::tuple<SDL_Window*, SDL_GLContext, const char*> begin_sdl(){
         exit(1);
     }
 
+    const char* video_driver = SDL_GetCurrentVideoDriver();
+    std::cout << "SDL Video Driver: " << video_driver << std::endl;
+
     // Decide GL+GLSL versions
 #if defined(IMGUI_IMPL_OPENGL_ES2)
     // GL ES 2.0 + GLSL 100 (WebGL 1.0)

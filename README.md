@@ -20,6 +20,7 @@ sudo apt install g++-aarch64-linux-gnu
 ```bash
 sudo apt-get update
 sudo apt-get install libopencv-dev libavcodec-dev libavformat-dev libswscale-dev libavutil-dev
+sudo apt-get install gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly
 ```
 
 總共有兩個輸出的應用程式
