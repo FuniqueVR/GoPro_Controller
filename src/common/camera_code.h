@@ -550,4 +550,68 @@ inline const int32_t GET_STATUS_NAME_BY_ID(int32_t x ){
     }
 }
 
+inline const int32_t GET_STATUS_SIZE_BY_ID(int32_t x ){
+    switch(x) {
+        case INTERNAL_BATTERY_BARS_ID:              return INTERNAL_BATTERY_BARS_SIZE;
+        case PAIRING_STATE_ID:                      return PAIRING_STATE_SIZE;
+        case LAST_PAIRING_TYPE_ID:                  return LAST_PAIRING_TYPE_SIZE;
+        case WIFI_SCAN_STATE_ID:                    return WIFI_SCAN_STATE_SIZE;
+        case WIFI_PROVISIONING_STATE_ID:            return WIFI_PROVISIONING_STATE_SIZE;
+        case PRIMARY_STORAGE_ID:                    return PRIMARY_STORAGE_SIZE;
+        case OTA_ID:                                return OTA_SIZE;
+        case LIVEVIEW_EXPOSURE_SELECT_MODE_ID:      return LIVEVIEW_EXPOSURE_SELECT_MODE_SIZE;
+        case MICROPHONE_ACCESSORY_ID:               return MICROPHONE_ACCESSORY_SIZE;
+        case STATUS_WIRELESS_BAND_ID:               return STATUS_WIRELESS_BAND_SIZE;
+        case ROTATION_ID:                           return ROTATION_SIZE;
+        case MEDIA_MOD_STATE_ID:                    return MEDIA_MOD_STATE_SIZE;
+        case TIME_WARP_SPEED_ID:                    return TIME_WARP_SPEED_SIZE;
+        case SCHEDULED_CAPTURE_ID:                  return SCHEDULED_CAPTURE_SIZE;
+        case STATUS_CAMERA_CONTROL_ID:              return STATUS_CAMERA_CONTROL_SIZE;
+        default: return 0;
+    }
+}
+
+inline const char** GET_STATUS_STRING_BY_ID(int32_t x ){
+    switch(x) {
+        case INTERNAL_BATTERY_BARS_ID:              return INTERNAL_BATTERY_BARS_STRING;
+        case PAIRING_STATE_ID:                      return PAIRING_STATE_STRING;
+        case LAST_PAIRING_TYPE_ID:                  return LAST_PAIRING_TYPE_STRING;
+        case WIFI_SCAN_STATE_ID:                    return WIFI_SCAN_STATE_STRING;
+        case WIFI_PROVISIONING_STATE_ID:            return WIFI_PROVISIONING_STATE_STRING;
+        case PRIMARY_STORAGE_ID:                    return PRIMARY_STORAGE_STRING;
+        case OTA_ID:                                return OTA_STRING;
+        case LIVEVIEW_EXPOSURE_SELECT_MODE_ID:      return LIVEVIEW_EXPOSURE_SELECT_MODE_STRING;
+        case MICROPHONE_ACCESSORY_ID:               return MICROPHONE_ACCESSORY_STRING;
+        case STATUS_WIRELESS_BAND_ID:               return STATUS_WIRELESS_BAND_STRING;
+        case ROTATION_ID:                           return ROTATION_STRING;
+        case MEDIA_MOD_STATE_ID:                    return MEDIA_MOD_STATE_STRING;
+        case TIME_WARP_SPEED_ID:                    return TIME_WARP_SPEED_STRING;
+        case SCHEDULED_CAPTURE_ID:                  return SCHEDULED_CAPTURE_STRING;
+        case STATUS_CAMERA_CONTROL_ID:              return STATUS_CAMERA_CONTROL_STRING;
+        default: return 0;
+    }
+}
+
+inline const int32_t* GET_STATUS_VALUE_BY_ID(int32_t x ){
+    switch(x) {
+        case INTERNAL_BATTERY_BARS_ID:              return INTERNAL_BATTERY_BARS_VALUE;
+        case PAIRING_STATE_ID:                      return PAIRING_STATE_VALUE;
+        case LAST_PAIRING_TYPE_ID:                  return LAST_PAIRING_TYPE_VALUE;
+        case WIFI_SCAN_STATE_ID:                    return WIFI_SCAN_STATE_VALUE;
+        case WIFI_PROVISIONING_STATE_ID:            return WIFI_PROVISIONING_STATE_VALUE;
+        case PRIMARY_STORAGE_ID:                    return PRIMARY_STORAGE_VALUE;
+        case OTA_ID:                                return OTA_VALUE;
+        case LIVEVIEW_EXPOSURE_SELECT_MODE_ID:      return LIVEVIEW_EXPOSURE_SELECT_MODE_VALUE;
+        case MICROPHONE_ACCESSORY_ID:               return MICROPHONE_ACCESSORY_VALUE;
+        case STATUS_WIRELESS_BAND_ID:               return STATUS_WIRELESS_BAND_VALUE;
+        case ROTATION_ID:                           return ROTATION_VALUE;
+        case MEDIA_MOD_STATE_ID:                    return MEDIA_MOD_STATE_VALUE;
+        case TIME_WARP_SPEED_ID:                    return TIME_WARP_SPEED_VALUE;
+        case SCHEDULED_CAPTURE_ID:                  return SCHEDULED_CAPTURE_VALUE;
+        case STATUS_CAMERA_CONTROL_ID:              return STATUS_CAMERA_CONTROL_VALUE;
+        default: return 0;
+    }
+}
+
+
 #endif
