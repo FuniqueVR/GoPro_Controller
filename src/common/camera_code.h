@@ -469,4 +469,85 @@ inline const int32_t GET_STATUS_TYPE_BY_ID(int32_t x ){
     }
 }
 
+inline const int32_t GET_STATUS_NAME_BY_ID(int32_t x ){
+    switch(x) {
+        case BATTERY_PRESENT_ID:                    return BATTERY_PRESENT_NAME;
+        case INTERNAL_BATTERY_BARS_ID:              return INTERNAL_BATTERY_BARS_NAME;
+        case OVERHEATING_ID:                        return OVERHEATING_NAME;
+        case BUSY_ID:                               return BUSY_NAME;
+        case QUICK_CAPTURE_ID:                      return QUICK_CAPTURE_NAME;
+        case ENCODING_ID:                           return ENCODING_NAME;
+        case LCD_LOCK_ID:                           return LCD_LOCK_NAME;
+        case VIDEO_ENCODING_DURATION_ID:            return VIDEO_ENCODING_DURATION_NAME;
+        case WIRELESS_CONNECTIONS_ENABLED_ID:       return WIRELESS_CONNECTIONS_ENABLED_NAME;
+        case PAIRING_STATE_ID:                      return PAIRING_STATE_NAME;
+        case LAST_PAIRING_TYPE_ID:                  return LAST_PAIRING_TYPE_NAME;
+        case LAST_PAIRING_SUCESS_ID:                return LAST_PAIRING_SUCESS_NAME;
+        case WIFI_SCAN_STATE_ID:                    return WIFI_SCAN_STATE_NAME;
+        case LAST_WIFI_SCAN_SUCESS_ID:              return LAST_WIFI_SCAN_SUCESS_NAME;
+        case WIFI_PROVISIONING_STATE_ID:            return WIFI_PROVISIONING_STATE_NAME;
+        case REMOTE_VERSION_ID:                     return REMOTE_VERSION_NAME;
+        case REMOTE_CONNECTED_ID:                   return REMOTE_CONNECTED_NAME;
+        case CONNECTED_WIFI_SSID_ID:                return CONNECTED_WIFI_SSID_NAME;
+        case ACCESS_POINT_SSID_ID:                  return ACCESS_POINT_SSID_NAME;
+        case CONNECTED_DEVICE_ID:                   return CONNECTED_DEVICE_NAME;
+        case PREVIEW_STREAM_ID:                     return PREVIEW_STREAM_NAME;
+        case PRIMARY_STORAGE_ID:                    return PRIMARY_STORAGE_NAME;
+        case REMAINING_PHOTOS_ID:                   return REMAINING_PHOTOS_NAME;
+        case REMAINING_VIDEO_TIME_ID:               return REMAINING_VIDEO_TIME_NAME;
+        case PHOTOS_ID:                             return PHOTOS_NAME;
+        case VIDEOS_ID:                             return VIDEOS_NAME;
+        case OTA_ID:                                return OTA_NAME;
+        case PENDING_FW_UPDATE_CANCEL_ID:           return PENDING_FW_UPDATE_CANCEL_NAME;
+        case LOCATE_ID:                             return LOCATE_NAME;
+        case TIMELAPSE_INTERVAL_COUNTDOWN_ID:       return TIMELAPSE_INTERVAL_COUNTDOWN_NAME;
+        case SD_CARD_REMAINING_ID:                  return SD_CARD_REMAINING_NAME;
+        case PREVIEW_STREAM_AVAILABLE_ID:           return PREVIEW_STREAM_AVAILABLE_NAME;
+        case WIFI_BARS_ID:                          return WIFI_BARS_NAME;
+        case ACTIVE_HILIGHTS_ID:                    return ACTIVE_HILIGHTS_NAME;
+        case TIME_SINCE_LAST_HILIGHT_ID:            return TIME_SINCE_LAST_HILIGHT_NAME;
+        case MINIMUM_STATUS_POLL_PREIOD_ID:         return MINIMUM_STATUS_POLL_PREIOD_NAME;
+        case LIVEVIEW_EXPOSURE_SELECT_MODE_ID:      return LIVEVIEW_EXPOSURE_SELECT_MODE_NAME;
+        case LIVEVIEW_Y_ID:                         return LIVEVIEW_Y_NAME;
+        case LIVEVIEW_X_ID:                         return LIVEVIEW_X_NAME;
+        case GPS_LOCK_ID:                           return GPS_LOCK_NAME;
+        case AP_MODE_ID:                            return AP_MODE_NAME;
+        case INTERNAL_BATTERY_PERCENTAGE_ID:        return INTERNAL_BATTERY_PERCENTAGE_NAME;
+        case MICROPHONE_ACCESSORY_ID:               return MICROPHONE_ACCESSORY_NAME;
+        case ZOOM_LEVEL_ID:                         return ZOOM_LEVEL_NAME;
+        case STATUS_WIRELESS_BAND_ID:               return STATUS_WIRELESS_BAND_NAME;
+        case ZOOM_AVAILABLE_ID:                     return ZOOM_AVAILABLE_NAME;
+        case MOBILE_FRIENDLY_ID:                    return MOBILE_FRIENDLY_NAME;
+        case FTU_ID:                                return FTU_NAME;
+        case _5GHZ_AVAILABLE_ID:                    return _5GHZ_AVAILABLE_NAME;
+        case READY_ID:                              return READY_NAME;
+        case OTA_CHANGED_ID:                        return OTA_CHANGED_NAME;
+        case COLD_ID:                               return COLD_NAME;
+        case ROTATION_ID:                           return ROTATION_NAME;
+        case ZOOM_WHILE_ENCODING_ID:                return ZOOM_WHILE_ENCODING_NAME;
+        case FLATMODE_ID:                           return FLATMODE_NAME;
+        case VIDEO_PRESET_ID:                       return VIDEO_PRESET_NAME;
+        case PHOTO_PRESET_ID:                       return PHOTO_PRESET_NAME;
+        case TIMELAPSE_PRESET_ID:                   return TIMELAPSE_PRESET_NAME;
+        case PRESET_GROUP_ID:                       return PRESET_GROUP_NAME;
+        case PRESET_ID:                             return PRESET_NAME;
+        case PRESET_MODIFIED_ID:                    return PRESET_MODIFIED_NAME;
+        case REMAINING_LIVE_BURSTS_ID:              return REMAINING_LIVE_BURSTS_NAME;
+        case LIVE_BURSTS_ID:                        return LIVE_BURSTS_NAME;
+        case CAPTURE_DELAY_ACTIVE_ID:               return CAPTURE_DELAY_ACTIVE_NAME;
+        case MEDIA_MOD_STATE_ID:                    return MEDIA_MOD_STATE_NAME;
+        case TIME_WARP_SPEED_ID:                    return TIME_WARP_SPEED_NAME;
+        case LENS_TYPE_ID,                          return STATUS_HINDSIGHT_NAME;
+        case SCHEDULED_CAPTURE_PRESET_ID:           return SCHEDULED_CAPTURE_PRESET_NAME;
+        case SCHEDULED_CAPTURE_ID:                  return SCHEDULED_CAPTURE_NAME;
+        case SD_CARD_WRITE_SPEED_ERROR_ID:          return SD_CARD_WRITE_SPEED_ERROR_NAME;
+        case SD_CARD_ERRORS_ID:                     return SD_CARD_ERRORS_NAME;
+        case STATUS_CAMERA_CONTROL_ID:              return STATUS_CAMERA_CONTROL_NAME;
+        case USB_CONNECTED_ID:                      return USB_CONNECTED_NAME;
+        case USE_CONTROLLED_ID:                     return USE_CONTROLLED_NAME;
+        case SD_CARD_CAPACITY_ID:                   return SD_CARD_CAPACITY_NAME;
+        default: return 0;
+    }
+}
+
 #endif
