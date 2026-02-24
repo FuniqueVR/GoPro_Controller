@@ -76,74 +76,140 @@ const static int32_t GOPRO_SETTING_IDS[] = {
     AUTOMATIC_WI_FI_ACCESS_POINT_ID
 };
 
-#define GOPRO_STATUS_SIZE 82
+#define GOPRO_STATUS_SIZE 76
 const static int32_t GOPRO_STATE_IDS[] = {
-    1,2,6,8,9,10,11,13,17,19,
-    20,21,22,23,24,26,27,28,29,30,
-    31,32,33,34,35,38,39,41,42,45,
-    49,54,55,56,58,59,60,65,66,67,
-    68,69,70,74,75,76,77,78,79,81,
-    82,83,85,86,88,89,93,94,95,96,
-    97,98,99,100,101,102,103,104,105,106,
-    107,108,110,111,112,113,114,115,116,117,
-    118,122
+    BATTERY_PRESENT_ID,
+    INTERNAL_BATTERY_BARS_ID,
+    OVERHEATING_ID,
+    BUSY_ID,
+    QUICK_CAPTURE_ID,
+    ENCODING_ID,
+    LCD_LOCK_ID,
+    VIDEO_ENCODING_DURATION_ID,
+    WIRELESS_CONNECTIONS_ENABLED_ID,
+    PAIRING_STATE_ID,
+    LAST_PAIRING_TYPE_ID,
+    LAST_PAIRING_SUCESS_ID,
+    WIFI_SCAN_STATE_ID,
+    LAST_WIFI_SCAN_SUCESS_ID,
+    WIFI_PROVISIONING_STATE_ID,
+    REMOTE_VERSION_ID,
+    REMOTE_CONNECTED_ID,
+    CONNECTED_WIFI_SSID_ID,
+    ACCESS_POINT_SSID_ID,
+    CONNECTED_DEVICE_ID,
+    PREVIEW_STREAM_ID,
+    PRIMARY_STORAGE_ID,
+    REMAINING_PHOTOS_ID,
+    REMAINING_VIDEO_TIME_ID,
+    PHOTOS_ID,
+    VIDEOS_ID,
+    OTA_ID,
+    PENDING_FW_UPDATE_CANCEL_ID,
+    LOCATE_ID,
+    TIMELAPSE_INTERVAL_COUNTDOWN_ID,
+    SD_CARD_REMAINING_ID,
+    PREVIEW_STREAM_AVAILABLE_ID,
+    WIFI_BARS_ID,
+    ACTIVE_HILIGHTS_ID,
+    TIME_SINCE_LAST_HILIGHT_ID,
+    MINIMUM_STATUS_POLL_PREIOD_ID,
+    LIVEVIEW_EXPOSURE_SELECT_MODE_ID,
+    LIVEVIEW_Y_ID,
+    LIVEVIEW_X_ID,
+    GPS_LOCK_ID,
+    AP_MODE_ID,
+    INTERNAL_BATTERY_PERCENTAGE_ID,
+    MICROPHONE_ACCESSORY_ID,
+    ZOOM_LEVEL_ID,
+    STATUS_WIRELESS_BAND_ID,
+    ZOOM_AVAILABLE_ID,
+    MOBILE_FRIENDLY_ID,
+    FTU_ID,
+    _5GHZ_AVAILABLE_ID,
+    READY_ID,
+    OTA_CHANGED_ID,
+    COLD_ID,
+    ROTATION_ID,
+    ZOOM_WHILE_ENCODING_ID,
+    FLATMODE_ID,
+    VIDEO_PRESET_ID,
+    PHOTO_PRESET_ID,
+    TIMELAPSE_PRESET_ID,
+    PRESET_GROUP_ID,
+    PRESET_ID,
+    PRESET_MODIFIED_ID,
+    REMAINING_LIVE_BURSTS_ID,
+    LIVE_BURSTS_ID,
+    CAPTURE_DELAY_ACTIVE_ID,
+    MEDIA_MOD_STATE_ID,
+    TIME_WARP_SPEED_ID,
+    LENS_TYPE_ID,STATUS_HINDSIGHT_ID,
+    SCHEDULED_CAPTURE_PRESET_ID,
+    SCHEDULED_CAPTURE_ID,
+    SD_CARD_WRITE_SPEED_ERROR_ID,
+    SD_CARD_ERRORS_ID,
+    STATUS_CAMERA_CONTROL_ID,
+    USB_CONNECTED_ID,
+    USE_CONTROLLED_ID,
+    SD_CARD_CAPACITY_ID
 };
 
 // Lookup functions
 inline const int32_t GET_SETTING_SIZE_BY_ID(int32_t x) {
     switch(x) {
-        case 2: return VIDEO_RESOLUTION_SIZE;
-        case 3: return FRAMES_PER_SECOND_SIZE;
-        case 5: return VIDEO_TIMELAPSE_RATE_SIZE;
-        case 13: return ISO_SIZE;
-        case 30: return PHOTO_TIMELAPSE_RATE_SIZE;
-        case 32: return NIGHTLAPSE_RATE_SIZE;
-        case 43: return WEBCAM_DIGITAL_LENSES_SIZE;
-        case 59: return AUTO_POWER_DOWN_SIZE;
-        case 83: return GPS_SIZE;
-        case 88: return LCD_BRIGHTNESS_SIZE;
-        case 91: return LED_SIZE;
-        case 102: return ISO_SIZE;
-        case 108: return VIDEO_ASPECT_RATIO_SIZE;
-        case 115: return WHITE_BALANCE_SIZE;
-        case 121: return VIDEO_LENS_SIZE;
-        case 122: return PHOTO_LENS_SIZE;
-        case 123: return TIME_LAPSE_DIGITAL_LENSES_SIZE;
-        case 125: return PHOTO_OUTPUT_SIZE;
-        case 128: return MEDIA_FORMAT_SIZE;
-        case 134: return ANTI_FLICKER_SIZE;
-        case 135: return HYPERSMOOTH_SIZE;
-        case 150: return VIDEO_HORIZON_LEVELING_SIZE;
-        case 151: return PHOTO_HORIZON_LEVELING_SIZE;
-        case 156: return VIDEO_DURATION_SIZE;
-        case 157: return MULTISHOT_DURATION_SIZE;
-        case 162: return MAX_LENS_SIZE;
-        case 167: return HINDSIGHT_SIZE;
-        case 168: return SCHEDULED_CAPTURE_SIZE;
-        case 171: return PHOTO_SINGLE_INTERVAL_SIZE;
-        case 172: return PHOTO_SINGLE_DURATION_SIZE;
-        case 173: return VIDEO_PERFORMANCE_MODE_SIZE;
-        case 175: return CONTROL_MODE_SIZE;
-        case 176: return EASY_MODE_SPEED_SIZE;
-        case 177: return ENABLE_NIGHT_PHOTO_SIZE;
-        case 178: return WIRELESS_BAND_SIZE;
-        case 179: return STAR_TRAILS_LENGTH_SIZE;
-        case 180: return SYSTEM_VIDEO_MODE_SIZE;
-        case 182: return VIDEO_BIT_RATE_SIZE;
-        case 183: return BIT_DEPTH_SIZE;
-        case 184: return PROFILES_SIZE;
-        case 186: return VIDEO_EASY_MODE_SIZE;
-        case 187: return LAPSE_MODE_SIZE;
-        case 189: return MAX_LENS_MOD_SIZE;
-        case 190: return MAX_LENS_MOD_ENABLE_SIZE;
-        case 191: return EASY_NIGHT_PHOTO_SIZE;
-        case 192: return MULTI_SHOT_ASPECT_RATIO_SIZE;
-        case 193: return FRAMING_SIZE;
-        case 196: return _360_PHOTO_FILES_EXTENSION_SIZE;
-        case 216: return BEEP_VOLUME_SIZE;
-        case 219: return SETUP_SCREEN_SAVER_SIZE;
-        case 232: return VIDEO_FRAMING_SIZE;
-        case 236: return AUTOMATIC_WI_FI_ACCESS_POINT_SIZE;
+        case 2:     return VIDEO_RESOLUTION_SIZE;
+        case 3:     return FRAMES_PER_SECOND_SIZE;
+        case 5:     return VIDEO_TIMELAPSE_RATE_SIZE;
+        case 13:    return ISO_SIZE;
+        case 30:    return PHOTO_TIMELAPSE_RATE_SIZE;
+        case 32:    return NIGHTLAPSE_RATE_SIZE;
+        case 43:    return WEBCAM_DIGITAL_LENSES_SIZE;
+        case 59:    return AUTO_POWER_DOWN_SIZE;
+        case 83:    return GPS_SIZE;
+        case 88:    return LCD_BRIGHTNESS_SIZE;
+        case 91:    return LED_SIZE;
+        case 102:   return ISO_SIZE;
+        case 108:   return VIDEO_ASPECT_RATIO_SIZE;
+        case 115:   return WHITE_BALANCE_SIZE;
+        case 121:   return VIDEO_LENS_SIZE;
+        case 122:   return PHOTO_LENS_SIZE;
+        case 123:   return TIME_LAPSE_DIGITAL_LENSES_SIZE;
+        case 125:   return PHOTO_OUTPUT_SIZE;
+        case 128:   return MEDIA_FORMAT_SIZE;
+        case 134:   return ANTI_FLICKER_SIZE;
+        case 135:   return HYPERSMOOTH_SIZE;
+        case 150:   return VIDEO_HORIZON_LEVELING_SIZE;
+        case 151:   return PHOTO_HORIZON_LEVELING_SIZE;
+        case 156:   return VIDEO_DURATION_SIZE;
+        case 157:   return MULTISHOT_DURATION_SIZE;
+        case 162:   return MAX_LENS_SIZE;
+        case 167:   return HINDSIGHT_SIZE;
+        case 168:   return SCHEDULED_CAPTURE_SIZE;
+        case 171:   return PHOTO_SINGLE_INTERVAL_SIZE;
+        case 172:   return PHOTO_SINGLE_DURATION_SIZE;
+        case 173:   return VIDEO_PERFORMANCE_MODE_SIZE;
+        case 175:   return CONTROL_MODE_SIZE;
+        case 176:   return EASY_MODE_SPEED_SIZE;
+        case 177:   return ENABLE_NIGHT_PHOTO_SIZE;
+        case 178:   return WIRELESS_BAND_SIZE;
+        case 179:   return STAR_TRAILS_LENGTH_SIZE;
+        case 180:   return SYSTEM_VIDEO_MODE_SIZE;
+        case 182:   return VIDEO_BIT_RATE_SIZE;
+        case 183:   return BIT_DEPTH_SIZE;
+        case 184:   return PROFILES_SIZE;
+        case 186:   return VIDEO_EASY_MODE_SIZE;
+        case 187:   return LAPSE_MODE_SIZE;
+        case 189:   return MAX_LENS_MOD_SIZE;
+        case 190:   return MAX_LENS_MOD_ENABLE_SIZE;
+        case 191:   return EASY_NIGHT_PHOTO_SIZE;
+        case 192:   return MULTI_SHOT_ASPECT_RATIO_SIZE;
+        case 193:   return FRAMING_SIZE;
+        case 196:   return _360_PHOTO_FILES_EXTENSION_SIZE;
+        case 216:   return BEEP_VOLUME_SIZE;
+        case 219:   return SETUP_SCREEN_SAVER_SIZE;
+        case 232:   return VIDEO_FRAMING_SIZE;
+        case 236:   return AUTOMATIC_WI_FI_ACCESS_POINT_SIZE;
         default: return 0;
     }
 }
@@ -319,6 +385,87 @@ inline const int32_t* GET_SETTING_VALUE_BY_ID(int32_t x) {
         case 232: return VIDEO_FRAMING_VALUE;
         case 236: return AUTOMATIC_WI_FI_ACCESS_POINT_VALUE;
         default: return nullptr;
+    }
+}
+
+inline const int32_t GET_STATUS_TYPE_BY_ID(int32_t x ){
+    switch(x) {
+        case BATTERY_PRESENT_ID:                    return BATTERY_PRESENT_TYPE;
+        case INTERNAL_BATTERY_BARS_ID:              return INTERNAL_BATTERY_BARS_TYPE;
+        case OVERHEATING_ID:                        return OVERHEATING_TYPE;
+        case BUSY_ID:                               return BUSY_TYPE;
+        case QUICK_CAPTURE_ID:                      return QUICK_CAPTURE_TYPE;
+        case ENCODING_ID:                           return ENCODING_TYPE;
+        case LCD_LOCK_ID:                           return LCD_LOCK_TYPE;
+        case VIDEO_ENCODING_DURATION_ID:            return VIDEO_ENCODING_DURATION_TYPE;
+        case WIRELESS_CONNECTIONS_ENABLED_ID:       return WIRELESS_CONNECTIONS_ENABLED_TYPE;
+        case PAIRING_STATE_ID:                      return PAIRING_STATE_TYPE;
+        case LAST_PAIRING_TYPE_ID:                  return LAST_PAIRING_TYPE_TYPE;
+        case LAST_PAIRING_SUCESS_ID:                return LAST_PAIRING_SUCESS_TYPE;
+        case WIFI_SCAN_STATE_ID:                    return WIFI_SCAN_STATE_TYPE;
+        case LAST_WIFI_SCAN_SUCESS_ID:              return LAST_WIFI_SCAN_SUCESS_TYPE;
+        case WIFI_PROVISIONING_STATE_ID:            return WIFI_PROVISIONING_STATE_TYPE;
+        case REMOTE_VERSION_ID:                     return REMOTE_VERSION_TYPE;
+        case REMOTE_CONNECTED_ID:                   return REMOTE_CONNECTED_TYPE;
+        case CONNECTED_WIFI_SSID_ID:                return CONNECTED_WIFI_SSID_TYPE;
+        case ACCESS_POINT_SSID_ID:                  return ACCESS_POINT_SSID_TYPE;
+        case CONNECTED_DEVICE_ID:                   return CONNECTED_DEVICE_TYPE;
+        case PREVIEW_STREAM_ID:                     return PREVIEW_STREAM_TYPE;
+        case PRIMARY_STORAGE_ID:                    return PRIMARY_STORAGE_TYPE;
+        case REMAINING_PHOTOS_ID:                   return REMAINING_PHOTOS_TYPE;
+        case REMAINING_VIDEO_TIME_ID:               return REMAINING_VIDEO_TIME_TYPE;
+        case PHOTOS_ID:                             return PHOTOS_TYPE;
+        case VIDEOS_ID:                             return VIDEOS_TYPE;
+        case OTA_ID:                                return OTA_TYPE;
+        case PENDING_FW_UPDATE_CANCEL_ID:           return PENDING_FW_UPDATE_CANCEL_TYPE;
+        case LOCATE_ID:                             return LOCATE_TYPE;
+        case TIMELAPSE_INTERVAL_COUNTDOWN_ID:       return TIMELAPSE_INTERVAL_COUNTDOWN_TYPE;
+        case SD_CARD_REMAINING_ID:                  return SD_CARD_REMAINING_TYPE;
+        case PREVIEW_STREAM_AVAILABLE_ID:           return PREVIEW_STREAM_AVAILABLE_TYPE;
+        case WIFI_BARS_ID:                          return WIFI_BARS_TYPE;
+        case ACTIVE_HILIGHTS_ID:                    return ACTIVE_HILIGHTS_TYPE;
+        case TIME_SINCE_LAST_HILIGHT_ID:            return TIME_SINCE_LAST_HILIGHT_TYPE;
+        case MINIMUM_STATUS_POLL_PREIOD_ID:         return MINIMUM_STATUS_POLL_PREIOD_TYPE;
+        case LIVEVIEW_EXPOSURE_SELECT_MODE_ID:      return LIVEVIEW_EXPOSURE_SELECT_MODE_TYPE;
+        case LIVEVIEW_Y_ID:                         return LIVEVIEW_Y_TYPE;
+        case LIVEVIEW_X_ID:                         return LIVEVIEW_X_TYPE;
+        case GPS_LOCK_ID:                           return GPS_LOCK_TYPE;
+        case AP_MODE_ID:                            return AP_MODE_TYPE;
+        case INTERNAL_BATTERY_PERCENTAGE_ID:        return INTERNAL_BATTERY_PERCENTAGE_TYPE;
+        case MICROPHONE_ACCESSORY_ID:               return MICROPHONE_ACCESSORY_TYPE;
+        case ZOOM_LEVEL_ID:                         return ZOOM_LEVEL_TYPE;
+        case STATUS_WIRELESS_BAND_ID:               return STATUS_WIRELESS_BAND_TYPE;
+        case ZOOM_AVAILABLE_ID:                     return ZOOM_AVAILABLE_TYPE;
+        case MOBILE_FRIENDLY_ID:                    return MOBILE_FRIENDLY_TYPE;
+        case FTU_ID:                                return FTU_TYPE;
+        case _5GHZ_AVAILABLE_ID:                    return _5GHZ_AVAILABLE_TYPE;
+        case READY_ID:                              return READY_TYPE;
+        case OTA_CHANGED_ID:                        return OTA_CHANGED_TYPE;
+        case COLD_ID:                               return COLD_TYPE;
+        case ROTATION_ID:                           return ROTATION_TYPE;
+        case ZOOM_WHILE_ENCODING_ID:                return ZOOM_WHILE_ENCODING_TYPE;
+        case FLATMODE_ID:                           return FLATMODE_TYPE;
+        case VIDEO_PRESET_ID:                       return VIDEO_PRESET_TYPE;
+        case PHOTO_PRESET_ID:                       return PHOTO_PRESET_TYPE;
+        case TIMELAPSE_PRESET_ID:                   return TIMELAPSE_PRESET_TYPE;
+        case PRESET_GROUP_ID:                       return PRESET_GROUP_TYPE;
+        case PRESET_ID:                             return PRESET_TYPE;
+        case PRESET_MODIFIED_ID:                    return PRESET_MODIFIED_TYPE;
+        case REMAINING_LIVE_BURSTS_ID:              return REMAINING_LIVE_BURSTS_TYPE;
+        case LIVE_BURSTS_ID:                        return LIVE_BURSTS_TYPE;
+        case CAPTURE_DELAY_ACTIVE_ID:               return CAPTURE_DELAY_ACTIVE_TYPE;
+        case MEDIA_MOD_STATE_ID:                    return MEDIA_MOD_STATE_TYPE;
+        case TIME_WARP_SPEED_ID:                    return TIME_WARP_SPEED_TYPE;
+        case LENS_TYPE_ID,                          return STATUS_HINDSIGHT_TYPE;
+        case SCHEDULED_CAPTURE_PRESET_ID:           return SCHEDULED_CAPTURE_PRESET_TYPE;
+        case SCHEDULED_CAPTURE_ID:                  return SCHEDULED_CAPTURE_TYPE;
+        case SD_CARD_WRITE_SPEED_ERROR_ID:          return SD_CARD_WRITE_SPEED_ERROR_TYPE;
+        case SD_CARD_ERRORS_ID:                     return SD_CARD_ERRORS_TYPE;
+        case STATUS_CAMERA_CONTROL_ID:              return STATUS_CAMERA_CONTROL_TYPE;
+        case USB_CONNECTED_ID:                      return USB_CONNECTED_TYPE;
+        case USE_CONTROLLED_ID:                     return USE_CONTROLLED_TYPE;
+        case SD_CARD_CAPACITY_ID:                   return SD_CARD_CAPACITY_TYPE;
+        default: return 0;
     }
 }
 

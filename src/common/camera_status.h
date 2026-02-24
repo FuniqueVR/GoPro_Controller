@@ -318,21 +318,6 @@ const static int32_t STATUS_WIRELESS_BAND_VALUE[] = {
     0, 1
 };
 
-#define MICROPHONE_ACCESSORY_ID 74
-#define MICROPHONE_ACCESSORY_TYPE CAMERA_STATUS_TYPE::OPTION
-#define MICROPHONE_ACCESSORY_SIZE 3
-#define MICROPHONE_ACCESSORY_NAME "Microphone Accessory"
-
-const static char* MICROPHONE_ACCESSORY_STRING[] = {
-    "Accessory not connected",
-    "Accessory connected",
-    "Accessory connected and a microphone is plugged into the accessory"
-};
-
-const static int32_t MICROPHONE_ACCESSORY_VALUE[] = {
-    0, 1, 2
-};
-
 #define ZOOM_AVAILABLE_ID 77
 #define ZOOM_AVAILABLE_TYPE CAMERA_STATUS_TYPE::BOOLEAN
 #define ZOOM_AVAILABLE_NAME "Zoom Available"
@@ -486,5 +471,48 @@ const static int32_t LENS_TYPE_VALUE[] = {
 #define STATUS_HINDSIGHT_ID 106
 #define STATUS_HINDSIGHT_TYPE CAMERA_STATUS_TYPE::BOOLEAN
 #define STATUS_HINDSIGHT_NAME "Hindsight"
+
+#define SCHEDULED_CAPTURE_PRESET_ID 107
+#define SCHEDULED_CAPTURE_PRESET_TYPE CAMERA_STATUS_TYPE::INT
+#define SCHEDULED_CAPTURE_PRESET_NAME "Scheduled Capture Preset ID"
+
+#define SCHEDULED_CAPTURE_ID 108
+#define SCHEDULED_CAPTURE_TYPE CAMERA_STATUS_TYPE::BOOLEAN
+#define SCHEDULED_CAPTURE_NAME "Scheduled Capture"
+
+#define SD_CARD_WRITE_SPEED_ERROR_ID 111
+#define SD_CARD_WRITE_SPEED_ERROR_TYPE CAMERA_STATUS_TYPE::BOOLEAN
+#define SD_CARD_WRITE_SPEED_ERROR_NAME "SD Card Write Speed Error"
+
+#define SD_CARD_ERRORS_ID 112
+#define SD_CARD_ERRORS_TYPE CAMERA_STATUS_TYPE::INT
+#define SD_CARD_ERRORS_NAME "SD Card Errors"
+
+#define STATUS_CAMERA_CONTROL_ID 114
+#define STATUS_CAMERA_CONTROL_TYPE CAMERA_STATUS_TYPE::OPTION
+#define STATUS_CAMERA_CONTROL_SIZE 3
+#define STATUS_CAMERA_CONTROL_NAME "Camera Control ID"
+
+const static char* STATUS_CAMERA_CONTROL_STRING[] = {
+    "Camera Idle",
+    "Camera Control",
+    "Camera External Control"
+};
+
+const static int32_t STATUS_CAMERA_CONTROL_VALUE[] = {
+    0, 1, 2
+};
+
+#define USB_CONNECTED_ID 115
+#define USB_CONNECTED_TYPE CAMERA_STATUS_TYPE::BOOLEAN
+#define USB_CONNECTED_NAME "USB Connected"
+
+#define USE_CONTROLLED_ID 116
+#define USE_CONTROLLED_TYPE CAMERA_STATUS_TYPE::BOOLEAN
+#define USE_CONTROLLED_NAME "Use Controlled"
+
+#define SD_CARD_CAPACITY_ID 117
+#define SD_CARD_CAPACITY_TYPE CAMERA_STATUS_TYPE::INT
+#define SD_CARD_CAPACITY_NAME "SD Card Capacity"
 
 #endif
