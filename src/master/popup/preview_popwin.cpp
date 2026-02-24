@@ -24,11 +24,12 @@ void PreviewPopup::trigger(bool value){
         });
     }else{
         stream_open = false;
-        if (cap.isOpened()) {
-            cap.release();
-        }
+        isopen = false;
         if(reader.joinable()){
             reader.join();
+        }
+        if (cap.isOpened()) {
+            cap.release();
         }
         if(gl_texture != 0){
             glDeleteTextures(1, &gl_texture);
@@ -79,8 +80,10 @@ void PreviewPopup::update_decoder(){
         std::cout << "[Preview Decoder] Attempt " << retry << "/" << MAX_RETRY << " opening pipeline..." << std::endl;
 
         pipeline =
-            "udpsrc port=8554 buffer-size=4194304 "
+            "udpsrc port=8554 buffer-size=41943040 "
             "! queue max-size-buffers=0 max-size-bytes=0 max-size-time=2000000000 "
+            "! tsdemux " 
+            "! h264parse "
             "! decodebin "
             "! videoconvert "
             "! video/x-raw,format=BGR "
@@ -135,6 +138,8 @@ void PreviewPopup::update_decoder(){
             std::cerr << "[Preview Decoder] cap.read() failed, stream dropped?" << std::endl;
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
+
+        if(!isopen) break;
     }
 
     std::cout << "[Preview Decoder] Update decoder end !" << std::endl;
@@ -147,6 +152,13 @@ void PreviewPopup::update(){
 void PreviewPopup::render(){
     cv::Mat frame = get_latest_frame();
     ConvertTexture(frame);
+
+    ImGuiIO& io = ImGui::GetIO();
+    ImVec2 display_size = io.DisplaySize;
+    ImVec2 unit = ImVec2(display_size.x / 10.0f, display_size.y / 10.0f);
+
+    ImGui::SetNextWindowPos(ImVec2(unit.x * 0.5F, unit.y * 0.5F), ImGuiCond_Always);
+    ImGui::SetNextWindowSize(ImVec2(unit.x * 9.0F, unit.y * 9.0F), ImGuiCond_Always);
 
     if(ImGui::BeginPopupModal(title.c_str(), NULL, wp_flag)){
         

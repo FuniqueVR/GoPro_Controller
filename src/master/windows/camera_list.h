@@ -23,6 +23,7 @@ public:
     virtual void draw_group(const std::shared_ptr<CameraInfo>& c);
     virtual void item_event(const std::shared_ptr<CameraInfo>& c);
     void onClick(const std::shared_ptr<CameraInfo>& c);
+
 private:
     ImVec2 get_rect_size();
     

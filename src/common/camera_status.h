@@ -3,11 +3,43 @@
 #define CAMERA_STATUS
 #include <cinttypes>
 
+enum class CAMERA_STATUS_TYPE {
+    INT, FLOAT, STRING, BOOLEAN, OPTION
+};
+
 #define BATTERY_PRESENT_ID 1
-#define INTERNALBATTERYBARS_ID 2
+#define BATTERY_PRESENT_TYPE CAMERA_STATUS_TYPE::BOOLEAN
+#define BATTERY_PRESENT_NAME "Battery Present"
+
+#define INTERNAL_BATTERY_BARS_ID 2
+#define INTERNAL_BATTERY_BARS_TYPE CAMERA_STATUS_TYPE::OPTION
+#define INTERNAL_BATTERY_BARS_SIZE 5
+#define INTERNAL_BATTERY_BARS_NAME "Internal Battery Bars"
+
+const static char* INTERNAL_BATTERY_BARS_STRING[] = {
+    "Zero",
+    "One",
+    "Two",
+    "Three",
+    "Charging",
+};
+
+const static int32_t INTERNAL_BATTERY_BARS_VALUE[] = {
+    0, 1, 2, 3, 4
+};
+
 #define OVERHEATING_ID 6
+#define OVERHEATING_TYPE CAMERA_STATUS_TYPE::BOOLEAN
+#define OVERHEATING_NAME "Overheating"
+
 #define BUSY_ID 8
+#define BUSY_TYPE CAMERA_STATUS_TYPE::BOOLEAN
+#define BUSY_NAME "Busy"
+
 #define QUICK_CAPTURE_ID 9
+#define QUICK_CAPTURE_TYPE CAMERA_STATUS_TYPE::BOOLEAN
+#define QUICK_CAPTURE_NAME "Quick Capture"
+
 #define ENCODING_ID 10
 #define LCD_LOCK_ID 11
 #define VIDEO_ENCODING_DURATION_ID 13

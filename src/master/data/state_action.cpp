@@ -5,6 +5,9 @@
  * See the LICENSE file in the project root for more information.
 */
 #include "state_action.h"
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
 
 void init_state_setup(
     std::shared_ptr<json> servers,
@@ -13,7 +16,7 @@ void init_state_setup(
     std::shared_ptr<GoProMaster> master,
     std::shared_ptr<BaseWindow> windows[]
 ){
-    if((*servers)["data"].is_array()){
+    if((*servers)["data"].is_array()){     
         for(int i = 0; i < (*servers)["data"].size(); i++){
             if((*servers)["data"].at(i).is_string()){
                 std::string buffer_ip = (*servers)["data"].at(i).get<std::string>();

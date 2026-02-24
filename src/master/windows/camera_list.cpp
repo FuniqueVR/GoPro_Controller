@@ -78,26 +78,73 @@ void CameraListWindow::draw_line(const std::shared_ptr<CameraInfo>& c){
 }
 
 void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
+    json state = json::object();
+    json setting = json::object();
+    master->getStatusFromCamera(*c, state);
+    master->getSettingsFromCamera(*c, setting);
+
     ImGui::BeginGroup();
     ImGuiStyle& style = ImGui::GetStyle();
     float fontsize = ImGui::GetFontSize();
     std::string id = c->ip + "##Grid_Item_ID";
     std::string pid = c->ip + "##Grid_Popup_Item_ID";
     ImGui::PushID(id.c_str());
+
     ImDrawList* draw_list = ImGui::GetWindowDrawList();
     ImVec2 image_pos = ImGui::GetCursorScreenPos();
     ImVec2 rect_size = get_rect_size();
+    ImVec2 rect_size_unit = ImVec2(rect_size.x / 12.0F, rect_size.y / 12.0F);
+
     ImVec2 image_pos_max = image_pos + rect_size;
     uint32_t col_white = IM_COL32(255, 255, 255, 255);
     uint32_t col_grey = IM_COL32(210, 210, 210, 255);
+    uint32_t col_greed = IM_COL32(10, 230, 10, 255);
     uint32_t col = IM_COL32(255, 0, 0, 255);
     if(c->connected) col = IM_COL32(0, 255, 0, 255);
 
-    draw_list->AddRect(image_pos + ImVec2(5, 5), image_pos_max - ImVec2(5, 5), col, 2.0F, 0, 2.0F);
+    // Drawing outline
+    {
+        draw_list->AddRect(image_pos + ImVec2(5, 5), image_pos_max - ImVec2(5, 5), col, 2.0F, 0, 2.0F);
+    }
+    // Drawing Battery
+    if(c->connected){
+        ImVec2 battery_text_size = ImGui::CalcTextSize("V");
+        ImVec2 bettery_size = ImVec2(rect_size_unit.x * 2.2, rect_size_unit.y * 1.2F);
+        // Drawing Battery outline
+        draw_list->AddRectFilled(image_pos + ImVec2(5, 5), image_pos + ImVec2(5, 5) + bettery_size, col_grey);
+        // Drawing Battery inline
+        draw_list->AddRectFilled(image_pos + ImVec2(7.5F, 7.5F), image_pos + ImVec2(2.5F, 2.5F) + bettery_size, col_greed);
+    }
+    // Drawing SD card
+    {
+        ImVec2 sd_pos_size = ImGui::CalcTextSize("V");
+        ImVec2 sd_size = ImVec2(rect_size_unit.x * 2.2, rect_size_unit.y * 1.2F);
+        // Drawing Battery outline
+        draw_list->AddRectFilled(image_pos + ImVec2(5, 5), image_pos + ImVec2(5, 5) + sd_size, col_grey);
+        // Drawing Battery inline
+        draw_list->AddRectFilled(image_pos + ImVec2(7.5F, 7.5F), image_pos + ImVec2(2.5F, 2.5F) + sd_size, col_greed);
+    }
+    // Center text
+    {
+        ImVec2 time_size = ImGui::CalcTextSize("00:00");
+        ImVec2 iso_size = ImGui::CalcTextSize("00:00");
+        ImVec2 shut_size = ImGui::CalcTextSize("00:00");
+        ImVec2 Lowflat_pos_size = ImGui::CalcTextSize("00:00");
 
-    ImVec2 title_pos_size = ImGui::CalcTextSize(c->name.c_str());
-    ImVec2 title_pos = image_pos + ImVec2((rect_size.x / 2.0F) - (title_pos_size.x / 2), (rect_size.y / 2.0F) - (title_pos_size.y / 2));
-    draw_list->AddText(title_pos, col_white, c->name.c_str());
+        ImVec2 title_pos = image_pos + ImVec2((rect_size.x / 2.0F) - (title_pos_size.x / 2), (rect_size.y / 2.0F) - (title_pos_size.y / 2));
+        draw_list->AddText(title_pos, col_white, c->name.c_str());
+    }
+    // Preset mode
+    {
+        ImVec2 preset_pos_size = ImGui::CalcTextSize("V");
+    }
+    // Setting
+    {
+        ImVec2 pro_pos_size = ImGui::CalcTextSize("V");
+        ImVec2 res_pos_size = ImGui::CalcTextSize("1080");
+        ImVec2 fps_pos_size = ImGui::CalcTextSize("60");
+        ImVec2 wide_pos_size = ImGui::CalcTextSize("w");
+    }
 
     int32_t have_battery = 0;
     int32_t bar_battery = 0;

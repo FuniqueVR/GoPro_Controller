@@ -146,7 +146,7 @@ void QueryAction(const WebSocketChannelPtr& channel, json j){
 void WebcamAction(const WebSocketChannelPtr& channel, json j){
     std::string name = "";
     std::string target = "";
-    int port = 10000;
+    int port = 8554;
     int res = 4;
     int fov = 0;
     bool ts = true;
