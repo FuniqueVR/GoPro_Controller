@@ -631,6 +631,25 @@ bool GoProMaster::getStatusFromCamera(CameraInfo target, json&& res){
         return false;
     }
     res = data["status"];
+    // Convert value id to index number
+    for(int32_t i = 0; i < GOPRO_STATUS_SIZE; i++){
+        int32_t id = GOPRO_STATUS_IDS[i];
+        const int32_t type = GET_STATUS_TYPE_BY_ID(id);
+        if(type == !CAMERA_STATUS_TYPE::OPTION){
+            continue; // Only option type need to convert
+        }
+        if(!res[std::to_string(id)].is_number()) continue;
+        int32_t value = res[std::to_string(id)].get<int32_t>();
+
+        const size_t size = GET_STATUS_SIZE_BY_ID(id);
+        const int32_t* all_values = GET_STATUS_VALUE_BY_ID(id);
+        for(int32_t j = 0; j < size; j++){
+            if(all_values[j] == value){
+                res[std::to_string(id)] = j; // Set index, instead of value id
+                break;
+            }
+        }
+    }
     return true;
 }
 

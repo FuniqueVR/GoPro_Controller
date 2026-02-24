@@ -120,48 +120,40 @@ void InspectorWindow::draw_setting(){
 void InspectorWindow::draw_status(){
     for(int32_t i = 0; i < GOPRO_STATUS_SIZE; i++){
         int32_t id = GOPRO_STATUS_IDS[i];
+        const int32_t type = GET_STATUS_TYPE_BY_ID(id);
         std::string name = GET_STATUS_NAME_BY_ID(id);
-        
-        size_t size = GET_SETTING_SIZE_BY_ID(id);
-        if (!state->current_setting_items[std::to_string(id)].is_number()) {
-            continue;
-        }
-        if (name.size() == 0) {
-            continue;
-        }
+        if (name.size() == 0) continue;
 
-        name += "##InspectorTitle";
-        int32_t select_index = state->current_setting_items[std::to_string(id)].get<int32_t>();
-        const char** select_string_list = GET_SETTING_STRING_BY_ID(id);
-        if(select_string_list == nullptr) {
-            std::cerr << "Inspector: select_string_list == nullptr" << std::endl;
-            continue;
-        }
-        if(select_index >= size) {
-            std::cerr << "Inspector: select_index >= size..." << id << "..." << select_index << "..." << size << std::endl;
-            continue;
-        }
-        const char* select_string = select_string_list[select_index];
-        if(select_string == nullptr) continue;
+        name += "##InspectorTitle_status";
 
-        const int32_t* values_id = GET_SETTING_VALUE_BY_ID(id);
-
-        if(ImGui::BeginCombo(name.c_str(), select_string)){
-            for (int n = 0; n < size; n++)
-            {
-                std::string option = GET_SETTING_STRING_BY_ID(id)[n];
-                if(option.size() == 0) continue;
-                bool is_selected = (state->current_setting_items[std::to_string(id)] == n); // You can store your selection however you want, outside or inside your objects
-                option += ("##InspectorOption_" + name); 
-                if (ImGui::Selectable(option.c_str(), is_selected))
-                {
-                    state->current_setting_items[std::to_string(id)] = n; // Change index
-                    master->apply(state->current_camera_item, id, values_id[n]);
-                }
-                if (is_selected)
-                    ImGui::SetItemDefaultFocus();   // You may set the initial focus when opening the combo (scrolling + for keyboard navigation support)
-            }
-            ImGui::EndCombo();
+        if(type == CAMERA_STATUS_TYPE::OPTION){
+            size_t size = GET_STATUS_SIZE_BY_ID(id);
+            if (!state->current_status_items[std::to_string(id)].is_number()) continue;
+            int32_t select_index = state->current_setting_items[std::to_string(id)].get<int32_t>();
+            const char** select_string_list = GET_STATUS_STRING_BY_ID(id);
+            std::string select_value_display = select_string_list[select_index];
+            ImGui::LabelText(name.c_str(), "%s", select_value_display.c_str());
+        }else if (type == CAMERA_STATUS_TYPE::BOOLEAN){
+            if (!state->current_status_items[std::to_string(id)].is_number()) continue;
+            int32_t value = state->current_setting_items[std::to_string(id)].get<int32_t>();
+            std::string display = "";
+            if(value == 1) display = "true";
+            else display = "false";
+            ImGui::LabelText(name.c_str(), "%s", display.c_str());
+        }else if (type == CAMERA_STATUS_TYPE::INT){
+            if (!state->current_status_items[std::to_string(id)].is_number()) continue;
+            int32_t value = state->current_setting_items[std::to_string(id)].get<int32_t>();
+            ImGui::LabelText(name.c_str(), "%d", value);
+        }else if (type == CAMERA_STATUS_TYPE::LONG){
+            if (!state->current_status_items[std::to_string(id)].is_number()) continue;
+            int64_t value = state->current_setting_items[std::to_string(id)].get<int64_t>();
+            ImGui::LabelText(name.c_str(), "%ld", value);
+        }else if (type == CAMERA_STATUS_TYPE::STRING){
+            if (!state->current_status_items[std::to_string(id)].is_string()) continue;
+            std::string value = state->current_setting_items[std::to_string(id)].get<std::string>();
+            ImGui::LabelText(name.c_str(), "%s", value.c_str());
+        }else {
+            continue;   
         }
     }
 }
