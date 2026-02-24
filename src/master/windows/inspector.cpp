@@ -118,9 +118,10 @@ void InspectorWindow::draw_setting(){
 }
 
 void InspectorWindow::draw_status(){
-    for(int32_t i = 0; i < GOPRO_SETTING_SIZE; i++){
-        int32_t id = GOPRO_SETTING_IDS[i];
-        std::string name = GET_SETTING_NAME_BY_ID(id);
+    for(int32_t i = 0; i < GOPRO_STATUS_SIZE; i++){
+        int32_t id = GOPRO_STATUS_IDS[i];
+        std::string name = GET_STATUS_NAME_BY_ID(id);
+        
         size_t size = GET_SETTING_SIZE_BY_ID(id);
         if (!state->current_setting_items[std::to_string(id)].is_number()) {
             continue;
