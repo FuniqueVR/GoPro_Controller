@@ -144,8 +144,9 @@ void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
         }
         battery_text_size = ImGui::CalcTextSize(battery_text.c_str());
         ImVec2 bettery_size = ImVec2(rect_size_unit.x * 2.2, rect_size_unit.y * 1.2F);
-        ImVec2 frame_padding = ImVec2(5, 5);
+        ImVec2 frame_padding = ImVec2(10, 10);
         ImVec2 inner_padding = ImVec2(2, 2);
+        int32_t spacing = 15;
 
         // Drawing Battery outline
         ImVec2 outter_min = image_pos + ImVec2(rect_size.x - (frame_padding.x + bettery_size.x), frame_padding.y);
@@ -164,7 +165,7 @@ void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
             col_inner_color);
 
         // Drawing Battery text
-        ImVec2 text_pos = ImVec2(outter_min.x - battery_text_size.x, outter_min.y);
+        ImVec2 text_pos = ImVec2(outter_min.x - (battery_text_size.x + spacing), outter_min.y);
         draw_list->AddText(text_pos, col_white, battery_text.c_str());
     }
     // Drawing SD card
@@ -190,8 +191,9 @@ void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
         }
         sd_text_size = ImGui::CalcTextSize(sd_text.c_str());
         ImVec2 sd_size = ImVec2(rect_size_unit.x * 2.2, rect_size_unit.y * 1.2F);
-        ImVec2 frame_padding = ImVec2(5, 5);
+        ImVec2 frame_padding = ImVec2(10, 10);
         ImVec2 inner_padding = ImVec2(2, 2);
+        int32_t spacing = 15;
 
         // Drawing SD outline
         ImVec2 outter_min = image_pos + frame_padding;
@@ -210,7 +212,7 @@ void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
             col_inner_color);
 
         // Drawing SD text
-        ImVec2 text_pos = ImVec2(outter_max.x, outter_min.y);
+        ImVec2 text_pos = ImVec2(outter_max.x + spacing, outter_min.y);
         draw_list->AddText(text_pos, col_white, sd_text.c_str());
     }
     // Center text
@@ -219,39 +221,95 @@ void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
         std::string camera_title = c->name;
         std::string iso_setting;
         std::string white_balance_setting;
+        float spacing = 0.75F;
 
-        if(!c->connected){
-            break;
+        ImVec2 camera_title_size = ImGui::CalcTextSize(camera_title.c_str());
+
+        // Draw Title in center
+        ImVec2 center = ImVec2(
+            image_pos.x + (rect_size.x / 2.0F),
+            image_pos.y + (rect_size.y / 2.0F)
+        );
+        ImVec2 camera_title_min = ImVec2(
+            center.x + ( camera_title_size.x / -2.0F ),
+            center.y + ( camera_title_size.y / -2.0F ) + (rect_size_unit.y * (spacing * -3.0F))
+        );
+        draw_list->AddText(camera_title_min, col_white, camera_title.c_str());
+        if(c->connected) {
+            if(status[std::to_string(VIDEO_ENCODING_DURATION_ID)].is_number_integer()){
+                int32_t re = status[std::to_string(VIDEO_ENCODING_DURATION_ID)].get<int32_t>();
+                record_time = std::to_string(re);
+            }
+            if(setting[std::to_string(ISO_MIN_ID)].is_number() && setting[std::to_string(ISO_MAX_ID)].is_number()){
+                int32_t iso_min = setting[std::to_string(ISO_MIN_ID)].get<int32_t>();
+                int32_t iso_max = setting[std::to_string(ISO_MAX_ID)].get<int32_t>();
+                std::string iso_min_text = ISO_STRING[iso_min];
+                std::string iso_max_text = ISO_STRING[iso_max];
+                iso_setting = "ISO " + iso_min_text + " " + iso_max_text;
+            }
+            if(setting[std::to_string(WHITE_BALANCE_ID)].is_number()){
+                int32_t white_bal = setting[std::to_string(WHITE_BALANCE_ID)].get<int32_t>();
+                white_balance_setting = WHITE_BALANCE_STRING[white_bal];
+            }
+
+            ImVec2 record_time_size = ImGui::CalcTextSize(record_time.c_str());
+            ImVec2 record_time_min = ImVec2(
+                center.x + ( record_time_size.x / -2.0F ),
+                center.y + ( record_time_size.y / -2.0F ) + (rect_size_unit.y * (spacing * -1.0F))
+            );
+            draw_list->AddText(record_time_min, col_white, record_time.c_str());
+
+            ImVec2 iso_setting_size = ImGui::CalcTextSize(iso_setting.c_str());
+            ImVec2 iso_setting_min = ImVec2(
+                center.x + ( iso_setting_size.x / -2.0F ),
+                center.y + ( iso_setting_size.y / -2.0F ) + (rect_size_unit.y * (spacing * 1.0F))
+            );
+            draw_list->AddText(iso_setting_min, col_white, iso_setting.c_str());
+
+            ImVec2 white_balance_setting_size = ImGui::CalcTextSize(white_balance_setting.c_str());
+            ImVec2 white_balance_setting_min = ImVec2(
+                center.x + ( white_balance_setting_size.x / -2.0F ),
+                center.y + ( white_balance_setting_size.y / -2.0F ) + (rect_size_unit.y * (spacing * 3.0F))
+            );
+            draw_list->AddText(white_balance_setting_min, col_white, white_balance_setting.c_str());
         }
     }
     // Preset mode
     if(c->connected){
         int32_t preset;
         std::string preset_text;
-        if(setting[std::to_string(PRESET_ID)].is_number_integer()){
-            preset = setting[std::to_string(PRESET_ID)].get<int32_t>();
+        if(status[std::to_string(PRESET_ID)].is_number_integer()){
+            preset = status[std::to_string(PRESET_ID)].get<int32_t>();
         }
 
         if(preset == 0){
             preset_text = "V";
-        }else if(preset == 65542 || preset == 65536){
+        }else if(preset == 65542 || 
+            preset == 65536){
             preset_text = "P";
-        }else if(preset == 65542 || preset == 65536){
+        }else if(preset == 131072 || 
+            preset == 131075 ||
+            preset == 131076 ||
+            preset == 131077 ||
+            preset == 131073 ||
+            preset == 131074){
             preset_text = "T";
         }else{
-            preset_text = "?";
+            preset_text = std::to_string(preset);
         }
 
         ImVec2 frame_padding = ImVec2(5, 5);
         ImVec2 preset_text_size = ImGui::CalcTextSize(preset_text.c_str());
         draw_list->AddText(ImVec2(
-            image_pos.x + frame_padding.x,
-            (image_pos.y + rect_size.y) - frame_padding.y
+            image_pos.x + frame_padding.x + preset_text_size.x,
+            (image_pos.y + rect_size.y) - (frame_padding.y + preset_text_size.y)
         ), col_white, preset_text.c_str());
     }
     // Setting
     if(c->connected){
-        
+        std::string res;
+        std::string fps;
+        std::string mode;
     }
     
     ImGui::PopID();
