@@ -374,7 +374,7 @@ void GoProMaster::update(){
             json get_status = json::object();
             get_status["key"] = "query";
             get_status["value"] = json::object();
-            get_status["value"]["name"] = "get";
+            get_status["value"]["name"] = "getall";
             stateQueryFinish.insert_or_assign(s->ip, true);
             s->client.send(get_status.dump());
         }
@@ -455,7 +455,10 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
 
             ipQueryFinish.insert_or_assign(server, false);
         }
-        else if(key == "query:get"){
+        else if(key == "query:get" || key == "query:getall"){
+            if(key == "query:getall"){
+                stateQueryFinish.insert_or_assign(server, false);
+            }
             if(!data["value"]["data"].is_array()){
                 std::cerr << "Invalid message from " << server << ": " << msg << std::endl;
                 std::cerr << "query:get, return value should be array" << std::endl;
@@ -492,7 +495,7 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
                 if(found == -1){
                     auto cam = std::make_shared<CameraInfo>();
                     cam->state = ip.value()["status"];
-                    cam->connected = cam->state["settings"]["2"].is_number_integer();
+                    cam->connected = true;
                     _cam = *cam;
                     cameras.push_back(cam);
                     std::cout << "Added camera state " << ip_ref << std::endl;
@@ -521,7 +524,6 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
                 }
                 count++;
             }
-            if(count > 1) stateQueryFinish.insert_or_assign(server, false);
         }
         else if(key == "query:set"){
             

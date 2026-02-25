@@ -195,7 +195,7 @@ void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
 
         // Drawing SD outline
         ImVec2 outter_min = image_pos + frame_padding;
-        ImVec2 outter_max = image_pos + ImVec2(frame_padding.x, frame_padding.y + sd_size.y);
+        ImVec2 outter_max = image_pos + frame_padding + sd_size;
         draw_list->AddRectFilled(
             outter_min, 
             outter_max, 
@@ -210,8 +210,8 @@ void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
             col_inner_color);
 
         // Drawing SD text
-        ImVec2 text_pos = ImVec2(outter_min.x - battery_text_size.x, outter_min.y);
-        draw_list->AddText(text_pos, col_white, battery_text.c_str());
+        ImVec2 text_pos = ImVec2(outter_max.x, outter_min.y);
+        draw_list->AddText(text_pos, col_white, sd_text.c_str());
     }
     // Center text
     {
@@ -260,14 +260,14 @@ void CameraListWindow::item_event(const std::shared_ptr<CameraInfo>& c){
         {
             master->command_only(c->server, "shutdown", c->ip);
         }
-        ImGui::EndDisabled();
-        if (ImGui::Selectable("Preview TEST"))
+        if (ImGui::Selectable("Preview"))
         {
             master->preview_start(c->server, c->ip);
             state->preview_ip = c->ip;
             state->preview_server = c->server;
             state->command_sender("preview_start");
         }
+        ImGui::EndDisabled();
         if (ImGui::Selectable("Delete"))
         {
             master->command_only(c->server, "delete", c->ip);
