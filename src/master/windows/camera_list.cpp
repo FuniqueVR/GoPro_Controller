@@ -215,14 +215,42 @@ void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
     }
     // Center text
     {
-        
+        std::string record_time;
+        std::string camera_title = c->name;
+        std::string iso_setting;
+        std::string white_balance_setting;
+
+        if(!c->connected){
+            break;
+        }
     }
     // Preset mode
-    {
-        
+    if(c->connected){
+        int32_t preset;
+        std::string preset_text;
+        if(setting[std::to_string(PRESET_ID)].is_number_integer()){
+            preset = setting[std::to_string(PRESET_ID)].get<int32_t>();
+        }
+
+        if(preset == 0){
+            preset_text = "V";
+        }else if(preset == 65542 || preset == 65536){
+            preset_text = "P";
+        }else if(preset == 65542 || preset == 65536){
+            preset_text = "T";
+        }else{
+            preset_text = "?";
+        }
+
+        ImVec2 frame_padding = ImVec2(5, 5);
+        ImVec2 preset_text_size = ImGui::CalcTextSize(preset_text.c_str());
+        draw_list->AddText(ImVec2(
+            image_pos.x + frame_padding.x,
+            (image_pos.y + rect_size.y) - frame_padding.y
+        ), col_white, preset_text.c_str());
     }
     // Setting
-    {
+    if(c->connected){
         
     }
     
