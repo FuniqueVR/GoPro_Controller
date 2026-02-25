@@ -6,6 +6,21 @@
 */
 #include "camera_list.h"
 
+std::string bytesToGbString(long bytes) {
+    // Define the value of one gigabyte (1024 * 1024 * 1024 bytes)
+    const long GIGABYTE = 1024L * 1024L * 1024L; 
+
+    // Convert bytes to gigabytes as a double
+    double gigabytes = static_cast<double>(bytes) / GIGABYTE;
+
+    // Use std::stringstream to format the output with desired precision
+    std::stringstream ss;
+    ss << std::fixed << std::setprecision(2) << gigabytes << " GB";
+
+    // Return the formatted string
+    return ss.str();
+}
+
 CameraListWindow::CameraListWindow(
     std::shared_ptr<json> _setting, 
     std::shared_ptr<GlobalState> _state, 
@@ -153,8 +168,50 @@ void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
         draw_list->AddText(text_pos, col_white, battery_text.c_str());
     }
     // Drawing SD card
-    {
-        
+    if(c->connected){
+        bool sdHave = false;
+        int64_t remaining = 0;
+        uint32_t col_inner_color;
+        if(status[std::to_string(PRIMARY_STORAGE_ID)].is_number()){
+            int b = status[std::to_string(PRIMARY_STORAGE_ID)].get<int32_t>() == 1;
+            if(b == 1) sdHave = true;
+        }
+        if(status[std::to_string(SD_CARD_REMAINING_ID)].is_number()){
+            remaining = status[std::to_string(SD_CARD_REMAINING_ID)].get<int64_t>();
+        }
+        ImVec2 sd_text_size;
+        std::string sd_text;
+        if(sdHave){
+            col_inner_color = col_greed;
+            sd_text = bytesToGbString(remaining);
+        }else{
+            col_inner_color = col_red;
+            sd_text = "X";
+        }
+        sd_text_size = ImGui::CalcTextSize(sd_text.c_str());
+        ImVec2 sd_size = ImVec2(rect_size_unit.x * 2.2, rect_size_unit.y * 1.2F);
+        ImVec2 frame_padding = ImVec2(5, 5);
+        ImVec2 inner_padding = ImVec2(2, 2);
+
+        // Drawing SD outline
+        ImVec2 outter_min = image_pos + frame_padding;
+        ImVec2 outter_max = image_pos + ImVec2(frame_padding.x, frame_padding.y + sd_size.y);
+        draw_list->AddRectFilled(
+            outter_min, 
+            outter_max, 
+            col_grey);
+            
+        // Drawing SD inline
+        ImVec2 inner_min = outter_min + inner_padding;
+        ImVec2 inner_max = outter_max - inner_padding;
+        draw_list->AddRectFilled(
+            inner_min, 
+            inner_max, 
+            col_inner_color);
+
+        // Drawing SD text
+        ImVec2 text_pos = ImVec2(outter_min.x - battery_text_size.x, outter_min.y);
+        draw_list->AddText(text_pos, col_white, battery_text.c_str());
     }
     // Center text
     {
