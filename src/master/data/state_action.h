@@ -5,14 +5,20 @@
  * See the LICENSE file in the project root for more information.
 */
 #pragma once
-#include "../windows/base_window.h"
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
+
+struct GlobalState;
+struct GoProMaster;
+struct BaseWindow;
 
 extern "C" void init_state_setup(
     std::shared_ptr<json> servers,
     std::shared_ptr<json> gui,
-    std::shared_ptr<GlobalState> global_state,
-    std::shared_ptr<GoProMaster> master,
-    std::shared_ptr<BaseWindow> windows[]
+    std::shared_ptr<struct GlobalState> global_state,
+    std::shared_ptr<struct GoProMaster> master,
+    std::shared_ptr<struct BaseWindow> windows[]
 );
-extern "C" json get_global_state_data(GlobalState& data);
-extern "C" void set_global_state_data(GlobalState& data, json refs);
+extern "C" json get_global_state_data(struct GlobalState& data);
+extern "C" void set_global_state_data(struct GlobalState& data, json refs);

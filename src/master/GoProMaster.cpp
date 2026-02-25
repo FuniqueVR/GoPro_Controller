@@ -473,6 +473,14 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
              */
             std::lock_guard<std::mutex> lock(camera_mtx);
             int32_t count = 0;
+
+            // Clear the message
+            for(auto& camera : cameras){
+                if(camera->server == server){
+                    camera->connected = false;
+                }
+            }
+
             for(auto ip = data["value"]["data"].begin(); ip != data["value"]["data"].end(); ++ip){
                 if(!ip.value()["ip"].is_string() || !ip.value()["status"].is_object()){
                     std::cerr << "query:get error: Require ip and status in value.data" << std::endl;
@@ -484,14 +492,17 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
                 if(found == -1){
                     auto cam = std::make_shared<CameraInfo>();
                     cam->state = ip.value()["status"];
+                    cam->connected = cam->state["settings"]["2"].is_number_integer();
                     _cam = *cam;
                     cameras.push_back(cam);
                     std::cout << "Added camera state " << ip_ref << std::endl;
                 }else{
                     auto cam = cameras[found];
                     cam->state = ip.value()["status"];
+                    cam->connected = cam->state["settings"]["2"].is_number_integer();
                     _cam = *cam;
                 }
+
                 if(_camera_setting_feedback != NULL){
                     json buffer_setting = json::object();
                     if(getSettingsFromCamera(_cam, buffer_setting)){
@@ -499,6 +510,14 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
                     }
                 }else{
                     std::cout << "Skip setting feedback: Detect function pointer is NULL" << std::endl;
+                }
+                if(_camera_status_feedback != NULL){
+                    json buffer_status = json::object();
+                    if(getStatusFromCamera(_cam, buffer_status)){
+                        _camera_status_feedback(_cam.ip, buffer_status);
+                    }
+                }else{
+                    std::cout << "Skip status feedback: Detect function pointer is NULL" << std::endl;
                 }
                 count++;
             }
@@ -625,7 +644,7 @@ bool GoProMaster::getSettingsFromCamera(CameraInfo target, json& res){
     return true;
 }
 
-bool GoProMaster::getStatusFromCamera(CameraInfo target, json&& res){
+bool GoProMaster::getStatusFromCamera(CameraInfo target, json& res){
     json data = target.state;
     if(!data["status"].is_object()){
         return false;
@@ -635,7 +654,7 @@ bool GoProMaster::getStatusFromCamera(CameraInfo target, json&& res){
     for(int32_t i = 0; i < GOPRO_STATUS_SIZE; i++){
         int32_t id = GOPRO_STATUS_IDS[i];
         const int32_t type = GET_STATUS_TYPE_BY_ID(id);
-        if(type == !CAMERA_STATUS_TYPE::OPTION){
+        if(type != (int32_t)CAMERA_STATUS_TYPE::OPTION){
             continue; // Only option type need to convert
         }
         if(!res[std::to_string(id)].is_number()) continue;

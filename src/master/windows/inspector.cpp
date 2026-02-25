@@ -126,33 +126,34 @@ void InspectorWindow::draw_status(){
 
         name += "##InspectorTitle_status";
 
-        if(type == CAMERA_STATUS_TYPE::OPTION){
+        if(type == (int32_t)CAMERA_STATUS_TYPE::OPTION){
             size_t size = GET_STATUS_SIZE_BY_ID(id);
             if (!state->current_status_items[std::to_string(id)].is_number()) continue;
-            int32_t select_index = state->current_setting_items[std::to_string(id)].get<int32_t>();
+            int32_t select_index = state->current_status_items[std::to_string(id)].get<int32_t>();
             const char** select_string_list = GET_STATUS_STRING_BY_ID(id);
             std::string select_value_display = select_string_list[select_index];
-            ImGui::LabelText(name.c_str(), "%s", select_value_display.c_str());
-        }else if (type == CAMERA_STATUS_TYPE::BOOLEAN){
+            ImGui::LabelText(name.c_str(), "%d: %s", select_index, select_value_display.c_str());
+        }else if (type == (int32_t)CAMERA_STATUS_TYPE::BOOLEAN){
             if (!state->current_status_items[std::to_string(id)].is_number()) continue;
-            int32_t value = state->current_setting_items[std::to_string(id)].get<int32_t>();
+            int32_t value = state->current_status_items[std::to_string(id)].get<int32_t>();
             std::string display = "";
             if(value == 1) display = "true";
             else display = "false";
             ImGui::LabelText(name.c_str(), "%s", display.c_str());
-        }else if (type == CAMERA_STATUS_TYPE::INT){
+        }else if (type == (int32_t)CAMERA_STATUS_TYPE::INT){
             if (!state->current_status_items[std::to_string(id)].is_number()) continue;
-            int32_t value = state->current_setting_items[std::to_string(id)].get<int32_t>();
+            int32_t value = state->current_status_items[std::to_string(id)].get<int32_t>();
             ImGui::LabelText(name.c_str(), "%d", value);
-        }else if (type == CAMERA_STATUS_TYPE::LONG){
+        }else if (type == (int32_t)CAMERA_STATUS_TYPE::LONG){
             if (!state->current_status_items[std::to_string(id)].is_number()) continue;
-            int64_t value = state->current_setting_items[std::to_string(id)].get<int64_t>();
+            int64_t value = state->current_status_items[std::to_string(id)].get<int64_t>();
             ImGui::LabelText(name.c_str(), "%ld", value);
-        }else if (type == CAMERA_STATUS_TYPE::STRING){
+        }else if (type == (int32_t)CAMERA_STATUS_TYPE::STRING){
             if (!state->current_status_items[std::to_string(id)].is_string()) continue;
-            std::string value = state->current_setting_items[std::to_string(id)].get<std::string>();
+            std::string value = state->current_status_items[std::to_string(id)].get<std::string>();
             ImGui::LabelText(name.c_str(), "%s", value.c_str());
         }else {
+            std::cout << "Type is unknown: " << type << std::endl;
             continue;   
         }
     }

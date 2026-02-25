@@ -78,9 +78,9 @@ void CameraListWindow::draw_line(const std::shared_ptr<CameraInfo>& c){
 }
 
 void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
-    json state = json::object();
+    json status = json::object();
     json setting = json::object();
-    master->getStatusFromCamera(*c, state);
+    master->getStatusFromCamera(*c, status);
     master->getSettingsFromCamera(*c, setting);
 
     ImGui::BeginGroup();
@@ -98,70 +98,76 @@ void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
     ImVec2 image_pos_max = image_pos + rect_size;
     uint32_t col_white = IM_COL32(255, 255, 255, 255);
     uint32_t col_grey = IM_COL32(210, 210, 210, 255);
+    uint32_t col_red = IM_COL32(230, 10, 10, 255);
     uint32_t col_greed = IM_COL32(10, 230, 10, 255);
-    uint32_t col = IM_COL32(255, 0, 0, 255);
-    if(c->connected) col = IM_COL32(0, 255, 0, 255);
 
     // Drawing outline
     {
+        uint32_t col = col_red;
+        if(c->connected) col = col_greed;
         draw_list->AddRect(image_pos + ImVec2(5, 5), image_pos_max - ImVec2(5, 5), col, 2.0F, 0, 2.0F);
     }
     // Drawing Battery
     if(c->connected){
-        ImVec2 battery_text_size = ImGui::CalcTextSize("V");
+        bool batteryHave = false;
+        int precentage = 0;
+        uint32_t col_inner_color;
+        if(status[std::to_string(BATTERY_PRESENT_ID)].is_number()){
+            batteryHave = status[std::to_string(BATTERY_PRESENT_ID)].get<int32_t>() == 1;
+        }
+        if(status[std::to_string(INTERNAL_BATTERY_PERCENTAGE_ID)].is_number()){
+            precentage = status[std::to_string(INTERNAL_BATTERY_PERCENTAGE_ID)].get<int32_t>();
+        }
+        ImVec2 battery_text_size;
+        std::string battery_text;
+        if(batteryHave){
+            col_inner_color = col_greed;
+            battery_text = std::to_string(precentage) + "%";
+        }else{
+            col_inner_color = col_red;
+            battery_text = "X";
+        }
+        battery_text_size = ImGui::CalcTextSize(battery_text.c_str());
         ImVec2 bettery_size = ImVec2(rect_size_unit.x * 2.2, rect_size_unit.y * 1.2F);
+        ImVec2 frame_padding = ImVec2(5, 5);
+        ImVec2 inner_padding = ImVec2(2, 2);
+
         // Drawing Battery outline
-        draw_list->AddRectFilled(image_pos + ImVec2(5, 5), image_pos + ImVec2(5, 5) + bettery_size, col_grey);
+        ImVec2 outter_min = image_pos + ImVec2(rect_size.x - (frame_padding.x + bettery_size.x), frame_padding.y);
+        ImVec2 outter_max = image_pos + ImVec2(rect_size.x - frame_padding.x, frame_padding.y + bettery_size.y);
+        draw_list->AddRectFilled(
+            outter_min, 
+            outter_max, 
+            col_grey);
+            
         // Drawing Battery inline
-        draw_list->AddRectFilled(image_pos + ImVec2(7.5F, 7.5F), image_pos + ImVec2(2.5F, 2.5F) + bettery_size, col_greed);
+        ImVec2 inner_min = outter_min + inner_padding;
+        ImVec2 inner_max = outter_max - inner_padding;
+        draw_list->AddRectFilled(
+            inner_min, 
+            inner_max, 
+            col_inner_color);
+
+        // Drawing Battery text
+        ImVec2 text_pos = ImVec2(outter_min.x - battery_text_size.x, outter_min.y);
+        draw_list->AddText(text_pos, col_white, battery_text.c_str());
     }
     // Drawing SD card
     {
-        ImVec2 sd_pos_size = ImGui::CalcTextSize("V");
-        ImVec2 sd_size = ImVec2(rect_size_unit.x * 2.2, rect_size_unit.y * 1.2F);
-        // Drawing Battery outline
-        draw_list->AddRectFilled(image_pos + ImVec2(5, 5), image_pos + ImVec2(5, 5) + sd_size, col_grey);
-        // Drawing Battery inline
-        draw_list->AddRectFilled(image_pos + ImVec2(7.5F, 7.5F), image_pos + ImVec2(2.5F, 2.5F) + sd_size, col_greed);
+        
     }
     // Center text
     {
-        ImVec2 time_size = ImGui::CalcTextSize("00:00");
-        ImVec2 iso_size = ImGui::CalcTextSize("00:00");
-        ImVec2 shut_size = ImGui::CalcTextSize("00:00");
-        ImVec2 Lowflat_pos_size = ImGui::CalcTextSize("00:00");
-
-        ImVec2 title_pos = image_pos + ImVec2((rect_size.x / 2.0F) - (title_pos_size.x / 2), (rect_size.y / 2.0F) - (title_pos_size.y / 2));
-        draw_list->AddText(title_pos, col_white, c->name.c_str());
+        
     }
     // Preset mode
     {
-        ImVec2 preset_pos_size = ImGui::CalcTextSize("V");
+        
     }
     // Setting
     {
-        ImVec2 pro_pos_size = ImGui::CalcTextSize("V");
-        ImVec2 res_pos_size = ImGui::CalcTextSize("1080");
-        ImVec2 fps_pos_size = ImGui::CalcTextSize("60");
-        ImVec2 wide_pos_size = ImGui::CalcTextSize("w");
+        
     }
-
-    int32_t have_battery = 0;
-    int32_t bar_battery = 0;
-    int32_t overheating = 0;
-    if(c->state["status"].is_object()){
-        if(c->state["status"]["1"].is_number_integer()){
-            have_battery = c->state["status"]["1"].get<int32_t>();
-        }
-        if(c->state["status"]["2"].is_number_integer()){
-            bar_battery = c->state["status"]["2"].get<int32_t>();
-        }
-        if(c->state["status"]["6"].is_number_integer()){
-            overheating = c->state["status"]["6"].get<int32_t>();
-        }
-    }
-
-    ImVec2 cursor = ImGui::GetCursorPos();
     
     ImGui::PopID();
     ImGui::Dummy(rect_size);

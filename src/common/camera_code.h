@@ -146,7 +146,7 @@ const static int32_t GOPRO_STATUS_IDS[] = {
     TIME_WARP_SPEED_ID,
     LENS_TYPE_ID,STATUS_HINDSIGHT_ID,
     SCHEDULED_CAPTURE_PRESET_ID,
-    SCHEDULED_CAPTURE_ID,
+    STATUS_SCHEDULED_CAPTURE_ID,
     SD_CARD_WRITE_SPEED_ERROR_ID,
     SD_CARD_ERRORS_ID,
     STATUS_CAMERA_CONTROL_ID,
@@ -458,7 +458,7 @@ inline const int32_t GET_STATUS_TYPE_BY_ID(int32_t x ){
         case TIME_WARP_SPEED_ID:                    return (int32_t)TIME_WARP_SPEED_TYPE;
         case LENS_TYPE_ID:                          return (int32_t)STATUS_HINDSIGHT_TYPE;
         case SCHEDULED_CAPTURE_PRESET_ID:           return (int32_t)SCHEDULED_CAPTURE_PRESET_TYPE;
-        case SCHEDULED_CAPTURE_ID:                  return (int32_t)SCHEDULED_CAPTURE_TYPE;
+        case STATUS_SCHEDULED_CAPTURE_ID:           return (int32_t)STATUS_SCHEDULED_CAPTURE_TYPE;
         case SD_CARD_WRITE_SPEED_ERROR_ID:          return (int32_t)SD_CARD_WRITE_SPEED_ERROR_TYPE;
         case SD_CARD_ERRORS_ID:                     return (int32_t)SD_CARD_ERRORS_TYPE;
         case STATUS_CAMERA_CONTROL_ID:              return (int32_t)STATUS_CAMERA_CONTROL_TYPE;
@@ -539,14 +539,14 @@ inline const char* GET_STATUS_NAME_BY_ID(int32_t x ){
         case TIME_WARP_SPEED_ID:                    return TIME_WARP_SPEED_NAME;
         case LENS_TYPE_ID:                          return STATUS_HINDSIGHT_NAME;
         case SCHEDULED_CAPTURE_PRESET_ID:           return SCHEDULED_CAPTURE_PRESET_NAME;
-        case SCHEDULED_CAPTURE_ID:                  return SCHEDULED_CAPTURE_NAME;
+        case STATUS_SCHEDULED_CAPTURE_ID:           return STATUS_SCHEDULED_CAPTURE_NAME;
         case SD_CARD_WRITE_SPEED_ERROR_ID:          return SD_CARD_WRITE_SPEED_ERROR_NAME;
         case SD_CARD_ERRORS_ID:                     return SD_CARD_ERRORS_NAME;
         case STATUS_CAMERA_CONTROL_ID:              return STATUS_CAMERA_CONTROL_NAME;
         case USB_CONNECTED_ID:                      return USB_CONNECTED_NAME;
         case USE_CONTROLLED_ID:                     return USE_CONTROLLED_NAME;
         case SD_CARD_CAPACITY_ID:                   return SD_CARD_CAPACITY_NAME;
-        default: return 0;
+        default: return "";
     }
 }
 
@@ -565,7 +565,6 @@ inline const int32_t GET_STATUS_SIZE_BY_ID(int32_t x ){
         case ROTATION_ID:                           return ROTATION_SIZE;
         case MEDIA_MOD_STATE_ID:                    return MEDIA_MOD_STATE_SIZE;
         case TIME_WARP_SPEED_ID:                    return TIME_WARP_SPEED_SIZE;
-        case SCHEDULED_CAPTURE_ID:                  return SCHEDULED_CAPTURE_SIZE;
         case STATUS_CAMERA_CONTROL_ID:              return STATUS_CAMERA_CONTROL_SIZE;
         default: return 0;
     }
@@ -586,7 +585,6 @@ inline const char** GET_STATUS_STRING_BY_ID(int32_t x ){
         case ROTATION_ID:                           return ROTATION_STRING;
         case MEDIA_MOD_STATE_ID:                    return MEDIA_MOD_STATE_STRING;
         case TIME_WARP_SPEED_ID:                    return TIME_WARP_SPEED_STRING;
-        case SCHEDULED_CAPTURE_ID:                  return SCHEDULED_CAPTURE_STRING;
         case STATUS_CAMERA_CONTROL_ID:              return STATUS_CAMERA_CONTROL_STRING;
         default: return 0;
     }
@@ -607,7 +605,6 @@ inline const int32_t* GET_STATUS_VALUE_BY_ID(int32_t x ){
         case ROTATION_ID:                           return ROTATION_VALUE;
         case MEDIA_MOD_STATE_ID:                    return MEDIA_MOD_STATE_VALUE;
         case TIME_WARP_SPEED_ID:                    return TIME_WARP_SPEED_VALUE;
-        case SCHEDULED_CAPTURE_ID:                  return SCHEDULED_CAPTURE_VALUE;
         case STATUS_CAMERA_CONTROL_ID:              return STATUS_CAMERA_CONTROL_VALUE;
         default: return 0;
     }

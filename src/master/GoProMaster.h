@@ -18,7 +18,7 @@
 #include "data/server_connection.h"
 
 typedef void (*camera_setting_feedback)(std::string ip, json setting);
-typedef void (*camera_status_feedback)(json status);
+typedef void (*camera_status_feedback)(std::string ip, json status);
 typedef void (*camera_log_feedback)(std::string key, std::string value);
 
 
@@ -180,7 +180,7 @@ public:
      * It's easier for me to display stuff on the gui this way
      */
     bool getSettingsFromCamera(CameraInfo target, json& res);
-    bool getStatusFromCamera(CameraInfo target, json&& res);
+    bool getStatusFromCamera(CameraInfo target, json& res);
     std::string getBarInfo(const std::shared_ptr<CameraInfo> &c);
 
     int32_t findCamera(const std::string ip);

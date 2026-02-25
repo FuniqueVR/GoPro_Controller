@@ -5,16 +5,14 @@
  * See the LICENSE file in the project root for more information.
 */
 #include "state_action.h"
-#include <nlohmann/json.hpp>
-
-using json = nlohmann::json;
+#include "../windows/base_window.h"
 
 void init_state_setup(
     std::shared_ptr<json> servers,
     std::shared_ptr<json> gui,
-    std::shared_ptr<GlobalState> global_state,
-    std::shared_ptr<GoProMaster> master,
-    std::shared_ptr<BaseWindow> windows[]
+    std::shared_ptr<struct GlobalState> global_state,
+    std::shared_ptr<struct GoProMaster> master,
+    std::shared_ptr<struct BaseWindow> windows[]
 ){
     if((*servers)["data"].is_array()){     
         for(int i = 0; i < (*servers)["data"].size(); i++){
@@ -62,11 +60,11 @@ void init_state_setup(
     }
 }
 
-json get_global_state_data(GlobalState& data){
+json get_global_state_data(struct GlobalState& data){
     json r = json::object();
     return r;
 }
 
-void set_global_state_data(GlobalState& data, json refs){
+void set_global_state_data(struct GlobalState& data, json refs){
     
 }

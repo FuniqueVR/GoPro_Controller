@@ -82,6 +82,12 @@ void settingGetterFeedback(std::string ip, json setting){
         global_state->current_setting_items_bind = true;
     }
 }
+void statusGetterFeedback(std::string ip, json status){
+    if(global_state->current_camera_item == ip){
+        global_state->current_status_items = status;
+        global_state->current_status_items_bind = true;
+    }
+}
 
 void updateServerList(){
     json data = json::object();
@@ -153,6 +159,7 @@ int main(int, char**)
     pop_windows_array[3] = preview_popwin;
     // Register event for master
     master->registerCameraSettingFeedback(settingGetterFeedback);
+    master->registerCameraStatusFeedback(statusGetterFeedback);
     master->registerCameraLogFeedback(assign_log);
     global_state->update_server = updateServerList;
     global_state->command_sender = pushCommand;
