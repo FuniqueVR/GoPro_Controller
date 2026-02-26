@@ -307,9 +307,57 @@ void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
     }
     // Setting
     if(c->connected){
+        float spacing = 0.75F;
+        float word_spacing = 10;
         std::string res;
         std::string fps;
-        std::string mode;
+        std::string profile;
+        std::string framing;
+
+        if(setting[std::to_string(VIDEO_RESOLUTION_ID)].is_number_integer()){
+            int32_t re = setting[std::to_string(VIDEO_RESOLUTION_ID)].get<int32_t>();
+            res = VIDEO_RESOLUTION_STRING[re];
+        }
+        if(setting[std::to_string(FRAMES_PER_SECOND_ID)].is_number_integer()){
+            int32_t re = setting[std::to_string(FRAMES_PER_SECOND_ID)].get<int32_t>();
+            fps = FRAMES_PER_SECOND_STRING[re];
+        }
+        if(setting[std::to_string(PROFILES_ID)].is_number_integer()){
+            int32_t re = setting[std::to_string(PROFILES_ID)].get<int32_t>();
+            profile = PROFILES_STRING[re];
+        }
+        if(setting[std::to_string(FRAMING_ID)].is_number_integer()){
+            int32_t re = setting[std::to_string(FRAMING_ID)].get<int32_t>();
+            framing = FRAMING_STRING[re];
+            while(framing.size() > 1){
+                framing.pop_back();
+            }
+        }
+
+        ImVec2 res_text_size = ImGui::CalcTextSize(res.c_str());
+        ImVec2 fps_text_size = ImGui::CalcTextSize(fps.c_str());
+        ImVec2 profile_text_size = ImGui::CalcTextSize(profile.c_str());
+        ImVec2 framing_text_size = ImGui::CalcTextSize(framing.c_str());
+        ImVec2 frame_padding = ImVec2(5, 5);
+
+        ImVec2 corner = image_pos + rect_size;
+        ImVec2 profile_pos = ImVec2(
+            corner.x - (frame_padding.x + profile_text_size.x),
+            corner.y - (frame_padding.y + profile_text_size.y + ((rect_size_unit.y * 2.0F) * spacing))
+        );
+        draw_list->AddText(profile_pos, col_white, profile.c_str());
+
+        ImVec2 framing_pos = ImVec2(
+            corner.x - (frame_padding.x + framing_text_size.x),
+            corner.y - (frame_padding.y + framing_text_size.y)
+        );
+        draw_list->AddText(framing_pos, col_white, framing.c_str());
+
+        ImVec2 fps_pos = framing_pos - ImVec2(word_spacing + fps_text_size.x, 0);
+        draw_list->AddText(fps_pos, col_white, fps.c_str());
+
+        ImVec2 res_pos = fps_pos - ImVec2(word_spacing + res_text_size.x, 0);
+        draw_list->AddText(res_pos, col_white, res.c_str());
     }
     
     ImGui::PopID();
