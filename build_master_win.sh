@@ -7,7 +7,7 @@ cd build_master_win
 cp ../Roboto-Medium.ttf .
 
 # Configure CMake
-cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=../cmake/windows-toolchain.cmake -DBUILD_SERVER=OFF -DBUILD_MASTER=ON
+cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-Wa,-mbig-obj" -DCMAKE_TOOLCHAIN_FILE=../cmake/windows-toolchain.cmake -DBUILD_SERVER=OFF -DBUILD_MASTER=ON
 
 # Build
 cmake --build . -j 8

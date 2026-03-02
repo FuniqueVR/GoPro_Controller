@@ -177,10 +177,9 @@ if(BUILD_MASTER)
     if(HAVE_OPENCV)
         target_include_directories(master PRIVATE
             ${opencv_SOURCE_DIR}/include
+            ${CMAKE_BINARY_DIR}
             ${opencv_BINARY_DIR}
-            ${opencv_SOURCE_DIR}/modules/core/include
-            ${opencv_SOURCE_DIR}/modules/imgproc/include
-            ${opencv_SOURCE_DIR}/modules/imgcodecs/include
+            ${opencv_SOURCE_DIR}/modules/**/include
         )
         target_compile_definitions(master PRIVATE HAVE_OPENCV)
         message(STATUS "Master will be built WITH OpenCV support")
