@@ -25,7 +25,6 @@ void InspectorWindow::render(){
         std::lock_guard<std::mutex> lock(master->camera_mtx);
         int32_t camera_ip = master->findCamera(state->current_camera_item);
         bool should_disabled = state->current_camera_item.size() < 10 || camera_ip == -1 || !state->current_setting_items_bind;
-        
 
         ImGui::InputText("Camera Name", &state->current_camera_name);
         if(ImGui::Button("Rename Camera")){
@@ -33,7 +32,6 @@ void InspectorWindow::render(){
         }
 
         ImGui::BeginDisabled(should_disabled);
-        draw_media();
         ImGui::Separator();
 
         if(ImGui::BeginTabBar("Inspector_Bar")){
@@ -148,6 +146,7 @@ void InspectorWindow::draw_status(){
 }
 
 void InspectorWindow::draw_media(){
+    int32_t camera_ip = master->findCamera(state->current_camera_item);
     ImGui::InputText("Media Download", &state->current_download_location);
     if(ImGui::Button("All Download")){
         master->download_last_media(state->current_download_location);
