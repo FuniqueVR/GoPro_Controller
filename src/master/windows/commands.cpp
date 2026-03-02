@@ -82,7 +82,8 @@ void CommandWindow::render_local(){
     std::lock_guard<std::mutex> lock(master->camera_mtx);
     ImGui::Text("Single Camera Control");
 
-    bool should_disabled = state->current_camera_item.size() < 10 || master->findCamera(state->current_camera_item) == -1;
+    int32_t current_camera = master->findCamera(state->current_camera_item);
+    bool should_disabled = state->current_camera_item.size() < 10 || current_camera == -1;
     ImGui::BeginDisabled(should_disabled);
 
     ImGuiStyle& style = ImGui::GetStyle();
@@ -121,13 +122,16 @@ void CommandWindow::render_local(){
         master->applyAll("", state->current_setting_items);
     } 
     ImGui::SameLine();
+
+    
     if(ImGui::Button("Setting Apply All By ID", button_2size)) {
         json buffer = json::object();
         int32_t v = state->current_setting_items[std::to_string(state->apply_all_item)].get<int32_t>();
         buffer[std::to_string(state->apply_all_item)] = GET_SETTING_VALUE_BY_ID(state->apply_all_item)[v];
-
         master->applyAll("", buffer);
     }
+
+    
 
     if(ImGui::BeginCombo("ID", state->apply_all_item_string.c_str())){
         for (int n = 0; n < GOPRO_SETTING_SIZE; n++)
@@ -145,6 +149,50 @@ void CommandWindow::render_local(){
         }
         ImGui::EndCombo();
     }
-
     ImGui::EndDisabled();
+
+    json buffer_c = json::object();
+    std::string try_apply = "";
+    if(current_camera != -1){
+        CameraInfo info = *(master->getCameras().at(current_camera));
+        if(master->getSettingsFromCamera(info, buffer_c)){
+            if(buffer_c[std::to_string(state->apply_all_item)].is_number_integer()){
+                int32_t v = buffer_c[std::to_string(state->apply_all_item)].get<int32_t>();
+                try_apply = GET_SETTING_STRING_BY_ID(state->apply_all_item)[v];
+                ImGui::Text("Trying Apply Value: %s", try_apply.c_str());
+            }
+        }
+
+        if (ImGui::BeginTable("Local_Apply", 4, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg)) {
+            ImGui::TableSetupColumn("Server Address##Local_Apply_header");
+            ImGui::TableSetupColumn("IP Address##Local_Apply_header");
+            ImGui::TableSetupColumn("Value##Local_Apply_header");
+            ImGui::TableSetupColumn("OK##Local_Apply_header");
+            ImGui::TableHeadersRow();
+
+            for(auto& camera: master->getCameras()){
+                json buffer = json::object();
+                if(master->getSettingsFromCamera(*camera, buffer)){
+                    if(buffer[std::to_string(state->apply_all_item)].is_number_integer()){
+                        int32_t v = buffer[std::to_string(state->apply_all_item)].get<int32_t>();
+                        std::string c_v = GET_SETTING_STRING_BY_ID(state->apply_all_item)[v];
+                        bool eq = c_v == try_apply;
+                        std::string ok = "";
+                        if(eq) ok = "O";
+                        else ok = "X";
+                        ImGui::TableNextRow();
+                        ImGui::TableSetColumnIndex(0);
+                        ImGui::Text("%s", camera->server.c_str());
+                        ImGui::TableSetColumnIndex(1);
+                        ImGui::Text("%s", camera->ip.c_str());
+                        ImGui::TableSetColumnIndex(2);
+                        ImGui::Text("%s", c_v.c_str());   
+                        ImGui::TableSetColumnIndex(3);
+                        ImGui::Text("%s", ok.c_str());
+                    }
+                }
+            }
+            ImGui::EndTable();
+        }
+    }
 }

@@ -19,7 +19,7 @@ PreviewPopup::~PreviewPopup(){
 void PreviewPopup::trigger(bool value){
     BasePopWindow::trigger(value);
     if(value){
-        reader = std::thread([=]() {
+        reader = std::thread([&]() {
             update_decoder();
         });
     }else{
