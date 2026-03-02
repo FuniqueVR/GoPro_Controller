@@ -122,7 +122,6 @@ void CommandWindow::render_local(){
         master->applyAll("", state->current_setting_items);
     } 
     ImGui::SameLine();
-
     
     if(ImGui::Button("Setting Apply All By ID", button_2size)) {
         json buffer = json::object();
@@ -130,8 +129,6 @@ void CommandWindow::render_local(){
         buffer[std::to_string(state->apply_all_item)] = GET_SETTING_VALUE_BY_ID(state->apply_all_item)[v];
         master->applyAll("", buffer);
     }
-
-    
 
     if(ImGui::BeginCombo("ID", state->apply_all_item_string.c_str())){
         for (int n = 0; n < GOPRO_SETTING_SIZE; n++)

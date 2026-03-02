@@ -33,19 +33,7 @@ void InspectorWindow::render(){
         }
 
         ImGui::BeginDisabled(should_disabled);
-        ImGui::InputText("Media Download", &state->current_download_location);
-        if(ImGui::Button("All Download")){
-            master->download_last_media(state->current_download_location);
-        }
-        ImGui::SameLine();
-        if(ImGui::Button("Single Download")){
-            
-        }
-        if(camera_ip >= 0){
-            std::shared_ptr<CameraInfo> t = master->getCameras()[camera_ip];
-            ImGui::LabelText("Server", "%s", t->server.c_str());
-            ImGui::LabelText("Last Media", "%s", t->last_media.c_str());
-        }
+        draw_media();
         ImGui::Separator();
 
         if(ImGui::BeginTabBar("Inspector_Bar")){
@@ -160,5 +148,17 @@ void InspectorWindow::draw_status(){
 }
 
 void InspectorWindow::draw_media(){
-
+    ImGui::InputText("Media Download", &state->current_download_location);
+    if(ImGui::Button("All Download")){
+        master->download_last_media(state->current_download_location);
+    }
+    ImGui::SameLine();
+    if(ImGui::Button("Single Download")){
+        
+    }
+    if(camera_ip >= 0){
+        std::shared_ptr<CameraInfo> t = master->getCameras()[camera_ip];
+        ImGui::LabelText("Server", "%s", t->server.c_str());
+        ImGui::LabelText("Last Media", "%s", t->last_media.c_str());
+    }
 }
