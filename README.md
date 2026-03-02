@@ -39,6 +39,8 @@ Websocket, Go-Pro 的中繼站, 會把訊息轉發到 Master.
 
 ## 架構圖
 
+Raspberry pi 用於負載分散, 如果性能不夠也可以改用 mini pc 或是 desktop pc 承擔
+
 ```mermaid
 ---
 title: 結構
@@ -324,7 +326,6 @@ dwc_otg.fiq_fix_enable=1 dwc_otg.fiq_fsm_enable=1 dwc_otg.nak_holdoff=1,isolcpus
     }
 }
 ```
-
 需求樹狀圖
 
 * key: command
