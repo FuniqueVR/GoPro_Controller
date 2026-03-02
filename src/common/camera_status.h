@@ -3,5 +3,516 @@
 #define CAMERA_STATUS
 #include <cinttypes>
 
+enum class CAMERA_STATUS_TYPE {
+    INT, LONG, FLOAT, STRING, BOOLEAN, OPTION
+};
+
+#define BATTERY_PRESENT_ID 1
+#define BATTERY_PRESENT_TYPE CAMERA_STATUS_TYPE::BOOLEAN
+#define BATTERY_PRESENT_NAME "Battery Present"
+
+#define INTERNAL_BATTERY_BARS_ID 2
+#define INTERNAL_BATTERY_BARS_TYPE CAMERA_STATUS_TYPE::OPTION
+#define INTERNAL_BATTERY_BARS_SIZE 5
+#define INTERNAL_BATTERY_BARS_NAME "Internal Battery Bars"
+
+const static char* INTERNAL_BATTERY_BARS_STRING[] = {
+    "Zero",
+    "One",
+    "Two",
+    "Three",
+    "Charging",
+};
+
+const static int32_t INTERNAL_BATTERY_BARS_VALUE[] = {
+    0, 1, 2, 3, 4
+};
+
+#define OVERHEATING_ID 6
+#define OVERHEATING_TYPE CAMERA_STATUS_TYPE::BOOLEAN
+#define OVERHEATING_NAME "Overheating"
+
+#define BUSY_ID 8
+#define BUSY_TYPE CAMERA_STATUS_TYPE::BOOLEAN
+#define BUSY_NAME "Busy"
+
+#define QUICK_CAPTURE_ID 9
+#define QUICK_CAPTURE_TYPE CAMERA_STATUS_TYPE::BOOLEAN
+#define QUICK_CAPTURE_NAME "Quick Capture"
+
+#define ENCODING_ID 10
+#define ENCODING_TYPE CAMERA_STATUS_TYPE::BOOLEAN
+#define ENCODING_NAME "Encoding"
+
+#define LCD_LOCK_ID 11
+#define LCD_LOCK_TYPE CAMERA_STATUS_TYPE::BOOLEAN
+#define LCD_LOCK_NAME "LCD Lock"
+
+#define VIDEO_ENCODING_DURATION_ID 13
+#define VIDEO_ENCODING_DURATION_TYPE CAMERA_STATUS_TYPE::INT
+#define VIDEO_ENCODING_DURATION_NAME "Video encoding duration"
+
+#define WIRELESS_CONNECTIONS_ENABLED_ID 17
+#define WIRELESS_CONNECTIONS_ENABLED_TYPE CAMERA_STATUS_TYPE::BOOLEAN
+#define WIRELESS_CONNECTIONS_ENABLED_NAME "Wireless Connections Enabled"
+
+#define PAIRING_STATE_ID 19
+#define PAIRING_STATE_TYPE CAMERA_STATUS_TYPE::OPTION
+#define PAIRING_STATE_SIZE 5
+#define PAIRING_STATE_NAME "Pairing State"
+
+const static char* PAIRING_STATE_STRING[] = {
+    "Never Started",
+    "Started",
+    "Aborted",
+    "Cancelled",
+    "Completed",
+};
+
+const static int32_t PAIRING_STATE_VALUE[] = {
+    0, 1, 2, 3, 4
+};
+
+#define LAST_PAIRING_TYPE_ID 20
+#define LAST_PAIRING_TYPE_TYPE CAMERA_STATUS_TYPE::OPTION
+#define LAST_PAIRING_TYPE_SIZE 4
+#define LAST_PAIRING_TYPE_NAME "Last Pairing Type"
+
+const static char* LAST_PAIRING_TYPE_STRING[] = {
+    "Not Pairing",
+    "Pairing App",
+    "Pairing Remote Control",
+    "Pairing Bluetooth Device",
+};
+
+const static int32_t LAST_PAIRING_TYPE_VALUE[] = {
+    0, 1, 2, 3
+};
+
+#define LAST_PAIRING_SUCESS_ID 21
+#define LAST_PAIRING_SUCESS_TYPE CAMERA_STATUS_TYPE::INT
+#define LAST_PAIRING_SUCESS_NAME "Last Pairing Success"
+
+#define WIFI_SCAN_STATE_ID 22
+#define WIFI_SCAN_STATE_TYPE CAMERA_STATUS_TYPE::OPTION
+#define WIFI_SCAN_STATE_SIZE 5
+#define WIFI_SCAN_STATE_NAME "Wifi Scan State"
+
+const static char* WIFI_SCAN_STATE_STRING[] = {
+    "Never Started",
+    "Started",
+    "Aborted",
+    "Cancelled",
+    "Completed",
+};
+
+const static int32_t WIFI_SCAN_STATE_VALUE[] = {
+    0, 1, 2, 3, 4
+};
+
+#define LAST_WIFI_SCAN_SUCESS_ID 23
+#define LAST_WIFI_SCAN_SUCESS_TYPE CAMERA_STATUS_TYPE::INT
+#define LAST_WIFI_SCAN_SUCESS_NAME "Last Wifi Scan Success"
+
+#define WIFI_PROVISIONING_STATE_ID 24
+#define WIFI_PROVISIONING_STATE_TYPE CAMERA_STATUS_TYPE::OPTION
+#define WIFI_PROVISIONING_STATE_SIZE 5
+#define WIFI_PROVISIONING_STATE_NAME "Wifi Provisioning State"
+
+const static char* WIFI_PROVISIONING_STATE_STRING[] = {
+    "Never Started",
+    "Started",
+    "Aborted",
+    "Cancelled",
+    "Completed",
+};
+
+const static int32_t WIFI_PROVISIONING_STATE_VALUE[] = {
+    0, 1, 2, 3, 4
+};
+
+#define REMOTE_VERSION_ID 26
+#define REMOTE_VERSION_TYPE CAMERA_STATUS_TYPE::INT
+#define REMOTE_VERSION_NAME "Remote Version"
+
+#define REMOTE_CONNECTED_ID 27
+#define REMOTE_CONNECTED_TYPE CAMERA_STATUS_TYPE::BOOLEAN
+#define REMOTE_CONNECTED_NAME "Remote Connected"
+
+#define CONNECTED_WIFI_SSID_ID 29
+#define CONNECTED_WIFI_SSID_TYPE CAMERA_STATUS_TYPE::STRING
+#define CONNECTED_WIFI_SSID_NAME "Connected Wifi SSID"
+
+#define ACCESS_POINT_SSID_ID 30
+#define ACCESS_POINT_SSID_TYPE CAMERA_STATUS_TYPE::STRING
+#define ACCESS_POINT_SSID_NAME "Access Point SSID"
+
+#define CONNECTED_DEVICE_ID 31
+#define CONNECTED_DEVICE_TYPE CAMERA_STATUS_TYPE::INT
+#define CONNECTED_DEVICE_NAME "Connected Device"
+
+#define PREVIEW_STREAM_ID 32
+#define PREVIEW_STREAM_TYPE CAMERA_STATUS_TYPE::BOOLEAN
+#define PREVIEW_STREAM_NAME "Preview Stream"
+
+#define PRIMARY_STORAGE_ID 33
+#define PRIMARY_STORAGE_TYPE CAMERA_STATUS_TYPE::OPTION
+#define PRIMARY_STORAGE_SIZE 7
+#define PRIMARY_STORAGE_NAME "Primary Storage"
+
+const static char* PRIMARY_STORAGE_STRING[] = {
+    "Unknown",
+    "OK",
+    "SD Card Full",
+    "SD Card Removed",
+    "SD Card Format Error",
+    "SD Card Busy",
+    "SD Card Swapped",
+};
+
+const static int32_t PRIMARY_STORAGE_VALUE[] = {
+    -1, 0, 1, 2, 3, 4, 8
+};
+
+#define REMAINING_PHOTOS_ID 34
+#define REMAINING_PHOTOS_TYPE CAMERA_STATUS_TYPE::INT
+#define REMAINING_PHOTOS_NAME "Remaining Photos"
+
+#define REMAINING_VIDEO_TIME_ID 35
+#define REMAINING_VIDEO_TIME_TYPE CAMERA_STATUS_TYPE::INT
+#define REMAINING_VIDEO_TIME_NAME "Remaining Video Time"
+
+#define PHOTOS_ID 38
+#define PHOTOS_TYPE CAMERA_STATUS_TYPE::INT
+#define PHOTOS_NAME "Photos"
+
+#define VIDEOS_ID 39
+#define VIDEOS_TYPE CAMERA_STATUS_TYPE::INT
+#define VIDEOS_NAME "Videos"
+
+#define OTA_ID 41
+#define OTA_TYPE CAMERA_STATUS_TYPE::OPTION
+#define OTA_SIZE 11
+#define OTA_NAME "OTA"
+
+const static char* OTA_STRING[] = {
+    "Idle",
+    "Downloading",
+    "Verifying",
+    "Download Failed",
+    "Verify Failed",
+    "Ready",
+    "GoPro App Downloading",
+    "GoPro App Verifying",
+    "GoPro App Download Failed",
+    "GoPro App Verify Failed",
+    "GoPro App Ready",
+};
+
+const static int32_t OTA_VALUE[] = {
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+};
+
+#define PENDING_FW_UPDATE_CANCEL_ID 42
+#define PENDING_FW_UPDATE_CANCEL_TYPE CAMERA_STATUS_TYPE::BOOLEAN
+#define PENDING_FW_UPDATE_CANCEL_NAME "Pending Firmware Update Cancel"
+
+#define LOCATE_ID 45
+#define LOCATE_TYPE CAMERA_STATUS_TYPE::BOOLEAN
+#define LOCATE_NAME "Locate"
+
+#define TIMELAPSE_INTERVAL_COUNTDOWN_ID 49
+#define TIMELAPSE_INTERVAL_COUNTDOWN_TYPE CAMERA_STATUS_TYPE::INT
+#define TIMELAPSE_INTERVAL_COUNTDOWN_NAME "Timelapse Interval Countdown"
+
+#define SD_CARD_REMAINING_ID 54
+#define SD_CARD_REMAINING_TYPE CAMERA_STATUS_TYPE::LONG
+#define SD_CARD_REMAINING_NAME "SD Card Remaining"
+
+#define PREVIEW_STREAM_AVAILABLE_ID 55
+#define PREVIEW_STREAM_AVAILABLE_TYPE CAMERA_STATUS_TYPE::BOOLEAN
+#define PREVIEW_STREAM_AVAILABLE_NAME "Preview Stream Available"
+
+#define WIFI_BARS_ID 56
+#define WIFI_BARS_TYPE CAMERA_STATUS_TYPE::INT
+#define WIFI_BARS_NAME "Wifi Bars"
+
+#define ACTIVE_HILIGHTS_ID 58
+#define ACTIVE_HILIGHTS_TYPE CAMERA_STATUS_TYPE::INT
+#define ACTIVE_HILIGHTS_NAME "Active Highlights"
+
+#define TIME_SINCE_LAST_HILIGHT_ID 59
+#define TIME_SINCE_LAST_HILIGHT_TYPE CAMERA_STATUS_TYPE::INT
+#define TIME_SINCE_LAST_HILIGHT_NAME "Time Since Last Highlight"
+
+#define MINIMUM_STATUS_POLL_PREIOD_ID 60
+#define MINIMUM_STATUS_POLL_PREIOD_TYPE CAMERA_STATUS_TYPE::INT
+#define MINIMUM_STATUS_POLL_PREIOD_NAME "Minimum Status Poll Period"
+
+#define LIVEVIEW_EXPOSURE_SELECT_MODE_ID 65
+#define LIVEVIEW_EXPOSURE_SELECT_MODE_TYPE CAMERA_STATUS_TYPE::OPTION
+#define LIVEVIEW_EXPOSURE_SELECT_MODE_SIZE 4
+#define LIVEVIEW_EXPOSURE_SELECT_MODE_NAME "Liveview Exposure Select Mode"
+
+const static char* LIVEVIEW_EXPOSURE_SELECT_MODE_STRING[] = {
+    "Disabled",
+    "Auto",
+    "ISO Lock",
+    "Hemisphere"
+};
+
+const static int32_t LIVEVIEW_EXPOSURE_SELECT_MODE_VALUE[] = {
+    0, 1, 2, 3
+};
+
+#define LIVEVIEW_Y_ID 66
+#define LIVEVIEW_Y_TYPE CAMERA_STATUS_TYPE::INT
+#define LIVEVIEW_Y_NAME "Liveview Y"
+
+#define LIVEVIEW_X_ID 67
+#define LIVEVIEW_X_TYPE CAMERA_STATUS_TYPE::INT
+#define LIVEVIEW_X_NAME "Liveview X"
+
+#define GPS_LOCK_ID 68
+#define GPS_LOCK_TYPE CAMERA_STATUS_TYPE::BOOLEAN
+#define GPS_LOCK_NAME "GPS Lock"
+
+#define AP_MODE_ID 69
+#define AP_MODE_TYPE CAMERA_STATUS_TYPE::BOOLEAN
+#define AP_MODE_NAME "AP Mode"
+
+#define INTERNAL_BATTERY_PERCENTAGE_ID 70
+#define INTERNAL_BATTERY_PERCENTAGE_TYPE CAMERA_STATUS_TYPE::INT
+#define INTERNAL_BATTERY_PERCENTAGE_NAME "Internal Battery Percentage"
+
+#define MICROPHONE_ACCESSORY_ID 74
+#define MICROPHONE_ACCESSORY_TYPE CAMERA_STATUS_TYPE::OPTION
+#define MICROPHONE_ACCESSORY_SIZE 3
+#define MICROPHONE_ACCESSORY_NAME "Microphone Accessory"
+
+const static char* MICROPHONE_ACCESSORY_STRING[] = {
+    "Accessory not connected",
+    "Accessory connected",
+    "Accessory connected and a microphone is plugged into the accessory"
+};
+
+const static int32_t MICROPHONE_ACCESSORY_VALUE[] = {
+    0, 1, 2
+};
+
+#define ZOOM_LEVEL_ID 75
+#define ZOOM_LEVEL_TYPE CAMERA_STATUS_TYPE::INT
+#define ZOOM_LEVEL_NAME "Zoom Level"
+
+#define STATUS_WIRELESS_BAND_ID 76
+#define STATUS_WIRELESS_BAND_TYPE CAMERA_STATUS_TYPE::OPTION
+#define STATUS_WIRELESS_BAND_SIZE 2
+#define STATUS_WIRELESS_BAND_NAME "Status Wireless Band"
+
+const static char* STATUS_WIRELESS_BAND_STRING[] = {
+    "2.4GHz",
+    "5GHz",
+};
+
+const static int32_t STATUS_WIRELESS_BAND_VALUE[] = {
+    0, 1
+};
+
+#define ZOOM_AVAILABLE_ID 77
+#define ZOOM_AVAILABLE_TYPE CAMERA_STATUS_TYPE::BOOLEAN
+#define ZOOM_AVAILABLE_NAME "Zoom Available"
+
+#define MOBILE_FRIENDLY_ID 78
+#define MOBILE_FRIENDLY_TYPE CAMERA_STATUS_TYPE::BOOLEAN
+#define MOBILE_FRIENDLY_NAME "Mobile Friendly"
+
+#define FTU_ID 79
+#define FTU_TYPE CAMERA_STATUS_TYPE::BOOLEAN
+#define FTU_NAME "FTU"
+
+#define _5GHZ_AVAILABLE_ID 81
+#define _5GHZ_AVAILABLE_TYPE CAMERA_STATUS_TYPE::BOOLEAN
+#define _5GHZ_AVAILABLE_NAME "5GHz Available"
+
+#define READY_ID 82
+#define READY_TYPE CAMERA_STATUS_TYPE::BOOLEAN
+#define READY_NAME "Ready"
+
+#define OTA_CHANGED_ID 83
+#define OTA_CHANGED_TYPE CAMERA_STATUS_TYPE::BOOLEAN
+#define OTA_CHANGED_NAME "OTA Changed"
+
+#define COLD_ID 85
+#define COLD_TYPE CAMERA_STATUS_TYPE::BOOLEAN
+#define COLD_NAME "Cold"
+
+#define ROTATION_ID 86
+#define ROTATION_TYPE CAMERA_STATUS_TYPE::OPTION
+#define ROTATION_SIZE 4
+#define ROTATION_NAME "Rotation"
+
+const static char* ROTATION_STRING[] = {
+    "0 degrees (upright)",
+    "180 degrees (upside down)",
+    "90 degrees (laying on right side)",
+    "270 degrees (laying on left side)"
+};
+
+const static int32_t ROTATION_VALUE[] = {
+    0, 1, 2, 3
+};
+
+#define ZOOM_WHILE_ENCODING_ID 88
+#define ZOOM_WHILE_ENCODING_TYPE CAMERA_STATUS_TYPE::BOOLEAN
+#define ZOOM_WHILE_ENCODING_NAME "Zoom While Encoding"
+
+#define FLATMODE_ID 89
+#define FLATMODE_TYPE CAMERA_STATUS_TYPE::INT
+#define FLATMODE_NAME "Flat Mode"
+
+#define VIDEO_PRESET_ID 93
+#define VIDEO_PRESET_TYPE CAMERA_STATUS_TYPE::INT
+#define VIDEO_PRESET_NAME "Video Preset"
+
+#define PHOTO_PRESET_ID 94
+#define PHOTO_PRESET_TYPE CAMERA_STATUS_TYPE::INT
+#define PHOTO_PRESET_NAME "Photo Preset"
+
+#define TIMELAPSE_PRESET_ID 95
+#define TIMELAPSE_PRESET_TYPE CAMERA_STATUS_TYPE::INT
+#define TIMELAPSE_PRESET_NAME "Timelapse Preset"
+
+#define PRESET_GROUP_ID 96
+#define PRESET_GROUP_TYPE CAMERA_STATUS_TYPE::INT
+#define PRESET_GROUP_NAME "Preset Group"
+
+#define PRESET_ID 97
+#define PRESET_TYPE CAMERA_STATUS_TYPE::INT
+#define PRESET_NAME "Preset"
+
+#define PRESET_MODIFIED_ID 98
+#define PRESET_MODIFIED_TYPE CAMERA_STATUS_TYPE::INT
+#define PRESET_MODIFIED_NAME "Preset Modified"
+
+#define REMAINING_LIVE_BURSTS_ID 99
+#define REMAINING_LIVE_BURSTS_TYPE CAMERA_STATUS_TYPE::INT
+#define REMAINING_LIVE_BURSTS_NAME "Remaining Live Bursts"
+
+#define LIVE_BURSTS_ID 100
+#define LIVE_BURSTS_TYPE CAMERA_STATUS_TYPE::INT
+#define LIVE_BURSTS_NAME "Live Bursts"
+
+#define CAPTURE_DELAY_ACTIVE_ID 101
+#define CAPTURE_DELAY_ACTIVE_TYPE CAMERA_STATUS_TYPE::BOOLEAN
+#define CAPTURE_DELAY_ACTIVE_NAME "Capture Delay Active"
+
+#define MEDIA_MOD_STATE_ID 102
+#define MEDIA_MOD_STATE_TYPE CAMERA_STATUS_TYPE::OPTION
+#define MEDIA_MOD_STATE_SIZE 3
+#define MEDIA_MOD_STATE_NAME "Media Modification State"
+
+const static char* MEDIA_MOD_STATE_STRING[] = {
+    "Microphone removed",
+    "Microphone only",
+    "Microphone with external microphone"
+};
+
+const static int32_t MEDIA_MOD_STATE_VALUE[] = {
+    0, 1, 2
+};
+
+#define TIME_WARP_SPEED_ID 103
+#define TIME_WARP_SPEED_TYPE CAMERA_STATUS_TYPE::OPTION
+#define TIME_WARP_SPEED_SIZE 13
+#define TIME_WARP_SPEED_NAME "Time Warp Speed"
+
+const static char* TIME_WARP_SPEED_STRING[] = {
+    "15x",
+    "30x",
+    "60x",
+    "150x",
+    "300x",
+    "900x",
+    "1800x",
+    "2x",
+    "5x",
+    "10x",
+    "Auto",
+    "1x (realtime)",
+    "1/2x (slow-motion)",
+};
+
+const static int32_t TIME_WARP_SPEED_VALUE[] = {
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12
+};
+
+#define LENS_TYPE_ID 105
+#define LENS_TYPE_TYPE CAMERA_STATUS_TYPE::OPTION
+#define LENS_TYPE_SIZE 10
+#define LENS_TYPE_NAME "Lens Type"
+
+const static char* LENS_TYPE_STRING[] = {
+    "Default",
+    "Max Lens",
+    "Max Lens 2.0",
+    "Max Lens 2.5",
+    "Macro Lens",
+    "Anamorphic Lens",
+    "Neutral Density 4",
+    "Neutral Density 8",
+    "Neutral Density 16",
+    "Neutral Density 32"
+};
+
+const static int32_t LENS_TYPE_VALUE[] = {
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+};
+
+#define STATUS_HINDSIGHT_ID 106
+#define STATUS_HINDSIGHT_TYPE CAMERA_STATUS_TYPE::BOOLEAN
+#define STATUS_HINDSIGHT_NAME "Hindsight"
+
+#define SCHEDULED_CAPTURE_PRESET_ID 107
+#define SCHEDULED_CAPTURE_PRESET_TYPE CAMERA_STATUS_TYPE::INT
+#define SCHEDULED_CAPTURE_PRESET_NAME "Scheduled Capture Preset ID"
+
+#define STATUS_SCHEDULED_CAPTURE_ID 108
+#define STATUS_SCHEDULED_CAPTURE_TYPE CAMERA_STATUS_TYPE::BOOLEAN
+#define STATUS_SCHEDULED_CAPTURE_NAME "Scheduled Capture"
+
+#define SD_CARD_WRITE_SPEED_ERROR_ID 111
+#define SD_CARD_WRITE_SPEED_ERROR_TYPE CAMERA_STATUS_TYPE::BOOLEAN
+#define SD_CARD_WRITE_SPEED_ERROR_NAME "SD Card Write Speed Error"
+
+#define SD_CARD_ERRORS_ID 112
+#define SD_CARD_ERRORS_TYPE CAMERA_STATUS_TYPE::INT
+#define SD_CARD_ERRORS_NAME "SD Card Errors"
+
+#define STATUS_CAMERA_CONTROL_ID 114
+#define STATUS_CAMERA_CONTROL_TYPE CAMERA_STATUS_TYPE::OPTION
+#define STATUS_CAMERA_CONTROL_SIZE 3
+#define STATUS_CAMERA_CONTROL_NAME "Camera Control ID"
+
+const static char* STATUS_CAMERA_CONTROL_STRING[] = {
+    "Camera Idle",
+    "Camera Control",
+    "Camera External Control"
+};
+
+const static int32_t STATUS_CAMERA_CONTROL_VALUE[] = {
+    0, 1, 2
+};
+
+#define USB_CONNECTED_ID 115
+#define USB_CONNECTED_TYPE CAMERA_STATUS_TYPE::BOOLEAN
+#define USB_CONNECTED_NAME "USB Connected"
+
+#define USE_CONTROLLED_ID 116
+#define USE_CONTROLLED_TYPE CAMERA_STATUS_TYPE::BOOLEAN
+#define USE_CONTROLLED_NAME "Use Controlled"
+
+#define SD_CARD_CAPACITY_ID 117
+#define SD_CARD_CAPACITY_TYPE CAMERA_STATUS_TYPE::INT
+#define SD_CARD_CAPACITY_NAME "SD Card Capacity"
 
 #endif

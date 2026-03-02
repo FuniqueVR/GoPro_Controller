@@ -35,7 +35,7 @@ int mDNS::openServiceSockets(int *sockets, int max_sockets) {
     sockaddr_in sock_addr{};
     sock_addr.sin_family = AF_INET;
 #ifdef _WIN32
-    sock_addr.sin_addr = in4addr_any;
+    sock_addr.sin_addr.s_addr = INADDR_ANY;
 #else
     sock_addr.sin_addr.s_addr = INADDR_ANY;
 #endif

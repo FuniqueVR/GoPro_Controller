@@ -4,7 +4,7 @@
  * This software is licensed under the [MIT License].
  * See the LICENSE file in the project root for more information.
 */
-#include "IO.h"
+#include "io.h"
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -28,7 +28,7 @@ void saveGUI(json data){
     }
 }
 
-json loadServerList(){
+json loadServerList() {
     std::ifstream file(SERVER_LIST_PATH);
     if(!file.is_open()){
         std::cerr << "No server config found" << std::endl;
@@ -46,7 +46,7 @@ json loadServerList(){
     return json::parse(fileContents);
 }
 
-json loadGUI(){
+json loadGUI() {
     std::ifstream file(GUI_PATH);
     if(!file.is_open()){
         std::cerr << "No gui config found" << std::endl;

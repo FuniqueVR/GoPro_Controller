@@ -8,7 +8,10 @@
 #include <vector>
 #include "hv/WebSocketServer.h"
 #include "hv/EventLoop.h"
-#include "GoProController.hpp"
+#include "hv/UdpServer.h"
+#include "hv/UdpClient.h"
+#include "hv/hsocket.h"
+#include "GoProController.h"
 
 std::vector<const WebSocketChannelPtr*> hosts = std::vector<const WebSocketChannelPtr*>();
 GoProController controller;
@@ -16,6 +19,8 @@ GoProController controller;
 void ExecuteCommand(const WebSocketChannelPtr& channel, json j){
     std::string name = "";
     std::string target = "";
+    std::string value = "";
+    int32_t ivalue = 0;
     json r = json::object();
 
     if(j["name"].is_string()){
@@ -23,6 +28,12 @@ void ExecuteCommand(const WebSocketChannelPtr& channel, json j){
     }
     if(j["target"].is_string()){
         target = j["target"].get<std::string>();
+    }
+    if(j["value"].is_string()){
+        value = j["value"].get<std::string>();
+    }
+    if(j["value"].is_number_integer()){
+        ivalue = j["value"].get<int32_t>();
     }
 
     if(name == "reboot"){
@@ -44,7 +55,7 @@ void ExecuteCommand(const WebSocketChannelPtr& channel, json j){
         controller.datetime(target);
         channel->send(getPacket("command:datetime", r));
     }else if(name == "zoom"){
-        controller.zoom(target);
+        controller.zoom(target, ivalue);
         channel->send(getPacket("command:zoom", r));
     }else if(name == "shutter_on"){
         controller.shutter(target, true);
@@ -68,7 +79,16 @@ void ExecuteCommand(const WebSocketChannelPtr& channel, json j){
     else if(name == "add" && target.size() >= 3){
         controller.addCameras(target);
         channel->send(getPacket("command:add", r));
-    }else{
+    }
+    else if(name == "delete" && target.size() >= 3){
+        controller.deleteCameras(target);
+        channel->send(getPacket("command:delete", r));
+    }
+    else if(name == "rename" && target.size() >= 3){
+        controller.renameCameras(target, value);
+        channel->send(getPacket("command:rename", r));
+    }
+    else{
         channel->send(getPacket("command:unknown", r));
     }
 }
@@ -97,9 +117,18 @@ void QueryAction(const WebSocketChannelPtr& channel, json j){
         jvalue = j["value"];
     }
 
+    // The reason we need to seperate the set and setall
+    // It's because we needs to know which one is called by master update loop
+    // And which one is called by UI event
+    //
+    // We don't want to flip the update flag when it's actually the UI event...
     if(name == "get"){
         r["data"] = json::parse(controller.queryStatus(target));
         channel->send(getPacket("query:get", r));
+    }
+    else if(name == "getall"){
+        r["data"] = json::parse(controller.queryStatus(""));
+        channel->send(getPacket("query:getall", r));
     }
     else if(name == "set"){
         r["data"] = json::parse(controller.setSetting(target, id, value));
@@ -117,7 +146,7 @@ void QueryAction(const WebSocketChannelPtr& channel, json j){
 void WebcamAction(const WebSocketChannelPtr& channel, json j){
     std::string name = "";
     std::string target = "";
-    int port = 10000;
+    int port = 8554;
     int res = 4;
     int fov = 0;
     bool ts = true;
@@ -196,17 +225,53 @@ void ModeAction(const WebSocketChannelPtr& channel, json j){
 
 void MediaAction(const WebSocketChannelPtr& channel, json j){
     std::string target = "";
+    std::string name = "";
+    json r = json::object();
     
     if(j["target"].is_string()){
         target = j["target"].get<std::string>();
     }
+    if(j["name"].is_string()){
+        name = j["name"].get<std::string>();
+    }
 
+    if(name == "lastmedia"){
+        controller.getMediaList(target);
+        channel->send(getPacket("media:lastmedia", r));
+    }else{
+        channel->send(getPacket("media:unknown", r));
+    }
 }
 
-int main() {
-    setvbuf(stdout, NULL, _IONBF, 0);
-    setvbuf(stderr, NULL, _IONBF, 0);
+void PreviewAction(const WebSocketChannelPtr& channel, json j){
+    std::string target = "";
+    std::string name = "";
+    int32_t port = 8556;
+    json r = json::object();
+    
+    if(j["target"].is_string()){
+        target = j["target"].get<std::string>();
+    }
+    if(j["name"].is_string()){
+        name = j["name"].get<std::string>();
+    }
+    if(j["port"].is_number_integer()){
+        port = j["port"].get<int32_t>();
+    }
 
+    if(name == "start"){
+        controller.previewOn(target, port);
+        channel->send(getPacket("preview:start", r));
+    }else if (name == "stop"){
+        controller.previewOff(target);
+        channel->send(getPacket("preview:stop", r));
+    }
+    else{
+        channel->send(getPacket("preview:unknown", r));
+    }
+}
+
+void WebsocketServer(){
     std::cout << "Starting GoPro Server (RPi)..." << std::endl;
     hv::WebSocketService ws;
     ws.onopen = [&](const WebSocketChannelPtr& channel, const HttpRequestPtr& req) {
@@ -230,6 +295,9 @@ int main() {
                 }
                 else if (j["key"].get<std::string>() == "media") {
                     MediaAction(channel, j["value"]);
+                }
+                else if (j["key"].get<std::string>() == "preview") {
+                    PreviewAction(channel, j["value"]);
                 }
                 else if (j["key"].get<std::string>() == "preset") {
                     ModeAction(channel, j["value"]);
@@ -257,7 +325,126 @@ int main() {
 
     std::cout << "WebSocket Server listening on port 9090..." << std::endl;
     server.run();
+}
 
+void HttpServer(){
+    hv::HttpService router;
+
+    router.GET("/last_media", [](HttpRequest* req, HttpResponse* resp) {
+        std::string target_ip = req->GetParam("ip");
+
+        if (target_ip.empty()) {
+            resp->status_code = http_status::HTTP_STATUS_BAD_REQUEST;
+            return resp->String("{\"error\": \"Missing ip parameter\"}");
+        }
+
+        std::cout << "Http GET /last_media " << target_ip << std::endl;
+
+        try{
+            std::string res = exec("http://" + target_ip + ":8080/gopro/media/last_captured");
+            json last_data = json::parse(res);
+            if(!last_data["file"].is_string() || !last_data["folder"].is_string()){
+                resp->status_code = http_status::HTTP_STATUS_BAD_REQUEST;
+                return resp->String("{\"error\": \"no last media file\"}");
+            }
+            std::string folder = last_data["folder"].get<std::string>();
+            std::string file = last_data["file"].get<std::string>();
+
+            std::string gopro_url = "http://" + target_ip + ":8080/videos/DCIM/" + folder + "/" + file;
+
+            std::cout << "Trying to proxy to file getter: " << gopro_url << std::endl;
+
+            auto gopro_resp = requests::get(gopro_url.c_str());
+
+            if (gopro_resp == NULL) {
+                resp->status_code = http_status::HTTP_STATUS_BAD_GATEWAY;
+                return resp->String("{\"error\": \"Failed to reach GoPro\"}");
+            }
+
+            // 4. Send the GoPro's response back to the client
+            resp->status_code = gopro_resp->status_code;
+            resp->content_type = gopro_resp->content_type;
+            resp->body = gopro_resp->body;
+            resp->headers["Content-Disposition"] = "attachment; filename=" + folder + "/" + file;
+            return 200; // Handled
+        }
+        catch(const std::exception& ex){
+            std::cerr << ex.what() << std::endl;
+        }
+    });
+
+    hv::HttpServer http_server;
+    http_server.registerHttpService(&router);
+    http_server.setPort(8080);
+    http_server.setThreadNum(4);
+    
+    std::cout << "Http Server listening on port 8080..." << std::endl;
+
+    http_server.run();
+}
+
+void UDPProxyServer(){
+    int32_t listen_port = 8556;
+    int32_t broadcast_port = 8554;
+    std::string broadcast_addr = "255.255.255.255";
+
+    std::cout << "Starting GoPro UDP Proxy Server (RPi)..." << std::endl;
+    static hv::UdpServer us;
+    int32_t bindfd = us.createsocket(listen_port);
+    if(bindfd == -1){
+        std::cerr << "Failed to create socket for recevier: " << std::endl;
+        return;
+    }
+    std::cout << "UDP bind on port: " << listen_port << std::endl;
+
+    int32_t sock_fd = socket(AF_INET, SOCK_DGRAM, 0);
+    if(sock_fd == -1){
+        std::cerr << "Failed to create socket for broadcasting: " << std::endl;
+        return;
+    }
+    int32_t broadcast_enable = 1;
+    int32_t err = setsockopt(sock_fd, SOL_SOCKET, SO_BROADCAST, &broadcast_enable, sizeof(broadcast_enable));
+    if(err == -1){
+        std::cerr << "Failed to set socket option for broadcasting: " << std::endl;
+        return;
+    }
+    std::cout << "UDP Broadcast Relay started:" << std::endl;
+    std::cout << "  Listening on: 0.0.0.0:" << listen_port << " (from GoPro)" << std::endl;
+    std::cout << "  Broadcasting to: " << broadcast_addr << ":" << broadcast_port << " (to all Masters)" << std::endl;
+
+    struct sockaddr_in broadcast_sockaddr;
+    memset(&broadcast_sockaddr, 0, sizeof(broadcast_sockaddr));
+    broadcast_sockaddr.sin_family = AF_INET;
+    broadcast_sockaddr.sin_port = htons(broadcast_port);
+    broadcast_sockaddr.sin_addr.s_addr = inet_addr(broadcast_addr.c_str());
+
+    us.onMessage = [sock_fd, broadcast_addr, broadcast_port, broadcast_sockaddr](const hv::SocketChannelPtr& channel, hv::Buffer* buf){
+        ssize_t sent = sendto(sock_fd, buf->data(), buf->size(), 0,
+            (struct sockaddr*)&broadcast_sockaddr, 
+            sizeof(broadcast_sockaddr));
+    };
+    us.start();
+}
+
+int main() {
+    setvbuf(stdout, NULL, _IONBF, 0);
+    setvbuf(stderr, NULL, _IONBF, 0);
+
+    std::thread t1 = std::thread([=]() {
+        WebsocketServer();
+    });
+
+    std::thread t2 = std::thread([=]() {
+        HttpServer();
+    });
+
+    std::thread t3 = std::thread([=]() {
+        UDPProxyServer();
+    });
+
+    t3.join();
+    t2.join();
+    t1.join();
     return 0;
 }
 

@@ -5,7 +5,6 @@
  * See the LICENSE file in the project root for more information.
 */
 #pragma once
-
 #include <vector>
 #include <map>
 #include <string>
@@ -13,56 +12,14 @@
 #include <mutex>
 #include <thread>
 #include <functional>
-#include "hv/WebSocketClient.h"
-#include <nlohmann/json.hpp>
 #include "../common/iphelper.h"
 #include "../common/camera_code.h"
+#include "data/camera_info.h"
+#include "data/server_connection.h"
 
-using json = nlohmann::json;
-/**
- * Basically holds the information of the camera
- * And which websocket server its from
- */
-struct CameraInfo {
-    /**
-     * Camera IP
-     */
-    std::string ip;
-    /**
-     * Websocket server ip
-     */
-    std::string server;
-    /**
-     * The json states
-     */
-    json state;
-};
-
-typedef void (*camera_setting_feedback)(json setting);
-typedef void (*camera_status_feedback)(json status);
+typedef void (*camera_setting_feedback)(std::string ip, json setting);
+typedef void (*camera_status_feedback)(std::string ip, json status);
 typedef void (*camera_log_feedback)(std::string key, std::string value);
-
-/**
- * Basically holds the Websocket instance
- */
-struct ServerConnection {
-    /**
-     * Websocket IP
-     */
-    std::string ip;
-    /**
-     * The libhv websocket client
-     */
-    hv::WebSocketClient client;
-    /**
-     * Current connection state
-     */
-    bool connected = false;
-    /**
-     * last message received from the server
-     */
-    std::string last_message;
-};
 
 
 /**
@@ -120,11 +77,16 @@ public:
     // ----------------------------------------------------------
     void command_only(const std::string command, std::string target = "");
     void command_only(const std::string server, const std::string command, std::string target = "");
+    void command_with_value(const std::string command, std::string target, std::string value);
     void query_only(const std::string command, std::string target = "");
     void query_only(const std::string server, const std::string command, std::string target = "");
     void webcam_only(const std::string command, std::string target = "");
     void webcam_only(const std::string server, const std::string command, std::string target = "");
     void webcam_start(const std::string server);
+    void preview_start(std::string server, std::string target);
+    void preview_end(std::string server, std::string target);
+    void media_only(const std::string command, std::string target = "");
+    void download_last_media(const std::string dir);
 
     void presetSwitch(const std::string server, int32_t mode);
     void apply(const std::string& ip, const int32_t id, const int32_t value);
@@ -185,6 +147,7 @@ private:
      * This prevent command stacking, when last state fetch is not finish yet
      */
     std::unordered_map<std::string, bool> stateQueryFinish = std::unordered_map<std::string, bool>();
+    std::unordered_map<std::string, bool> mediaQueryFinish = std::unordered_map<std::string, bool>();
     camera_setting_feedback _camera_setting_feedback = NULL;
     camera_status_feedback _camera_status_feedback = NULL;
     camera_log_feedback _camera_log_feedback = NULL;
@@ -217,8 +180,8 @@ public:
      * It's easier for me to display stuff on the gui this way
      */
     bool getSettingsFromCamera(CameraInfo target, json& res);
-    bool getStatusFromCamera(CameraInfo target, json&& res);
-    std::string getBarInfo(const std::string camera_ip);
+    bool getStatusFromCamera(CameraInfo target, json& res);
+    std::string getBarInfo(const std::shared_ptr<CameraInfo> &c);
 
     int32_t findCamera(const std::string ip);
     int32_t findServer(const std::string ip);

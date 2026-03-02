@@ -11,7 +11,7 @@
 #include <stdexcept>
 
 #ifdef _WIN32
-#include <Ws2tcpip.h>
+#include <ws2tcpip.h>
 #include <iphlpapi.h>
 #include <windows.h>
 #include <winsock.h>

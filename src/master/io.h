@@ -5,6 +5,7 @@
  * See the LICENSE file in the project root for more information.
 */
 #pragma once
+#include <string>
 #include <nlohmann/json.hpp>
 
 using json = nlohmann::json;

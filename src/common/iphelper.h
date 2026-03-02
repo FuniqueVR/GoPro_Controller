@@ -16,11 +16,19 @@
 #include <random>
 #include <sstream>
 #include <curl/curl.h>
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 // 1. Add this callback outside the function
 inline size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* userp) {
     userp->append((char*)contents, size * nmemb);
     return size * nmemb;
+}
+
+inline size_t write_data(void *ptr, size_t size, size_t nmemb, FILE *stream) {
+    size_t written = fwrite(ptr, size, nmemb, stream);
+    return written;
 }
 
 inline std::string GetRemoteIPBySerial(std::string serial){
@@ -59,15 +67,10 @@ inline std::string exec(std::string cmd) {
         curl_easy_setopt(curl, CURLOPT_URL, cmd.c_str());
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &result);
-        curl_easy_setopt(curl, CURLOPT_TIMEOUT, 1500L);
+        curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, 1500L);
 
         res = curl_easy_perform(curl);
-
-        if(res != CURLE_OK) {
-            std::cerr << "GET failed: " << curl_easy_strerror(res) << std::endl;
-            result.clear();
-        }
-            
+        
         curl_easy_cleanup(curl);
     }else{
         std::cerr << "Curl init failed" << std::endl;
@@ -76,15 +79,156 @@ inline std::string exec(std::string cmd) {
     return result;
 }
 
-inline std::string get_env_var( std::string const & key ) {                                 
-    char * val;                                                                        
-    val = getenv( key.c_str() );                                                       
-    std::string retval = "";                                                           
-    if (val != NULL) {                                                                 
-        retval = val;                                                                    
-    }                                                                                  
-    return retval;                                                                        
-}  
+inline std::vector<std::string> execs(std::vector<std::string> cmds) {
+    CURLM* curlm = curl_multi_init();
+    CURL* curl = NULL;
+    int32_t still_running = 0;
+    int32_t msgs_left = 0;
+    int32_t http_status_code = 0;
+    CURLMcode resm;
+    CURLcode res;
+    CURLMsg *msg=NULL;
+    std::vector<std::string> result = std::vector<std::string>(cmds.size(), "");
+
+    if(curlm) {
+        curl_multi_setopt(curlm, CURLMOPT_MAX_TOTAL_CONNECTIONS, 64L);
+        for(int32_t i = 0; i < cmds.size(); i++){
+            CURL* curlb = curl_easy_init();
+            curl_easy_setopt(curlb, CURLOPT_URL, cmds[i].c_str());
+            curl_easy_setopt(curlb, CURLOPT_WRITEFUNCTION, WriteCallback);
+            curl_easy_setopt(curlb, CURLOPT_WRITEDATA, &result[i]);
+            curl_easy_setopt(curlb, CURLOPT_TIMEOUT_MS, 1500L);
+            curl_multi_add_handle(curlm, curlb);
+        }
+
+        curl_multi_perform(curlm, &still_running);
+
+        do {
+            int32_t numfds = 0;
+            resm = curl_multi_wait(curlm, NULL, 0, 1500, &numfds);
+
+            if(res != CURLE_OK) {
+                //std::cerr << "GET failed curl_multi_wait: " << numfds << "/" << cmds.size() << std::endl;
+            }
+
+            curl_multi_perform(curlm, &still_running);
+        } while (still_running);
+            
+        while((msg = curl_multi_info_read(curlm, &msgs_left))){
+            if (msg->msg == CURLMSG_DONE) {
+                curl = msg->easy_handle;
+
+                res = msg->data.result;
+                if (res != CURLE_OK) {
+                    //fprintf(stderr, "CURL error code: %d\n", msg->data.result);
+                    continue;
+                }
+
+                // Get HTTP status code
+                http_status_code=0;
+                std::string buffer = "";
+
+                curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_status_code);
+                curl_easy_getinfo(curl, CURLINFO_PRIVATE, buffer);
+
+                curl_multi_remove_handle(curlm, curl);
+                curl_easy_cleanup(curl);
+            }
+            else {
+                fprintf(stderr, "error: after curl_multi_info_read(), CURLMsg=%d\n", msg->msg);
+            }
+        }
+
+        curl_multi_cleanup(curlm);
+    }else{
+        std::cerr << "Curl init failed" << std::endl;
+    }
+
+    return result;
+}
+
+inline void execs_download(std::vector<std::string> cmds, std::vector<std::string> ps) {
+    CURLM* curlm = curl_multi_init();
+    CURL* curl = NULL;
+    int32_t still_running = 0;
+    int32_t msgs_left = 0;
+    int32_t http_status_code = 0;
+    std::vector<FILE*> fps = std::vector<FILE*>(cmds.size());
+    CURLMcode resm;
+    CURLcode res;
+    CURLMsg *msg=NULL;
+
+    if(curlm) {
+        curl_multi_setopt(curlm, CURLMOPT_MAX_TOTAL_CONNECTIONS, 64L);
+        for(int32_t i = 0; i < cmds.size(); i++){
+            CURL* curlb = curl_easy_init();
+            fps[i] = fopen(ps[i].c_str(), "wb");
+            curl_easy_setopt(curlb, CURLOPT_URL, cmds[i].c_str());
+            curl_easy_setopt(curlb, CURLOPT_WRITEFUNCTION, write_data);
+            curl_easy_setopt(curlb, CURLOPT_WRITEDATA, fps[i]);
+            curl_easy_setopt(curlb, CURLOPT_TIMEOUT_MS, 60000L);
+            curl_easy_setopt(curlb, CURLOPT_CONNECTTIMEOUT_MS, 5000L);
+            curl_easy_setopt(curlb, CURLOPT_FOLLOWLOCATION, 1L);
+            curl_multi_add_handle(curlm, curlb);
+        }
+
+        curl_multi_perform(curlm, &still_running);
+
+        do {
+            int32_t numfds = 0;
+            resm = curl_multi_wait(curlm, NULL, 0, 1000, &numfds);
+
+            if(res != CURLE_OK) {
+                //std::cerr << "GET failed curl_multi_wait: " << numfds << "/" << cmds.size() << std::endl;
+            }
+
+            curl_multi_perform(curlm, &still_running);
+        } while (still_running);
+            
+        for(int32_t i = 0; i < cmds.size(); i++){
+            fclose(fps[i]);
+        }
+
+        while((msg = curl_multi_info_read(curlm, &msgs_left))){
+            if (msg->msg == CURLMSG_DONE) {
+                curl = msg->easy_handle;
+
+                res = msg->data.result;
+                if (res != CURLE_OK) {
+                    //fprintf(stderr, "CURL error code: %d\n", msg->data.result);
+                    continue;
+                }
+
+                // Get HTTP status code
+                http_status_code=0;
+                std::string buffer = "";
+
+                curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_status_code);
+                curl_easy_getinfo(curl, CURLINFO_PRIVATE, buffer);
+
+                curl_multi_remove_handle(curlm, curl);
+                curl_easy_cleanup(curl);
+            }
+            else {
+                fprintf(stderr, "error: after curl_multi_info_read(), CURLMsg=%d\n", msg->msg);
+            }
+        }
+
+        curl_multi_cleanup(curlm);
+    }else{
+        std::cerr << "Curl init failed" << std::endl;
+    }
+}
+
+inline std::string get_env_var( std::string const & key ) {
+    char * val;
+    val = getenv( key.c_str() );
+    std::string retval = fs::current_path().string();
+    if (val != NULL) {
+        retval = val;
+    }
+    return retval;
+}
 
 namespace uuid {
     static std::random_device              rd;

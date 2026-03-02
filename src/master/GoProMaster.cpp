@@ -6,6 +6,16 @@
 */
 #include "GoProMaster.h"
 #include <iostream>
+#include <filesystem>
+
+namespace fs = std::filesystem;
+
+bool directoryExists(const std::string& path) {
+    if (fs::exists(path) && fs::is_directory(path)) {
+        return true;
+    }
+    return false;
+}
 
 GoProMaster::GoProMaster() {
     t1 = std::thread(&GoProMaster::update, this);
@@ -51,6 +61,9 @@ std::string GoProMaster::addServer(const std::string& ip) {
             conn->connected = false;
             std::lock_guard<std::mutex> lock(camera_mtx);
             cleanCameraFromServer(conn->ip);
+            stateQueryFinish.insert_or_assign(conn->ip, false);
+            ipQueryFinish.insert_or_assign(conn->ip, false);
+            mediaQueryFinish.insert_or_assign(conn->ip, false);
         }
     };
 
@@ -148,6 +161,21 @@ void GoProMaster::command_only(const std::string server, const std::string comma
     }
 }
 
+void GoProMaster::command_with_value(const std::string command, std::string target, std::string value){
+    json data = json::object();
+    data["key"] = "command";
+    data["value"] = json::object();
+    data["value"]["name"] = command;
+    data["value"]["target"] = target;
+    data["value"]["value"] = value;
+
+    for(auto s : servers){
+        if(s->connected){
+            s->client.send(data.dump());
+        }
+    }
+}
+
 void GoProMaster::query_only(const std::string command, std::string target){
     json data = json::object();
     data["key"] = "query";
@@ -208,6 +236,58 @@ void GoProMaster::webcam_only(const std::string server, const std::string comman
 
 void GoProMaster::webcam_start(const std::string server){
 
+}
+
+void GoProMaster::preview_start(std::string server, std::string target){
+    json data = json::object();
+    data["key"] = "preview";
+    data["value"] = json::object();
+    data["value"]["name"] = "start";
+    data["value"]["target"] = target;
+
+    for(auto s : servers){
+        if(s->ip == server && s->connected){
+            s->client.send(data.dump());
+            break;
+        }
+    }
+}
+
+void GoProMaster::preview_end(std::string server, std::string target){
+    json data = json::object();
+    data["key"] = "preview";
+    data["value"] = json::object();
+    data["value"]["name"] = "stop";
+    data["value"]["target"] = target;
+
+    for(auto s : servers){
+        if(s->ip == server && s->connected){
+            s->client.send(data.dump());
+            break;
+        }
+    }
+}
+
+void GoProMaster::media_only(const std::string command, std::string target){
+
+}
+
+void GoProMaster::download_last_media(const std::string dir){
+    if(!directoryExists(dir)){
+        std::cerr << "Dir not exists: " << dir << std::endl;
+        return;
+    }
+    std::thread([=](){
+        std::vector<std::string> urls = std::vector<std::string>();
+        std::vector<std::string> names = std::vector<std::string>();
+        for(auto& s : cameras){
+            std::string filename = s->name + fs::path(s->last_media).extension().string();
+            if(filename.size() == 0) continue;
+            urls.push_back("http://" + s->server + ":8080/last_media?ip=" + s->ip);
+            names.push_back(dir + "/" + filename);
+        }
+        execs_download(urls, names);
+    }).detach();
 }
 
 void GoProMaster::presetSwitch(const std::string server, int32_t mode) {
@@ -294,12 +374,23 @@ void GoProMaster::update(){
             json get_status = json::object();
             get_status["key"] = "query";
             get_status["value"] = json::object();
-            get_status["value"]["name"] = "get";
+            get_status["value"]["name"] = "getall";
             stateQueryFinish.insert_or_assign(s->ip, true);
             s->client.send(get_status.dump());
         }
+
+        for (auto& s : servers) {
+            if (!s->connected) continue;
+            if (mediaQueryFinish.count(s->ip) && mediaQueryFinish.at(s->ip)) continue;
+            json get_status = json::object();
+            get_status["key"] = "media";
+            get_status["value"] = json::object();
+            get_status["value"]["name"] = "lastmedia";
+            mediaQueryFinish.insert_or_assign(s->ip, true);
+            s->client.send(get_status.dump());
+        }
         
-        std::this_thread::sleep_for(std::chrono::seconds(2));
+        std::this_thread::sleep_for(std::chrono::seconds(3));
     }
 }
 
@@ -324,18 +415,50 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
                 return;
             }
             std::vector<std::string> ips = std::vector<std::string>();
+            std::vector<std::string> serial = std::vector<std::string>();
+            std::unordered_map<std::string, std::string> names = std::unordered_map<std::string, std::string>();
             for(auto ip = data["value"]["data"].begin(); ip != data["value"]["data"].end(); ++ip){
                 if(!ip.value().is_string()){
                     continue;
                 }
                 std::string ip_ref = ip.value().get<std::string>();
-                ips.push_back(ip_ref);
+                
+                std::vector<std::string> words = std::vector<std::string>();
+                std::stringstream ss(ip_ref);
+                std::string word;
+                while (ss >> word) { // Extracts words separated by any whitespace
+                    words.push_back(word);
+                }
+
+                if(words.size() > 0){
+                    std::string serial_buffer = "";
+                    serial_buffer += words[0][5];
+                    serial_buffer += words[0][8];
+                    serial_buffer += words[0][9];
+                    serial.push_back(serial_buffer);
+                    ips.push_back(words[0]);
+                }
+                if(words.size() > 1){
+                    names.insert_or_assign(words[0], words[1]);
+                }
             }
             std::lock_guard<std::mutex> lock(camera_mtx);
             replaceCameraFromServer(server, ips);
+
+            for(int32_t i = 0; i < ips.size(); i++){
+                int32_t index = findCamera(ips[i]);
+                cameras[index]->serial = serial[i];
+                if(names.count(ips[i])){
+                    cameras[index]->name = names.at(ips[i]);
+                }
+            }
+
             ipQueryFinish.insert_or_assign(server, false);
         }
-        else if(key == "query:get"){
+        else if(key == "query:get" || key == "query:getall"){
+            if(key == "query:getall"){
+                stateQueryFinish.insert_or_assign(server, false);
+            }
             if(!data["value"]["data"].is_array()){
                 std::cerr << "Invalid message from " << server << ": " << msg << std::endl;
                 std::cerr << "query:get, return value should be array" << std::endl;
@@ -352,41 +475,87 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
              *     * status <- Where all the go pro status keeps
              */
             std::lock_guard<std::mutex> lock(camera_mtx);
+            int32_t count = 0;
+
+            // Clear the message
+            for(auto& camera : cameras){
+                if(camera->server == server){
+                    camera->connected = false;
+                }
+            }
+
             for(auto ip = data["value"]["data"].begin(); ip != data["value"]["data"].end(); ++ip){
                 if(!ip.value()["ip"].is_string() || !ip.value()["status"].is_object()){
                     std::cerr << "query:get error: Require ip and status in value.data" << std::endl;
                     continue;
                 }
-
                 std::string ip_ref = ip.value()["ip"].get<std::string>();
                 int32_t found = findCamera(ip_ref);
                 CameraInfo _cam;
                 if(found == -1){
                     auto cam = std::make_shared<CameraInfo>();
                     cam->state = ip.value()["status"];
+                    cam->connected = true;
                     _cam = *cam;
                     cameras.push_back(cam);
                     std::cout << "Added camera state " << ip_ref << std::endl;
                 }else{
                     auto cam = cameras[found];
                     cam->state = ip.value()["status"];
+                    cam->connected = cam->state["settings"]["2"].is_number_integer();
                     _cam = *cam;
                 }
+
                 if(_camera_setting_feedback != NULL){
                     json buffer_setting = json::object();
                     if(getSettingsFromCamera(_cam, buffer_setting)){
-                        _camera_setting_feedback(buffer_setting);
-                    }else{
-                        std::cout << "Error setting feedback: getSettingsFromCamera failed " << _cam.ip << std::endl;    
+                        _camera_setting_feedback(_cam.ip, buffer_setting);
                     }
                 }else{
                     std::cout << "Skip setting feedback: Detect function pointer is NULL" << std::endl;
                 }
+                if(_camera_status_feedback != NULL){
+                    json buffer_status = json::object();
+                    if(getStatusFromCamera(_cam, buffer_status)){
+                        _camera_status_feedback(_cam.ip, buffer_status);
+                    }
+                }else{
+                    std::cout << "Skip status feedback: Detect function pointer is NULL" << std::endl;
+                }
+                count++;
             }
-            stateQueryFinish.insert_or_assign(server, false);
         }
         else if(key == "query:set"){
             
+        }
+        else if(key == "media:lastmedia"){
+            if(!data["value"]["data"].is_array()){
+                std::cerr << "Invalid message from " << server << ": " << msg << std::endl;
+                std::cerr << "media:lastmedia, return value should be array" << std::endl;
+                return;
+            }
+
+            std::lock_guard<std::mutex> lock(camera_mtx);
+            for(auto ip = data["value"]["data"].begin(); ip != data["value"]["data"].end(); ++ip){
+                if(!ip.value()["ip"].is_string() || !ip.value()["filename"].is_object()){
+                    std::cerr << "media:lastmedia error: Require ip and filename in value.data" << std::endl;
+                    continue;
+                }
+                std::string folder = "";
+                std::string file = "";
+                if(ip.value()["filename"]["folder"].is_string()){
+                    folder = ip.value()["filename"]["folder"].get<std::string>();
+                }
+                if(ip.value()["filename"]["file"].is_string()){
+                    file = ip.value()["filename"]["folfileder"].get<std::string>();
+                }
+                std::string ip_ref = ip.value()["ip"].get<std::string>();
+                int32_t found = findCamera(ip_ref);
+                if(found == -1){
+                    cameras[found]->last_media = folder + "/" + file;
+                }
+            }
+            mediaQueryFinish.insert_or_assign(server, false);
         }
         else{
             std::cerr << "Invalid message from " << server << ": " << msg << std::endl;
@@ -477,27 +646,38 @@ bool GoProMaster::getSettingsFromCamera(CameraInfo target, json& res){
     return true;
 }
 
-bool GoProMaster::getStatusFromCamera(CameraInfo target, json&& res){
+bool GoProMaster::getStatusFromCamera(CameraInfo target, json& res){
     json data = target.state;
     if(!data["status"].is_object()){
         return false;
     }
     res = data["status"];
+    // Convert value id to index number
+    for(int32_t i = 0; i < GOPRO_STATUS_SIZE; i++){
+        int32_t id = GOPRO_STATUS_IDS[i];
+        const int32_t type = GET_STATUS_TYPE_BY_ID(id);
+        if(type != (int32_t)CAMERA_STATUS_TYPE::OPTION){
+            continue; // Only option type need to convert
+        }
+        if(!res[std::to_string(id)].is_number()) continue;
+        int32_t value = res[std::to_string(id)].get<int32_t>();
+
+        const size_t size = GET_STATUS_SIZE_BY_ID(id);
+        const int32_t* all_values = GET_STATUS_VALUE_BY_ID(id);
+        for(int32_t j = 0; j < size; j++){
+            if(all_values[j] == value){
+                res[std::to_string(id)] = j; // Set index, instead of value id
+                break;
+            }
+        }
+    }
     return true;
 }
 
-std::string GoProMaster::getBarInfo(const std::string camera_ip){
+std::string GoProMaster::getBarInfo(const std::shared_ptr<CameraInfo> &c){
+    json obj = c->state;
     bool find = false;
-    json obj;
-    for(int32_t i = 0; i < cameras.size(); i++){
-        if(cameras[i]->ip == camera_ip){
-            find = true;
-            obj = cameras[i]->state;
-        }
-    }
-    if(!find) return camera_ip + "  ...";
-    find = false;
-    std::string result = camera_ip + "  ";
+    std::string result = c->name + "  " + c->serial + "  " + c->ip + "  ";
     if(obj["settings"].is_object()){
         if(obj["settings"]["2"].is_number()){
             int32_t vr = obj["settings"]["2"].get<int32_t>();
@@ -522,7 +702,7 @@ std::string GoProMaster::getBarInfo(const std::string camera_ip){
             find = true;
         }
     }
-    if(!find) return camera_ip + "  ...";
+    if(!find) return c->ip + "  ...";
     return result;
 }
 
