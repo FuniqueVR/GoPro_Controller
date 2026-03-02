@@ -146,10 +146,6 @@ if(BUILD_MASTER)
         ${MDNS_SOURCES}
     )
 
-    target_include_directories(master PRIVATE
-        ${OpenCV_INCLUDE_DIRS}
-    )
-
     if (WIN32)
         target_link_libraries(master PRIVATE
             ${OpenCV_LIBS}
@@ -171,13 +167,14 @@ if(BUILD_MASTER)
 
     # Add OpenCV
     if(HAVE_OPENCV)
-        target_link_libraries(master PRIVATE 
-            opencv_core 
-            opencv_imgproc 
-            opencv_videoio 
-            opencv_imgcodecs
+        target_include_directories(master PRIVATE
+            ${opencv_SOURCE_DIR}/include
+            ${CMAKE_BINARY_DIR}
+            ${opencv_BINARY_DIR}
+            ${opencv_SOURCE_DIR}/modules/core/include
+            ${opencv_SOURCE_DIR}/modules/imgcodecs/include
+            ${opencv_SOURCE_DIR}/modules/videoio/include
         )
-        target_include_directories(master PRIVATE ${opencv_SOURCE_DIR}/include)
         target_compile_definitions(master PRIVATE HAVE_OPENCV)
         message(STATUS "Master will be built WITH OpenCV support")
     endif()

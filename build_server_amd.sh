@@ -8,4 +8,4 @@ cd build_server_amd
 cmake .. -DCMAKE_BUILD_TYPE=Debug -DBUILD_SERVER=ON -DBUILD_MASTER=OFF
 
 # Build
-cmake --build . -j 8
+cmake --build . -j $nproc
