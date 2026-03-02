@@ -1,5 +1,7 @@
 #!/bin/bash
 
+sh install_opencv.sh
+
 sh build_master_win.sh
 sh build_master.sh
 sh build_server_amd.sh
