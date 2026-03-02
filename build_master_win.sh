@@ -10,4 +10,4 @@ cp ../Roboto-Medium.ttf .
 cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-Wa,-mbig-obj" -DCMAKE_TOOLCHAIN_FILE=../cmake/windows-toolchain.cmake -DBUILD_SERVER=OFF -DBUILD_MASTER=ON
 
 # Build
-cmake --build . -j 8
+cmake --build . -j $nproc

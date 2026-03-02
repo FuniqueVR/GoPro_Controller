@@ -95,16 +95,7 @@ if(BUILD_MASTER)
         FetchContent_MakeAvailable(SDL3)
     endif()
 
-    FetchContent_Declare(
-        opencv
-        GIT_REPOSITORY https://github.com/opencv/opencv.git
-        GIT_TAG        4.10.0
-        GIT_SHALLOW    TRUE
-        GIT_PROGRESS   TRUE
-    )
-    FetchContent_MakeAvailable(opencv)
-    set(HAVE_OPENCV TRUE)
-    message(STATUS "OpenCV configured via FetchContent")
+    find_package(OpenCV REQUIRED COMPONENTS core imgcodecs highgui)
 
     # ImGui
     set(IMGUI_DIR "lib/imgui")
@@ -157,6 +148,7 @@ if(BUILD_MASTER)
 
     if (WIN32)
         target_link_libraries(master PRIVATE
+            ${OpenCV_LIBS}
             OpenGL::GL
             SDL3::SDL3
             hv_static
@@ -179,7 +171,9 @@ if(BUILD_MASTER)
             ${opencv_SOURCE_DIR}/include
             ${CMAKE_BINARY_DIR}
             ${opencv_BINARY_DIR}
-            ${opencv_SOURCE_DIR}/modules/**/include
+            ${opencv_SOURCE_DIR}/modules/core/include
+            ${opencv_SOURCE_DIR}/modules/imgcodecs/include
+            ${opencv_SOURCE_DIR}/modules/videoio/include
         )
         target_compile_definitions(master PRIVATE HAVE_OPENCV)
         message(STATUS "Master will be built WITH OpenCV support")
