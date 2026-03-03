@@ -1,8 +1,11 @@
 mkdir build_master_win
 cd build_master_win
 
-wget https://github.com/opencv/opencv/releases/download/4.10.0/opencv-4.10.0-windows.exe
-7z x opencv-4.10.0-windows.exe
+REM Download using built-in curl
+curl -L -o opencv-4.10.0-windows.exe https://github.com/opencv/opencv/releases/download/4.10.0/opencv-4.10.0-windows.exe
+
+REM Extract using 7-Zip (if installed)
+"C:\Program Files\7-Zip\7z.exe" x opencv-4.10.0-windows.exe
 
 xcopy ..\Roboto-Medium.ttf .
 
