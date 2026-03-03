@@ -60,7 +60,7 @@ void CameraListWindow::render(){
         for(const auto& c : master->getCameras()){
             if(c){
                 try{
-                    if(size == 0) draw_line(c);
+                    if(size_event == 0) draw_line(c);
                     else {
                         draw_group(c);
                         if(counter + 1 < limit){
