@@ -5,7 +5,7 @@
  * See the LICENSE file in the project root for more information.
 */
 #ifdef _WIN32
-#include <window.h>
+#include <windows.h>
 #endif
 #include <iostream>
 #include <fstream>
