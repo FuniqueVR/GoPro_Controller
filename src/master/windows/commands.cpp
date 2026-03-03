@@ -116,14 +116,11 @@ void CommandWindow::render_local(){
         ImGui::EndCombo();
     }
 
+    ImGui::Dummy();
     ImGui::Separator();
-
-    if(ImGui::Button("Setting Apply All", button_2size)) {
-        master->applyAll("", state->current_setting_items);
-    } 
-    ImGui::SameLine();
+    ImGui::Dummy();
     
-    if(ImGui::Button("Setting Apply All By ID", button_2size)) {
+    if(ImGui::Button("Setting Apply All By ID", full_button_size)) {
         json buffer = json::object();
         int32_t v = state->current_setting_items[std::to_string(state->apply_all_item)].get<int32_t>();
         buffer[std::to_string(state->apply_all_item)] = GET_SETTING_VALUE_BY_ID(state->apply_all_item)[v];

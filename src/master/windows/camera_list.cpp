@@ -52,16 +52,18 @@ void CameraListWindow::render(){
         std::lock_guard<std::mutex> lock(master->camera_mtx);
         ImGui::SliderInt("Item Size##Camera_List_Size", &size_event, 0, 10);
         ImVec2 rect_size = get_rect_size();
-        float width = ImGui::GetWindowWidth();
+        float width = ImGui::GetWindowSize().x;
         int32_t limit = static_cast<int32_t>(width / rect_size.x);
         int32_t counter = 0;
+        int32_t size = master->getCameras().size();
+        ImGui::Text("Cal: %f/%f, Total: %d, Line: %d", width, rect_size.x, size, limit);
         for(const auto& c : master->getCameras()){
             if(c){
                 try{
                     if(size == 0) draw_line(c);
                     else {
                         draw_group(c);
-                        if(counter - 1 < limit){
+                        if(counter + 1 < limit){
                             ImGui::SameLine();
                             counter++;
                         }else{
@@ -165,7 +167,7 @@ void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
             col_inner_color);
 
         // Drawing Battery text
-        ImVec2 text_pos = ImVec2(outter_min.x - (battery_text_size.x + spacing), outter_min.y);
+        ImVec2 text_pos = ImVec2(outter_max.x - battery_text_size.x, outter_max.y);
         draw_list->AddText(text_pos, col_white, battery_text.c_str());
     }
     // Drawing SD card
@@ -212,7 +214,7 @@ void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
             col_inner_color);
 
         // Drawing SD text
-        ImVec2 text_pos = ImVec2(outter_max.x + spacing, outter_min.y);
+        ImVec2 text_pos = ImVec2(outter_min.x, outter_max.y);
         draw_list->AddText(text_pos, col_white, sd_text.c_str());
     }
     // Center text
@@ -377,14 +379,14 @@ void CameraListWindow::item_event(const std::shared_ptr<CameraInfo>& c){
     if(ImGui::IsItemClicked(ImGuiMouseButton_Right)){
         ImGui::OpenPopupOnItemClick();
     }
-    if(ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)){
+    if(ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left) && c->connected){
         master->preview_start(c->server, c->ip);
         state->preview_ip = c->ip;
         state->preview_server = c->server;
         state->command_sender("preview_start");
     }
 
-    if(ImGui::BeginPopupContextItem((title + "##Popup_Menu").c_str())){
+    if(ImGui::BeginPopupContextItem((title + "##Popup_Menu" + c->ip).c_str())){
         ImGui::BeginDisabled(!c->connected);
         if (ImGui::Selectable("Reboot"))
         {

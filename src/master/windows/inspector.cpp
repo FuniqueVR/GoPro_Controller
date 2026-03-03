@@ -30,6 +30,7 @@ void InspectorWindow::render(){
         if(ImGui::Button("Rename Camera")){
             master->command_with_value("rename", state->current_camera_item, state->current_camera_name);
         }
+        ImGui::LabelText("IP##Inspector", state->current_camera_item.c_str());
 
         ImGui::BeginDisabled(should_disabled);
         ImGui::Separator();

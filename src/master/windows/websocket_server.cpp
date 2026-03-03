@@ -28,12 +28,6 @@ void WebsocketWindow::render(){
         ImVec2 button_3size = ImVec2(size.x / 3.0F - style.ItemSpacing.x, 0);
         ImVec2 full_button_size = ImVec2(size.x - style.ItemSpacing.x, 0);
 
-        ImGui::Text("Hotkeys:");
-        ImGui::BulletText("F2: Start Recording");
-        ImGui::BulletText("F3: Stop Recording");
-        ImGui::BulletText("F4: Switch to Photo Mode");
-        ImGui::BulletText("F5: Switch to Video Mode");
-
         ImGui::Separator();
 
         ImGui::Text("Manual Control:");

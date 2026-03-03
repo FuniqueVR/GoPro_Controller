@@ -478,9 +478,11 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
             int32_t count = 0;
 
             // Clear the message
-            for(auto& camera : cameras){
-                if(camera->server == server){
-                    camera->connected = false;
+            if(key == "query:getall"){
+                for(auto& camera : cameras){
+                    if(camera->server == server){
+                        camera->connected = false;
+                    }
                 }
             }
 
