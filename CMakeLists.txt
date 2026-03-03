@@ -186,10 +186,10 @@ if(BUILD_MASTER)
     # Add OpenCV
     if(WIN32)
         target_include_directories(master PRIVATE
-            lib/opencv/source/include
-            lib/opencv/source/modules/core/include
-            lib/opencv/source/modules/imgcodecs/include
-            lib/opencv/source/modules/videoio/include
+            lib/opencv/sources/include
+            lib/opencv/sources/modules/core/include
+            lib/opencv/sources/modules/imgcodecs/include
+            lib/opencv/sources/modules/videoio/include
         )
         message(STATUS "Master will be built WITH OpenCV support")
     endif()

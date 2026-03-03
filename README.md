@@ -31,6 +31,7 @@ sudo apt-get install gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly
 * [7Z](https://www.7-zip.org/)
 * [CMake](https://cmake.org/)
 * [MSVC](https://visualstudio.microsoft.com/vs/features/cplusplus/)
+  * 再建置的時候你要去 VS 改成 C++ Standard 17, 否則不會建置成功...
 
 總共有兩個輸出的應用程式
 * Master
