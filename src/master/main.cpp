@@ -136,10 +136,11 @@ int main(int, char**)
     SDL_GLContext gl_context;
     const char* glsl_version;
     {
-        std::tuple<SDL_Window*, SDL_GLContext, const char*> sdl_ctx = begin_sdl();
+        std::tuple<SDL_Window*, const char*> sdl_ctx = begin_sdl();
         window = std::get<0>(sdl_ctx);
         gl_context = SDL_GL_CreateContext(window);
-        glsl_version = std::get<2>(sdl_ctx);
+        glsl_version = std::get<1>(sdl_ctx);
+        SDL_GL_MakeCurrent(window, gl_context);
     }
     SDL_Renderer* renderer = SDL_CreateRenderer(window, NULL);
 
@@ -305,7 +306,7 @@ int main(int, char**)
     // Cleanup
     end_imgui();
     SDL_GL_DestroyContext(gl_context);
-    end_sdl(window, gl_context);
+    end_sdl(window);
 
     return 0;
 }

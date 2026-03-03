@@ -231,7 +231,6 @@ std::tuple<struct SDL_Window*, const char*> begin_sdl(){
         printf("Error: SDL_CreateWindow(): %s\n", SDL_GetError());
         exit(1);
     }
-    SDL_GL_MakeCurrent(window, gl_context);
     SDL_GL_SetSwapInterval(1); // Enable vsync
     SDL_ShowWindow(window);
     return {window, glsl_version};
