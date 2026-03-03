@@ -82,7 +82,7 @@ endif()
 
 if(BUILD_MASTER)
     # OpenGL
-    find_package(OpenGL REQUIRED)
+    add_subdirectory(lib/SDL3 EXCLUDE_FROM_ALL)
 
     if(WIN32)
         set(SDL_RENDER_D3D OFF CACHE BOOL "" FORCE)
