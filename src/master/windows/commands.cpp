@@ -93,20 +93,22 @@ void CommandWindow::render_local(){
     ImVec2 button_4size = ImVec2(size.x / 4.0F - style.ItemSpacing.x, 0);
     ImVec2 full_button_size = ImVec2(size.x - style.ItemSpacing.x, 0);
 
-    if(ImGui::Button("Record", button_2size)) master->command_only("", "shutter_on", state->current_camera_item); ImGui::SameLine();
-    if(ImGui::Button("Stop", button_2size)) master->command_only("", "shutter_off", state->current_camera_item);
-
-    if(ImGui::Button("Connect", button_4size)) master->command_only("", "usb_on", state->current_camera_item); ImGui::SameLine();
-    if(ImGui::Button("Disconnect", button_4size)) master->command_only("", "usb_off", state->current_camera_item); ImGui::SameLine();
-    if(ImGui::Button("Shutdown", button_4size)) master->command_only("", "usb_on", state->current_camera_item); ImGui::SameLine();
-    if(ImGui::Button("Locate", button_4size)) master->command_only("", "usb_on", state->current_camera_item);
-
-    ImGui::Dummy(ImVec2(0, 20));
-    ImGui::Separator();
-    ImGui::Dummy(ImVec2(0, 20));
-
     if(current_camera != -1) {
         CameraInfo info = *(master->getCameras().at(current_camera));
+
+        if(ImGui::Button("Record", button_2size)) master->command_only(info.server, "shutter_on", info.ip); ImGui::SameLine();
+        if(ImGui::Button("Stop", button_2size)) master->command_only(info.server, "shutter_off", info.ip);
+
+        if(ImGui::Button("Connect", button_4size)) master->command_only(info.server, "usb_on", info.ip); ImGui::SameLine();
+        if(ImGui::Button("Disconnect", button_4size)) master->command_only(info.server, "usb_off", info.ip); ImGui::SameLine();
+        if(ImGui::Button("Shutdown", button_4size)) master->command_only(info.server, "usb_on", info.ip); ImGui::SameLine();
+        if(ImGui::Button("Locate", button_4size)) master->presetSwitch(info.server, info.ip, 0);
+
+        ImGui::Dummy(ImVec2(0, 20));
+        ImGui::Separator();
+        ImGui::Dummy(ImVec2(0, 20));
+
+    
 
         if(state->current_status_items[std::to_string(PRESET_ID)].is_number_integer()){
 
@@ -160,7 +162,6 @@ void CommandWindow::render_local(){
             }
             ImGui::EndCombo();
         }
-        ImGui::EndDisabled();
 
         json buffer_c = json::object();
         std::string try_apply = "";
@@ -204,4 +205,5 @@ void CommandWindow::render_local(){
             ImGui::EndTable();
         }
     }
+    ImGui::EndDisabled();
 }
