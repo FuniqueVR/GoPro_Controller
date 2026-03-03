@@ -116,6 +116,7 @@ void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
     uint32_t col_white = IM_COL32(255, 255, 255, 255);
     uint32_t col_grey = IM_COL32(210, 210, 210, 255);
     uint32_t col_red = IM_COL32(230, 10, 10, 255);
+    uint32_t col_orange = IM_COL32(230, 230, 10, 255);
     uint32_t col_greed = IM_COL32(10, 230, 10, 255);
 
     // Drawing outline
@@ -138,7 +139,11 @@ void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
         ImVec2 battery_text_size;
         std::string battery_text;
         if(batteryHave){
-            col_inner_color = col_greed;
+            if(precentage <= 25){
+                col_inner_color = col_orange;
+            }else{
+                col_inner_color = col_greed;
+            }
             battery_text = std::to_string(precentage) + "%";
         }else{
             col_inner_color = col_red;
@@ -161,6 +166,10 @@ void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
         // Drawing Battery inline
         ImVec2 inner_min = outter_min + inner_padding;
         ImVec2 inner_max = outter_max - inner_padding;
+        float w = inner_max.y - inner_min.y;
+        float wc = w * (precentage / 100.0F);
+        float wr = w - wc;
+        inner_max.x -= wr;
         draw_list->AddRectFilled(
             inner_min, 
             inner_max, 
