@@ -172,6 +172,8 @@ inline const int32_t GET_SETTING_SIZE_BY_ID(int32_t x) {
         case 102:   return ISO_SIZE;
         case 108:   return VIDEO_ASPECT_RATIO_SIZE;
         case 115:   return WHITE_BALANCE_SIZE;
+        case 117:   return SHARPNESS_SIZE;
+        case 118:   return EXPOSURE_SIZE;
         case 121:   return VIDEO_LENS_SIZE;
         case 122:   return PHOTO_LENS_SIZE;
         case 123:   return TIME_LAPSE_DIGITAL_LENSES_SIZE;
@@ -179,6 +181,7 @@ inline const int32_t GET_SETTING_SIZE_BY_ID(int32_t x) {
         case 128:   return MEDIA_FORMAT_SIZE;
         case 134:   return ANTI_FLICKER_SIZE;
         case 135:   return HYPERSMOOTH_SIZE;
+        case 145:   return SHUTTER_SPEED_SIZE;
         case 150:   return VIDEO_HORIZON_LEVELING_SIZE;
         case 151:   return PHOTO_HORIZON_LEVELING_SIZE;
         case 156:   return VIDEO_DURATION_SIZE;
@@ -205,6 +208,7 @@ inline const int32_t GET_SETTING_SIZE_BY_ID(int32_t x) {
         case 191:   return EASY_NIGHT_PHOTO_SIZE;
         case 192:   return MULTI_SHOT_ASPECT_RATIO_SIZE;
         case 193:   return FRAMING_SIZE;
+        case 194:   return CAMERA_MODE_SIZE;
         case 196:   return _360_PHOTO_FILES_EXTENSION_SIZE;
         case 216:   return BEEP_VOLUME_SIZE;
         case 219:   return SETUP_SCREEN_SAVER_SIZE;
@@ -230,6 +234,8 @@ inline const char* GET_SETTING_NAME_BY_ID(int32_t x) {
         case 102: return ISO_MAX_NAME;
         case 108: return VIDEO_ASPECT_RATIO_NAME;
         case 115: return WHITE_BALANCE_NAME;
+        case 117: return SHARPNESS_NAME;
+        case 118: return EXPOSURE_NAME;
         case 121: return VIDEO_LENS_NAME;
         case 122: return PHOTO_LENS_NAME;
         case 123: return TIME_LAPSE_DIGITAL_LENSES_NAME;
@@ -237,6 +243,7 @@ inline const char* GET_SETTING_NAME_BY_ID(int32_t x) {
         case 128: return MEDIA_FORMAT_NAME;
         case 134: return ANTI_FLICKER_NAME;
         case 135: return HYPERSMOOTH_NAME;
+        case 145: return SHUTTER_SPEED_NAME;
         case 150: return VIDEO_HORIZON_LEVELING_NAME;
         case 151: return PHOTO_HORIZON_LEVELING_NAME;
         case 156: return VIDEO_DURATION_NAME;
@@ -263,6 +270,7 @@ inline const char* GET_SETTING_NAME_BY_ID(int32_t x) {
         case 191: return EASY_NIGHT_PHOTO_NAME;
         case 192: return MULTI_SHOT_ASPECT_RATIO_NAME;
         case 193: return FRAMING_NAME;
+        case 194: return CAMERA_MODE_NAME;
         case 196: return _360_PHOTO_FILES_EXTENSION_NAME;
         case 216: return BEEP_VOLUME_NAME;
         case 219: return SETUP_SCREEN_SAVER_NAME;
@@ -288,6 +296,8 @@ inline const char** GET_SETTING_STRING_BY_ID(int32_t x) {
         case 102: return ISO_STRING;
         case 108: return VIDEO_ASPECT_RATIO_STRING;
         case 115: return WHITE_BALANCE_STRING;
+        case 117: return SHARPNESS_STRING;
+        case 118: return EXPOSURE_STRING;
         case 121: return VIDEO_LENS_STRING;
         case 122: return PHOTO_LENS_STRING;
         case 123: return TIME_LAPSE_DIGITAL_LENSES_STRING;
@@ -295,6 +305,7 @@ inline const char** GET_SETTING_STRING_BY_ID(int32_t x) {
         case 128: return MEDIA_FORMAT_STRING;
         case 134: return ANTI_FLICKER_STRING;
         case 135: return HYPERSMOOTH_STRING;
+        case 145: return SHUTTER_SPEED_STRING;
         case 150: return VIDEO_HORIZON_LEVELING_STRING;
         case 151: return PHOTO_HORIZON_LEVELING_STRING;
         case 156: return VIDEO_DURATION_STRING;
@@ -321,6 +332,7 @@ inline const char** GET_SETTING_STRING_BY_ID(int32_t x) {
         case 191: return EASY_NIGHT_PHOTO_STRING;
         case 192: return MULTI_SHOT_ASPECT_RATIO_STRING;
         case 193: return FRAMING_STRING;
+        case 194: return CAMERA_MODE_STRING;
         case 196: return _360_PHOTO_FILES_EXTENSION_STRING;
         case 216: return BEEP_VOLUME_STRING;
         case 219: return SETUP_SCREEN_SAVER_STRING;
@@ -346,6 +358,8 @@ inline const int32_t* GET_SETTING_VALUE_BY_ID(int32_t x) {
         case 102: return ISO_VALUE;
         case 108: return VIDEO_ASPECT_RATIO_VALUE;
         case 115: return WHITE_BALANCE_VALUE;
+        case 117: return SHARPNESS_VALUE;
+        case 118: return EXPOSURE_VALUE;
         case 121: return VIDEO_LENS_VALUE;
         case 122: return PHOTO_LENS_VALUE;
         case 123: return TIME_LAPSE_DIGITAL_LENSES_VALUE;
@@ -353,6 +367,7 @@ inline const int32_t* GET_SETTING_VALUE_BY_ID(int32_t x) {
         case 128: return MEDIA_FORMAT_VALUE;
         case 134: return ANTI_FLICKER_VALUE;
         case 135: return HYPERSMOOTH_VALUE;
+        case 145: return SHUTTER_SPEED_VALUE;
         case 150: return VIDEO_HORIZON_LEVELING_VALUE;
         case 151: return PHOTO_HORIZON_LEVELING_VALUE;
         case 156: return VIDEO_DURATION_VALUE;
@@ -379,6 +394,7 @@ inline const int32_t* GET_SETTING_VALUE_BY_ID(int32_t x) {
         case 191: return EASY_NIGHT_PHOTO_VALUE;
         case 192: return MULTI_SHOT_ASPECT_RATIO_VALUE;
         case 193: return FRAMING_VALUE;
+        case 194: return CAMERA_MODE_VALUE;
         case 196: return _360_PHOTO_FILES_EXTENSION_VALUE;
         case 216: return BEEP_VOLUME_VALUE;
         case 219: return SETUP_SCREEN_SAVER_VALUE;

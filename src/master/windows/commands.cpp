@@ -75,7 +75,8 @@ void CommandWindow::render_global(){
     if(ImGui::Button("Start Webcam", button_size)) state->command_sender("start_webcam"); ImGui::SameLine();
     if(ImGui::Button("Sync Time", button_size)) master->command_only("datetime");
 
-    if(ImGui::Button("Last Media", full_button_size)) master->media_only("lastmedia");
+    if(ImGui::Button("Last Media", button_size)) master->media_only("lastmedia"); ImGui::SameLine();
+    if(ImGui::Button("Close Preview", button_size)) master->preview_end("", "");
 }
 
 void CommandWindow::render_local(){
@@ -116,15 +117,13 @@ void CommandWindow::render_local(){
         ImGui::EndCombo();
     }
 
-    ImGui::Dummy();
+    ImGui::Dummy(ImVec2(0, 20));
     ImGui::Separator();
-    ImGui::Dummy();
+    ImGui::Dummy(ImVec2(0, 20));
     
     if(ImGui::Button("Setting Apply All By ID", full_button_size)) {
-        json buffer = json::object();
         int32_t v = state->current_setting_items[std::to_string(state->apply_all_item)].get<int32_t>();
-        buffer[std::to_string(state->apply_all_item)] = GET_SETTING_VALUE_BY_ID(state->apply_all_item)[v];
-        master->applyAll("", buffer);
+        master->apply("", state->apply_all_item, GET_SETTING_VALUE_BY_ID(state->apply_all_item)[v]);
     }
 
     if(ImGui::BeginCombo("ID", state->apply_all_item_string.c_str())){

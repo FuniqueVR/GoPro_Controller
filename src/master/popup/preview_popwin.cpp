@@ -200,7 +200,6 @@ cv::Mat PreviewPopup::get_latest_frame(){
     
     cv::Mat frame = frame_queue.front();
     frame_queue.pop();
-    std::cout << "[Preview Decoder] Last frame received !" << std::endl;
     return frame;
 }
 

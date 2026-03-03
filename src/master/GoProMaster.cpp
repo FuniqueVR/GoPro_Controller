@@ -261,7 +261,7 @@ void GoProMaster::preview_end(std::string server, std::string target){
     data["value"]["target"] = target;
 
     for(auto s : servers){
-        if(s->ip == server && s->connected){
+        if((s->ip == server || server.size() == 0) && s->connected){
             s->client.send(data.dump());
             break;
         }
