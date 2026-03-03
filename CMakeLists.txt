@@ -82,7 +82,9 @@ endif()
 
 if(BUILD_MASTER)
     # OpenGL
-    find_package(OpenGL REQUIRED)
+    if(NOT WIN32)
+        find_package(OpenGL REQUIRED)
+    endif()
 
     if(WIN32)
         set(SDL_RENDER_D3D OFF CACHE BOOL "" FORCE)
