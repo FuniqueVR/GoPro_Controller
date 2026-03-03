@@ -4,6 +4,9 @@
  * This software is licensed under the [MIT License].
  * See the LICENSE file in the project root for more information.
 */
+#ifdef _WIN32
+#include <window.h>
+#endif
 #include <iostream>
 #include <fstream>
 #include <chrono>
