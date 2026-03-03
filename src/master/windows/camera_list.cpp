@@ -61,7 +61,7 @@ void CameraListWindow::render(){
                     if(size == 0) draw_line(c);
                     else {
                         draw_group(c);
-                        if(counter < limit){
+                        if(counter - 1 < limit){
                             ImGui::SameLine();
                             counter++;
                         }else{
