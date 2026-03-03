@@ -93,7 +93,7 @@ if(BUILD_MASTER)
     endif()
 
     # SDL3
-    find_package(SDL3)
+    find_package(SDL3 REQUIRED)
     if (NOT SDL3_FOUND)
         message(STATUS "SDL3 not found on system. Getting SDL3 from GitHub...")
         include(FetchContent)
@@ -186,6 +186,7 @@ if(BUILD_MASTER)
     # Add OpenCV
     if(WIN32)
         target_include_directories(master PRIVATE
+            lib/opencv/build/include
             lib/opencv/sources/include
             lib/opencv/sources/modules/core/include
             lib/opencv/sources/modules/imgcodecs/include
