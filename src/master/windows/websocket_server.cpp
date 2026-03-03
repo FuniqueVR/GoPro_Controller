@@ -35,9 +35,9 @@ void WebsocketWindow::render(){
         if(ImGui::IsItemHovered()) ImGui::SetTooltip("Keyboard shortcut for broadcasting record signal to all connected cameras");
         if (ImGui::Button("Stop Rec (F3)", button_2size)) master->command_only("shutter_off");
         if(ImGui::IsItemHovered()) ImGui::SetTooltip("Keyboard shortcut for broadcasting stop signal to all connected cameras");
-        if (ImGui::Button("Photo Mode (F4)", button_2size)) master->presetSwitch("", 65536);  ImGui::SameLine();
+        if (ImGui::Button("Photo Mode (F4)", button_2size)) master->presetSwitch("", "", 65536);  ImGui::SameLine();
         if(ImGui::IsItemHovered()) ImGui::SetTooltip("Keyboard shortcut for broadcasting switch to photo mode signal to all connected cameras");
-        if (ImGui::Button("Video Mode (F5)", button_2size)) master->presetSwitch("", 0);
+        if (ImGui::Button("Video Mode (F5)", button_2size)) master->presetSwitch("", "", 0);
         if(ImGui::IsItemHovered()) ImGui::SetTooltip("Keyboard shortcut for broadcasting switch to video mode signal to all connected cameras");
 
         ImGui::Separator();

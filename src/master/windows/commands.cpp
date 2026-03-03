@@ -101,52 +101,68 @@ void CommandWindow::render_local(){
     if(ImGui::Button("Shutdown", button_4size)) master->command_only("", "usb_on", state->current_camera_item); ImGui::SameLine();
     if(ImGui::Button("Locate", button_4size)) master->command_only("", "usb_on", state->current_camera_item);
 
-    if(ImGui::BeginCombo("Mode##SCC", state->current_mode_item_string.c_str())){
-        for (int n = 0; n < GOPRO_MODE_SIZE; n++)
-        {
-            std::string curr = GOPRO_MODE_STRING[n];
-            std::string curr_b = curr + "##SCC_Option";
-            bool is_selected = (state->current_mode_item_string == curr); // You can store your selection however you want, outside or inside your objects
-            if (ImGui::Selectable(curr_b.c_str(), is_selected)){
-                state->current_mode_item_string = curr;
-                state->current_mode_item = n;
-            }
-            if (is_selected)
-                ImGui::SetItemDefaultFocus();   // You may set the initial focus when opening the combo (scrolling + for keyboard navigation support)
-        }
-        ImGui::EndCombo();
-    }
-
     ImGui::Dummy(ImVec2(0, 20));
     ImGui::Separator();
     ImGui::Dummy(ImVec2(0, 20));
-    
-    if(ImGui::Button("Setting Apply All By ID", full_button_size)) {
-        int32_t v = state->current_setting_items[std::to_string(state->apply_all_item)].get<int32_t>();
-        master->apply("", state->apply_all_item, GET_SETTING_VALUE_BY_ID(state->apply_all_item)[v]);
-    }
 
-    if(ImGui::BeginCombo("ID", state->apply_all_item_string.c_str())){
-        for (int n = 0; n < GOPRO_SETTING_SIZE; n++)
-        {
-            int32_t id = GOPRO_SETTING_IDS[n];
-            std::string curr = GET_SETTING_NAME_BY_ID(id);
-            bool is_selected = (state->current_mode_item_string == curr); // You can store your selection however you want, outside or inside your objects
-            std::string curr_b = curr + "##Setting_ID_Option";
-            if (ImGui::Selectable(curr_b.c_str(), is_selected)){
-                state->apply_all_item_string = curr;
-                state->apply_all_item = GOPRO_SETTING_IDS[n];
+    if(current_camera != -1) {
+
+        if(state->current_status_items[std::to_string(PRESET_ID)].is_number_integer()){
+
+            int32_t cuccrent_select = state->current_status_items[std::to_string(PRESET_ID)].get<int32_t>();
+            int32_t index = -1;
+            for(int32_t i = 0; i < GOPRO_MODE_SIZE; i++){
+                if(GOPRO_MODE_VALUE[i] == cuccrent_select){
+                    index = GOPRO_MODE_VALUE[i];
+                    break;
+                }
             }
-            if (is_selected)
-                ImGui::SetItemDefaultFocus();   // You may set the initial focus when opening the combo (scrolling + for keyboard navigation support)
-        }
-        ImGui::EndCombo();
-    }
-    ImGui::EndDisabled();
 
-    json buffer_c = json::object();
-    std::string try_apply = "";
-    if(current_camera != -1){
+            std::string display_mode = GOPRO_MODE_STRING[index];
+            
+            if(ImGui::BeginCombo("Mode##SCC", display_mode.c_str())){
+                for (int n = 0; n < GOPRO_MODE_SIZE; n++)
+                {
+                    std::string curr = GOPRO_MODE_STRING[n];
+                    std::string curr_b = curr + "##SCC_Option";
+                    bool is_selected = (state->current_mode_item_string == curr); // You can store your selection however you want, outside or inside your objects
+                    if (ImGui::Selectable(curr_b.c_str(), is_selected)){
+                        master->presetSwitch("", 65536);
+                        state->current_mode_item_string = curr;
+                        state->current_mode_item = n;
+                    }
+                    if (is_selected)
+                        ImGui::SetItemDefaultFocus();   // You may set the initial focus when opening the combo (scrolling + for keyboard navigation support)
+                }
+                ImGui::EndCombo();
+            }
+        }
+        
+        if(ImGui::Button("Setting Apply All By ID", full_button_size)) {
+            int32_t v = state->current_setting_items[std::to_string(state->apply_all_item)].get<int32_t>();
+            master->apply("", state->apply_all_item, GET_SETTING_VALUE_BY_ID(state->apply_all_item)[v]);
+        }
+
+        if(ImGui::BeginCombo("ID", state->apply_all_item_string.c_str())){
+            for (int n = 0; n < GOPRO_SETTING_SIZE; n++)
+            {
+                int32_t id = GOPRO_SETTING_IDS[n];
+                std::string curr = GET_SETTING_NAME_BY_ID(id);
+                bool is_selected = (state->current_mode_item_string == curr); // You can store your selection however you want, outside or inside your objects
+                std::string curr_b = curr + "##Setting_ID_Option";
+                if (ImGui::Selectable(curr_b.c_str(), is_selected)){
+                    state->apply_all_item_string = curr;
+                    state->apply_all_item = GOPRO_SETTING_IDS[n];
+                }
+                if (is_selected)
+                    ImGui::SetItemDefaultFocus();   // You may set the initial focus when opening the combo (scrolling + for keyboard navigation support)
+            }
+            ImGui::EndCombo();
+        }
+        ImGui::EndDisabled();
+
+        json buffer_c = json::object();
+        std::string try_apply = "";
         CameraInfo info = *(master->getCameras().at(current_camera));
         if(master->getSettingsFromCamera(info, buffer_c)){
             if(buffer_c[std::to_string(state->apply_all_item)].is_number_integer()){

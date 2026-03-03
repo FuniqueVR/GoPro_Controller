@@ -205,11 +205,11 @@ int main(int, char**)
                     printf("Hotkey F3: Stop Recording\n");
                 }
                 if (event.key.key == SDLK_F4) {
-                    master->presetSwitch("", 65536);
+                    master->presetSwitch("", "", 65536);
                     printf("Hotkey F4: Photo Mode\n");
                 }
                 if (event.key.key == SDLK_F5) {
-                    master->presetSwitch("", 0);
+                    master->presetSwitch("", "", 0);
                     printf("Hotkey F5: Video Mode\n");
                 }
                 if (event.key.key == SDLK_F11) {

@@ -117,6 +117,7 @@ void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
     uint32_t col_grey = IM_COL32(210, 210, 210, 255);
     uint32_t col_red = IM_COL32(230, 10, 10, 255);
     uint32_t col_orange = IM_COL32(230, 230, 10, 255);
+    uint32_t col_orange_dark = IM_COL32(80, 80, 10, 255);
     uint32_t col_greed = IM_COL32(10, 230, 10, 255);
 
     // Drawing outline
@@ -128,6 +129,7 @@ void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
     // Drawing Battery
     if(c->connected){
         bool batteryHave = false;
+        bool batteryCharging = false;
         int precentage = 0;
         uint32_t col_inner_color;
         if(status[std::to_string(BATTERY_PRESENT_ID)].is_number()){
@@ -135,6 +137,9 @@ void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
         }
         if(status[std::to_string(INTERNAL_BATTERY_PERCENTAGE_ID)].is_number()){
             precentage = status[std::to_string(INTERNAL_BATTERY_PERCENTAGE_ID)].get<int32_t>();
+        }
+        if(status[std::to_string(INTERNAL_BATTERY_BARS_ID)].is_number()){
+            batteryCharging = status[std::to_string(INTERNAL_BATTERY_BARS_ID)].get<int32_t>() == 4;
         }
         ImVec2 battery_text_size;
         std::string battery_text;
@@ -178,6 +183,15 @@ void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
         // Drawing Battery text
         ImVec2 text_pos = ImVec2(outter_max.x - battery_text_size.x, outter_max.y);
         draw_list->AddText(text_pos, col_white, battery_text.c_str());
+
+        if(batteryCharging){
+            std::string charging_text = "C=>";
+            ImVec2 charging_text_size = ImGui::CalcTextSize(charging_text.c_str());
+            ImVec2 charging_text_pos = ImVec2(inner_min.x, 
+                ((inner_max.y + inner_min.y) / 2.0F) - (charging_text_size.y / 2.0F)
+            );
+            draw_list->AddText(charging_text_pos, col_orange_dark, charging_text.c_str());
+        }
     }
     // Drawing SD card
     if(c->connected){
