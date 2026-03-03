@@ -5,7 +5,10 @@
  * See the LICENSE file in the project root for more information.
 */
 #ifdef _WIN32
-#include <windows.h>
+#define WIN32_LEAN_AND_MEAN
+    #include <WinSock2.h>
+    #include <WS2tcpip.h>
+    #include <windows.h>
 #endif
 #include <iostream>
 #include <fstream>
