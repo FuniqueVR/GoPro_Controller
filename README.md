@@ -28,6 +28,7 @@ sudo apt-get install gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly
 
 ### Windows 需要配置
 
+* [7Z](https://www.7-zip.org/)
 * [CMake](https://cmake.org/)
 * [MSVC](https://visualstudio.microsoft.com/vs/features/cplusplus/)
 
