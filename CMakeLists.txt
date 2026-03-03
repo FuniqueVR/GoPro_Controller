@@ -82,6 +82,13 @@ if(BUILD_MASTER)
     # OpenGL
     find_package(OpenGL REQUIRED)
 
+    if(WIN32)
+        set(SDL_RENDER_D3D OFF CACHE BOOL "" FORCE)
+        set(SDL_RENDER_D3D11 OFF CACHE BOOL "" FORCE)
+        set(SDL_RENDER_D3D12 OFF CACHE BOOL "" FORCE)
+        set(SDL_DIRECTX OFF CACHE BOOL "" FORCE)
+    endif()
+
     # SDL3
     find_package(SDL3)
     if (NOT SDL3_FOUND)
