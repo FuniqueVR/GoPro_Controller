@@ -6,9 +6,10 @@
 */
 #pragma once
 #include <utility>
-#include <SDL3/SDL.h>
-#define IMGUI_DEFINE_MATH_OPERATORS
-#include "imgui.h"
+
+struct SDL_Window;
+struct SDL_GLContext;
+struct ImGuiIO;
 
 /**
  * Helping setup the imgui context
@@ -22,7 +23,7 @@ extern "C" void setup_catppuccin_mocha_theme();
 /**
  * Create the imgui context, use it in the begining and out of the loop
  */
-extern "C" void begin_imgui(SDL_Window *window, void *sdl_gl_context, const char *glsl_version);
+extern "C" void begin_imgui(struct SDL_Window *window, void *sdl_gl_context, const char *glsl_version);
 /**
  * Destory the imgui context, use it in the end and out of the loop
  */
@@ -30,11 +31,11 @@ extern "C" void end_imgui();
 /**
  * Create the SDL context
  */
-extern "C" std::tuple<SDL_Window*, SDL_GLContext, const char*> begin_sdl();
+extern "C" std::tuple<struct SDL_Window*, struct SDL_GLContext, const char*> begin_sdl();
 /**
  * Destory the SDL context
  */
-extern "C" void end_sdl(SDL_Window *window, SDL_GLContext sdl_gl_context);
+extern "C" void end_sdl(struct SDL_Window *window, struct SDL_GLContext sdl_gl_context);
 /**
  * Loop begin
  */
@@ -43,5 +44,5 @@ extern "C" void begin_loop();
  * Loop end
  * Clear color and swap the chain and stuff
  */
-extern "C" void end_loop(SDL_Window* window, ImGuiIO &io);
+extern "C" void end_loop(struct SDL_Window* window, struct ImGuiIO &io);
 

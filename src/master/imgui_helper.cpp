@@ -163,7 +163,7 @@ void setup_catppuccin_mocha_theme() {
 /**
  * Create the imgui context, use it in the begining and out of the loop
  */
-void begin_imgui(SDL_Window *window, void *sdl_gl_context, const char *glsl_version){
+void begin_imgui(struct SDL_Window *window, void *sdl_gl_context, const char *glsl_version){
     ImGui_ImplSDL3_InitForOpenGL(window, sdl_gl_context);
     ImGui_ImplOpenGL3_Init(glsl_version);
 }
@@ -178,7 +178,7 @@ void end_imgui(){
 /**
  * Create the SDL context
  */
-std::tuple<SDL_Window*, SDL_GLContext, const char*> begin_sdl(){
+std::tuple<struct SDL_Window*, struct SDL_GLContext, const char*> begin_sdl(){
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD))
     {
         printf("Error: SDL_Init(): %s\n", SDL_GetError());
@@ -240,7 +240,7 @@ std::tuple<SDL_Window*, SDL_GLContext, const char*> begin_sdl(){
 /**
  * Destory the SDL context
  */
-void end_sdl(SDL_Window *window, SDL_GLContext sdl_gl_context){
+void end_sdl(struct SDL_Window *window, struct SDL_GLContext sdl_gl_context){
     SDL_GL_DestroyContext(sdl_gl_context);
     SDL_DestroyWindow(window);
     SDL_Quit();
@@ -258,7 +258,7 @@ void begin_loop(){
  * Loop end
  * Clear color and swap the chain and stuff
  */
-void end_loop(SDL_Window* window, ImGuiIO &io){
+void end_loop(struct SDL_Window* window, struct ImGuiIO &io){
     glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
