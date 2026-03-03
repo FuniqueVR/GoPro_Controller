@@ -106,6 +106,7 @@ void CommandWindow::render_local(){
     ImGui::Dummy(ImVec2(0, 20));
 
     if(current_camera != -1) {
+        CameraInfo info = *(master->getCameras().at(current_camera));
 
         if(state->current_status_items[std::to_string(PRESET_ID)].is_number_integer()){
 
@@ -113,7 +114,7 @@ void CommandWindow::render_local(){
             int32_t index = -1;
             for(int32_t i = 0; i < GOPRO_MODE_SIZE; i++){
                 if(GOPRO_MODE_VALUE[i] == cuccrent_select){
-                    index = GOPRO_MODE_VALUE[i];
+                    index = i;
                     break;
                 }
             }
@@ -127,7 +128,7 @@ void CommandWindow::render_local(){
                     std::string curr_b = curr + "##SCC_Option";
                     bool is_selected = (state->current_mode_item_string == curr); // You can store your selection however you want, outside or inside your objects
                     if (ImGui::Selectable(curr_b.c_str(), is_selected)){
-                        master->presetSwitch("", 65536);
+                        master->presetSwitch("", info.ip, GOPRO_MODE_VALUE[n]);
                         state->current_mode_item_string = curr;
                         state->current_mode_item = n;
                     }
@@ -163,7 +164,6 @@ void CommandWindow::render_local(){
 
         json buffer_c = json::object();
         std::string try_apply = "";
-        CameraInfo info = *(master->getCameras().at(current_camera));
         if(master->getSettingsFromCamera(info, buffer_c)){
             if(buffer_c[std::to_string(state->apply_all_item)].is_number_integer()){
                 int32_t v = buffer_c[std::to_string(state->apply_all_item)].get<int32_t>();
