@@ -307,26 +307,21 @@ void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
             preset = status[std::to_string(PRESET_ID)].get<int32_t>();
         }
 
-        if(preset == 0){
-            preset_text = "V";
-        }else if(preset == 65542 || 
-            preset == 65536){
-            preset_text = "P";
-        }else if(preset == 131072 || 
-            preset == 131075 ||
-            preset == 131076 ||
-            preset == 131077 ||
-            preset == 131073 ||
-            preset == 131074){
-            preset_text = "T";
-        }else{
-            preset_text = std::to_string(preset);
-        }
+        if(preset == 0) preset_text = "V";
+        else if(preset == 65542) preset_text = "PB";
+        else if(preset == 65536) preset_text = "PS";
+        else if(preset == 131072) preset_text = "T";
+        else if(preset == 131075) preset_text = "TT";
+        else if(preset == 131076) preset_text = "TLP";
+        else if(preset == 131077) preset_text = "TLT";
+        else if(preset == 131073) preset_text = "TV";
+        else if(preset == 131074) preset_text = "TNV";
+        else preset_text = std::to_string(preset);
 
-        ImVec2 frame_padding = ImVec2(5, 5);
+        ImVec2 frame_padding = ImVec2(10, 10);
         ImVec2 preset_text_size = ImGui::CalcTextSize(preset_text.c_str());
         draw_list->AddText(ImVec2(
-            image_pos.x + frame_padding.x + preset_text_size.x,
+            image_pos.x + frame_padding.x,
             (image_pos.y + rect_size.y) - (frame_padding.y + preset_text_size.y)
         ), col_white, preset_text.c_str());
     }
