@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.14)
-project(GoPro_Controller)
+project(GoPro_Controller LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_C_STANDARD 17)
 
 # --- NUCLEAR STATIC OVERRIDES (MUST BE AT THE TOP) ---
@@ -138,6 +140,9 @@ if(BUILD_SERVER)
         ${SERVER_SOURCE}
         ${MDNS_SOURCES}
     )
+    if(WIN32)
+        set_target_properties(server PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED ON)
+    endif()
     target_link_libraries(server hv_static libcurl)
     # Ensure json include is available for server too if it uses nlohmann/json
     target_include_directories(server PRIVATE lib/json/include) 
@@ -159,6 +164,7 @@ if(BUILD_MASTER)
     )
 
     if (WIN32)
+        set_target_properties(master PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED ON)
         target_link_libraries(master PRIVATE
             lib/opencv/build/bin
             OpenGL::GL
