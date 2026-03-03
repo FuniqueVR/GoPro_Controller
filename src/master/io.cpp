@@ -7,6 +7,7 @@
 #include "io.h"
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <string>
 
 const char* SERVER_LIST_PATH = "servers.json";
