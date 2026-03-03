@@ -102,7 +102,10 @@ if(BUILD_MASTER)
         FetchContent_MakeAvailable(SDL3)
     endif()
 
-    find_package(OpenCV REQUIRED COMPONENTS core imgcodecs highgui)
+    if(WIN32)
+    else()
+        find_package(OpenCV REQUIRED COMPONENTS core imgcodecs highgui)
+    endif()
 
     # ImGui
     set(IMGUI_DIR "lib/imgui")
