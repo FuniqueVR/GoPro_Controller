@@ -82,7 +82,7 @@ endif()
 
 if(BUILD_MASTER)
     # OpenGL
-    add_subdirectory(lib/SDL3 EXCLUDE_FROM_ALL)
+    find_package(OpenGL REQUIRED)
 
     if(WIN32)
         set(SDL_RENDER_D3D OFF CACHE BOOL "" FORCE)
@@ -93,17 +93,7 @@ if(BUILD_MASTER)
     endif()
 
     # SDL3
-    find_package(SDL3 REQUIRED)
-    if (NOT SDL3_FOUND)
-        message(STATUS "SDL3 not found on system. Getting SDL3 from GitHub...")
-        include(FetchContent)
-        FetchContent_Declare(
-            SDL3
-            GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-            GIT_TAG        release-3.2.0  # Use a stable release tag
-        )
-        FetchContent_MakeAvailable(SDL3)
-    endif()
+    add_subdirectory(lib/SDL3 EXCLUDE_FROM_ALL)
 
     if(WIN32)
         message(STATUS "Using curl install the window prebuild binary for import here")
@@ -187,6 +177,10 @@ if(BUILD_MASTER)
     if(WIN32)
         target_include_directories(master PRIVATE
             lib/opencv/build/include
+            lib/opencv/sources/include
+            lib/opencv/sources/modules/core/include
+            lib/opencv/sources/modules/imgcodecs/include
+            lib/opencv/sources/modules/videoio/include
         )
         message(STATUS "Master will be built WITH OpenCV support")
     endif()
