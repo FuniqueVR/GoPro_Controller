@@ -103,6 +103,7 @@ if(BUILD_MASTER)
     endif()
 
     if(WIN32)
+        message(STATUS "Using curl install the window prebuild binary for import here")
     else()
         find_package(OpenCV REQUIRED COMPONENTS core imgcodecs highgui)
     endif()
@@ -158,7 +159,7 @@ if(BUILD_MASTER)
 
     if (WIN32)
         target_link_libraries(master PRIVATE
-            ${OpenCV_LIBS}
+            lib/opencv/build/bin
             OpenGL::GL
             SDL3::SDL3
             hv_static
@@ -176,22 +177,19 @@ if(BUILD_MASTER)
     endif()
 
     # Add OpenCV
-    if(HAVE_OPENCV)
+    if(WIN32)
         target_include_directories(master PRIVATE
-            ${opencv_SOURCE_DIR}/include
-            ${CMAKE_BINARY_DIR}
-            ${opencv_BINARY_DIR}
-            ${opencv_SOURCE_DIR}/modules/core/include
-            ${opencv_SOURCE_DIR}/modules/imgcodecs/include
-            ${opencv_SOURCE_DIR}/modules/videoio/include
+            lib/opencv/source/include
+            lib/opencv/source/modules/core/include
+            lib/opencv/source/modules/imgcodecs/include
+            lib/opencv/source/modules/videoio/include
         )
-        target_compile_definitions(master PRIVATE HAVE_OPENCV)
         message(STATUS "Master will be built WITH OpenCV support")
     endif()
 
     if(WIN32)
         target_link_options(master PRIVATE "-static-libgcc" "-static-libstdc++" "-static")
-        target_link_libraries(master PRIVATE ws2_32 wsock32)
+        target_link_libraries(master PRIVATE ws2_32 wsock32 opencv_videoio_ffmpeg4100_64.dll)
     endif()
 endif()
 
