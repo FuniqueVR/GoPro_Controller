@@ -31,11 +31,11 @@ extern "C" void end_imgui();
 /**
  * Create the SDL context
  */
-extern "C" std::tuple<struct SDL_Window*, struct SDL_GLContext, const char*> begin_sdl();
+extern "C" std::tuple<struct SDL_Window*, const char*> begin_sdl();
 /**
  * Destory the SDL context
  */
-extern "C" void end_sdl(struct SDL_Window *window, struct SDL_GLContext sdl_gl_context);
+extern "C" void end_sdl(struct SDL_Window *window, struct SDL_GLContext* sdl_gl_context);
 /**
  * Loop begin
  */

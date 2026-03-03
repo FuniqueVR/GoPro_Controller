@@ -178,7 +178,7 @@ void end_imgui(){
 /**
  * Create the SDL context
  */
-std::tuple<struct SDL_Window*, struct SDL_GLContext, const char*> begin_sdl(){
+std::tuple<struct SDL_Window*, const char*> begin_sdl(){
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD))
     {
         printf("Error: SDL_Init(): %s\n", SDL_GetError());
@@ -231,17 +231,15 @@ std::tuple<struct SDL_Window*, struct SDL_GLContext, const char*> begin_sdl(){
         printf("Error: SDL_CreateWindow(): %s\n", SDL_GetError());
         exit(1);
     }
-    SDL_GLContext gl_context = SDL_GL_CreateContext(window);
     SDL_GL_MakeCurrent(window, gl_context);
     SDL_GL_SetSwapInterval(1); // Enable vsync
     SDL_ShowWindow(window);
-    return {window, gl_context, glsl_version};
+    return {window, glsl_version};
 }
 /**
  * Destory the SDL context
  */
-void end_sdl(struct SDL_Window *window, struct SDL_GLContext sdl_gl_context){
-    SDL_GL_DestroyContext(sdl_gl_context);
+void end_sdl(struct SDL_Window *window){
     SDL_DestroyWindow(window);
     SDL_Quit();
 }
