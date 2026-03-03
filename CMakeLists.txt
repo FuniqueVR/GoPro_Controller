@@ -187,7 +187,7 @@ if(BUILD_MASTER)
 
     if(WIN32)
         target_link_options(master PRIVATE "-static-libgcc" "-static-libstdc++" "-static")
-        target_link_libraries(master PRIVATE ws2_32 wsock32 opencv_videoio_ffmpeg4100_64.dll)
+        target_link_libraries(master PRIVATE opencv_videoio_ffmpeg4100_64.dll)
     endif()
 endif()
 
