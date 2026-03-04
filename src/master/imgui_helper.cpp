@@ -15,6 +15,7 @@
 #include <windows.h>
 #pragma comment(lib, "Wtsapi32.lib") 
 #pragma comment(lib, "Crypt32.lib")
+#pragma comment(lib, "Ole32.lib")
 #endif
 #include <SDL3/SDL.h>
 #if defined(IMGUI_IMPL_OPENGL_ES2)
