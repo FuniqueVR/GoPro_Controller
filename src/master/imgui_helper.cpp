@@ -13,7 +13,9 @@
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-#pragma comment(lib, "Wtsapi32.lib") 
+#pragma comment(lib, "setupapi.lib") 
+#pragma comment(lib, "version.lib") 
+#pragma comment(lib, "Wtsapi32.lib")
 #pragma comment(lib, "Advapi32.lib")
 #pragma comment(lib, "Crypt32.lib")
 #pragma comment(lib, "Ole32.lib")
@@ -21,6 +23,7 @@
 #pragma comment(lib, "Gdi32.lib")
 #pragma comment(lib, "user32.lib")
 #pragma comment(lib, "winmm.lib")
+#pragma comment(lib, "imm32.lib") 
 #endif
 #include <SDL3/SDL.h>
 #if defined(IMGUI_IMPL_OPENGL_ES2)
