@@ -20,6 +20,10 @@ option(BUILD_SERVER "Build the server (RPi) executable" ON)
 option(BUILD_MASTER "Build the master (PC) executable" ON)
 # Dependencies
 
+if(MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17")
+endif()
+
 # libhv (Required for Server, used in Master too if needed, but primarily Server)
 if(BUILD_SERVER OR BUILD_MASTER)
     # --- GLOBAL CURL CONFIGURATION (Apply to BOTH Server and Master) ---
@@ -152,6 +156,7 @@ if(BUILD_MASTER)
         ${IMGUI_SOURCES}
         ${MDNS_SOURCES}
     )
+    target_compile_features(master PUBLIC cxx_std_17)
 
     if (WIN32)
         set_property(TARGET master PROPERTY C_STANDARD 17)
