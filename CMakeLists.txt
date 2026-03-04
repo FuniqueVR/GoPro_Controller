@@ -20,12 +20,6 @@ option(BUILD_SERVER "Build the server (RPi) executable" ON)
 option(BUILD_MASTER "Build the master (PC) executable" ON)
 # Dependencies
 
-if(MSVC)
-    target_compile_options(GoPro_Controller PRIVATE "/std:c++17")
-else()
-    target_compile_features(GoPro_Controller PRIVATE cxx_std_17)
-endif()
-
 # libhv (Required for Server, used in Master too if needed, but primarily Server)
 if(BUILD_SERVER OR BUILD_MASTER)
     # --- GLOBAL CURL CONFIGURATION (Apply to BOTH Server and Master) ---
@@ -158,7 +152,11 @@ if(BUILD_MASTER)
         ${IMGUI_SOURCES}
         ${MDNS_SOURCES}
     )
-    target_compile_features(master PUBLIC cxx_std_17)
+    if(MSVC)
+        target_compile_options(master PRIVATE "/std:c++17")
+    else()
+        target_compile_features(master PRIVATE cxx_std_17)
+    endif()
 
     if (WIN32)
         set_property(TARGET master PROPERTY C_STANDARD 17)
