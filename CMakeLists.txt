@@ -154,7 +154,8 @@ if(BUILD_MASTER)
     )
 
     if (WIN32)
-        set_target_properties(master PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED ON)
+        set_property(TARGET master PROPERTY CXX_STANDARD 17)
+        set_property(TARGET master PROPERTY CXX_STANDARD_REQUIRED ON)
         set_property(TARGET master PROPERTY 
             MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL"
         )
