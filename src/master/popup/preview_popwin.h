@@ -17,7 +17,23 @@
 #pragma comment(lib, "winmm.lib")
 #pragma comment(lib, "imm32.lib") 
 #pragma comment(lib, "OleAut32.lib") 
-#pragma comment(lib, "Iphlpapi.lib") 
+#pragma comment(lib, "Iphlpapi.lib")
+
+// ✅ Add these OpenCV-required system libs
+#pragma comment(lib, "comctl32.lib")
+#pragma comment(lib, "gdi32.lib")
+#pragma comment(lib, "ole32.lib")
+#pragma comment(lib, "oleaut32.lib")
+#pragma comment(lib, "uuid.lib")
+#pragma comment(lib, "vfw32.lib")
+#pragma comment(lib, "msvfw32.lib")
+
+// ✅ Add OpenCV world library directly
+#ifdef _DEBUG
+#pragma comment(lib, "opencv_world4100d.lib")
+#else
+#pragma comment(lib, "opencv_world4100.lib")
+#endif
 #endif
 #include <SDL3/SDL.h>
 #if defined(IMGUI_IMPL_OPENGL_ES2)

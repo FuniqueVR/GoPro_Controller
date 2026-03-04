@@ -163,7 +163,7 @@ if(BUILD_MASTER)
         set_property(TARGET master PROPERTY C_STANDARD 17)
         set_property(TARGET master PROPERTY CXX_STANDARD 17)
         set_property(TARGET master PROPERTY CXX_STANDARD_REQUIRED ON)
-        target_link_libraries(master PUBLIC
+        target_link_libraries(master PRIVATE
             $<IF:$<CONFIG:Debug>,opencv_world4100d,opencv_world4100>
             OpenGL::GL
             SDL3::SDL3
