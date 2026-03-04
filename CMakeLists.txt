@@ -152,21 +152,18 @@ if(BUILD_MASTER)
         ${IMGUI_SOURCES}
         ${MDNS_SOURCES}
     )
-    if(WIN32)
-        set(OPENCV_DIR "${CMAKE_SOURCE_DIR}/lib/opencv")
-        target_compile_options(master PRIVATE "/std:c++17")
-    else()
-        target_compile_features(master PRIVATE cxx_std_17)
-    endif()
 
     if (WIN32)
+        set(OPENCV_DIR "${CMAKE_SOURCE_DIR}/lib/opencv")
+        target_compile_options(master PRIVATE "/std:c++17")
+
         target_link_directories(master PRIVATE
             "${OPENCV_DIR}/build/x64/vc16/lib"
         )
         set_property(TARGET master PROPERTY C_STANDARD 17)
         set_property(TARGET master PROPERTY CXX_STANDARD 17)
         set_property(TARGET master PROPERTY CXX_STANDARD_REQUIRED ON)
-        target_link_libraries(master PRIVATE
+        target_link_libraries(master PUBLIC
             $<IF:$<CONFIG:Debug>,opencv_world4100d,opencv_world4100>
             OpenGL::GL
             SDL3::SDL3
@@ -174,18 +171,7 @@ if(BUILD_MASTER)
             libcurl
             winpthread
         )
-    else()
-        target_link_libraries(master PRIVATE
-            ${OpenCV_LIBS}
-            OpenGL::GL
-            SDL3::SDL3
-            hv_static
-            libcurl
-        )
-    endif()
 
-    # Add OpenCV
-    if(WIN32)
         target_include_directories(master PRIVATE
             lib/opencv/build/include
         )
@@ -196,10 +182,16 @@ if(BUILD_MASTER)
             $<TARGET_FILE_DIR:master>
             COMMENT "Copying OpenCV DLL to output directory"
         )
-    endif()
-
-    if(WIN32)
         target_link_options(master PRIVATE "-static-libgcc" "-static-libstdc++" "-static")
+    else()
+        target_compile_features(master PRIVATE cxx_std_17)
+        target_link_libraries(master PRIVATE
+            ${OpenCV_LIBS}
+            OpenGL::GL
+            SDL3::SDL3
+            hv_static
+            libcurl
+        )
     endif()
 endif()
 
