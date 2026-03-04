@@ -34,7 +34,7 @@ void end_imgui();
 /**
  * Create the SDL context
  */
-std::tuple<struct SDL_Window*, const char*> begin_sdl();
+void begin_sdl(std::tuple<struct SDL_Window*, const char*>& r);
 /**
  * Destory the SDL context
  */

@@ -130,7 +130,8 @@ int main(int, char**)
     SDL_GLContext gl_context;
     const char* glsl_version;
     {
-        std::tuple<SDL_Window*, const char*> sdl_ctx = begin_sdl();
+        std::tuple<SDL_Window*, const char*> sdl_ctx;
+        begin_sdl(sdl_ctx);
         window = std::get<0>(sdl_ctx);
         gl_context = SDL_GL_CreateContext(window);
         glsl_version = std::get<1>(sdl_ctx);

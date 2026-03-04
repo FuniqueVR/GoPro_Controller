@@ -185,7 +185,7 @@ void end_imgui(){
 /**
  * Create the SDL context
  */
-std::tuple<struct SDL_Window*, const char*> begin_sdl(){
+void begin_sdl(std::tuple<struct SDL_Window*, const char*>& r){
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD))
     {
         printf("Error: SDL_Init(): %s\n", SDL_GetError());
@@ -240,7 +240,7 @@ std::tuple<struct SDL_Window*, const char*> begin_sdl(){
     }
     SDL_GL_SetSwapInterval(1); // Enable vsync
     SDL_ShowWindow(window);
-    return {window, glsl_version};
+    r = {window, glsl_version};
 }
 /**
  * Destory the SDL context
