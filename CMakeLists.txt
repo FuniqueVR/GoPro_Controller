@@ -152,7 +152,8 @@ if(BUILD_MASTER)
         ${IMGUI_SOURCES}
         ${MDNS_SOURCES}
     )
-    if(MSVC)
+    if(_WIN32)
+        set(OPENCV_DIR "${CMAKE_SOURCE_DIR}/lib/opencv")
         target_compile_options(master PRIVATE "/std:c++17")
     else()
         target_compile_features(master PRIVATE cxx_std_17)
@@ -160,7 +161,7 @@ if(BUILD_MASTER)
 
     if (WIN32)
         target_link_directories(master PRIVATE
-            lib/opencv/build/x64/vc16/lib
+            "${OPENCV_DIR}/build/x64/vc16/lib"
         )
         set_property(TARGET master PROPERTY C_STANDARD 17)
         set_property(TARGET master PROPERTY CXX_STANDARD 17)
@@ -191,7 +192,7 @@ if(BUILD_MASTER)
         message(STATUS "Master will be built WITH OpenCV support")
         add_custom_command(TARGET master POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${CMAKE_SOURCE_DIR}/lib/opencv/build/x64/vc16/bin/opencv_world4100$<$<CONFIG:Debug>:d>.dll"
+            "${OPENCV_DIR}/build/x64/vc16/bin/opencv_world4100$<$<CONFIG:Debug>:d>.dll"
             $<TARGET_FILE_DIR:master>
             COMMENT "Copying OpenCV DLL to output directory"
         )
