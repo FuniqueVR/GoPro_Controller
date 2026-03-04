@@ -156,7 +156,8 @@ if(BUILD_MASTER)
     if (WIN32)
         set_target_properties(master PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED ON)
         target_link_libraries(master PRIVATE
-            lib/opencv/build/bin
+            lib/opencv/build/x64/v16/bin
+            lib/opencv/build/x64/v16/lib
             OpenGL::GL
             SDL3::SDL3
             hv_static
@@ -187,7 +188,10 @@ if(BUILD_MASTER)
 
     if(WIN32)
         target_link_options(master PRIVATE "-static-libgcc" "-static-libstdc++" "-static")
-        target_link_libraries(master PRIVATE opencv_videoio_ffmpeg4100_64.dll)
+        target_link_libraries(master PRIVATE 
+            opencv_world4100.lib
+            opencv_world4100d.lib
+        )
     endif()
 endif()
 
