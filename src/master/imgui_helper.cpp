@@ -25,6 +25,7 @@
 #pragma comment(lib, "winmm.lib")
 #pragma comment(lib, "imm32.lib") 
 #pragma comment(lib, "OleAut32.lib") 
+#pragma comment(lib, "Iphlpapi.lib") 
 #endif
 #include <SDL3/SDL.h>
 #if defined(IMGUI_IMPL_OPENGL_ES2)
