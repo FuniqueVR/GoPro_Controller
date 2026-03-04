@@ -154,6 +154,7 @@ if(BUILD_MASTER)
     )
 
     if (WIN32)
+        set_property(TARGET master PROPERTY C_STANDARD 17)
         set_property(TARGET master PROPERTY CXX_STANDARD 17)
         set_property(TARGET master PROPERTY CXX_STANDARD_REQUIRED ON)
         set_property(TARGET master PROPERTY 
