@@ -289,7 +289,6 @@ int main(int, char**)
         }
         // Rendering
         ImGui::Render();
-
         end_loop(window, io);
     }
 

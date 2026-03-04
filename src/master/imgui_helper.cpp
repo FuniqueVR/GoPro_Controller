@@ -74,6 +74,9 @@ void setup_imgui(){
     io.ConfigErrorRecoveryEnableTooltip = true;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+#ifdef _WIN32
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+#endif
     io.ConfigDockingAlwaysTabBar = true;
     io.ConfigDpiScaleFonts = true;
     io.ConfigDpiScaleViewports = true;
