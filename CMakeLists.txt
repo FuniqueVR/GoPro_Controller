@@ -152,7 +152,7 @@ if(BUILD_MASTER)
         ${IMGUI_SOURCES}
         ${MDNS_SOURCES}
     )
-    if(_WIN32)
+    if(WIN32)
         set(OPENCV_DIR "${CMAKE_SOURCE_DIR}/lib/opencv")
         target_compile_options(master PRIVATE "/std:c++17")
     else()
