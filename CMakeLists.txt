@@ -160,15 +160,13 @@ if(BUILD_MASTER)
 
     if (WIN32)
         target_link_directories(master PRIVATE
-            lib/opencv/build/x64/v16/bin
-            lib/opencv/build/x64/v16/lib
+            lib/opencv/build/x64/vc16/lib
         )
         set_property(TARGET master PROPERTY C_STANDARD 17)
         set_property(TARGET master PROPERTY CXX_STANDARD 17)
         set_property(TARGET master PROPERTY CXX_STANDARD_REQUIRED ON)
         target_link_libraries(master PRIVATE
-            opencv_world4100.lib
-            opencv_world4100d.lib
+            opencv_world4100d
             OpenGL::GL
             SDL3::SDL3
             hv_static
@@ -195,6 +193,12 @@ if(BUILD_MASTER)
             lib/opencv/sources/modules/videoio/include
         )
         message(STATUS "Master will be built WITH OpenCV support")
+        add_custom_command(TARGET master POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${CMAKE_SOURCE_DIR}/lib/opencv/build/x64/vc16/bin/opencv_world4100$<$<CONFIG:Debug>:d>.dll"
+            $<TARGET_FILE_DIR:master>
+            COMMENT "Copying OpenCV DLL to output directory"
+        )
     endif()
 
     if(WIN32)
