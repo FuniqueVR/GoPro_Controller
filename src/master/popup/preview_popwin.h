@@ -2,6 +2,7 @@
 #include <queue>
 #include <mutex>
 #include <thread>
+#define WIN32_LEAN_AND_MEAN
 #include <SDL3/SDL.h>
 #include <GL/gl.h>
 #include <opencv2/opencv.hpp>

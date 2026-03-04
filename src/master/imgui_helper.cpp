@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <string>
 #include <tuple>
+#define WIN32_LEAN_AND_MEAN
 #include <SDL3/SDL.h>
 #if defined(IMGUI_IMPL_OPENGL_ES2)
 #include <SDL3/SDL_opengles2.h>
