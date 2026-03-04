@@ -11,7 +11,11 @@
 #pragma comment(lib, "opengl32.lib")
 #endif
 #include <SDL3/SDL.h>
-#include <GL/gl.h>
+#if defined(IMGUI_IMPL_OPENGL_ES2)
+#include <SDL3/SDL_opengles2.h>
+#else
+#include <SDL3/SDL_opengl.h>
+#endif
 #include <opencv2/opencv.hpp>
 #include "base_pop_window.h"
 
