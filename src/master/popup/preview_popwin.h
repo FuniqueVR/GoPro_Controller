@@ -6,6 +6,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #pragma comment(lib, "Wtsapi32.lib") 
+#pragma comment(lib, "Crypt32.lib")
 #endif
 #include <SDL3/SDL.h>
 #include <GL/gl.h>
