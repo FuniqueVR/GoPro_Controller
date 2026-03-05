@@ -13,10 +13,44 @@ InspectorWindow::InspectorWindow(
 ) 
     : BaseWindow(_setting, _state, _master) {
     title = "Inspector";
+    setting_list_ordered = std::vector<int32_t>(GOPRO_SETTING_SIZE);
+    status_list_ordered = std::vector<int32_t>(GOPRO_STATUS_SIZE);
+    reset_setting_order();
+    reset_status_order();
 }
 
 InspectorWindow::~InspectorWindow(){
     
+}
+
+json InspectorWindow::get_window_data() {
+    json data = json::object();
+    data["setting_order"] = json::array();
+    data["status_order"] = json::array();
+    for(int32_t i = 0; i < GOPRO_SETTING_SIZE; i++){
+        data["setting_order"].push_back(setting_list_ordered[i]);
+    }
+    for(int32_t i = 0; i < GOPRO_STATUS_SIZE; i++){
+        data["status_order"].push_back(status_list_ordered[i]);
+    }
+    return data;
+}
+
+void InspectorWindow::set_window_data(json data) {
+    if(data["setting_order"].is_array() && data["setting_order"].size() == GOPRO_SETTING_SIZE){
+        for(int32_t i = 0; i < GOPRO_SETTING_SIZE; i++){
+            if(data["setting_order"].at(i).is_number_integer()){
+                setting_list_ordered[i] = data["setting_order"].at(i).get<int32_t>();
+            }
+        }
+    }
+    if(data["status_order"].is_array() && data["status_order"].size() == GOPRO_STATUS_SIZE){
+        for(int32_t i = 0; i < GOPRO_STATUS_SIZE; i++){
+            if(data["status_order"].at(i).is_number_integer()){
+                status_list_ordered[i] = data["status_order"].at(i).get<int32_t>();
+            }
+        }
+    }
 }
 
 void InspectorWindow::render(){
@@ -30,9 +64,20 @@ void InspectorWindow::render(){
         if(ImGui::Button("Rename Camera")){
             master->command_with_value("rename", state->current_camera_item, state->current_camera_name);
         }
-        ImGui::LabelText("IP##Inspector", "%s", state->current_camera_item.c_str());
+        ImGui::Text("Name: %s, IP: %s", state->current_camera_name.c_str(), state->current_camera_item.c_str());
 
         ImGui::BeginDisabled(should_disabled);
+
+        if(ImGui::Button("Reset Setting Order")){
+            reset_setting_order();
+            state->update_server();
+        }
+        ImGui::SameLine();
+        if(ImGui::Button("Reset Status Order")){
+            reset_status_order();
+            state->update_server();
+        }
+
         ImGui::Separator();
 
         if(ImGui::BeginTabBar("Inspector_Bar")){
@@ -57,8 +102,9 @@ void InspectorWindow::render(){
 }
 
 void InspectorWindow::draw_setting(){
+    int move_from = -1, move_to = -1;
     for(int32_t i = 0; i < GOPRO_SETTING_SIZE; i++){
-        int32_t id = GOPRO_SETTING_IDS[i];
+        int32_t id = setting_list_ordered[i];
         std::string name = GET_SETTING_NAME_BY_ID(id);
         size_t size = GET_SETTING_SIZE_BY_ID(id);
         if (!state->current_setting_items[std::to_string(id)].is_number()) {
@@ -101,12 +147,44 @@ void InspectorWindow::draw_setting(){
             }
             ImGui::EndCombo();
         }
+        
+        ImGuiDragDropFlags src_flags = 0;
+        src_flags |= ImGuiDragDropFlags_SourceNoDisableHover;
+        src_flags |= ImGuiDragDropFlags_SourceNoHoldToOpenOthers;
+        //src_flags |= ImGuiDragDropFlags_SourceNoPreviewTooltip;
+        if(ImGui::BeginDragDropSource(src_flags)){
+            if (!(src_flags & ImGuiDragDropFlags_SourceNoPreviewTooltip))
+                ImGui::Text("Moving \"%s\"", name.c_str());
+            ImGui::SetDragDropPayload("INSPECTOR_SETTING", &i, sizeof(int));
+            ImGui::EndDragDropSource();
+        }
+
+        if(ImGui::BeginDragDropTarget()){
+            ImGuiDragDropFlags target_flags = 0;
+            target_flags |= ImGuiDragDropFlags_AcceptBeforeDelivery;
+            target_flags |= ImGuiDragDropFlags_AcceptNoDrawDefaultRect;
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("INSPECTOR_SETTING", target_flags))
+            {
+                move_from = *(const int*)payload->Data;
+                move_to = i;
+            }
+            ImGui::EndDragDropTarget();
+        }
+    }
+    if (move_from != -1 && move_to != -1)
+    {
+        const int32_t tmp = setting_list_ordered[move_from];
+        setting_list_ordered[move_from] = setting_list_ordered[move_to];
+        setting_list_ordered[move_to] = tmp;
+        //ImGui::SetDragDropPayload("INSPECTOR_SETTING", &move_to, sizeof(int));
+        state->update_server();
     }
 }
 
 void InspectorWindow::draw_status(){
+    int move_from = -1, move_to = -1;
     for(int32_t i = 0; i < GOPRO_STATUS_SIZE; i++){
-        int32_t id = GOPRO_STATUS_IDS[i];
+        int32_t id = status_list_ordered[i];
         const int32_t type = GET_STATUS_TYPE_BY_ID(id);
         std::string name = GET_STATUS_NAME_BY_ID(id);
         if (name.size() == 0) continue;
@@ -143,6 +221,37 @@ void InspectorWindow::draw_status(){
             std::cout << "Type is unknown: " << type << std::endl;
             continue;   
         }
+
+        ImGuiDragDropFlags src_flags = 0;
+        src_flags |= ImGuiDragDropFlags_SourceNoDisableHover;
+        src_flags |= ImGuiDragDropFlags_SourceNoHoldToOpenOthers;
+        //src_flags |= ImGuiDragDropFlags_SourceNoPreviewTooltip;
+        if(ImGui::BeginDragDropSource(src_flags)){
+            if (!(src_flags & ImGuiDragDropFlags_SourceNoPreviewTooltip))
+                ImGui::Text("Moving \"%s\"", name.c_str());
+            ImGui::SetDragDropPayload("INSPECTOR_STATUS", &i, sizeof(int));
+            ImGui::EndDragDropSource();
+        }
+
+        if(ImGui::BeginDragDropTarget()){
+            ImGuiDragDropFlags target_flags = 0;
+            target_flags |= ImGuiDragDropFlags_AcceptBeforeDelivery;
+            target_flags |= ImGuiDragDropFlags_AcceptNoDrawDefaultRect;
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("INSPECTOR_STATUS", target_flags))
+            {
+                move_from = *(const int*)payload->Data;
+                move_to = i;
+            }
+            ImGui::EndDragDropTarget();
+        }
+    }
+    if (move_from != -1 && move_to != -1)
+    {
+        const int32_t tmp = status_list_ordered[move_from];
+        status_list_ordered[move_from] = status_list_ordered[move_to];
+        status_list_ordered[move_to] = tmp;
+        //ImGui::SetDragDropPayload("INSPECTOR_SETTING", &move_to, sizeof(int));
+        state->update_server();
     }
 }
 
@@ -160,5 +269,17 @@ void InspectorWindow::draw_media(){
         std::shared_ptr<CameraInfo> t = master->getCameras()[camera_ip];
         ImGui::LabelText("Server", "%s", t->server.c_str());
         ImGui::LabelText("Last Media", "%s", t->last_media.c_str());
+    }
+}
+
+void InspectorWindow::reset_setting_order(){
+    for(int32_t i = 0; i < GOPRO_SETTING_SIZE; i++){
+        setting_list_ordered[i] = GOPRO_SETTING_IDS[i];
+    }
+}
+
+void InspectorWindow::reset_status_order(){
+    for(int32_t i = 0; i < GOPRO_STATUS_SIZE; i++){
+        status_list_ordered[i] = GOPRO_STATUS_IDS[i];
     }
 }
