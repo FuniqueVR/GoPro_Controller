@@ -22,5 +22,8 @@ void StyleSetting::set_window_data(json data) {
 }
 
 void StyleSetting::render(){
-
+    ImGui::Begin("Style Setting", &enable, w_flag);
+    {
+    }
+    ImGui::End();
 }

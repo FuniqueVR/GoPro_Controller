@@ -235,6 +235,10 @@ int main(int, char**)
                     inspector_win->trigger(!inspector_win->is_enable());
                     updateGUIList();
                 }
+                if (event.key.key == SDLK_T) {
+                    style_setting_win->trigger(!style_setting_win->is_enable());
+                    updateGUIList();
+                }
             }
         }
 
@@ -259,6 +263,7 @@ int main(int, char**)
             update_menu = update_menu || ImGui::MenuItem("Command Sender (W)", NULL, commands_win->is_enable());
             update_menu = update_menu || ImGui::MenuItem("Camera List (E)", NULL, camera_list_win->is_enable());
             update_menu = update_menu || ImGui::MenuItem("Inspector (R)", NULL, inspector_win->is_enable());
+            update_menu = update_menu || ImGui::MenuItem("Style (T)", NULL, style_setting_win->is_enable());
             ImGui::Separator();
             //update_menu = update_menu || ImGui::MenuItem("System Style", NULL, &system_style_win);
             ImGui::EndMenu();
