@@ -18,8 +18,12 @@
 #include "imgui_helper.h"
 
 #define WIN_INIT(a, b, c, d) \
-a = std::make_shared<b>(gui, global_state, master) \
-c[d] = a \
+a = std::make_shared<b>(gui, global_state, master); \
+c[d] = a; \
+
+#define WIN_INIT2(a, b, r, c, d) \
+a = std::make_shared<b>(r, gui, global_state, master); \
+c[d] = a; \
 
 std::queue<std::string> command_queue = std::queue<std::string>();
 std::shared_ptr<GoProMaster> master = std::make_shared<GoProMaster>();
@@ -155,7 +159,7 @@ int main(int, char**)
     WIN_INIT(add_camera_popwin, AddCameraPopup, pop_windows_array, 0);
     WIN_INIT(scan_camera_popwin, ScanCameraPopup, pop_windows_array, 1);
     WIN_INIT(start_webcam_popwin, StartWebcamPopup, pop_windows_array, 2);
-    WIN_INIT(preview_popwin, PreviewPopup, pop_windows_array, 3);
+    WIN_INIT2(preview_popwin, PreviewPopup, renderer, pop_windows_array, 3);
     WIN_INIT(style_setting_popwin, StyleSettingPopup, pop_windows_array, 4);
     // Register event for master
     master->registerCameraSettingFeedback(settingGetterFeedback);

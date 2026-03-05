@@ -6,7 +6,7 @@ StyleSettingPopup::StyleSettingPopup(
     std::shared_ptr<GoProMaster> _master
 ) 
     : BasePopWindow(_setting, _state, _master) {
-    title = "Start Webcam##Popup";
+    title = "Style Setting##Popup";
 }
 
 StyleSettingPopup::~StyleSettingPopup(){
@@ -14,5 +14,5 @@ StyleSettingPopup::~StyleSettingPopup(){
 }
 
 void StyleSettingPopup::render(){
-    
+
 }

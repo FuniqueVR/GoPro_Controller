@@ -391,13 +391,13 @@ void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
 }
 
 void CameraListWindow::item_event(const std::shared_ptr<CameraInfo>& c){
-    if(ImGui::IsItemClicked(ImGuiMouseButton_Left)){
+    if(ImGui::IsItemClicked(ImGuiMouseButton_Left) && ImGui::IsItemHovered()){
         onClick(c);
     }
-    if(ImGui::IsItemClicked(ImGuiMouseButton_Right)){
+    if(ImGui::IsItemClicked(ImGuiMouseButton_Right) && ImGui::IsItemHovered()){
         ImGui::OpenPopupOnItemClick();
     }
-    if(ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left) && c->connected){
+    if(ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left) && ImGui::IsItemHovered() && c->connected){
         master->preview_start(c->server, c->ip);
         state->preview_ip = c->ip;
         state->preview_server = c->server;
@@ -406,6 +406,13 @@ void CameraListWindow::item_event(const std::shared_ptr<CameraInfo>& c){
 
     if(ImGui::BeginPopupContextItem((title + "##Popup_Menu" + c->ip).c_str())){
         ImGui::BeginDisabled(!c->connected);
+        if (ImGui::Selectable("Connect")){
+            master->command_only(c->server, "usb_on", c->ip);
+        }
+        if (ImGui::Selectable("Disconnect")){
+            master->command_only(c->server, "usb_off", c->ip);
+        }
+        ImGui::Separator();
         if (ImGui::Selectable("Reboot"))
         {
             master->command_only(c->server, "reboot", c->ip);

@@ -27,7 +27,6 @@
 #pragma comment(lib, "OleAut32.lib") 
 #pragma comment(lib, "Iphlpapi.lib")
 
-// ✅ Add these OpenCV-required system libs
 #pragma comment(lib, "comctl32.lib")
 #pragma comment(lib, "gdi32.lib")
 #pragma comment(lib, "ole32.lib")
@@ -36,7 +35,6 @@
 #pragma comment(lib, "vfw32.lib")
 #pragma comment(lib, "msvfw32.lib")
 
-// ✅ Add OpenCV world library directly
 #ifdef _DEBUG
 #pragma comment(lib, "opencv_world4100d.lib")
 #else
