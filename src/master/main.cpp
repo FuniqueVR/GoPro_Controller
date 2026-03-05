@@ -17,6 +17,10 @@
 #include "popup/popwins.h"
 #include "imgui_helper.h"
 
+#define WIN_INIT(a, b, c, d) \
+a = std::make_shared<b>(gui, global_state, master) \
+c[d] = a \
+
 std::queue<std::string> command_queue = std::queue<std::string>();
 std::shared_ptr<GoProMaster> master = std::make_shared<GoProMaster>();
 std::shared_ptr<json> gui;
@@ -33,7 +37,8 @@ std::shared_ptr<AddCameraPopup> add_camera_popwin;
 std::shared_ptr<ScanCameraPopup> scan_camera_popwin;
 std::shared_ptr<StartWebcamPopup> start_webcam_popwin;
 std::shared_ptr<PreviewPopup> preview_popwin;
-std::shared_ptr<BasePopWindow> pop_windows_array[4];
+std::shared_ptr<StyleSettingPopup> style_setting_popwin;
+std::shared_ptr<BasePopWindow> pop_windows_array[5];
 
 // All the window flags
 ExecutionType execution_type = ExecutionType::SetAll;
@@ -142,23 +147,16 @@ int main(int, char**)
     servers = std::make_shared<json>(loadServerList());
     gui = std::make_shared<json>(loadGUI());
     // Win
-    websocket_win = std::make_shared<WebsocketWindow>(gui, global_state, master);
-    commands_win = std::make_shared<CommandWindow>(gui, global_state, master);
-    camera_list_win = std::make_shared<CameraListWindow>(gui, global_state, master);
-    inspector_win = std::make_shared<InspectorWindow>(gui, global_state, master);
-    windows_array[0] = websocket_win;
-    windows_array[1] = commands_win;
-    windows_array[2] = camera_list_win;
-    windows_array[3] = inspector_win;
+    WIN_INIT(websocket_win, WebsocketWindow, windows_array, 0);
+    WIN_INIT(commands_win, CommandWindow, windows_array, 1);
+    WIN_INIT(camera_list_win, CameraListWindow, windows_array, 2);
+    WIN_INIT(inspector_win, InspectorWindow, windows_array, 3);
     // Popup
-    add_camera_popwin = std::make_shared<AddCameraPopup>(gui, global_state, master);
-    scan_camera_popwin = std::make_shared<ScanCameraPopup>(gui, global_state, master);
-    start_webcam_popwin = std::make_shared<StartWebcamPopup>(gui, global_state, master);
-    preview_popwin = std::make_shared<PreviewPopup>(renderer, gui, global_state, master);
-    pop_windows_array[0] = add_camera_popwin;
-    pop_windows_array[1] = scan_camera_popwin;
-    pop_windows_array[2] = start_webcam_popwin;
-    pop_windows_array[3] = preview_popwin;
+    WIN_INIT(add_camera_popwin, AddCameraPopup, pop_windows_array, 0);
+    WIN_INIT(scan_camera_popwin, ScanCameraPopup, pop_windows_array, 1);
+    WIN_INIT(start_webcam_popwin, StartWebcamPopup, pop_windows_array, 2);
+    WIN_INIT(preview_popwin, PreviewPopup, pop_windows_array, 3);
+    WIN_INIT(style_setting_popwin, StyleSettingPopup, pop_windows_array, 4);
     // Register event for master
     master->registerCameraSettingFeedback(settingGetterFeedback);
     master->registerCameraStatusFeedback(statusGetterFeedback);

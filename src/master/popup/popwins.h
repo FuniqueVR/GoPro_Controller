@@ -9,3 +9,4 @@
 #include "preview_popwin.h"
 #include "scan_camera_popwin.h"
 #include "start_webcam_popwin.h"
+#include "style_setting_popwin.h"
