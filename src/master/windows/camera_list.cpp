@@ -5,6 +5,11 @@
  * See the LICENSE file in the project root for more information.
 */
 #include "camera_list.h"
+#include <vector>
+#include <memory>
+#include "../data/camera_info.h"
+#include <algorithm>
+#include <functional> 
 
 std::string bytesToGbString(long bytes) {
     // Define the value of one gigabyte (1024 * 1024 * 1024 bytes)
@@ -37,30 +42,74 @@ CameraListWindow::~CameraListWindow(){
 json CameraListWindow::get_window_data() {
     json d = json::object();
     d["size"] = size;
+    d["filter"] = (int32_t)filter;
+    d["sort"] = (int32_t)sort;
+    d["filter_ip"] = filter_ip;
+    d["filter_connect"] = filter_connect;
     return d;
 }
 
 void CameraListWindow::set_window_data(json data){
     if(data["size"].is_number_integer()){
-        size_event = data["size"].get<int32_t>();
+        size = data["size"].get<int32_t>();
+    }
+    if(data["filter"].is_number_integer()){
+        filter = (FilterType)data["filter"].get<int32_t>();
+    }
+    if(data["sort"].is_number_integer()){
+        sort = (SortType)data["sort"].get<int32_t>();
+    }
+    if(data["filter_connect"].is_boolean()){
+        filter_connect = data["filter_connect"].get<bool>();
+    }
+    if(data["filter_ip"].is_string()){
+        filter_ip = data["filter_ip"].get<std::string>();
     }
 }
 
 void CameraListWindow::render(){
+    bool changed = false;
     ImGui::Begin(title.c_str(), &enable, w_flag);
     {
         std::lock_guard<std::mutex> lock(master->camera_mtx);
-        ImGui::SliderInt("Item Size##Camera_List_Size", &size_event, 0, 10);
+        changed = ImGui::SliderInt("Item Size##Camera_List_Size", &size, 0, 10);
+
+        std::string filter_text = get_filter_string(filter);
+        std::string sort_text = get_sort_string(sort);
+
+        ImGui::BeginCombo("Filter", filter_text.c_str());
+        {
+            for(int32_t i = 0; i < 3; i++){
+                if(ImGui::Selectable((get_filter_string((FilterType)i) + "##filter_option").c_str())){
+                    filter = (FilterType)i;
+                    changed = true;
+                }
+            }
+        }
+        ImGui::EndCombo();
+
+        ImGui::BeginCombo("Sort", sort_text.c_str());
+        {
+            for(int32_t i = 0; i < 3; i++){
+                if(ImGui::Selectable((get_sort_string((SortType)i) + "##sort_option").c_str())){
+                    sort = (SortType)i;
+                    changed = true;
+                }
+            }
+        }
+        ImGui::EndCombo();
+
         ImVec2 rect_size = get_rect_size();
         float width = ImGui::GetWindowSize().x;
         int32_t limit = static_cast<int32_t>(width / rect_size.x);
         int32_t counter = 0;
-        int32_t size = master->getCameras().size();
+        std::vector<std::shared_ptr<CameraInfo>> ciss = get_filtering_result();
+        int32_t size = ciss.size();
         ImGui::Text("Cal: %f/%f, Total: %d, Line: %d", width, rect_size.x, size, limit);
-        for(const auto& c : master->getCameras()){
+        for(const auto& c : ciss){
             if(c){
                 try{
-                    if(size_event == 0) draw_line(c);
+                    if(size == 0) draw_line(c);
                     else {
                         draw_group(c);
                         if(counter + 1 < limit){
@@ -77,8 +126,7 @@ void CameraListWindow::render(){
         }
     }
     ImGui::End();
-    if(size != size_event){
-        size = size_event;
+    if(changed){
         state->update_server();
     }
 }
@@ -449,3 +497,53 @@ void CameraListWindow::onClick(const std::shared_ptr<CameraInfo>& c){
 ImVec2 CameraListWindow::get_rect_size(){
     return ImVec2(10 * (size + 10) + 20, 10 * (size + 10) + 20);
 }
+
+std::vector<std::shared_ptr<CameraInfo>> CameraListWindow::get_filtering_result(){
+    auto buffer = master->getCameras();
+    auto filtered = std::vector<std::shared_ptr<CameraInfo>>();
+
+    for(auto& c : buffer){
+        if(filter == FilterType::Connect){
+            if(c->connected == filter_connect){
+                filtered.push_back(c);
+            }
+        }else if(filter == FilterType::Server){
+            if(c->server == filter_ip){
+                filtered.push_back(c);
+            }
+        }else {
+            filtered.push_back(c);
+        }
+    }
+
+    if (sort == SortType::Name){
+        std::sort(filtered.begin(), filtered.end(), [](const std::shared_ptr<CameraInfo>& a, const std::shared_ptr<CameraInfo>& b){
+            return a->name < b->name;
+        });
+    }else if (sort == SortType::IP){
+        std::sort(filtered.begin(), filtered.end(), [](const std::shared_ptr<CameraInfo>& a, const std::shared_ptr<CameraInfo>& b){
+            return a->ip < b->ip;
+        });
+    }
+    return filtered;
+}
+
+std::string CameraListWindow::get_filter_string(FilterType type){
+    switch(type){
+        default:
+        case FilterType::None: return "None";
+        case FilterType::Server: return "Server";
+        case FilterType::Connect: return "Connect";
+    }
+}
+
+std::string CameraListWindow::get_sort_string(SortType type){
+    switch(type){
+        default:
+        case SortType::None: return "None";
+        case SortType::Name: return "Name";
+        case SortType::IP: return "IP";
+    }
+}
+
+

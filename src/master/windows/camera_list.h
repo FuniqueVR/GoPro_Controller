@@ -15,6 +15,14 @@ public:
         std::shared_ptr<GoProMaster> _master);
     virtual ~CameraListWindow();
 
+    enum class FilterType {
+        None, Connect, Server
+    };
+
+    enum class SortType {
+        None, Name, IP
+    };
+
     json get_window_data() override;
     void set_window_data(json data) override;
     virtual void render() override;
@@ -26,7 +34,14 @@ public:
 
 private:
     ImVec2 get_rect_size();
-    
+    std::vector<std::shared_ptr<CameraInfo>> get_filtering_result();
+    std::string get_filter_string(FilterType type);
+    std::string get_sort_string(SortType type);
+
     int32_t size;
-    int32_t size_event;
+    FilterType filter = FilterType::None;
+    SortType sort = SortType::None;
+
+    std::string filter_ip;
+    bool filter_connect;
 };

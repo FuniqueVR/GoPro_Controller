@@ -35,14 +35,14 @@ std::shared_ptr<CameraListWindow> camera_list_win;
 std::shared_ptr<CommandWindow> commands_win;
 std::shared_ptr<InspectorWindow> inspector_win;
 std::shared_ptr<WebsocketWindow> websocket_win;
-std::shared_ptr<BaseWindow> windows_array[4];
+std::shared_ptr<StyleSetting> style_setting_win;
+std::shared_ptr<BaseWindow> windows_array[5];
 
 std::shared_ptr<AddCameraPopup> add_camera_popwin;
 std::shared_ptr<ScanCameraPopup> scan_camera_popwin;
 std::shared_ptr<StartWebcamPopup> start_webcam_popwin;
 std::shared_ptr<PreviewPopup> preview_popwin;
-std::shared_ptr<StyleSettingPopup> style_setting_popwin;
-std::shared_ptr<BasePopWindow> pop_windows_array[5];
+std::shared_ptr<BasePopWindow> pop_windows_array[4];
 
 // All the window flags
 ExecutionType execution_type = ExecutionType::SetAll;
@@ -155,12 +155,12 @@ int main(int, char**)
     WIN_INIT(commands_win, CommandWindow, windows_array, 1);
     WIN_INIT(camera_list_win, CameraListWindow, windows_array, 2);
     WIN_INIT(inspector_win, InspectorWindow, windows_array, 3);
+    WIN_INIT(style_setting_win, StyleSetting, windows_array, 4);
     // Popup
     WIN_INIT(add_camera_popwin, AddCameraPopup, pop_windows_array, 0);
     WIN_INIT(scan_camera_popwin, ScanCameraPopup, pop_windows_array, 1);
     WIN_INIT(start_webcam_popwin, StartWebcamPopup, pop_windows_array, 2);
     WIN_INIT2(preview_popwin, PreviewPopup, renderer, pop_windows_array, 3);
-    WIN_INIT(style_setting_popwin, StyleSettingPopup, pop_windows_array, 4);
     // Register event for master
     master->registerCameraSettingFeedback(settingGetterFeedback);
     master->registerCameraStatusFeedback(statusGetterFeedback);
