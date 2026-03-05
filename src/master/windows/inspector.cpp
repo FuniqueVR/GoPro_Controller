@@ -225,6 +225,7 @@ void InspectorWindow::draw_status(){
         ImGuiDragDropFlags src_flags = 0;
         src_flags |= ImGuiDragDropFlags_SourceNoDisableHover;
         src_flags |= ImGuiDragDropFlags_SourceNoHoldToOpenOthers;
+        src_flags |= ImGuiDragDropFlags_SourceAllowNullID;
         //src_flags |= ImGuiDragDropFlags_SourceNoPreviewTooltip;
         if(ImGui::BeginDragDropSource(src_flags)){
             if (!(src_flags & ImGuiDragDropFlags_SourceNoPreviewTooltip))
@@ -250,7 +251,7 @@ void InspectorWindow::draw_status(){
         const int32_t tmp = status_list_ordered[move_from];
         status_list_ordered[move_from] = status_list_ordered[move_to];
         status_list_ordered[move_to] = tmp;
-        //ImGui::SetDragDropPayload("INSPECTOR_SETTING", &move_to, sizeof(int));
+        //ImGui::SetDragDropPayload("INSPECTOR_STATUS", &move_to, sizeof(int));
         state->update_server();
     }
 }
