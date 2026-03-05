@@ -77,27 +77,45 @@ void CameraListWindow::render(){
         std::string filter_text = get_filter_string(filter);
         std::string sort_text = get_sort_string(sort);
 
-        ImGui::BeginCombo("Filter", filter_text.c_str());
-        {
-            for(int32_t i = 0; i < 3; i++){
-                if(ImGui::Selectable((get_filter_string((FilterType)i) + "##filter_option").c_str())){
-                    filter = (FilterType)i;
-                    changed = true;
-                }
-            }
-        }
-        ImGui::EndCombo();
-
-        ImGui::BeginCombo("Sort", sort_text.c_str());
-        {
+        if(ImGui::BeginCombo("Sort##Camera_List_combo", sort_text.c_str())){
             for(int32_t i = 0; i < 3; i++){
                 if(ImGui::Selectable((get_sort_string((SortType)i) + "##sort_option").c_str())){
                     sort = (SortType)i;
                     changed = true;
                 }
             }
+            ImGui::EndCombo();
         }
-        ImGui::EndCombo();
+
+        if(ImGui::BeginCombo("Filter##Camera_List_combo", filter_text.c_str())){
+            for(int32_t i = 0; i < 3; i++){
+                if(ImGui::Selectable((get_filter_string((FilterType)i) + "##filter_option").c_str())){
+                    filter = (FilterType)i;
+                    if(filter == FilterType::Server && master->getServers().size() > 0){
+                        filter_ip = master->getServers().at(0)->ip;
+                    }
+                    changed = true;
+                }
+            }
+            ImGui::EndCombo();
+        }
+
+        if(filter == FilterType::Connect){
+            ImGui::SameLine();
+            if(ImGui::Checkbox("State##Camera_List_combo2", &filter_connect)){
+                changed = true;
+            }
+        }else if(filter == FilterType::Server){
+            if(ImGui::BeginCombo("Server##Camera_List_combo2", filter_ip.c_str())){
+                for(auto& ser : master->getServers()){
+                    if(ImGui::Selectable((ser->ip + "##filter_server_option").c_str())){
+                        filter_ip = ser->ip;
+                        changed = true;
+                    }
+                }
+                ImGui::EndCombo();
+            }
+        }
 
         ImVec2 rect_size = get_rect_size();
         float width = ImGui::GetWindowSize().x;
