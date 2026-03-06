@@ -112,6 +112,7 @@ void updateServerList(){
     data["window"]["commands_win"] = commands_win->get_window_data();
     data["window"]["inspector_win"] = inspector_win->get_window_data();
     data["window"]["websocket_win"] = websocket_win->get_window_data();
+    data["popwin"]["preview_popwin"] = preview_popwin->get_window_data();
     saveServerList(data);
     servers->swap(data);
 }
@@ -169,7 +170,7 @@ int main(int, char**)
     global_state->command_sender = pushCommand;
     std::thread bg_thread(background_worker);
     // Init the windows
-    init_state_setup(servers, gui, global_state, master, windows_array);
+    init_state_setup(servers, gui, global_state, master, windows_array, pop_windows_array);
 
     setup_imgui();
     setup_catppuccin_mocha_theme();

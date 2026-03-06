@@ -51,6 +51,9 @@ public:
         std::shared_ptr<GoProMaster> _master);
     ~PreviewPopup();
 
+    json get_window_data() override;
+    void set_window_data(json data) override;
+
     virtual void trigger(bool value) override;
     virtual void update_decoder();
     virtual void update() override;
@@ -72,4 +75,5 @@ private:
 
     cv::Mat get_latest_frame();
     void ConvertTexture(cv::Mat& mat);
+    void DirChange(bool increase);
 };

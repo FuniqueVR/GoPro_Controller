@@ -20,6 +20,14 @@ BasePopWindow::~BasePopWindow(){
 
 }
 
+json get_window_data() {
+    return json::object();
+}
+
+void set_window_data(json data){
+
+}
+
 std::string BasePopWindow::get_title(){
     return title;
 }
