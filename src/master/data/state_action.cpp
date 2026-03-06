@@ -6,13 +6,15 @@
 */
 #include "state_action.h"
 #include "../windows/base_window.h"
+#include "../popup/base_pop_window.h"
 
 void init_state_setup(
     std::shared_ptr<json> servers,
     std::shared_ptr<json> gui,
     std::shared_ptr<struct GlobalState> global_state,
     std::shared_ptr<struct GoProMaster> master,
-    std::shared_ptr<struct BaseWindow> windows[]
+    std::shared_ptr<struct BaseWindow> windows[],
+    std::shared_ptr<struct BasePopWindow> popwins[]
 ){
     if((*servers)["data"].is_array()){     
         for(int i = 0; i < (*servers)["data"].size(); i++){
@@ -42,6 +44,12 @@ void init_state_setup(
         json inspector_win_json = (*servers)["window"]["inspector_win"];
         if(inspector_win_json.is_object()){
             windows[3]->set_window_data(inspector_win_json);
+        }
+    }
+    if((*servers)["popwin"].is_object()){
+        json preview_popwin_json = (*servers)["popwin"]["preview_popwin"];
+        if(preview_popwin_json.is_object()){
+            popwins[3]->set_window_data(preview_popwin_json);
         }
     }
 

@@ -5,6 +5,11 @@
  * See the LICENSE file in the project root for more information.
 */
 #include "camera_list.h"
+#include <vector>
+#include <memory>
+#include "../data/camera_info.h"
+#include <algorithm>
+#include <functional> 
 
 std::string bytesToGbString(long bytes) {
     // Define the value of one gigabyte (1024 * 1024 * 1024 bytes)
@@ -37,31 +42,95 @@ CameraListWindow::~CameraListWindow(){
 json CameraListWindow::get_window_data() {
     json d = json::object();
     d["size"] = size;
+    d["filter"] = (int32_t)filter;
+    d["sort"] = (int32_t)sort;
+    d["filter_ip"] = filter_ip;
+    d["filter_connect"] = filter_connect;
     return d;
 }
 
 void CameraListWindow::set_window_data(json data){
     if(data["size"].is_number_integer()){
-        size_event = data["size"].get<int32_t>();
+        size = data["size"].get<int32_t>();
+    }
+    if(data["filter"].is_number_integer()){
+        filter = (FilterType)data["filter"].get<int32_t>();
+    }
+    if(data["sort"].is_number_integer()){
+        sort = (SortType)data["sort"].get<int32_t>();
+    }
+    if(data["filter_connect"].is_boolean()){
+        filter_connect = data["filter_connect"].get<bool>();
+    }
+    if(data["filter_ip"].is_string()){
+        filter_ip = data["filter_ip"].get<std::string>();
     }
 }
 
 void CameraListWindow::render(){
+    bool changed = false;
     ImGui::Begin(title.c_str(), &enable, w_flag);
     {
         std::lock_guard<std::mutex> lock(master->camera_mtx);
-        ImGui::SliderInt("Item Size##Camera_List_Size", &size_event, 0, 10);
+        changed = ImGui::SliderInt("Item Size##Camera_List_Size", &size, 0, 10);
+
+        std::string filter_text = get_filter_string(filter);
+        std::string sort_text = get_sort_string(sort);
+
+        if(ImGui::BeginCombo("Sort##Camera_List_combo", sort_text.c_str())){
+            for(int32_t i = 0; i < 3; i++){
+                if(ImGui::Selectable((get_sort_string((SortType)i) + "##sort_option").c_str())){
+                    sort = (SortType)i;
+                    changed = true;
+                }
+            }
+            ImGui::EndCombo();
+        }
+
+        if(ImGui::BeginCombo("Filter##Camera_List_combo", filter_text.c_str())){
+            for(int32_t i = 0; i < 3; i++){
+                if(ImGui::Selectable((get_filter_string((FilterType)i) + "##filter_option").c_str())){
+                    filter = (FilterType)i;
+                    if(filter == FilterType::Server && master->getServers().size() > 0){
+                        filter_ip = master->getServers().at(0)->ip;
+                    }
+                    changed = true;
+                }
+            }
+            ImGui::EndCombo();
+        }
+
+        if(filter == FilterType::Connect){
+            ImGui::SameLine();
+            if(ImGui::Checkbox("State##Camera_List_combo2", &filter_connect)){
+                changed = true;
+            }
+        }else if(filter == FilterType::Server){
+            if(ImGui::BeginCombo("Server##Camera_List_combo2", filter_ip.c_str())){
+                for(auto& ser : master->getServers()){
+                    if(ImGui::Selectable((ser->ip + "##filter_server_option").c_str())){
+                        filter_ip = ser->ip;
+                        changed = true;
+                    }
+                }
+                ImGui::EndCombo();
+            }
+        }
+
         ImVec2 rect_size = get_rect_size();
-        float width = ImGui::GetWindowWidth();
+        float width = ImGui::GetWindowSize().x;
         int32_t limit = static_cast<int32_t>(width / rect_size.x);
         int32_t counter = 0;
-        for(const auto& c : master->getCameras()){
+        std::vector<std::shared_ptr<CameraInfo>> ciss = get_filtering_result();
+        int32_t size = ciss.size();
+        ImGui::Text("Cal: %f/%f, Total: %d, Line: %d", width, rect_size.x, size, limit);
+        for(const auto& c : ciss){
             if(c){
                 try{
                     if(size == 0) draw_line(c);
                     else {
                         draw_group(c);
-                        if(counter < limit){
+                        if(counter + 1 < limit){
                             ImGui::SameLine();
                             counter++;
                         }else{
@@ -75,8 +144,7 @@ void CameraListWindow::render(){
         }
     }
     ImGui::End();
-    if(size != size_event){
-        size = size_event;
+    if(changed){
         state->update_server();
     }
 }
@@ -114,6 +182,8 @@ void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
     uint32_t col_white = IM_COL32(255, 255, 255, 255);
     uint32_t col_grey = IM_COL32(210, 210, 210, 255);
     uint32_t col_red = IM_COL32(230, 10, 10, 255);
+    uint32_t col_orange = IM_COL32(230, 230, 10, 255);
+    uint32_t col_orange_dark = IM_COL32(80, 80, 10, 255);
     uint32_t col_greed = IM_COL32(10, 230, 10, 255);
 
     // Drawing outline
@@ -125,6 +195,7 @@ void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
     // Drawing Battery
     if(c->connected){
         bool batteryHave = false;
+        bool batteryCharging = false;
         int precentage = 0;
         uint32_t col_inner_color;
         if(status[std::to_string(BATTERY_PRESENT_ID)].is_number()){
@@ -133,10 +204,17 @@ void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
         if(status[std::to_string(INTERNAL_BATTERY_PERCENTAGE_ID)].is_number()){
             precentage = status[std::to_string(INTERNAL_BATTERY_PERCENTAGE_ID)].get<int32_t>();
         }
+        if(status[std::to_string(INTERNAL_BATTERY_BARS_ID)].is_number()){
+            batteryCharging = status[std::to_string(INTERNAL_BATTERY_BARS_ID)].get<int32_t>() == 4;
+        }
         ImVec2 battery_text_size;
         std::string battery_text;
         if(batteryHave){
-            col_inner_color = col_greed;
+            if(precentage <= 25){
+                col_inner_color = col_orange;
+            }else{
+                col_inner_color = col_greed;
+            }
             battery_text = std::to_string(precentage) + "%";
         }else{
             col_inner_color = col_red;
@@ -159,14 +237,27 @@ void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
         // Drawing Battery inline
         ImVec2 inner_min = outter_min + inner_padding;
         ImVec2 inner_max = outter_max - inner_padding;
+        float w = inner_max.y - inner_min.y;
+        float wc = w * (precentage / 100.0F);
+        float wr = w - wc;
+        inner_max.x -= wr;
         draw_list->AddRectFilled(
             inner_min, 
             inner_max, 
             col_inner_color);
 
         // Drawing Battery text
-        ImVec2 text_pos = ImVec2(outter_min.x - (battery_text_size.x + spacing), outter_min.y);
+        ImVec2 text_pos = ImVec2(outter_max.x - battery_text_size.x, outter_max.y);
         draw_list->AddText(text_pos, col_white, battery_text.c_str());
+
+        if(batteryCharging){
+            std::string charging_text = "C=>";
+            ImVec2 charging_text_size = ImGui::CalcTextSize(charging_text.c_str());
+            ImVec2 charging_text_pos = ImVec2(inner_min.x, 
+                ((inner_max.y + inner_min.y) / 2.0F) - (charging_text_size.y / 2.0F)
+            );
+            draw_list->AddText(charging_text_pos, col_orange_dark, charging_text.c_str());
+        }
     }
     // Drawing SD card
     if(c->connected){
@@ -212,7 +303,7 @@ void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
             col_inner_color);
 
         // Drawing SD text
-        ImVec2 text_pos = ImVec2(outter_max.x + spacing, outter_min.y);
+        ImVec2 text_pos = ImVec2(outter_min.x, outter_max.y);
         draw_list->AddText(text_pos, col_white, sd_text.c_str());
     }
     // Center text
@@ -282,26 +373,21 @@ void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
             preset = status[std::to_string(PRESET_ID)].get<int32_t>();
         }
 
-        if(preset == 0){
-            preset_text = "V";
-        }else if(preset == 65542 || 
-            preset == 65536){
-            preset_text = "P";
-        }else if(preset == 131072 || 
-            preset == 131075 ||
-            preset == 131076 ||
-            preset == 131077 ||
-            preset == 131073 ||
-            preset == 131074){
-            preset_text = "T";
-        }else{
-            preset_text = std::to_string(preset);
-        }
+        if(preset == 0) preset_text = "V";
+        else if(preset == 65542) preset_text = "PB";
+        else if(preset == 65536) preset_text = "PS";
+        else if(preset == 131072) preset_text = "T";
+        else if(preset == 131075) preset_text = "TT";
+        else if(preset == 131076) preset_text = "TLP";
+        else if(preset == 131077) preset_text = "TLT";
+        else if(preset == 131073) preset_text = "TV";
+        else if(preset == 131074) preset_text = "TNV";
+        else preset_text = std::to_string(preset);
 
-        ImVec2 frame_padding = ImVec2(5, 5);
+        ImVec2 frame_padding = ImVec2(10, 10);
         ImVec2 preset_text_size = ImGui::CalcTextSize(preset_text.c_str());
         draw_list->AddText(ImVec2(
-            image_pos.x + frame_padding.x + preset_text_size.x,
+            image_pos.x + frame_padding.x,
             (image_pos.y + rect_size.y) - (frame_padding.y + preset_text_size.y)
         ), col_white, preset_text.c_str());
     }
@@ -371,21 +457,28 @@ void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
 }
 
 void CameraListWindow::item_event(const std::shared_ptr<CameraInfo>& c){
-    if(ImGui::IsItemClicked(ImGuiMouseButton_Left)){
+    if(ImGui::IsItemClicked(ImGuiMouseButton_Left) && ImGui::IsItemHovered()){
         onClick(c);
     }
-    if(ImGui::IsItemClicked(ImGuiMouseButton_Right)){
+    if(ImGui::IsItemClicked(ImGuiMouseButton_Right) && ImGui::IsItemHovered()){
         ImGui::OpenPopupOnItemClick();
     }
-    if(ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)){
+    if(ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left) && ImGui::IsItemHovered() && c->connected){
         master->preview_start(c->server, c->ip);
         state->preview_ip = c->ip;
         state->preview_server = c->server;
         state->command_sender("preview_start");
     }
 
-    if(ImGui::BeginPopupContextItem((title + "##Popup_Menu").c_str())){
+    if(ImGui::BeginPopupContextItem((title + "##Popup_Menu" + c->ip).c_str())){
         ImGui::BeginDisabled(!c->connected);
+        if (ImGui::Selectable("Connect")){
+            master->command_only(c->server, "usb_on", c->ip);
+        }
+        if (ImGui::Selectable("Disconnect")){
+            master->command_only(c->server, "usb_off", c->ip);
+        }
+        ImGui::Separator();
         if (ImGui::Selectable("Reboot"))
         {
             master->command_only(c->server, "reboot", c->ip);
@@ -422,3 +515,53 @@ void CameraListWindow::onClick(const std::shared_ptr<CameraInfo>& c){
 ImVec2 CameraListWindow::get_rect_size(){
     return ImVec2(10 * (size + 10) + 20, 10 * (size + 10) + 20);
 }
+
+std::vector<std::shared_ptr<CameraInfo>> CameraListWindow::get_filtering_result(){
+    auto buffer = master->getCameras();
+    auto filtered = std::vector<std::shared_ptr<CameraInfo>>();
+
+    for(auto& c : buffer){
+        if(filter == FilterType::Connect){
+            if(c->connected == filter_connect){
+                filtered.push_back(c);
+            }
+        }else if(filter == FilterType::Server){
+            if(c->server == filter_ip){
+                filtered.push_back(c);
+            }
+        }else {
+            filtered.push_back(c);
+        }
+    }
+
+    if (sort == SortType::Name){
+        std::sort(filtered.begin(), filtered.end(), [](const std::shared_ptr<CameraInfo>& a, const std::shared_ptr<CameraInfo>& b){
+            return a->name < b->name;
+        });
+    }else if (sort == SortType::IP){
+        std::sort(filtered.begin(), filtered.end(), [](const std::shared_ptr<CameraInfo>& a, const std::shared_ptr<CameraInfo>& b){
+            return a->ip < b->ip;
+        });
+    }
+    return filtered;
+}
+
+std::string CameraListWindow::get_filter_string(FilterType type){
+    switch(type){
+        default:
+        case FilterType::None: return "None";
+        case FilterType::Server: return "Server";
+        case FilterType::Connect: return "Connect";
+    }
+}
+
+std::string CameraListWindow::get_sort_string(SortType type){
+    switch(type){
+        default:
+        case SortType::None: return "None";
+        case SortType::Name: return "Name";
+        case SortType::IP: return "IP";
+    }
+}
+
+

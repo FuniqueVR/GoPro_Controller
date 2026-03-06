@@ -17,6 +17,14 @@
 #include "popup/popwins.h"
 #include "imgui_helper.h"
 
+#define WIN_INIT(a, b, c, d) \
+a = std::make_shared<b>(gui, global_state, master); \
+c[d] = a; \
+
+#define WIN_INIT2(a, b, r, c, d) \
+a = std::make_shared<b>(r, gui, global_state, master); \
+c[d] = a; \
+
 std::queue<std::string> command_queue = std::queue<std::string>();
 std::shared_ptr<GoProMaster> master = std::make_shared<GoProMaster>();
 std::shared_ptr<json> gui;
@@ -27,7 +35,8 @@ std::shared_ptr<CameraListWindow> camera_list_win;
 std::shared_ptr<CommandWindow> commands_win;
 std::shared_ptr<InspectorWindow> inspector_win;
 std::shared_ptr<WebsocketWindow> websocket_win;
-std::shared_ptr<BaseWindow> windows_array[4];
+std::shared_ptr<StyleSetting> style_setting_win;
+std::shared_ptr<BaseWindow> windows_array[5];
 
 std::shared_ptr<AddCameraPopup> add_camera_popwin;
 std::shared_ptr<ScanCameraPopup> scan_camera_popwin;
@@ -103,6 +112,7 @@ void updateServerList(){
     data["window"]["commands_win"] = commands_win->get_window_data();
     data["window"]["inspector_win"] = inspector_win->get_window_data();
     data["window"]["websocket_win"] = websocket_win->get_window_data();
+    data["popwin"]["preview_popwin"] = preview_popwin->get_window_data();
     saveServerList(data);
     servers->swap(data);
 }
@@ -130,33 +140,28 @@ int main(int, char**)
     SDL_GLContext gl_context;
     const char* glsl_version;
     {
-        std::tuple<SDL_Window*, SDL_GLContext, const char*> sdl_ctx = begin_sdl();
+        std::tuple<SDL_Window*, const char*> sdl_ctx;
+        begin_sdl(sdl_ctx);
         window = std::get<0>(sdl_ctx);
-        gl_context = std::get<1>(sdl_ctx);
-        glsl_version = std::get<2>(sdl_ctx);
+        gl_context = SDL_GL_CreateContext(window);
+        glsl_version = std::get<1>(sdl_ctx);
+        SDL_GL_MakeCurrent(window, gl_context);
     }
     SDL_Renderer* renderer = SDL_CreateRenderer(window, NULL);
 
     servers = std::make_shared<json>(loadServerList());
     gui = std::make_shared<json>(loadGUI());
     // Win
-    websocket_win = std::make_shared<WebsocketWindow>(gui, global_state, master);
-    commands_win = std::make_shared<CommandWindow>(gui, global_state, master);
-    camera_list_win = std::make_shared<CameraListWindow>(gui, global_state, master);
-    inspector_win = std::make_shared<InspectorWindow>(gui, global_state, master);
-    windows_array[0] = websocket_win;
-    windows_array[1] = commands_win;
-    windows_array[2] = camera_list_win;
-    windows_array[3] = inspector_win;
+    WIN_INIT(websocket_win, WebsocketWindow, windows_array, 0);
+    WIN_INIT(commands_win, CommandWindow, windows_array, 1);
+    WIN_INIT(camera_list_win, CameraListWindow, windows_array, 2);
+    WIN_INIT(inspector_win, InspectorWindow, windows_array, 3);
+    WIN_INIT(style_setting_win, StyleSetting, windows_array, 4);
     // Popup
-    add_camera_popwin = std::make_shared<AddCameraPopup>(gui, global_state, master);
-    scan_camera_popwin = std::make_shared<ScanCameraPopup>(gui, global_state, master);
-    start_webcam_popwin = std::make_shared<StartWebcamPopup>(gui, global_state, master);
-    preview_popwin = std::make_shared<PreviewPopup>(renderer, gui, global_state, master);
-    pop_windows_array[0] = add_camera_popwin;
-    pop_windows_array[1] = scan_camera_popwin;
-    pop_windows_array[2] = start_webcam_popwin;
-    pop_windows_array[3] = preview_popwin;
+    WIN_INIT(add_camera_popwin, AddCameraPopup, pop_windows_array, 0);
+    WIN_INIT(scan_camera_popwin, ScanCameraPopup, pop_windows_array, 1);
+    WIN_INIT(start_webcam_popwin, StartWebcamPopup, pop_windows_array, 2);
+    WIN_INIT2(preview_popwin, PreviewPopup, renderer, pop_windows_array, 3);
     // Register event for master
     master->registerCameraSettingFeedback(settingGetterFeedback);
     master->registerCameraStatusFeedback(statusGetterFeedback);
@@ -165,7 +170,7 @@ int main(int, char**)
     global_state->command_sender = pushCommand;
     std::thread bg_thread(background_worker);
     // Init the windows
-    init_state_setup(servers, gui, global_state, master, windows_array);
+    init_state_setup(servers, gui, global_state, master, windows_array, pop_windows_array);
 
     setup_imgui();
     setup_catppuccin_mocha_theme();
@@ -198,11 +203,11 @@ int main(int, char**)
                     printf("Hotkey F3: Stop Recording\n");
                 }
                 if (event.key.key == SDLK_F4) {
-                    master->presetSwitch("", 65536);
+                    master->presetSwitch("", "", 65536);
                     printf("Hotkey F4: Photo Mode\n");
                 }
                 if (event.key.key == SDLK_F5) {
-                    master->presetSwitch("", 0);
+                    master->presetSwitch("", "", 0);
                     printf("Hotkey F5: Video Mode\n");
                 }
                 if (event.key.key == SDLK_F11) {
@@ -231,6 +236,10 @@ int main(int, char**)
                     inspector_win->trigger(!inspector_win->is_enable());
                     updateGUIList();
                 }
+                if (event.key.key == SDLK_T) {
+                    style_setting_win->trigger(!style_setting_win->is_enable());
+                    updateGUIList();
+                }
             }
         }
 
@@ -255,6 +264,7 @@ int main(int, char**)
             update_menu = update_menu || ImGui::MenuItem("Command Sender (W)", NULL, commands_win->is_enable());
             update_menu = update_menu || ImGui::MenuItem("Camera List (E)", NULL, camera_list_win->is_enable());
             update_menu = update_menu || ImGui::MenuItem("Inspector (R)", NULL, inspector_win->is_enable());
+            update_menu = update_menu || ImGui::MenuItem("Style (T)", NULL, style_setting_win->is_enable());
             ImGui::Separator();
             //update_menu = update_menu || ImGui::MenuItem("System Style", NULL, &system_style_win);
             ImGui::EndMenu();
@@ -287,7 +297,6 @@ int main(int, char**)
         }
         // Rendering
         ImGui::Render();
-
         end_loop(window, io);
     }
 
@@ -298,7 +307,8 @@ int main(int, char**)
     }
     // Cleanup
     end_imgui();
-    end_sdl(window, gl_context);
+    SDL_GL_DestroyContext(gl_context);
+    end_sdl(window);
 
     return 0;
 }

@@ -5,6 +5,9 @@
 ## 開發需求
 
 * Debine OS / Windows OS
+
+### Debine 需要配置
+
 * CMake
 ```bash
 sudo apt update
@@ -22,6 +25,12 @@ sudo apt-get update
 sudo apt-get install libopencv-dev libavcodec-dev libavformat-dev libswscale-dev libavutil-dev
 sudo apt-get install gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly
 ```
+
+### Windows 需要配置
+
+* [7Z](https://www.7-zip.org/)
+* [CMake](https://cmake.org/)
+* [MSVC](https://visualstudio.microsoft.com/vs/features/cplusplus/)
 
 總共有兩個輸出的應用程式
 * Master

@@ -16,6 +16,18 @@ PreviewPopup::~PreviewPopup(){
     trigger(false);
 }
 
+json PreviewPopup::get_window_data(){
+    json data = json::object();
+    data["dir"] = dir;
+    return data;
+}
+
+void PreviewPopup::set_window_data(json data){
+    if(data["dir"].is_number_integer()){
+        dir = data["dir"].get<int32_t>();
+    }
+}
+
 void PreviewPopup::trigger(bool value){
     BasePopWindow::trigger(value);
     if(value){
@@ -41,7 +53,6 @@ void PreviewPopup::trigger(bool value){
 }
 
 void PreviewPopup::update_decoder(){
-
     stream_open = false;
     int32_t retry = 0;
     const int32_t MAX_RETRY = 10;
@@ -152,6 +163,7 @@ void PreviewPopup::update(){
 void PreviewPopup::render(){
     cv::Mat frame = get_latest_frame();
     ConvertTexture(frame);
+    bool remap = false;
 
     ImGuiIO& io = ImGui::GetIO();
     ImVec2 display_size = io.DisplaySize;
@@ -160,10 +172,34 @@ void PreviewPopup::render(){
     ImGui::SetNextWindowPos(ImVec2(unit.x * 0.5F, unit.y * 0.5F), ImGuiCond_Always);
     ImGui::SetNextWindowSize(ImVec2(unit.x * 9.0F, unit.y * 9.0F), ImGuiCond_Always);
 
+    int32_t target_w, target_h;
+    if(dir == 0 || dir == 2){
+        // 0° or 180° - width/height unchanged
+        target_w = texture_width;
+        target_h = texture_height;
+    } else {
+        // 90° or 270° - width/height swapped
+        target_w = texture_height;
+        target_h = texture_width;
+    }
+
     if(ImGui::BeginPopupModal(title.c_str(), NULL, wp_flag)){
-        
         if(gl_texture != 0){
-            ImGui::Image((ImTextureID)(intptr_t)gl_texture, ImVec2(800, 600));
+            if(ImGui::Button("<== Rotate##preview_button")){
+                DirChange(true); remap = true;
+            }
+            ImGui::SameLine();
+            if(ImGui::Button("Rotate ==>##preview_button")){
+                DirChange(false); remap = true;
+            }
+            float ratio = (float)target_w / (float)target_h;
+            ImVec2 size;
+            if(target_w >= target_h){
+                size = ImVec2(unit.x * 7, (unit.x * 7) / ratio);
+            }else{
+                size = ImVec2((unit.y * 7) * ratio, unit.y * 7);
+            }
+            ImGui::Image((ImTextureID)(intptr_t)gl_texture, size);
         } else {
             ImGui::Dummy(ImVec2(800, 280));
             float win_width = ImGui::GetContentRegionAvail().x;
@@ -189,6 +225,9 @@ void PreviewPopup::render(){
         }
         ImGui::EndPopup();
     }
+    if(remap){
+      // Let's recreate the map here  
+    }
 }
 
 cv::Mat PreviewPopup::get_latest_frame(){
@@ -200,18 +239,45 @@ cv::Mat PreviewPopup::get_latest_frame(){
     
     cv::Mat frame = frame_queue.front();
     frame_queue.pop();
-    std::cout << "[Preview Decoder] Last frame received !" << std::endl;
     return frame;
 }
 
 void PreviewPopup::ConvertTexture(cv::Mat& mat){
     if(mat.empty()) return;
 
+    cv::Mat rotated_frame;
+    if(dir == 0){
+        rotated_frame = mat;  // No rotation
+    }
+    else if(dir == 1){
+        cv::rotate(mat, rotated_frame, cv::ROTATE_90_CLOCKWISE);
+    }
+    else if(dir == 2){
+        cv::rotate(mat, rotated_frame, cv::ROTATE_180);
+    }
+    else if(dir == 3){
+        cv::rotate(mat, rotated_frame, cv::ROTATE_90_COUNTERCLOCKWISE);
+    }
+    else {
+        rotated_frame = mat;  // Invalid dir, no rotation
+    }
+
     cv::Mat frame;
-    if (mat.cols != texture_width || mat.rows != texture_height){
-        cv::resize(mat, frame, cv::Size(texture_width, texture_height));
+    int32_t target_w, target_h;
+    if(dir == 0 || dir == 2){
+        // 0° or 180° - width/height unchanged
+        target_w = texture_width;
+        target_h = texture_height;
     } else {
-        frame = mat;
+        // 90° or 270° - width/height swapped
+        target_w = texture_height;
+        target_h = texture_width;
+    }
+
+    if (rotated_frame.cols != target_w || rotated_frame.rows != target_h){
+        cv::resize(rotated_frame, frame, cv::Size(target_w, target_h));
+    } else {
+        frame = rotated_frame;
     }
 
     cv::Mat rgb;
@@ -222,11 +288,11 @@ void PreviewPopup::ConvertTexture(cv::Mat& mat){
         glBindTexture(GL_TEXTURE_2D, gl_texture);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_LINEAR);
         // Allocate texture
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
-            texture_width, texture_height,
+            target_w, target_h,
             0, GL_RGB, GL_UNSIGNED_BYTE, rgb.data);
         glBindTexture(GL_TEXTURE_2D, 0);
         std::cout << "[Preview Decoder] Frame converted !" << std::endl;
@@ -234,8 +300,21 @@ void PreviewPopup::ConvertTexture(cv::Mat& mat){
         // ✅ Update texture data (fast path)
         glBindTexture(GL_TEXTURE_2D, gl_texture);
         glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0,
-                        texture_width, texture_height,
-                        GL_RGB, GL_UNSIGNED_BYTE, rgb.data);
+            target_w, target_h,
+            GL_RGB, GL_UNSIGNED_BYTE, rgb.data);
         glBindTexture(GL_TEXTURE_2D, 0);
     }
+}
+
+void PreviewPopup::DirChange(bool increase){
+    if(increase){
+        dir++;
+        if(dir >= 4) dir = 0;
+    }else{
+        dir--;
+        if(dir <= -1) dir = 3;
+    }
+    glDeleteTextures(1, &gl_texture);
+    gl_texture = 0;
+    state->update_server();
 }

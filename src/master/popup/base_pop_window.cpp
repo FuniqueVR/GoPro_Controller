@@ -20,6 +20,14 @@ BasePopWindow::~BasePopWindow(){
 
 }
 
+json BasePopWindow::get_window_data() {
+    return json::object();
+}
+
+void BasePopWindow::set_window_data(json data){
+
+}
+
 std::string BasePopWindow::get_title(){
     return title;
 }
@@ -34,7 +42,7 @@ bool BasePopWindow::is_open(){
 
 void BasePopWindow::trigger(bool value){
     enable = value;
-    if(!enable){
+    if(!enable && isopen){
         isopen = false;
         ImGui::CloseCurrentPopup();
     }

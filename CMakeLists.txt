@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.14)
-project(GoPro_Controller)
+project(GoPro_Controller LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_C_STANDARD 17)
 
 # --- NUCLEAR STATIC OVERRIDES (MUST BE AT THE TOP) ---
@@ -82,20 +84,22 @@ if(BUILD_MASTER)
     # OpenGL
     find_package(OpenGL REQUIRED)
 
-    # SDL3
-    find_package(SDL3)
-    if (NOT SDL3_FOUND)
-        message(STATUS "SDL3 not found on system. Getting SDL3 from GitHub...")
-        include(FetchContent)
-        FetchContent_Declare(
-            SDL3
-            GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-            GIT_TAG        release-3.2.0  # Use a stable release tag
-        )
-        FetchContent_MakeAvailable(SDL3)
+    if(WIN32)
+        set(SDL_RENDER_D3D OFF CACHE BOOL "" FORCE)
+        set(SDL_RENDER_D3D11 OFF CACHE BOOL "" FORCE)
+        set(SDL_RENDER_D3D12 OFF CACHE BOOL "" FORCE)
+        set(SDL_DIRECTX OFF CACHE BOOL "" FORCE)
+        set(CMAKE_DISABLE_PRECOMPILE_HEADERS ON CACHE BOOL "" FORCE)
     endif()
 
-    find_package(OpenCV REQUIRED COMPONENTS core imgcodecs highgui)
+    # SDL3
+    add_subdirectory(lib/SDL3 EXCLUDE_FROM_ALL)
+
+    if(WIN32)
+        message(STATUS "Using curl install the window prebuild binary for import here")
+    else()
+        find_package(OpenCV REQUIRED COMPONENTS core imgcodecs highgui)
+    endif()
 
     # ImGui
     set(IMGUI_DIR "lib/imgui")
@@ -126,6 +130,9 @@ if(BUILD_SERVER)
         ${SERVER_SOURCE}
         ${MDNS_SOURCES}
     )
+    if(WIN32)
+        set_target_properties(server PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED ON)
+    endif()
     target_link_libraries(server hv_static libcurl)
     # Ensure json include is available for server too if it uses nlohmann/json
     target_include_directories(server PRIVATE lib/json/include) 
@@ -147,15 +154,67 @@ if(BUILD_MASTER)
     )
 
     if (WIN32)
+        set(OPENCV_DIR "${CMAKE_SOURCE_DIR}/lib/opencv")
+        target_compile_options(master PRIVATE "/std:c++17")
+
+        target_link_directories(master PRIVATE
+            "${OPENCV_DIR}/build/x64/vc16/lib"
+        )
+        set_property(TARGET master PROPERTY C_STANDARD 17)
+        set_property(TARGET master PROPERTY CXX_STANDARD 17)
+        set_property(TARGET master PROPERTY CXX_STANDARD_REQUIRED ON)
         target_link_libraries(master PRIVATE
-            ${OpenCV_LIBS}
+            $<IF:$<CONFIG:Debug>,opencv_world4100d,opencv_world4100>
             OpenGL::GL
             SDL3::SDL3
             hv_static
             libcurl
             winpthread
         )
+
+        target_include_directories(master PRIVATE
+            lib/opencv/build/include
+        )
+        message(STATUS "Master will be built WITH OpenCV support")
+        add_custom_command(TARGET master POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                "${OPENCV_DIR}/build/x64/vc16/bin/opencv_world4100.dll"
+                $<TARGET_FILE_DIR:master>
+                COMMENT "Copying OpenCV DLL to output directory"
+        )
+        add_custom_command(TARGET master POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                "${OPENCV_DIR}/build/x64/vc16/bin/opencv_world4100d.dll"
+                $<TARGET_FILE_DIR:master>
+                COMMENT "Copying OpenCV Debug DLL to output directory"
+        )
+        add_custom_command(TARGET master POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                "${OPENCV_DIR}/build/x64/vc16/bin/opencv_videoio_ffmpeg4100_64.dll"
+                $<TARGET_FILE_DIR:master>
+                COMMENT "Copying OpenCV FFmpeg DLL to output directory"
+        )
+        add_custom_command(TARGET master POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                "${OPENCV_DIR}/build/x64/vc16/bin/opencv_videoio_msmf4100_64.dll"
+                $<TARGET_FILE_DIR:master>
+                COMMENT "Copying OpenCV Fsmf DLL to output directory"
+        )
+        add_custom_command(TARGET master POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                "${OPENCV_DIR}/build/x64/vc16/bin/opencv_videoio_msmf4100_64d.dll"
+                $<TARGET_FILE_DIR:master>
+                COMMENT "Copying OpenCV Fsmf Debug DLL to output directory"
+        )
+        add_custom_command(TARGET master POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                "${CMAKE_SOURCE_DIR}/Roboto-Medium.ttf"
+                $<TARGET_FILE_DIR:master>
+                COMMENT "Copying Font to output directory"
+        )
+        target_link_options(master PRIVATE "-static-libgcc" "-static-libstdc++" "-static")
     else()
+        target_compile_features(master PRIVATE cxx_std_17)
         target_link_libraries(master PRIVATE
             ${OpenCV_LIBS}
             OpenGL::GL
@@ -163,25 +222,6 @@ if(BUILD_MASTER)
             hv_static
             libcurl
         )
-    endif()
-
-    # Add OpenCV
-    if(HAVE_OPENCV)
-        target_include_directories(master PRIVATE
-            ${opencv_SOURCE_DIR}/include
-            ${CMAKE_BINARY_DIR}
-            ${opencv_BINARY_DIR}
-            ${opencv_SOURCE_DIR}/modules/core/include
-            ${opencv_SOURCE_DIR}/modules/imgcodecs/include
-            ${opencv_SOURCE_DIR}/modules/videoio/include
-        )
-        target_compile_definitions(master PRIVATE HAVE_OPENCV)
-        message(STATUS "Master will be built WITH OpenCV support")
-    endif()
-
-    if(WIN32)
-        target_link_options(master PRIVATE "-static-libgcc" "-static-libstdc++" "-static")
-        target_link_libraries(master PRIVATE ws2_32 wsock32)
     endif()
 endif()
 

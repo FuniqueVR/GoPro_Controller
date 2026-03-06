@@ -23,6 +23,9 @@ public:
         std::shared_ptr<GoProMaster> _master);
     ~BasePopWindow();
 
+    virtual json get_window_data();
+    virtual void set_window_data(json data);
+
     /**
      * Does anyone call open popup right at this frame
      */

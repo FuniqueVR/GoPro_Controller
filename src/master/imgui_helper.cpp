@@ -10,6 +10,37 @@
 #include <stdio.h>
 #include <string>
 #include <tuple>
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#pragma comment(lib, "setupapi.lib") 
+#pragma comment(lib, "version.lib") 
+#pragma comment(lib, "Wtsapi32.lib")
+#pragma comment(lib, "Advapi32.lib")
+#pragma comment(lib, "Crypt32.lib")
+#pragma comment(lib, "Ole32.lib")
+#pragma comment(lib, "opengl32.lib")
+#pragma comment(lib, "Gdi32.lib")
+#pragma comment(lib, "user32.lib")
+#pragma comment(lib, "winmm.lib")
+#pragma comment(lib, "imm32.lib") 
+#pragma comment(lib, "OleAut32.lib") 
+#pragma comment(lib, "Iphlpapi.lib")
+
+#pragma comment(lib, "comctl32.lib")
+#pragma comment(lib, "gdi32.lib")
+#pragma comment(lib, "ole32.lib")
+#pragma comment(lib, "oleaut32.lib")
+#pragma comment(lib, "uuid.lib")
+#pragma comment(lib, "vfw32.lib")
+#pragma comment(lib, "msvfw32.lib")
+
+#ifdef _DEBUG
+#pragma comment(lib, "opencv_world4100d.lib")
+#else
+#pragma comment(lib, "opencv_world4100.lib")
+#endif
+#endif
 #include <SDL3/SDL.h>
 #if defined(IMGUI_IMPL_OPENGL_ES2)
 #include <SDL3/SDL_opengles2.h>
@@ -41,6 +72,9 @@ void setup_imgui(){
     io.ConfigErrorRecoveryEnableTooltip = true;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+#ifdef _WIN32
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+#endif
     io.ConfigDockingAlwaysTabBar = true;
     io.ConfigDpiScaleFonts = true;
     io.ConfigDpiScaleViewports = true;
@@ -163,7 +197,7 @@ void setup_catppuccin_mocha_theme() {
 /**
  * Create the imgui context, use it in the begining and out of the loop
  */
-void begin_imgui(SDL_Window *window, void *sdl_gl_context, const char *glsl_version){
+void begin_imgui(struct SDL_Window *window, void *sdl_gl_context, const char *glsl_version){
     ImGui_ImplSDL3_InitForOpenGL(window, sdl_gl_context);
     ImGui_ImplOpenGL3_Init(glsl_version);
 }
@@ -178,7 +212,7 @@ void end_imgui(){
 /**
  * Create the SDL context
  */
-std::tuple<SDL_Window*, SDL_GLContext, const char*> begin_sdl(){
+void begin_sdl(std::tuple<struct SDL_Window*, const char*>& r){
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD))
     {
         printf("Error: SDL_Init(): %s\n", SDL_GetError());
@@ -231,17 +265,14 @@ std::tuple<SDL_Window*, SDL_GLContext, const char*> begin_sdl(){
         printf("Error: SDL_CreateWindow(): %s\n", SDL_GetError());
         exit(1);
     }
-    SDL_GLContext gl_context = SDL_GL_CreateContext(window);
-    SDL_GL_MakeCurrent(window, gl_context);
     SDL_GL_SetSwapInterval(1); // Enable vsync
     SDL_ShowWindow(window);
-    return {window, gl_context, glsl_version};
+    r = {window, glsl_version};
 }
 /**
  * Destory the SDL context
  */
-void end_sdl(SDL_Window *window, SDL_GLContext sdl_gl_context){
-    SDL_GL_DestroyContext(sdl_gl_context);
+void end_sdl(struct SDL_Window *window){
     SDL_DestroyWindow(window);
     SDL_Quit();
 }
@@ -258,7 +289,7 @@ void begin_loop(){
  * Loop end
  * Clear color and swap the chain and stuff
  */
-void end_loop(SDL_Window* window, ImGuiIO &io){
+void end_loop(struct SDL_Window* window, struct ImGuiIO &io){
     glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);

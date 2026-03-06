@@ -261,7 +261,7 @@ void GoProMaster::preview_end(std::string server, std::string target){
     data["value"]["target"] = target;
 
     for(auto s : servers){
-        if(s->ip == server && s->connected){
+        if((s->ip == server || server.size() == 0) && s->connected){
             s->client.send(data.dump());
             break;
         }
@@ -290,7 +290,7 @@ void GoProMaster::download_last_media(const std::string dir){
     }).detach();
 }
 
-void GoProMaster::presetSwitch(const std::string server, int32_t mode) {
+void GoProMaster::presetSwitch(const std::string server, const std::string target, int32_t mode) {
     std::thread([=](){
         for (auto& s : servers) {
             if (!s->connected) continue;
@@ -300,6 +300,7 @@ void GoProMaster::presetSwitch(const std::string server, int32_t mode) {
             get_status["value"] = json::object();
             get_status["value"]["name"] = "load";
             get_status["value"]["mode"] = mode;
+            get_status["value"]["target"] = target;
             s->client.send(get_status.dump());
         }
     }).detach();
@@ -478,9 +479,11 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
             int32_t count = 0;
 
             // Clear the message
-            for(auto& camera : cameras){
-                if(camera->server == server){
-                    camera->connected = false;
+            if(key == "query:getall"){
+                for(auto& camera : cameras){
+                    if(camera->server == server){
+                        camera->connected = false;
+                    }
                 }
             }
 

@@ -88,7 +88,7 @@ public:
     void media_only(const std::string command, std::string target = "");
     void download_last_media(const std::string dir);
 
-    void presetSwitch(const std::string server, int32_t mode);
+    void presetSwitch(const std::string server, const std::string target, int32_t mode);
     void apply(const std::string& ip, const int32_t id, const int32_t value);
     void applyAll(const std::string& ip, const json& res);
 
