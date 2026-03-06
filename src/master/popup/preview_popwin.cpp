@@ -172,6 +172,17 @@ void PreviewPopup::render(){
     ImGui::SetNextWindowPos(ImVec2(unit.x * 0.5F, unit.y * 0.5F), ImGuiCond_Always);
     ImGui::SetNextWindowSize(ImVec2(unit.x * 9.0F, unit.y * 9.0F), ImGuiCond_Always);
 
+    int32_t target_w, target_h;
+    if(dir == 0 || dir == 2){
+        // 0° or 180° - width/height unchanged
+        target_w = texture_width;
+        target_h = texture_height;
+    } else {
+        // 90° or 270° - width/height swapped
+        target_w = texture_height;
+        target_h = texture_width;
+    }
+
     if(ImGui::BeginPopupModal(title.c_str(), NULL, wp_flag)){
         if(gl_texture != 0){
             if(ImGui::Button("<== Rotate##preview_button")){
@@ -181,7 +192,14 @@ void PreviewPopup::render(){
             if(ImGui::Button("Rotate ==>##preview_button")){
                 DirChange(false); remap = true;
             }
-            ImGui::Image((ImTextureID)(intptr_t)gl_texture, ImVec2(800, 600));
+            float ratio = (float)target_w / (float)target_h;
+            ImVec2 size;
+            if(target_w >= target_h){
+                size = ImVec2(unit.x * 7, (unit.x * 7) / ratio);
+            }else{
+                size = ImVec2((unit.y * 7) * ratio, unit.y * 7);
+            }
+            ImGui::Image((ImTextureID)(intptr_t)gl_texture, size);
         } else {
             ImGui::Dummy(ImVec2(800, 280));
             float win_width = ImGui::GetContentRegionAvail().x;
@@ -227,30 +245,39 @@ cv::Mat PreviewPopup::get_latest_frame(){
 void PreviewPopup::ConvertTexture(cv::Mat& mat){
     if(mat.empty()) return;
 
-    cv::Mat frame;
     cv::Mat rotated_frame;
-    //cv::getRotationMatrix2D()
-    if(dir != 0){
-        rotated_frame = mat;
-    }else{
-        int32_t len = std::max(mat.cols, mat.rows);
-        cv::Point2f center(len/2., len/2.);
-        double angle = 90 * dir;
-        rotated_frame = cv::getRotationMatrix2D(center, angle, 1.0);
+    if(dir == 0){
+        rotated_frame = mat;  // No rotation
+    }
+    else if(dir == 1){
+        cv::rotate(mat, rotated_frame, cv::ROTATE_90_CLOCKWISE);
+    }
+    else if(dir == 2){
+        cv::rotate(mat, rotated_frame, cv::ROTATE_180);
+    }
+    else if(dir == 3){
+        cv::rotate(mat, rotated_frame, cv::ROTATE_90_COUNTERCLOCKWISE);
+    }
+    else {
+        rotated_frame = mat;  // Invalid dir, no rotation
     }
 
+    cv::Mat frame;
+    int32_t target_w, target_h;
     if(dir == 0 || dir == 2){
-        if (mat.cols != texture_width || mat.rows != texture_height){
-            cv::resize(rotated_frame, frame, cv::Size(texture_width, texture_height));
-        } else {
-            frame = mat;
-        }   
-    }else {
-        if (mat.cols != texture_height || mat.rows != texture_width){
-            cv::resize(rotated_frame, frame, cv::Size(texture_height, texture_width));
-        } else {
-            frame = mat;
-        }   
+        // 0° or 180° - width/height unchanged
+        target_w = texture_width;
+        target_h = texture_height;
+    } else {
+        // 90° or 270° - width/height swapped
+        target_w = texture_height;
+        target_h = texture_width;
+    }
+
+    if (rotated_frame.cols != target_w || rotated_frame.rows != target_h){
+        cv::resize(rotated_frame, frame, cv::Size(target_w, target_h));
+    } else {
+        frame = rotated_frame;
     }
 
     cv::Mat rgb;
@@ -265,7 +292,7 @@ void PreviewPopup::ConvertTexture(cv::Mat& mat){
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_LINEAR);
         // Allocate texture
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
-            texture_width, texture_height,
+            target_w, target_h,
             0, GL_RGB, GL_UNSIGNED_BYTE, rgb.data);
         glBindTexture(GL_TEXTURE_2D, 0);
         std::cout << "[Preview Decoder] Frame converted !" << std::endl;
@@ -273,8 +300,8 @@ void PreviewPopup::ConvertTexture(cv::Mat& mat){
         // ✅ Update texture data (fast path)
         glBindTexture(GL_TEXTURE_2D, gl_texture);
         glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0,
-                        texture_width, texture_height,
-                        GL_RGB, GL_UNSIGNED_BYTE, rgb.data);
+            target_w, target_h,
+            GL_RGB, GL_UNSIGNED_BYTE, rgb.data);
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 }
@@ -287,5 +314,7 @@ void PreviewPopup::DirChange(bool increase){
         dir--;
         if(dir <= -1) dir = 3;
     }
+    glDeleteTextures(1, &gl_texture);
+    gl_texture = 0;
     state->update_server();
 }

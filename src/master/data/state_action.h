@@ -21,7 +21,6 @@ extern "C" void init_state_setup(
     std::shared_ptr<struct GoProMaster> master,
     std::shared_ptr<struct BaseWindow> windows[],
     std::shared_ptr<struct BasePopWindow> popwins[]
-
 );
 extern "C" json get_global_state_data(struct GlobalState& data);
 extern "C" void set_global_state_data(struct GlobalState& data, json refs);

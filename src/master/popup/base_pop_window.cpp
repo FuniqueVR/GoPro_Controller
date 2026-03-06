@@ -20,11 +20,11 @@ BasePopWindow::~BasePopWindow(){
 
 }
 
-json get_window_data() {
+json BasePopWindow::get_window_data() {
     return json::object();
 }
 
-void set_window_data(json data){
+void BasePopWindow::set_window_data(json data){
 
 }
 
