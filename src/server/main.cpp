@@ -26,8 +26,15 @@ GoProController controller;
 const int32_t listen_port = 8556;
 const int32_t broadcast_port = 8554;
 
+struct SenderStruct {
+    std::string host_ip;
+    std::string websocket_ip;
+    struct sockaddr_in bcsa;
+    int32_t sock_fd;
+};
+
 std::mutex broadcast_mtx;
-std::vector<std::string> broadcast_addrs = std::vector<std::string>();
+std::vector<SenderStruct> broadcast_addrs = std::vector<SenderStruct>();
 
 void ExecuteCommand(const WebSocketChannelPtr& channel, json j){
     std::string name = "";
@@ -294,21 +301,30 @@ void WebsocketServer(){
 
         int32_t f = -1;
         for(int32_t i = 0; i < broadcast_addrs.size(); i++){
-            if(broadcast_addrs.at(i) == channel->peeraddr().c_str()){
+            if(broadcast_addrs.at(i).websocket_ip == channel->peeraddr().c_str()){
                 f = i;
                 break;
             }
         }
 
         if(f == -1){
+            SenderStruct sss = SenderStruct();
             std::string addd = channel->peeraddr().c_str();
             while(addd.at(addd.size() - 1) != ':'){
                 addd.pop_back();
             }
             addd.pop_back();
-            broadcast_addrs.push_back((
-                addd.c_str()
-            ));
+
+            sss.websocket_ip = channel->peeraddr().c_str();
+            sss.host_ip = addd.c_str();
+
+            sss.sock_fd = socket(AF_INET, SOCK_DGRAM, 0);
+            memset(&sss.bcsa, 0, sizeof(sss.bcsa));
+            sss.bcsa.sin_family = AF_INET;
+            sss.bcsa.sin_port = htons(broadcast_port);
+            sss.bcsa.sin_addr.s_addr = inet_addr(addd.c_str());
+        
+            broadcast_addrs.push_back((sss));
         }
     };
     ws.onmessage = [&](const WebSocketChannelPtr& channel, const std::string& msg) {
@@ -354,12 +370,14 @@ void WebsocketServer(){
         
         int32_t f = -1;
         for(int32_t i = 0; i < broadcast_addrs.size(); i++){
-            if(broadcast_addrs.at(i) == channel->peeraddr().c_str()){
+            if(broadcast_addrs.at(i).websocket_ip == channel->peeraddr().c_str()){
                 f = i;
                 break;
             }
         }
         if(f >= 0){
+            SenderStruct& sss = broadcast_addrs.at(f);
+            closesocket(sss.sock_fd);
             broadcast_addrs.erase(broadcast_addrs.begin() + f);
         }
     };
@@ -441,32 +459,17 @@ void UDPProxyServer(){
     std::cout << "  Listening on: 0.0.0.0:" << listen_port << " (from GoPro)" << std::endl;
     std::cout << "  Broadcasting to: " << broadcast_port << " (to all Masters)" << std::endl;
 
-    const char* broadcast_addr = "192.168.61.255";
-    struct sockaddr_in bcsa;
-    memset(&bcsa, 0, sizeof(bcsa));
-    bcsa.sin_family = AF_INET;
-    bcsa.sin_port = htons(broadcast_port);
-    bcsa.sin_addr.s_addr = inet_addr(broadcast_addr);
-
-    int broadcastEnable = 1;
-    int32_t sock_fd = socket(AF_INET, SOCK_DGRAM, 0);
-#ifdef _WIN32
-            setsockopt(sock, SOL_SOCKET, SO_BROADCAST, (const char*)&broadcastEnable, sizeof(broadcastEnable))
-#else
-            setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &broadcastEnable, sizeof(broadcastEnable))
-#endif
-
-    us.onMessage = [sock_fd, broadcast_mtx, bcsa, broadcast_addrs, broadcast_port](const hv::SocketChannelPtr& channel, hv::Buffer* buf){
+    us.onMessage = [broadcast_mtx, broadcast_addrs](const hv::SocketChannelPtr& channel, hv::Buffer* buf){
         std::lock_guard<std::mutex> lock(broadcast_mtx);
-        {
+        for(auto& sss : broadcast_addrs){
 #ifdef _WIN32
-            sendto(sock_fd, (const char*)buf->data(), buf->size(), 0,
-                (struct sockaddr*)&bcsa, 
-                sizeof(bcsa));
+            sendto(sss.sock_fd, (const char*)buf->data(), buf->size(), 0,
+                (struct sockaddr*)&sss.bcsa, 
+                sizeof(sss.bcsa));
 #else
-            sendto(sock_fd, buf->data(), buf->size(), 0,
-                (struct sockaddr*)&bcsa, 
-                sizeof(bcsa));
+            sendto(sss.sock_fd, buf->data(), buf->size(), 0,
+                (struct sockaddr*)&sss.bcsa, 
+                sizeof(sss.bcsa));
 #endif
         }
     };
