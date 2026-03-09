@@ -161,6 +161,7 @@ if(BUILD_MASTER)
     )
 
     if (WIN32)
+        message(STATUS "Default WIN32 Build Master")
         set(BUILD_LIST "core,imgproc,imgcodecs,videoio" CACHE STRING "" FORCE)
         # Disable examples, tests, apps
         set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
