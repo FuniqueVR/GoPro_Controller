@@ -220,11 +220,11 @@ if(BUILD_MASTER)
 
         target_link_directories(master PRIVATE
             "${CMAKE_BINARY_DIR}"
-            "lib/opencv/include"
-            "lib/opencv/modules/core/include"
-            "lib/opencv/modules/imgproc/include"
-            "lib/opencv/modules/imgcodecs/include"
-            "lib/opencv/modules/videoio/include"
+            "${OPENCV_DIR}/include"
+            "${OPENCV_DIR}/modules/core/include"
+            "${OPENCV_DIR}/modules/imgproc/include"
+            "${OPENCV_DIR}/modules/imgcodecs/include"
+            "${OPENCV_DIR}/modules/videoio/include"
         )
         set_property(TARGET master PROPERTY C_STANDARD 17)
         set_property(TARGET master PROPERTY CXX_STANDARD 17)
