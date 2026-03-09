@@ -441,30 +441,33 @@ void UDPProxyServer(){
     std::cout << "  Listening on: 0.0.0.0:" << listen_port << " (from GoPro)" << std::endl;
     std::cout << "  Broadcasting to: " << broadcast_port << " (to all Masters)" << std::endl;
 
-    us.onMessage = [broadcast_mtx, broadcast_addrs, broadcast_port](const hv::SocketChannelPtr& channel, hv::Buffer* buf){
-        std::lock_guard<std::mutex> lock(broadcast_mtx);
-        for(auto& broadcast_addr : broadcast_addrs){
-            struct sockaddr_in bcsa;
-            memset(&bcsa, 0, sizeof(bcsa));
-            bcsa.sin_family = AF_INET;
-            bcsa.sin_port = htons(broadcast_port);
-            bcsa.sin_addr.s_addr = inet_addr(broadcast_addr.c_str());
+    const char* broadcast_addr = "192.168.61.255";
+    struct sockaddr_in bcsa;
+    memset(&bcsa, 0, sizeof(bcsa));
+    bcsa.sin_family = AF_INET;
+    bcsa.sin_port = htons(broadcast_port);
+    bcsa.sin_addr.s_addr = inet_addr(broadcast_addr);
 
-            int32_t sock_fd = socket(AF_INET, SOCK_DGRAM, 0);
+    int broadcastEnable = 1;
+    int32_t sock_fd = socket(AF_INET, SOCK_DGRAM, 0);
 #ifdef _WIN32
-            u_long mode = 1;
-            ioctlsocket(sock_fd, FIONBIO, &mode);
+            setsockopt(sock, SOL_SOCKET, SO_BROADCAST, (const char*)&broadcastEnable, sizeof(broadcastEnable))
+#else
+            setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &broadcastEnable, sizeof(broadcastEnable))
+#endif
+
+    us.onMessage = [sock_fd, broadcast_mtx, bcsa, broadcast_addrs, broadcast_port](const hv::SocketChannelPtr& channel, hv::Buffer* buf){
+        std::lock_guard<std::mutex> lock(broadcast_mtx);
+        {
+#ifdef _WIN32
             sendto(sock_fd, (const char*)buf->data(), buf->size(), 0,
                 (struct sockaddr*)&bcsa, 
                 sizeof(bcsa));
 #else
-            int flags = fcntl(sock_fd, F_GETFL, 0);
-            fcntl(sock_fd, F_SETFL, flags | O_NONBLOCK);
             sendto(sock_fd, buf->data(), buf->size(), 0,
                 (struct sockaddr*)&bcsa, 
                 sizeof(bcsa));
 #endif
-            close(sock_fd);
         }
     };
     us.start();
