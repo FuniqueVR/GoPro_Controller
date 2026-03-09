@@ -141,7 +141,7 @@ if(BUILD_SERVER)
     endif()
     target_link_libraries(server hv_static libcurl)
     # Ensure json include is available for server too if it uses nlohmann/json
-    target_include_directories(server PRIVATE lib/json/include) 
+    target_include_directories(server PRIVATE lib/json/include "${MDNS_DIR}/src" "${MDNS_DIR}/include") 
 endif()
 
 # --- Master Executable ---
