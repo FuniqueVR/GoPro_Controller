@@ -95,12 +95,6 @@ if(BUILD_MASTER)
     # SDL3
     add_subdirectory(lib/SDL3 EXCLUDE_FROM_ALL)
 
-    if(WIN32)
-        message(STATUS "Using curl install the window prebuild binary for import here")
-    else()
-        find_package(OpenCV REQUIRED COMPONENTS core imgcodecs highgui)
-    endif()
-
     # ImGui
     set(IMGUI_DIR "lib/imgui")
     file(GLOB IMGUI_SOURCES
@@ -115,6 +109,72 @@ if(BUILD_MASTER)
     include_directories(${IMGUI_DIR})
     include_directories(${IMGUI_DIR}/backends)
     include_directories(lib/json/include)
+
+    # ============================================================
+    # OpenCV - Try system first, fallback to FetchContent
+    # ============================================================
+    find_package(OpenCV QUIET COMPONENTS core imgproc videoio imgcodecs)
+    
+    if(OpenCV_FOUND)
+        message(STATUS "Using system OpenCV: ${OpenCV_VERSION}")
+        set(HAVE_OPENCV TRUE)
+        set(OPENCV_FROM_SOURCE FALSE)
+    else()
+        message(STATUS "System OpenCV not found, building from source...")
+        
+        # -------------------------------------------------------
+        # Disable everything we don't need (faster build)
+        # -------------------------------------------------------
+        set(BUILD_LIST "core,imgproc,videoio,imgcodecs" CACHE STRING "" FORCE)
+        
+        set(BUILD_EXAMPLES         OFF CACHE BOOL "" FORCE)
+        set(BUILD_TESTS            OFF CACHE BOOL "" FORCE)
+        set(BUILD_PERF_TESTS       OFF CACHE BOOL "" FORCE)
+        set(BUILD_opencv_apps      OFF CACHE BOOL "" FORCE)
+        set(BUILD_DOCS             OFF CACHE BOOL "" FORCE)
+        set(BUILD_opencv_java      OFF CACHE BOOL "" FORCE)
+        set(BUILD_opencv_python2   OFF CACHE BOOL "" FORCE)
+        set(BUILD_opencv_python3   OFF CACHE BOOL "" FORCE)
+        set(BUILD_PROTOBUF         OFF CACHE BOOL "" FORCE)
+        
+        set(WITH_CUDA              OFF CACHE BOOL "" FORCE)
+        set(WITH_OPENCL            OFF CACHE BOOL "" FORCE)
+        set(WITH_IPP               OFF CACHE BOOL "" FORCE)
+        set(WITH_ITT               OFF CACHE BOOL "" FORCE)
+        set(WITH_EIGEN             OFF CACHE BOOL "" FORCE)
+        set(WITH_TBB               OFF CACHE BOOL "" FORCE)
+        set(WITH_GTK               OFF CACHE BOOL "" FORCE)
+        set(WITH_QT                OFF CACHE BOOL "" FORCE)
+        set(WITH_WIN32UI           OFF CACHE BOOL "" FORCE)
+        set(WITH_TIFF              OFF CACHE BOOL "" FORCE)
+        set(WITH_WEBP              OFF CACHE BOOL "" FORCE)
+        set(WITH_JASPER            OFF CACHE BOOL "" FORCE)
+        set(WITH_OPENEXR           OFF CACHE BOOL "" FORCE)
+        set(WITH_V4L               OFF CACHE BOOL "" FORCE)
+        
+        set(WITH_FFMPEG            ON  CACHE BOOL "" FORCE)
+        set(WITH_JPEG              ON  CACHE BOOL "" FORCE)
+        set(WITH_PNG               ON  CACHE BOOL "" FORCE)
+        
+        # Must be OFF to match your global static override
+        set(BUILD_SHARED_LIBS      OFF CACHE BOOL "" FORCE)
+        
+        FetchContent_Declare(
+            opencv
+            GIT_REPOSITORY https://github.com/opencv/opencv.git
+            GIT_TAG        4.10.0
+            GIT_SHALLOW    TRUE
+            GIT_PROGRESS   TRUE
+        )
+        
+        FetchContent_MakeAvailable(opencv)
+        
+        set(HAVE_OPENCV TRUE)
+        set(OPENCV_FROM_SOURCE TRUE)
+        
+        message(STATUS "OpenCV source dir: ${opencv_SOURCE_DIR}")
+        message(STATUS "OpenCV binary dir: ${opencv_BINARY_DIR}")
+    endif()
 endif()
 
 # --- Server Executable ---
@@ -162,59 +222,6 @@ if(BUILD_MASTER)
 
     if (WIN32)
         message(STATUS "Default WIN32 Build Master")
-        set(BUILD_LIST "core,imgproc,imgcodecs,videoio" CACHE STRING "" FORCE)
-        # Disable examples, tests, apps
-        set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-        set(BUILD_TESTS OFF CACHE BOOL "" FORCE)
-        set(BUILD_PERF_TESTS OFF CACHE BOOL "" FORCE)
-        set(BUILD_opencv_apps OFF CACHE BOOL "" FORCE)
-        set(BUILD_DOCS OFF CACHE BOOL "" FORCE)
-        
-        # Disable language bindings
-        set(BUILD_opencv_python2 OFF CACHE BOOL "" FORCE)
-        set(BUILD_opencv_python3 OFF CACHE BOOL "" FORCE)
-        set(BUILD_opencv_java OFF CACHE BOOL "" FORCE)
-        
-        # ENABLE GStreamer (the whole point!)
-        set(WITH_GSTREAMER ON CACHE BOOL "" FORCE)
-        
-        # Disable heavy features
-        set(WITH_CUDA OFF CACHE BOOL "" FORCE)
-        set(WITH_OPENCL OFF CACHE BOOL "" FORCE)
-        set(WITH_IPP OFF CACHE BOOL "" FORCE)
-        set(WITH_TBB OFF CACHE BOOL "" FORCE)
-        set(WITH_OPENGL OFF CACHE BOOL "" FORCE)
-        
-        # Disable GUI toolkits
-        set(WITH_GTK OFF CACHE BOOL "" FORCE)
-        set(WITH_QT OFF CACHE BOOL "" FORCE)
-        set(WITH_WIN32UI OFF CACHE BOOL "" FORCE)
-        
-        # Disable extra image formats
-        set(WITH_TIFF OFF CACHE BOOL "" FORCE)
-        set(WITH_WEBP OFF CACHE BOOL "" FORCE)
-        set(WITH_JASPER OFF CACHE BOOL "" FORCE)
-        set(WITH_OPENEXR OFF CACHE BOOL "" FORCE)
-        
-        # Keep basic formats
-        set(WITH_JPEG ON CACHE BOOL "" FORCE)
-        set(WITH_PNG ON CACHE BOOL "" FORCE)
-        set(BUILD_ZLIB ON CACHE BOOL "" FORCE)
-        set(BUILD_PNG ON CACHE BOOL "" FORCE)
-        set(BUILD_JPEG ON CACHE BOOL "" FORCE)
-        
-        # Disable extra modules
-        set(BUILD_opencv_calib3d OFF CACHE BOOL "" FORCE)
-        set(BUILD_opencv_dnn OFF CACHE BOOL "" FORCE)
-        set(BUILD_opencv_features2d OFF CACHE BOOL "" FORCE)
-        set(BUILD_opencv_flann OFF CACHE BOOL "" FORCE)
-        set(BUILD_opencv_highgui OFF CACHE BOOL "" FORCE)
-        set(BUILD_opencv_ml OFF CACHE BOOL "" FORCE)
-        set(BUILD_opencv_photo OFF CACHE BOOL "" FORCE)
-        set(BUILD_opencv_stitching OFF CACHE BOOL "" FORCE)
-        set(BUILD_opencv_video OFF CACHE BOOL "" FORCE)
-        set(BUILD_opencv_videostab OFF CACHE BOOL "" FORCE)
-        set(BUILD_opencv_objdetect OFF CACHE BOOL "" FORCE)
 
         set(OPENCV_DIR "${CMAKE_SOURCE_DIR}/lib/opencv")
         target_compile_options(master PRIVATE "/std:c++17")
