@@ -52,6 +52,7 @@ if(BUILD_SERVER OR BUILD_MASTER)
     file(GLOB MDNS_SOURCES
         "${MDNS_DIR}/src/logger.cpp"
         "${MDNS_DIR}/src/mdns.cpp"
+        "${MDNS_DIR}/src/mdns.h"
         "${MDNS_DIR}/src/utils.cpp"
     )
     if (BUILD_SERVER)
