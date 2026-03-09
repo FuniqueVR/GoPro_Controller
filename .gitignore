@@ -57,7 +57,6 @@ build_server_win-*/
 build_server_amd/
 Build_server_amd/
 build_server_amd-*/
-lib/opencv
 lib/*.exe
 
 # CMake generated files

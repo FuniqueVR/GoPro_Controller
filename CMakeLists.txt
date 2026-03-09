@@ -161,17 +161,79 @@ if(BUILD_MASTER)
     )
 
     if (WIN32)
+        set(BUILD_LIST "core,imgproc,imgcodecs,videoio" CACHE STRING "" FORCE)
+        # Disable examples, tests, apps
+        set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+        set(BUILD_TESTS OFF CACHE BOOL "" FORCE)
+        set(BUILD_PERF_TESTS OFF CACHE BOOL "" FORCE)
+        set(BUILD_opencv_apps OFF CACHE BOOL "" FORCE)
+        set(BUILD_DOCS OFF CACHE BOOL "" FORCE)
+        
+        # Disable language bindings
+        set(BUILD_opencv_python2 OFF CACHE BOOL "" FORCE)
+        set(BUILD_opencv_python3 OFF CACHE BOOL "" FORCE)
+        set(BUILD_opencv_java OFF CACHE BOOL "" FORCE)
+        
+        # ENABLE GStreamer (the whole point!)
+        set(WITH_GSTREAMER ON CACHE BOOL "" FORCE)
+        
+        # Disable heavy features
+        set(WITH_CUDA OFF CACHE BOOL "" FORCE)
+        set(WITH_OPENCL OFF CACHE BOOL "" FORCE)
+        set(WITH_IPP OFF CACHE BOOL "" FORCE)
+        set(WITH_TBB OFF CACHE BOOL "" FORCE)
+        set(WITH_OPENGL OFF CACHE BOOL "" FORCE)
+        
+        # Disable GUI toolkits
+        set(WITH_GTK OFF CACHE BOOL "" FORCE)
+        set(WITH_QT OFF CACHE BOOL "" FORCE)
+        set(WITH_WIN32UI OFF CACHE BOOL "" FORCE)
+        
+        # Disable extra image formats
+        set(WITH_TIFF OFF CACHE BOOL "" FORCE)
+        set(WITH_WEBP OFF CACHE BOOL "" FORCE)
+        set(WITH_JASPER OFF CACHE BOOL "" FORCE)
+        set(WITH_OPENEXR OFF CACHE BOOL "" FORCE)
+        
+        # Keep basic formats
+        set(WITH_JPEG ON CACHE BOOL "" FORCE)
+        set(WITH_PNG ON CACHE BOOL "" FORCE)
+        set(BUILD_ZLIB ON CACHE BOOL "" FORCE)
+        set(BUILD_PNG ON CACHE BOOL "" FORCE)
+        set(BUILD_JPEG ON CACHE BOOL "" FORCE)
+        
+        # Disable extra modules
+        set(BUILD_opencv_calib3d OFF CACHE BOOL "" FORCE)
+        set(BUILD_opencv_dnn OFF CACHE BOOL "" FORCE)
+        set(BUILD_opencv_features2d OFF CACHE BOOL "" FORCE)
+        set(BUILD_opencv_flann OFF CACHE BOOL "" FORCE)
+        set(BUILD_opencv_highgui OFF CACHE BOOL "" FORCE)
+        set(BUILD_opencv_ml OFF CACHE BOOL "" FORCE)
+        set(BUILD_opencv_photo OFF CACHE BOOL "" FORCE)
+        set(BUILD_opencv_stitching OFF CACHE BOOL "" FORCE)
+        set(BUILD_opencv_video OFF CACHE BOOL "" FORCE)
+        set(BUILD_opencv_videostab OFF CACHE BOOL "" FORCE)
+        set(BUILD_opencv_objdetect OFF CACHE BOOL "" FORCE)
+
         set(OPENCV_DIR "${CMAKE_SOURCE_DIR}/lib/opencv")
         target_compile_options(master PRIVATE "/std:c++17")
 
         target_link_directories(master PRIVATE
-            "${OPENCV_DIR}/build/x64/vc16/lib"
+            "${CMAKE_BINARY_DIR}"
+            "lib/opencv/include"
+            "lib/opencv/modules/core/include"
+            "lib/opencv/modules/imgproc/include"
+            "lib/opencv/modules/imgcodecs/include"
+            "lib/opencv/modules/videoio/include"
         )
         set_property(TARGET master PROPERTY C_STANDARD 17)
         set_property(TARGET master PROPERTY CXX_STANDARD 17)
         set_property(TARGET master PROPERTY CXX_STANDARD_REQUIRED ON)
         target_link_libraries(master PRIVATE
-            $<IF:$<CONFIG:Debug>,opencv_world4100d,opencv_world4100>
+            opencv_core
+            opencv_imgproc
+            opencv_imgcodecs
+            opencv_videoio
             OpenGL::GL
             SDL3::SDL3
             hv_static
