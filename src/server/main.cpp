@@ -27,7 +27,7 @@ const int32_t listen_port = 8556;
 const int32_t broadcast_port = 8554;
 
 std::mutex broadcast_mtx;
-std::vector<std::pair<std::string, struct sockaddr_in>> broadcast_addrs = std::vector<std::pair<std::string, struct sockaddr_in>>();
+std::vector<std::pair<std::string>> broadcast_addrs = std::vector<std::pair<std::string>>();
 
 void ExecuteCommand(const WebSocketChannelPtr& channel, json j){
     std::string name = "";
@@ -294,21 +294,14 @@ void WebsocketServer(){
 
         int32_t f = -1;
         for(int32_t i = 0; i < broadcast_addrs.size(); i++){
-            if(broadcast_addrs.at(i).second == channel->peeraddr().c_str()){
+            if(broadcast_addrs.at(i) == channel->peeraddr().c_str()){
                 f = i;
                 break;
             }
         }
 
         if(f == -1){
-            struct sockaddr_in broadcast_sockaddr;
-            memset(&broadcast_sockaddr, 0, sizeof(broadcast_sockaddr));
-            broadcast_sockaddr.sin_family = AF_INET;
-            broadcast_sockaddr.sin_port = htons(broadcast_port);
-            broadcast_sockaddr.sin_addr.s_addr = inet_addr(channel->peeraddr().c_str());
-
             broadcast_addrs.push_back((
-                broadcast_sockaddr,
                 channel->peeraddr().c_str()
             ))
         }
@@ -356,7 +349,7 @@ void WebsocketServer(){
         
         int32_t f = -1;
         for(int32_t i = 0; i < broadcast_addrs.size(); i++){
-            if(broadcast_addrs.at(i).second == channel->peeraddr().c_str()){
+            if(broadcast_addrs.at(i) == channel->peeraddr().c_str()){
                 f = i;
                 break;
             }
@@ -439,23 +432,6 @@ void UDPProxyServer(){
         return;
     }
     std::cout << "UDP bind on port: " << listen_port << std::endl;
-
-    int32_t sock_fd = socket(AF_INET, SOCK_DGRAM, 0);
-    if(sock_fd == -1){
-        std::cerr << "Failed to create socket for broadcasting: " << std::endl;
-        return;
-    }
-
-    int sendbuf = 2097152;
-#ifdef _WIN32
-    u_long mode = 1;
-    ioctlsocket(sock_fd, FIONBIO, &mode);
-    setsockopt(sock_fd, SOL_SOCKET, SO_SNDBUF, (const char*)&sendbuf, sizeof(sendbuf));
-#else
-    int flags = fcntl(sock_fd, F_GETFL, 0);
-    fcntl(sock_fd, F_SETFL, flags | O_NONBLOCK);
-    setsockopt(sock_fd, SOL_SOCKET, SO_SNDBUF, &sendbuf, sizeof(sendbuf));
-#endif
     std::cout << "UDP Broadcast Relay started:" << std::endl;
     std::cout << "  Listening on: 0.0.0.0:" << listen_port << " (from GoPro)" << std::endl;
     std::cout << "  Broadcasting to: " << broadcast_port << " (to all Masters)" << std::endl;
@@ -463,15 +439,27 @@ void UDPProxyServer(){
     us.onMessage = [sock_fd, broadcast_mtx, broadcast_addrs, broadcast_port, broadcast_sockaddr](const hv::SocketChannelPtr& channel, hv::Buffer* buf){
         std::lock_guard<std::mutex> lock(broadcast_mtx);
         for(auto& broadcast_addr : broadcast_addrs){
+            struct sockaddr_in bcsa;
+            memset(&bcsa, 0, sizeof(bcsa));
+            bcsa.sin_family = AF_INET;
+            bcsa.sin_port = htons(broadcast_port);
+            bcsa.sin_addr.s_addr = inet_addr(broadcast_addr.c_str());
+
+            int32_t sock_fd = socket(AF_INET, SOCK_DGRAM, 0);
 #ifdef _WIN32
+            u_long mode = 1;
+            ioctlsocket(sock_fd, FIONBIO, &mode);
             sendto(sock_fd, (const char*)buf->data(), buf->size(), 0,
-                (struct sockaddr*)&broadcast_sockaddr, 
-                sizeof(broadcast_sockaddr));
+                (struct sockaddr*)&bcsa, 
+                sizeof(bcsa));
 #else
+            int flags = fcntl(sock_fd, F_GETFL, 0);
+            fcntl(sock_fd, F_SETFL, flags | O_NONBLOCK);
             sendto(sock_fd, buf->data(), buf->size(), 0,
-                (struct sockaddr*)&broadcast_sockaddr, 
-                sizeof(broadcast_sockaddr));
+                (struct sockaddr*)&bcsa, 
+                sizeof(bcsa));
 #endif
+            close(sock_fd);
         }
     };
     us.start();
