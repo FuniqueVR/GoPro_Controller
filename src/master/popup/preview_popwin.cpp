@@ -98,23 +98,26 @@ void PreviewPopup::update_decoder(){
         gl_texture = 0;
     }
 
+    bool g = false;
     while(!stream_open && retry < MAX_RETRY){
         const std::shared_ptr<CameraInfo>& c = master->getCameras().at(s);
         retry++;
         std::cout << "[Preview Decoder] Attempt " << retry << "/" << MAX_RETRY << " opening pipeline..." << std::endl;
 
-        pipeline = 
-            "udpsrc address={0} port=8554 buffer-size=41943040 "
-            "! queue max-size-buffers=0 max-size-bytes=0 max-size-time=2000000000 "
-            "! tsdemux " 
-            "! h264parse "
-            "! decodebin "
-            "! videoconvert "
-            "! video/x-raw,format=BGR "
-            "! appsink sync=false drop=true max-buffers=2";
-        replaceAll(pipeline, "{0}", c->server.c_str());
-
-        cap.open(pipeline, cv::CAP_GSTREAMER);
+        if(!g){
+            pipeline = 
+                "udpsrc address={0} port=8554 buffer-size=41943040 "
+                "! queue max-size-buffers=0 max-size-bytes=0 max-size-time=2000000000 "
+                "! tsdemux " 
+                "! h264parse "
+                "! decodebin "
+                "! videoconvert "
+                "! video/x-raw,format=BGR "
+                "! appsink sync=false drop=true max-buffers=2";
+            replaceAll(pipeline, "{0}", c->server.c_str());
+            cap.open(pipeline, cv::CAP_GSTREAMER);
+        }
+        g = true;
 
         if(cap.isOpened()){
             // ✅ Try to grab one frame to confirm it actually works
@@ -125,7 +128,7 @@ void PreviewPopup::update_decoder(){
                 std::cout << "[Preview Decoder] Pipeline opened successfully! " << test.cols << "x" << test.rows << std::endl;
             } else {
                 std::cout << "[Preview Decoder] Pipeline opened but no frames yet, retrying..." << std::endl;
-                cap.release();
+                //cap.release();
                 std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             }
         } else {
@@ -137,6 +140,7 @@ void PreviewPopup::update_decoder(){
     }
 
     if(!stream_open){
+        cap.release();
         std::cerr << "[Preview Decoder] Could not open pipeline after " << MAX_RETRY << " attempts!" << std::endl;
         return;
     }
