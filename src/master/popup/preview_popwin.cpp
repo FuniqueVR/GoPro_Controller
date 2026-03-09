@@ -106,7 +106,7 @@ void PreviewPopup::update_decoder(){
 
         if(!g){
             pipeline = 
-                "udpsrc address={0} port=8554 buffer-size=41943040 "
+                "udpsrc port=8554 buffer-size=41943040 "
                 "! queue max-size-buffers=0 max-size-bytes=0 max-size-time=2000000000 "
                 "! tsdemux " 
                 "! h264parse "
@@ -114,7 +114,7 @@ void PreviewPopup::update_decoder(){
                 "! videoconvert "
                 "! video/x-raw,format=BGR "
                 "! appsink sync=false drop=true max-buffers=2";
-            replaceAll(pipeline, "{0}", c->server.c_str());
+            //replaceAll(pipeline, "{0}", c->server.c_str());
             cap.open(pipeline, cv::CAP_GSTREAMER);
             std::cout << "[Preview Decoder] Pipeline use:" << std::endl << pipeline << std::endl;
         }
@@ -135,7 +135,6 @@ void PreviewPopup::update_decoder(){
         } else {
             std::cout << "[Preview Decoder] Failed to open pipeline, retrying in 1s..." << std::endl;
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-            g = false;
         }
 
         if(!isopen) break;
