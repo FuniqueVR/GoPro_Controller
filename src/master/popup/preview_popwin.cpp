@@ -141,7 +141,6 @@ void PreviewPopup::update_decoder(){
     }
 
     if(!stream_open){
-        cap.release();
         std::cerr << "[Preview Decoder] Could not open pipeline after " << MAX_RETRY << " attempts!" << std::endl;
         return;
     }
