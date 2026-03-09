@@ -27,7 +27,7 @@ const int32_t listen_port = 8556;
 const int32_t broadcast_port = 8554;
 
 std::mutex broadcast_mtx;
-std::vector<std::pair<std::string>> broadcast_addrs = std::vector<std::pair<std::string>>();
+std::vector<std::string> broadcast_addrs = std::vector<std::string>();
 
 void ExecuteCommand(const WebSocketChannelPtr& channel, json j){
     std::string name = "";
@@ -303,7 +303,7 @@ void WebsocketServer(){
         if(f == -1){
             broadcast_addrs.push_back((
                 channel->peeraddr().c_str()
-            ))
+            ));
         }
     };
     ws.onmessage = [&](const WebSocketChannelPtr& channel, const std::string& msg) {
@@ -436,7 +436,7 @@ void UDPProxyServer(){
     std::cout << "  Listening on: 0.0.0.0:" << listen_port << " (from GoPro)" << std::endl;
     std::cout << "  Broadcasting to: " << broadcast_port << " (to all Masters)" << std::endl;
 
-    us.onMessage = [sock_fd, broadcast_mtx, broadcast_addrs, broadcast_port, broadcast_sockaddr](const hv::SocketChannelPtr& channel, hv::Buffer* buf){
+    us.onMessage = [broadcast_mtx, broadcast_addrs, broadcast_port](const hv::SocketChannelPtr& channel, hv::Buffer* buf){
         std::lock_guard<std::mutex> lock(broadcast_mtx);
         for(auto& broadcast_addr : broadcast_addrs){
             struct sockaddr_in bcsa;
