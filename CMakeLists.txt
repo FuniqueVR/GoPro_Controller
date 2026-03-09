@@ -219,14 +219,6 @@ if(BUILD_MASTER)
         set(OPENCV_DIR "${CMAKE_SOURCE_DIR}/lib/opencv")
         target_compile_options(master PRIVATE "/std:c++17")
 
-        target_link_directories(master PRIVATE
-            "${CMAKE_BINARY_DIR}"
-            "${OPENCV_DIR}/include"
-            "${OPENCV_DIR}/modules/core/include"
-            "${OPENCV_DIR}/modules/imgproc/include"
-            "${OPENCV_DIR}/modules/imgcodecs/include"
-            "${OPENCV_DIR}/modules/videoio/include"
-        )
         set_property(TARGET master PROPERTY C_STANDARD 17)
         set_property(TARGET master PROPERTY CXX_STANDARD 17)
         set_property(TARGET master PROPERTY CXX_STANDARD_REQUIRED ON)
@@ -240,6 +232,15 @@ if(BUILD_MASTER)
             hv_static
             libcurl
             winpthread
+        )
+
+        target_include_directories(master PRIVATE
+            ${CMAKE_BINARY_DIR}
+            ${OPENCV_DIR}/include
+            ${OPENCV_DIR}/modules/core/include
+            ${OPENCV_DIR}/modules/imgproc/include
+            ${OPENCV_DIR}/modules/imgcodecs/include
+            ${OPENCV_DIR}/modules/videoio/include
         )
         message(STATUS "Master will be built WITH OpenCV support")
         add_custom_command(TARGET master POST_BUILD
