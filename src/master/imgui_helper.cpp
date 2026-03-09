@@ -76,8 +76,8 @@ void setup_imgui(){
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 #endif
     io.ConfigDockingAlwaysTabBar = true;
-    io.ConfigDpiScaleFonts = true;
-    io.ConfigDpiScaleViewports = true;
+    io.ConfigDpiScaleFonts = false;
+    io.ConfigDpiScaleViewports = false;
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
