@@ -247,36 +247,6 @@ if(BUILD_MASTER)
         message(STATUS "Master will be built WITH OpenCV support")
         add_custom_command(TARGET master POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                "${OPENCV_DIR}/build/x64/vc16/bin/opencv_world4100.dll"
-                $<TARGET_FILE_DIR:master>
-                COMMENT "Copying OpenCV DLL to output directory"
-        )
-        add_custom_command(TARGET master POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                "${OPENCV_DIR}/build/x64/vc16/bin/opencv_world4100d.dll"
-                $<TARGET_FILE_DIR:master>
-                COMMENT "Copying OpenCV Debug DLL to output directory"
-        )
-        add_custom_command(TARGET master POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                "${OPENCV_DIR}/build/x64/vc16/bin/opencv_videoio_ffmpeg4100_64.dll"
-                $<TARGET_FILE_DIR:master>
-                COMMENT "Copying OpenCV FFmpeg DLL to output directory"
-        )
-        add_custom_command(TARGET master POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                "${OPENCV_DIR}/build/x64/vc16/bin/opencv_videoio_msmf4100_64.dll"
-                $<TARGET_FILE_DIR:master>
-                COMMENT "Copying OpenCV Fsmf DLL to output directory"
-        )
-        add_custom_command(TARGET master POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                "${OPENCV_DIR}/build/x64/vc16/bin/opencv_videoio_msmf4100_64d.dll"
-                $<TARGET_FILE_DIR:master>
-                COMMENT "Copying OpenCV Fsmf Debug DLL to output directory"
-        )
-        add_custom_command(TARGET master POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
                 "${CMAKE_SOURCE_DIR}/Roboto-Medium.ttf"
                 $<TARGET_FILE_DIR:master>
                 COMMENT "Copying Font to output directory"
