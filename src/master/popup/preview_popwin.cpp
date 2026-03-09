@@ -129,7 +129,7 @@ void PreviewPopup::update_decoder(){
                 std::cout << "[Preview Decoder] Pipeline opened successfully! " << test.cols << "x" << test.rows << std::endl;
             } else {
                 std::cout << "[Preview Decoder] Pipeline opened but no frames yet, retrying..." << std::endl;
-                //cap.release();
+                cap.release();
                 std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             }
         } else {
