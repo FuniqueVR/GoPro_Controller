@@ -245,6 +245,7 @@ if(BUILD_MASTER)
         set_property(TARGET master PROPERTY CXX_STANDARD 17)
         set_property(TARGET master PROPERTY CXX_STANDARD_REQUIRED ON)
         target_link_libraries(master PRIVATE
+            ${OpenCV_LIBS}
             opencv_core
             opencv_imgproc
             opencv_imgcodecs
