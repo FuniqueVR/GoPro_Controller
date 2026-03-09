@@ -419,7 +419,7 @@ void UDPProxyServer(){
     broadcast_sockaddr.sin_addr.s_addr = inet_addr(broadcast_addr.c_str());
 
     us.onMessage = [sock_fd, broadcast_addr, broadcast_port, broadcast_sockaddr](const hv::SocketChannelPtr& channel, hv::Buffer* buf){
-        ssize_t sent = sendto(sock_fd, buf->data(), buf->size(), 0,
+        sendto(sock_fd, buf->data(), buf->size(), 0,
             (struct sockaddr*)&broadcast_sockaddr, 
             sizeof(broadcast_sockaddr));
     };
