@@ -4,6 +4,11 @@
  * This software is licensed under the [MIT License].
  * See the LICENSE file in the project root for more information.
 */
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#pragma comment(lib, "Crypt32.lib")
+#endif
 #include <iostream>
 #include <vector>
 #include "hv/WebSocketServer.h"
