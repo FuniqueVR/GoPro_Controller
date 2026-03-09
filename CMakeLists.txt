@@ -241,10 +241,6 @@ if(BUILD_MASTER)
             libcurl
             winpthread
         )
-
-        target_include_directories(master PRIVATE
-            lib/opencv/build/include
-        )
         message(STATUS "Master will be built WITH OpenCV support")
         add_custom_command(TARGET master POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
