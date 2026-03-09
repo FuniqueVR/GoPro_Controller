@@ -264,10 +264,6 @@ if(BUILD_MASTER)
             ${opencv_SOURCE_DIR}/modules/imgproc/include
             ${opencv_SOURCE_DIR}/modules/videoio/include
             ${opencv_SOURCE_DIR}/modules/imgcodecs/include
-            ${opencv_SOURCE_DIR}/modules/core/src
-            ${opencv_SOURCE_DIR}/modules/imgproc/src
-            ${opencv_SOURCE_DIR}/modules/videoio/src
-            ${opencv_SOURCE_DIR}/modules/imgcodecs/src
         )
         message(STATUS "Master will be built WITH OpenCV support")
         add_custom_command(TARGET master POST_BUILD
