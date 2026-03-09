@@ -1,4 +1,5 @@
 #include "preview_popwin.h"
+#include <format>
 #include "../../common/camera_setting.h"
 
 PreviewPopup::PreviewPopup(
@@ -55,12 +56,13 @@ void PreviewPopup::trigger(bool value){
 void PreviewPopup::update_decoder(){
     stream_open = false;
     int32_t retry = 0;
+    int32_t s = -1;
     const int32_t MAX_RETRY = 10;
 
     std::cout << "[Preview Decoder] Update decoder start !" << " " << stream_open << " " << (retry < MAX_RETRY) << std::endl;
     {
         std::lock_guard<std::mutex> lock(master->camera_mtx);
-        int32_t s = master->findCamera(state->preview_ip);
+        s = master->findCamera(state->preview_ip);
         if(s == -1){
             std::cout << "[Preview Decoder] Cannot find camera: " << state->preview_ip << std::endl;
             return;
@@ -87,18 +89,19 @@ void PreviewPopup::update_decoder(){
     }
 
     while(!stream_open && retry < MAX_RETRY){
+        const std::shared_ptr<CameraInfo>& c = master->getCameras().at(s);
         retry++;
         std::cout << "[Preview Decoder] Attempt " << retry << "/" << MAX_RETRY << " opening pipeline..." << std::endl;
 
-        pipeline =
-            "udpsrc port=8554 buffer-size=41943040 "
+        pipeline = std::format(
+            "udpsrc address={} port=8554 buffer-size=41943040 "
             "! queue max-size-buffers=0 max-size-bytes=0 max-size-time=2000000000 "
             "! tsdemux " 
             "! h264parse "
             "! decodebin "
             "! videoconvert "
             "! video/x-raw,format=BGR "
-            "! appsink sync=false drop=true max-buffers=2";
+            "! appsink sync=false drop=true max-buffers=2", c->server);
 
         cap.open(pipeline, cv::CAP_GSTREAMER);
 

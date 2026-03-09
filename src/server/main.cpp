@@ -445,16 +445,17 @@ void UDPProxyServer(){
         std::cerr << "Failed to create socket for broadcasting: " << std::endl;
         return;
     }
-    int32_t broadcast_enable = 1;
+
+    int sendbuf = 2097152;
 #ifdef _WIN32
-    int32_t err = setsockopt(sock_fd, SOL_SOCKET, SO_BROADCAST, (const char*)&broadcast_enable, sizeof(broadcast_enable));
+    u_long mode = 1;
+    ioctlsocket(sock_fd, FIONBIO, &mode);
+    setsockopt(sock_fd, SOL_SOCKET, SO_SNDBUF, (const char*)&sendbuf, sizeof(sendbuf));
 #else
-    int32_t err = setsockopt(sock_fd, SOL_SOCKET, SO_BROADCAST, &broadcast_enable, sizeof(broadcast_enable));
+    int flags = fcntl(sock_fd, F_GETFL, 0);
+    fcntl(sock_fd, F_SETFL, flags | O_NONBLOCK);
+    setsockopt(sock_fd, SOL_SOCKET, SO_SNDBUF, &sendbuf, sizeof(sendbuf));
 #endif
-    if(err == -1){
-        std::cerr << "Failed to set socket option for broadcasting: " << std::endl;
-        return;
-    }
     std::cout << "UDP Broadcast Relay started:" << std::endl;
     std::cout << "  Listening on: 0.0.0.0:" << listen_port << " (from GoPro)" << std::endl;
     std::cout << "  Broadcasting to: " << broadcast_port << " (to all Masters)" << std::endl;
