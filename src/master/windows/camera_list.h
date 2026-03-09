@@ -38,10 +38,10 @@ private:
     std::string get_filter_string(FilterType type);
     std::string get_sort_string(SortType type);
 
-    int32_t size;
+    int32_t size = 1;
     FilterType filter = FilterType::None;
     SortType sort = SortType::None;
 
-    std::string filter_ip;
-    bool filter_connect;
+    std::string filter_ip = "";
+    bool filter_connect = false;
 };

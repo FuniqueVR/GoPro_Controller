@@ -16,5 +16,5 @@ public:
     void set_window_data(json data) override;
     virtual void render() override;
 private:
-    json buffer;
+    json buffer = json::object();
 };
