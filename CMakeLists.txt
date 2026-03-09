@@ -219,12 +219,12 @@ if(BUILD_MASTER)
         target_compile_options(master PRIVATE "/std:c++17")
 
         target_link_directories(master PRIVATE
-            ${CMAKE_BINARY_DIR}
-            ${OPENCV_DIR}/include
-            ${OPENCV_DIR}/modules/core/include
-            ${OPENCV_DIR}/modules/imgproc/include
-            ${OPENCV_DIR}/modules/imgcodecs/include
-            ${OPENCV_DIR}/modules/videoio/include
+            "${CMAKE_BINARY_DIR}"
+            "${OPENCV_DIR}/include"
+            "${OPENCV_DIR}/modules/core/include"
+            "${OPENCV_DIR}/modules/imgproc/include"
+            "${OPENCV_DIR}/modules/imgcodecs/include"
+            "${OPENCV_DIR}/modules/videoio/include"
         )
         set_property(TARGET master PROPERTY C_STANDARD 17)
         set_property(TARGET master PROPERTY CXX_STANDARD 17)
