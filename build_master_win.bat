@@ -1,5 +1,3 @@
-cd lib
-
 mkdir build_master_win
 
 cd build_master_win
