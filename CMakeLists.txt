@@ -140,7 +140,7 @@ if(BUILD_SERVER)
         )
         target_link_options(server PRIVATE "-static-libgcc" "-static-libstdc++" "-static")
     endif()
-    target_link_libraries(server hv_static libcurl)
+    target_link_libraries(server hv_static libcurl "${MDNS_DIR}/lib/libmdns_cpp.a")
     # Ensure json include is available for server too if it uses nlohmann/json
     target_include_directories(server PRIVATE lib/json/include) 
 endif()
