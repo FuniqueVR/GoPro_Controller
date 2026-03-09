@@ -51,8 +51,8 @@ if(BUILD_SERVER OR BUILD_MASTER)
     set(MDNS_DIR "lib/mdns")
     file(GLOB MDNS_SOURCES
         "${MDNS_DIR}/src/logger.cpp"
-        "${MDNS_DIR}/src/mdns.h"
         "${MDNS_DIR}/src/mdns.cpp"
+        "${MDNS_DIR}/src/mdns.h"
         "${MDNS_DIR}/src/utils.cpp"
     )
     if (BUILD_SERVER)
@@ -131,11 +131,18 @@ if(BUILD_SERVER)
         ${MDNS_SOURCES}
     )
     if(WIN32)
-        set_target_properties(server PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED ON)
+        target_compile_options(server PRIVATE "/std:c++17")
+        add_custom_command(TARGET server POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                "${CMAKE_SOURCE_DIR}/Roboto-Medium.ttf"
+                $<TARGET_FILE_DIR:server>
+                COMMENT "Copying Font to output directory"
+        )
+        target_link_options(server PRIVATE "-static-libgcc" "-static-libstdc++" "-static")
     endif()
     target_link_libraries(server hv_static libcurl)
     # Ensure json include is available for server too if it uses nlohmann/json
-    target_include_directories(server PRIVATE lib/json/include) 
+    target_include_directories(server PRIVATE lib/json/include "${MDNS_DIR}/src" "${MDNS_DIR}/include") 
 endif()
 
 # --- Master Executable ---

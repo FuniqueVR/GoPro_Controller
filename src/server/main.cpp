@@ -4,6 +4,13 @@
  * This software is licensed under the [MIT License].
  * See the LICENSE file in the project root for more information.
 */
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#pragma comment(lib, "Crypt32.lib")
+#pragma comment(lib, "Advapi32.lib")
+#pragma comment(lib, "Iphlpapi.lib")
+#endif
 #include <iostream>
 #include <vector>
 #include "hv/WebSocketServer.h"
@@ -403,7 +410,11 @@ void UDPProxyServer(){
         return;
     }
     int32_t broadcast_enable = 1;
+#ifdef _WIN32
+    int32_t err = setsockopt(sock_fd, SOL_SOCKET, SO_BROADCAST, (const char*)&broadcast_enable, sizeof(broadcast_enable));
+#else
     int32_t err = setsockopt(sock_fd, SOL_SOCKET, SO_BROADCAST, &broadcast_enable, sizeof(broadcast_enable));
+#endif
     if(err == -1){
         std::cerr << "Failed to set socket option for broadcasting: " << std::endl;
         return;
@@ -419,9 +430,15 @@ void UDPProxyServer(){
     broadcast_sockaddr.sin_addr.s_addr = inet_addr(broadcast_addr.c_str());
 
     us.onMessage = [sock_fd, broadcast_addr, broadcast_port, broadcast_sockaddr](const hv::SocketChannelPtr& channel, hv::Buffer* buf){
-        ssize_t sent = sendto(sock_fd, buf->data(), buf->size(), 0,
+#ifdef _WIN32
+        sendto(sock_fd, (const char*)buf->data(), buf->size(), 0,
             (struct sockaddr*)&broadcast_sockaddr, 
             sizeof(broadcast_sockaddr));
+#else
+        sendto(sock_fd, buf->data(), buf->size(), 0,
+            (struct sockaddr*)&broadcast_sockaddr, 
+            sizeof(broadcast_sockaddr));
+#endif
     };
     us.start();
 }
