@@ -9,6 +9,7 @@
 #include <windows.h>
 #pragma comment(lib, "Crypt32.lib")
 #pragma comment(lib, "Advapi32.lib")
+#pragma comment(lib, "Iphlpapi.lib")
 #endif
 #include <iostream>
 #include <vector>
