@@ -2,6 +2,16 @@
 #include <format>
 #include "../../common/camera_setting.h"
 
+void replaceAll(std::string& str, const std::string& from, const std::string& to) {
+    if(from.empty())
+        return;
+    size_t start_pos = 0;
+    while((start_pos = str.find(from, start_pos)) != std::string::npos) {
+        str.replace(start_pos, from.length(), to);
+        start_pos += to.length(); // Move past the replaced section to avoid infinite loops
+    }
+}
+
 PreviewPopup::PreviewPopup(
     SDL_Renderer* _renderer,
     std::shared_ptr<json> _setting, 
@@ -93,15 +103,16 @@ void PreviewPopup::update_decoder(){
         retry++;
         std::cout << "[Preview Decoder] Attempt " << retry << "/" << MAX_RETRY << " opening pipeline..." << std::endl;
 
-        pipeline = std::format(
-            "udpsrc address={} port=8554 buffer-size=41943040 "
+        pipeline = 
+            "udpsrc address={0} port=8554 buffer-size=41943040 "
             "! queue max-size-buffers=0 max-size-bytes=0 max-size-time=2000000000 "
             "! tsdemux " 
             "! h264parse "
             "! decodebin "
             "! videoconvert "
             "! video/x-raw,format=BGR "
-            "! appsink sync=false drop=true max-buffers=2", c->server);
+            "! appsink sync=false drop=true max-buffers=2";
+        replaceAll(pipeline, "{0}", c->server.c_str());
 
         cap.open(pipeline, cv::CAP_GSTREAMER);
 

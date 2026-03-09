@@ -301,8 +301,13 @@ void WebsocketServer(){
         }
 
         if(f == -1){
+            std::string addd = channel->peeraddr().c_str();
+            while(addd.at(addd.size() - 1) != ':'){
+                addd.pop_back();
+            }
+            addd.pop_back();
             broadcast_addrs.push_back((
-                channel->peeraddr().c_str()
+                addd.c_str()
             ));
         }
     };
