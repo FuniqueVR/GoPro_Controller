@@ -69,6 +69,10 @@ void PreviewPopup::update_decoder(){
     int32_t s = -1;
     const int32_t MAX_RETRY = 10;
 
+    std::cout << "===== OpenCV Build Info =====" << std::endl;
+    std::cout << cv::getBuildInformation() << std::endl;
+    std::cout << "=============================" << std::endl;
+
     std::cout << "[Preview Decoder] Update decoder start !" << " " << stream_open << " " << (retry < MAX_RETRY) << std::endl;
     {
         std::lock_guard<std::mutex> lock(master->camera_mtx);
@@ -121,7 +125,6 @@ void PreviewPopup::update_decoder(){
         g = true;
 
         if(cap.isOpened()){
-            // ✅ Try to grab one frame to confirm it actually works
             cv::Mat test;
             cap.grab();
             if(cap.retrieve(test) && !test.empty()){
