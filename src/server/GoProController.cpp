@@ -11,8 +11,6 @@
 #include <chrono>   // For std::chrono::seconds, milliseconds, etc.
 #include <thread>   // For std::this_thread::sleep_for
 #include <future>
-#include <unistd.h>
-#include <sys/types.h>
 
 std::string getPacket(std::string key, json data){
     json response = json::object();

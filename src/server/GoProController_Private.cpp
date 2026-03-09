@@ -11,33 +11,50 @@
 #include <chrono>   // For std::chrono::seconds, milliseconds, etc.
 #include <thread>   // For std::this_thread::sleep_for
 #include <future>
-#include <unistd.h>
-#include <sys/types.h>
+#include <ctime>
+
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 int32_t get_timezone_offset_minutes() {
-    time_t t = time(NULL);
+#ifdef _WIN32
+    // Windows-specific implementation using Win32 API
+    TIME_ZONE_INFORMATION tzInfo;
+    DWORD result = GetTimeZoneInformation(&tzInfo);
     
-    struct tm lt = *localtime(&t);
-    struct tm gt = *gmtime(&t);
+    if (result == TIME_ZONE_ID_INVALID) {
+        return 0;
+    }
     
-    // Convert both to time_t to get the difference
-    // Note: mktime assumes 'lt' is local time
-    time_t local_t = mktime(&lt);
+    // Bias is in minutes
+    // Negative bias = east of UTC (e.g., UTC+8 = -480)
+    // Positive bias = west of UTC (e.g., UTC-5 = 300)
+    // We want positive = east, so negate
+    return -tzInfo.Bias;
     
-    // We need a trick for GMT because mktime uses local timezone
-    // We use the 'timezone' external global variable or manual math:
-    struct tm* gmt_ptr = gmtime(&t);
+#elif defined(__unix__) || defined(__APPLE__)
+    // POSIX systems (Linux, macOS, BSD)
+    tzset();  // Initialize timezone global
     
-    // This is the most portable manual calculation
-    time_t now = time(NULL);
-    struct tm *loc = localtime(&now);
-    // difftime gives difference in seconds
-    double diff = difftime(now, mktime(gmtime(&now)));
+    // timezone = seconds West of UTC
+    // Negate to get East, divide by 60 for minutes
+    return static_cast<int32_t>(-(timezone) / 60);
     
-    // However, the simplest cross-platform way is:
-    return (int)(-(timezone) / 60); 
-    // 'timezone' is a global in <ctime> representing seconds West of UTC
+#else
+    // Fallback: Manual calculation for unknown platforms
+    time_t now = time(nullptr);
+    struct tm local_tm = *localtime(&now);
+    struct tm utc_tm = *gmtime(&now);
+    
+    time_t local_time = mktime(&local_tm);
+    time_t utc_time = mktime(&utc_tm);
+    
+    double diff = difftime(local_time, utc_time);
+    return static_cast<int32_t>(diff / 60);
+#endif
 }
+
 std::string getCommand(std::string url){
     return url;
 }
