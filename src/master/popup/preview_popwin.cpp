@@ -116,6 +116,7 @@ void PreviewPopup::update_decoder(){
                 "! appsink sync=false drop=true max-buffers=2";
             replaceAll(pipeline, "{0}", c->server.c_str());
             cap.open(pipeline, cv::CAP_GSTREAMER);
+            std::cout << "[Preview Decoder] Pipeline use:" << std::endl << pipeline << std::endl;
         }
         g = true;
 
