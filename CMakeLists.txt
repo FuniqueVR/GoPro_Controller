@@ -242,12 +242,13 @@ if(BUILD_MASTER)
         )
 
         target_include_directories(master PRIVATE
-            ${CMAKE_BINARY_DIR}
-            ${OPENCV_DIR}/include
-            ${OPENCV_DIR}/modules/core/include
-            ${OPENCV_DIR}/modules/imgproc/include
-            ${OPENCV_DIR}/modules/imgcodecs/include
-            ${OPENCV_DIR}/modules/videoio/include
+            ${opencv_SOURCE_DIR}/include
+            ${opencv_BINARY_DIR}                        # opencv_modules.hpp is HERE
+            ${opencv_BINARY_DIR}/opencv2                # Also check here
+            ${opencv_SOURCE_DIR}/modules/core/include
+            ${opencv_SOURCE_DIR}/modules/imgproc/include
+            ${opencv_SOURCE_DIR}/modules/videoio/include
+            ${opencv_SOURCE_DIR}/modules/imgcodecs/include
         )
         message(STATUS "Master will be built WITH OpenCV support")
         add_custom_command(TARGET master POST_BUILD
