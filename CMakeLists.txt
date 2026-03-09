@@ -155,8 +155,8 @@ if(BUILD_MASTER)
         set(WITH_V4L               OFF CACHE BOOL "" FORCE)
         
         set(WITH_FFMPEG            ON  CACHE BOOL "" FORCE)
-        set(WITH_JPEG              ON  CACHE BOOL "" FORCE)
-        set(WITH_PNG               ON  CACHE BOOL "" FORCE)
+        set(WITH_JPEG              OFF  CACHE BOOL "" FORCE)
+        set(WITH_PNG               OFF  CACHE BOOL "" FORCE)
 
         # Disable extra modules
         set(BUILD_opencv_calib3d OFF CACHE BOOL "" FORCE)
