@@ -294,10 +294,12 @@ if(BUILD_MASTER)
             ${opencv_SOURCE_DIR}/modules/imgcodecs/include
         )
 
+        file(GLOB_RECURSE GSTREAM_DLL "${GSTREAMER_DIR}/bin/*.dll")
+
         message(STATUS "Master will be built WITH OpenCV support")
         add_custom_command(TARGET master POST_BUILD
-            COMMAND xopy
-                "${GSTREAMER_DIR}/bin/*.dll"
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                ${GSTREAM_DLL}
                 $<TARGET_FILE_DIR:master>
                 COMMENT "Copying gstreamer dll to output directory"
         )
