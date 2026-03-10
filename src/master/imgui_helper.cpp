@@ -78,6 +78,7 @@ void setup_imgui(){
     ImGui::StyleColorsDark();
     ImGuiStyle& style = ImGui::GetStyle();
     style.ScaleAllSizes(main_scale);
+    ImGui_ImplWin32_EnableDpiAwareness();
 }
 /**
  * Setup build-in theme
@@ -213,6 +214,9 @@ void begin_sdl(std::tuple<struct SDL_Window*, const char*>& r){
         printf("Error: SDL_Init(): %s\n", SDL_GetError());
         exit(1);
     }
+
+    SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengl");
+    SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
 
     const char* video_driver = SDL_GetCurrentVideoDriver();
     std::cout << "SDL Video Driver: " << video_driver << std::endl;
