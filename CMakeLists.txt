@@ -301,10 +301,10 @@ if(BUILD_MASTER)
                 $<TARGET_FILE_DIR:master>
                 COMMENT "Copying gstreamer dll to output directory"
         )
-        add_custom_command(TARGET server POST_BUILD
+        add_custom_command(TARGET master POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
                 "${CMAKE_SOURCE_DIR}/Roboto-Medium.ttf"
-                $<TARGET_FILE_DIR:server>
+                $<TARGET_FILE_DIR:master>
                 COMMENT "Copying Font to output directory"
         )
         target_link_options(master PRIVATE "-static-libgcc" "-static-libstdc++" "-static")
