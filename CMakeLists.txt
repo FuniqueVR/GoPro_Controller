@@ -136,6 +136,8 @@ if(BUILD_MASTER)
         set(BUILD_opencv_python2   OFF CACHE BOOL "" FORCE)
         set(BUILD_opencv_python3   OFF CACHE BOOL "" FORCE)
         set(BUILD_PROTOBUF         OFF CACHE BOOL "" FORCE)
+        set(BUILD_ZLIB OFF CACHE BOOL "Don't build zlib" FORCE)
+        set(BUILD_PNG OFF CACHE BOOL "Don't build PNG (avoids zlib)" FORCE)
         
         set(WITH_CUDA              OFF CACHE BOOL "" FORCE)
         set(WITH_OPENCL            OFF CACHE BOOL "" FORCE)
@@ -156,7 +158,7 @@ if(BUILD_MASTER)
         
         set(WITH_FFMPEG            ON  CACHE BOOL "" FORCE)
         set(WITH_JPEG              OFF  CACHE BOOL "" FORCE)
-        set(WITH_PNG               OFF  CACHE BOOL "" FORCE)
+        set(WITH_PNG OFF CACHE BOOL "Disable PNG support" FORCE)
 
         # Disable extra modules
         set(BUILD_opencv_calib3d OFF CACHE BOOL "" FORCE)
@@ -250,7 +252,6 @@ if(BUILD_MASTER)
             opencv_imgproc
             opencv_imgcodecs
             opencv_videoio
-            zlib
             OpenGL::GL
             SDL3::SDL3
             hv_static
