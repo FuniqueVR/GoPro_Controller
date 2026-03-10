@@ -113,7 +113,7 @@ if(BUILD_MASTER)
     # ============================================================
     # OpenCV - Try system first, fallback to FetchContent
     # ============================================================
-    find_package(OpenCV QUIET COMPONENTS core imgproc videoio)
+    find_package(OpenCV QUIET COMPONENTS core imgproc videoio imgcodecs)
     
     if(OpenCV_FOUND)
         message(STATUS "Using system OpenCV: ${OpenCV_VERSION}")
@@ -158,6 +158,9 @@ if(BUILD_MASTER)
         set(WITH_OPENEXR           OFF CACHE BOOL "" FORCE)
         set(WITH_V4L               OFF CACHE BOOL "" FORCE)
         
+        set(WITH_GSTREAMER         ON  CACHE BOOL "Enable GStreamer" FORCE)
+        set(WITH_GSTREAMER_0_10    OFF CACHE BOOL "Disable old GStreamer" FORCE)
+
         set(WITH_FFMPEG            ON  CACHE BOOL "" FORCE)
         set(WITH_PNG OFF CACHE BOOL "Disable PNG" FORCE)
         set(WITH_JPEG OFF CACHE BOOL "Disable JPEG" FORCE)
