@@ -78,7 +78,9 @@ void setup_imgui(){
     ImGui::StyleColorsDark();
     ImGuiStyle& style = ImGui::GetStyle();
     style.ScaleAllSizes(main_scale);
-    ImGui_ImplWin32_EnableDpiAwareness();
+#ifdef _WIN32
+    //ImGui_ImplWin32_EnableDpiAwareness();
+#endif
 }
 /**
  * Setup build-in theme

@@ -261,23 +261,23 @@ int main(int, char**)
         if (ImGui::BeginMenu("Windows")) {
             bool update_menu = false;
             if(ImGui::MenuItem("Websocket Dashboard (Q)", NULL, websocket_win->is_enable())){
-                websocket_win->trigger(!websocket_win->is_enable())
+                websocket_win->trigger(!websocket_win->is_enable());
                 update_menu = true;
             }
             if(ImGui::MenuItem("Command Sender (W)", NULL, commands_win->is_enable())){
-                commands_win->trigger(!commands_win->is_enable())
+                commands_win->trigger(!commands_win->is_enable());
                 update_menu = true;
             }
             if(ImGui::MenuItem("Camera List (E)", NULL, camera_list_win->is_enable())){
-                camera_list_win->trigger(!camera_list_win->is_enable())
+                camera_list_win->trigger(!camera_list_win->is_enable());
                 update_menu = true;
             }
             if(ImGui::MenuItem("Inspector (R)", NULL, inspector_win->is_enable())){
-                inspector_win->trigger(!inspector_win->is_enable())
+                inspector_win->trigger(!inspector_win->is_enable());
                 update_menu = true;
             }
             if(ImGui::MenuItem("Style (T)", NULL, style_setting_win->is_enable())){
-                style_setting_win->trigger(!style_setting_win->is_enable())
+                style_setting_win->trigger(!style_setting_win->is_enable());
                 update_menu = true;
             }
             ImGui::Separator();
