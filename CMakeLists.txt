@@ -259,8 +259,9 @@ if(BUILD_MASTER)
 
         target_include_directories(master PRIVATE
             ${opencv_SOURCE_DIR}/include
-            ${opencv_BINARY_DIR}                        # opencv_modules.hpp is HERE
-            ${opencv_BINARY_DIR}/opencv2                # Also check here
+            ${opencv_BINARY_DIR}
+            ${CMAKE_BINARY_DIR}
+            ${opencv_BINARY_DIR}/opencv2
             ${opencv_SOURCE_DIR}/modules/core/include
             ${opencv_SOURCE_DIR}/modules/imgproc/include
             ${opencv_SOURCE_DIR}/modules/videoio/include
