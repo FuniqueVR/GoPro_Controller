@@ -267,6 +267,38 @@ if(BUILD_MASTER)
             ${opencv_SOURCE_DIR}/modules/videoio/include
             ${opencv_SOURCE_DIR}/modules/imgcodecs/include
         )
+        
+        # These are built by OpenCV but not automatically linked
+        if(EXISTS "${opencv_BINARY_DIR}/3rdparty/lib")
+            target_link_directories(master PRIVATE
+                ${opencv_BINARY_DIR}/3rdparty/lib
+            )
+            
+            # Link zlib if it was built
+            if(EXISTS "${opencv_BINARY_DIR}/3rdparty/lib/libzlib.a")
+                target_link_libraries(master PRIVATE
+                    ${opencv_BINARY_DIR}/3rdparty/lib/libzlib.a
+                )
+                message(STATUS "✓ Linking OpenCV's built-in zlib")
+            endif()
+            
+            # Link libjpeg if it was built
+            if(EXISTS "${opencv_BINARY_DIR}/3rdparty/lib/liblibjpeg-turbo.a")
+                target_link_libraries(master PRIVATE
+                    ${opencv_BINARY_DIR}/3rdparty/lib/liblibjpeg-turbo.a
+                )
+                message(STATUS "✓ Linking OpenCV's built-in libjpeg")
+            endif()
+            
+            # Link libpng if it was built
+            if(EXISTS "${opencv_BINARY_DIR}/3rdparty/lib/liblibpng.a")
+                target_link_libraries(master PRIVATE
+                    ${opencv_BINARY_DIR}/3rdparty/lib/liblibpng.a
+                )
+                message(STATUS "✓ Linking OpenCV's built-in libpng")
+            endif()
+        endif()
+
         message(STATUS "Master will be built WITH OpenCV support")
         add_custom_command(TARGET master POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
