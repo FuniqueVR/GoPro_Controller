@@ -266,7 +266,7 @@ bool StyleSetting::render_fields(){
     ImVec4* colors = style.Colors;
     bool changed = false;
     changed = changed | ImGui::InputFloat("Font Size Base##style_field", &style.FontSizeBase);
-    changed = changed | ImGui::InputFloat("Font Scale Main##style_field", &style.FontScaleMain);
+    changed = changed | ImGui::SliderFloat("Font Scale Main##style_field", &style.FontScaleMain, 0.1f, 2.0f, "%.1f");
     changed = changed | ImGui::InputFloat2("Window Padding##style_field", (float*)&style.WindowPadding);
     changed = changed | ImGui::InputFloat("Window Padding##style_field", &style.WindowRounding);
     return changed;
@@ -274,4 +274,5 @@ bool StyleSetting::render_fields(){
 
 bool StyleSetting::update_style(){
     state->update_server();
+    return true;
 }
