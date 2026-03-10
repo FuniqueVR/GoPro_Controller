@@ -1,6 +1,15 @@
 #include "preview_popwin.h"
 #include <format>
+#include <cstdlib>
 #include "../../common/camera_setting.h"
+
+fdef _WIN32
+    _putenv("GST_DEBUG=2");  // Level 2 = warnings and errors
+    // Or for more detail:
+    // _putenv("GST_DEBUG=3");  // Level 3 = info + warnings + errors
+#else
+    setenv("GST_DEBUG", "2", 1);
+#endif
 
 void replaceAll(std::string& str, const std::string& from, const std::string& to) {
     if(from.empty())
