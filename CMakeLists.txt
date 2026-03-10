@@ -299,6 +299,7 @@ if(BUILD_MASTER)
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
                 $<TARGET_RUNTIME_DLLS:master>
                 $<TARGET_FILE_DIR:master>
+                COMMAND_EXPAND_LISTS
                 COMMENT "Copying gstreamer dll to output directory"
         )
         add_custom_command(TARGET master POST_BUILD
