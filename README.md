@@ -34,6 +34,8 @@ sudo apt-get install gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly
 * [GStreamer](https://gstreamer.freedesktop.org/)
     * Please install in C://Program Files/gstreamer
 
+* 如果 Compile 碰到 zlib 找不到的問題, 進入專案細節直接從 library input 刪掉 zlib (應該會在最下面).
+
 總共有兩個輸出的應用程式
 * Master
     * AMD64 (WIN/LINUX)
