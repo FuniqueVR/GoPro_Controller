@@ -283,6 +283,10 @@ if(BUILD_MASTER)
             winpthread
         )
 
+        get_target_property(CURRENT_LIBS master LINK_LIBRARIES)
+        list(REMOVE_ITEM CURRENT_LIBS zlib)
+        set_property(TARGET master PROPERTY LINK_LIBRARIES ${CURRENT_LIBS})
+
         target_include_directories(master PRIVATE
             ${opencv_SOURCE_DIR}/include
             ${opencv_BINARY_DIR}
