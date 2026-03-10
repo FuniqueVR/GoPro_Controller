@@ -125,7 +125,7 @@ if(BUILD_MASTER)
         # -------------------------------------------------------
         # Disable everything we don't need (faster build)
         # -------------------------------------------------------
-        set(BUILD_LIST "core,imgproc,videoio" CACHE STRING "" FORCE)
+        set(BUILD_LIST "core,imgproc,videoio,imgcodecs" CACHE STRING "" FORCE)
         
         set(BUILD_EXAMPLES         OFF CACHE BOOL "" FORCE)
         set(BUILD_TESTS            OFF CACHE BOOL "" FORCE)
@@ -136,10 +136,6 @@ if(BUILD_MASTER)
         set(BUILD_opencv_python2   OFF CACHE BOOL "" FORCE)
         set(BUILD_opencv_python3   OFF CACHE BOOL "" FORCE)
         set(BUILD_PROTOBUF         OFF CACHE BOOL "" FORCE)
-        set(BUILD_opencv_imgcodecs OFF CACHE BOOL "Disable image codecs" FORCE)
-        set(BUILD_ZLIB OFF CACHE BOOL "Don't build zlib" FORCE)
-        set(BUILD_PNG OFF CACHE BOOL "Don't build PNG" FORCE)
-        set(BUILD_JPEG OFF CACHE BOOL "Don't build JPEG" FORCE)
         
         set(WITH_CUDA              OFF CACHE BOOL "" FORCE)
         set(WITH_OPENCL            OFF CACHE BOOL "" FORCE)
@@ -158,12 +154,9 @@ if(BUILD_MASTER)
         set(WITH_OPENEXR           OFF CACHE BOOL "" FORCE)
         set(WITH_V4L               OFF CACHE BOOL "" FORCE)
         
-        set(WITH_GSTREAMER         ON  CACHE BOOL "Enable GStreamer" FORCE)
-        set(WITH_GSTREAMER_0_10    OFF CACHE BOOL "Disable old GStreamer" FORCE)
-
         set(WITH_FFMPEG            ON  CACHE BOOL "" FORCE)
-        set(WITH_PNG OFF CACHE BOOL "Disable PNG" FORCE)
-        set(WITH_JPEG OFF CACHE BOOL "Disable JPEG" FORCE)
+        set(WITH_JPEG              OFF  CACHE BOOL "" FORCE)
+        set(WITH_PNG               OFF  CACHE BOOL "" FORCE)
 
         # Disable extra modules
         set(BUILD_opencv_calib3d OFF CACHE BOOL "" FORCE)
@@ -255,6 +248,7 @@ if(BUILD_MASTER)
             ${OpenCV_LIBS}
             opencv_core
             opencv_imgproc
+            opencv_imgcodecs
             opencv_videoio
             OpenGL::GL
             SDL3::SDL3
@@ -271,6 +265,7 @@ if(BUILD_MASTER)
             ${opencv_SOURCE_DIR}/modules/core/include
             ${opencv_SOURCE_DIR}/modules/imgproc/include
             ${opencv_SOURCE_DIR}/modules/videoio/include
+            ${opencv_SOURCE_DIR}/modules/imgcodecs/include
         )
         message(STATUS "Master will be built WITH OpenCV support")
         add_custom_command(TARGET master POST_BUILD
