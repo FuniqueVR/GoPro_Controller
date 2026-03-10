@@ -190,8 +190,14 @@ void PreviewPopup::render(){
     ImVec2 display_size = io.DisplaySize;
     ImVec2 unit = ImVec2(display_size.x / 10.0f, display_size.y / 10.0f);
 
-    ImGui::SetNextWindowPos(ImVec2(unit.x * 0.5F, unit.y * 0.5F), ImGuiCond_Always);
-    ImGui::SetNextWindowSize(ImVec2(unit.x * 9.0F, unit.y * 9.0F), ImGuiCond_Always);
+#ifdef _WIN32
+    int32_t cond = ImGuiCond_Once;
+#else
+    int32_t cond = ImGuiCond_Always;
+#endif
+
+    ImGui::SetNextWindowPos(ImVec2(unit.x * 0.5F, unit.y * 0.5F), cond);
+    ImGui::SetNextWindowSize(ImVec2(unit.x * 9.0F, unit.y * 9.0F), cond);
 
     int32_t target_w, target_h;
     if(dir == 0 || dir == 2){
