@@ -373,15 +373,15 @@ void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
             preset = status[std::to_string(PRESET_ID)].get<int32_t>();
         }
 
-        if(preset == 0) preset_text = "V";
-        else if(preset == 65538) preset_text = "PB";
-        else if(preset == 65536) preset_text = "PS";
-        else if(preset == 131072) preset_text = "T";
-        else if(preset == 131075) preset_text = "TT";
-        else if(preset == 131076) preset_text = "TLP";
-        else if(preset == 131077) preset_text = "TLT";
-        else if(preset == 131073) preset_text = "TV";
-        else if(preset == 131074) preset_text = "TNV";
+        if(preset == GOPRO_MODE_VALUE[0]) preset_text = "V";
+        else if(preset == GOPRO_MODE_VALUE[1]) preset_text = "PB";
+        else if(preset == GOPRO_MODE_VALUE[2]) preset_text = "PS";
+        else if(preset == GOPRO_MODE_VALUE[3]) preset_text = "T";
+        else if(preset == GOPRO_MODE_VALUE[4]) preset_text = "TT";
+        else if(preset == GOPRO_MODE_VALUE[5]) preset_text = "TLP";
+        else if(preset == GOPRO_MODE_VALUE[6]) preset_text = "TLT";
+        else if(preset == GOPRO_MODE_VALUE[7]) preset_text = "TV";
+        else if(preset == GOPRO_MODE_VALUE[8]) preset_text = "TNV";
         else preset_text = std::to_string(preset);
 
         ImVec2 frame_padding = ImVec2(10, 10);
