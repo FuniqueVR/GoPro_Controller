@@ -297,7 +297,7 @@ if(BUILD_MASTER)
         message(STATUS "Master will be built WITH OpenCV support")
         add_custom_command(TARGET master POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                "${GSTREAMER_DIR}/bin/*.dll"
+                $<TARGET_RUNTIME_DLLS:master>
                 $<TARGET_FILE_DIR:master>
                 COMMENT "Copying gstreamer dll to output directory"
         )
