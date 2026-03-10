@@ -265,7 +265,6 @@ bool StyleSetting::render_fields(){
     ImGuiStyle& style = ImGui::GetStyle();
     ImVec4* colors = style.Colors;
     bool changed = false;
-    changed = changed | ImGui::SliderFloat("Alpha##style_field", &style.Alpha, 0.01f, 1);
     changed = changed | ImGui::InputFloat("Font Size Base##style_field", &style.FontSizeBase);
     changed = changed | ImGui::InputFloat("Font Scale Main##style_field", &style.FontScaleMain);
     changed = changed | ImGui::InputFloat2("Window Padding##style_field", (float*)&style.WindowPadding);
