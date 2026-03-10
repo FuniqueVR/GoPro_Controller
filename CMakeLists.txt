@@ -250,6 +250,7 @@ if(BUILD_MASTER)
             opencv_imgproc
             opencv_imgcodecs
             opencv_videoio
+            zlib
             OpenGL::GL
             SDL3::SDL3
             hv_static
