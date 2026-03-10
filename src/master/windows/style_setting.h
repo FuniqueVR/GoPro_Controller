@@ -17,8 +17,8 @@ public:
     virtual void render() override;
 
 protected:
-    bool redner_colors();
-    bool redner_fields();
+    bool render_colors();
+    bool render_fields();
     bool update_style();
 
 private:

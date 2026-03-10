@@ -49,11 +49,11 @@ void StyleSetting::render(){
         
         if(ImGui::BeginTabBar("Style Fields##style_win")){
             if(ImGui::BeginTabItem("Colors##style_win")){
-                redner_colors();
+                render_colors();
                 ImGui::EndTabItem();
             }
             if(ImGui::BeginTabItem("Fields##style_win")){
-                redner_fields();
+                render_fields();
                 ImGui::EndTabItem();
             }
             ImGui::EndTabBar();
@@ -68,7 +68,7 @@ void StyleSetting::render(){
     ImGui::End();
 }
 
-bool StyleSetting::redner_colors(){
+bool StyleSetting::render_colors(){
     ImGuiStyle& style = ImGui::GetStyle();
     ImVec4* colors = style.Colors;
     bool changed = false;
@@ -130,10 +130,16 @@ bool StyleSetting::redner_colors(){
     return changed;
 }
 
-bool StyleSetting::redner_fields(){
-
+bool StyleSetting::render_fields(){
+    ImGuiStyle& style = ImGui::GetStyle();
+    ImVec4* colors = style.Colors;
+    bool changed = false;
+    return changed;
 }
 
 bool StyleSetting::update_style(){
     ImGuiStyle& style = ImGui::GetStyle();
+    ImVec4* colors = style.Colors;
+    bool changed = false;
+    return changed;
 }
