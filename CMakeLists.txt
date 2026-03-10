@@ -297,6 +297,30 @@ if(BUILD_MASTER)
         message(STATUS "Master will be built WITH OpenCV support")
         add_custom_command(TARGET master POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                "${GSTREAMER_DIR}/bin/gstapp-1.0-0.dll"
+                $<TARGET_FILE_DIR:master>
+                COMMENT "Copying gstreamer dll to output directory"
+        )
+        add_custom_command(TARGET master POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                "${GSTREAMER_DIR}/bin/gstbase-1.0-0.dll"
+                $<TARGET_FILE_DIR:master>
+                COMMENT "Copying gstreamer dll to output directory"
+        )
+        add_custom_command(TARGET master POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                "${GSTREAMER_DIR}/bin/gstreamer-1.0-0.dll"
+                $<TARGET_FILE_DIR:master>
+                COMMENT "Copying gstreamer dll to output directory"
+        )
+        add_custom_command(TARGET master POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                "${GSTREAMER_DIR}/bin/gstriff-1.0-0.dll"
+                $<TARGET_FILE_DIR:master>
+                COMMENT "Copying gstreamer dll to output directory"
+        )
+        add_custom_command(TARGET master POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
                 "${CMAKE_SOURCE_DIR}/Roboto-Medium.ttf"
                 $<TARGET_FILE_DIR:master>
                 COMMENT "Copying Font to output directory"

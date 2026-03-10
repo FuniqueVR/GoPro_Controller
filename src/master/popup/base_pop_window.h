@@ -14,6 +14,11 @@
 using json = nlohmann::json;
 
 #define wp_flag ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_AlwaysAutoResize
+#ifdef _WIN32
+    int32_t wp_cond = ImGuiCond_Once;
+#else
+    int32_t wp_cond = ImGuiCond_Always;
+#endif
 
 class BasePopWindow {
 public:
