@@ -3,7 +3,7 @@
 #include <cstdlib>
 #include "../../common/camera_setting.h"
 
-fdef _WIN32
+#ifdef _WIN32
     _putenv("GST_DEBUG=2");  // Level 2 = warnings and errors
     // Or for more detail:
     // _putenv("GST_DEBUG=3");  // Level 3 = info + warnings + errors
