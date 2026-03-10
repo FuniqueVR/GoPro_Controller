@@ -154,6 +154,7 @@ if(BUILD_MASTER)
         set(WITH_OPENEXR           OFF CACHE BOOL "" FORCE)
         set(WITH_V4L               OFF CACHE BOOL "" FORCE)
         
+        set(WITH_GSTREAMER         ON  CACHE BOOL "Enable GStreamer" FORCE)
         set(WITH_FFMPEG            ON  CACHE BOOL "" FORCE)
         set(WITH_JPEG              OFF  CACHE BOOL "" FORCE)
         set(WITH_PNG               OFF  CACHE BOOL "" FORCE)
@@ -267,7 +268,7 @@ if(BUILD_MASTER)
             ${opencv_SOURCE_DIR}/modules/videoio/include
             ${opencv_SOURCE_DIR}/modules/imgcodecs/include
         )
-        
+
         # These are built by OpenCV but not automatically linked
         if(EXISTS "${opencv_BINARY_DIR}/3rdparty/lib")
             target_link_directories(master PRIVATE
