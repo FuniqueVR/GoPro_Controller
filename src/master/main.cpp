@@ -112,6 +112,7 @@ void updateServerList(){
     data["window"]["commands_win"] = commands_win->get_window_data();
     data["window"]["inspector_win"] = inspector_win->get_window_data();
     data["window"]["websocket_win"] = websocket_win->get_window_data();
+    data["popwin"]["style_setting_win"] = style_setting_win->get_window_data();
     data["popwin"]["preview_popwin"] = preview_popwin->get_window_data();
     saveServerList(data);
     servers->swap(data);
@@ -122,6 +123,7 @@ void updateGUIList(){
     (*gui)["camera_list_win"] = camera_list_win->is_enable();
     (*gui)["commands_win"] = commands_win->is_enable();
     (*gui)["inspector_win"] = inspector_win->is_enable();
+    (*gui)["style_setting_win"] = style_setting_win->is_enable();
     saveGUI(*gui);
     ImGui::SaveIniSettingsToDisk("imgui.ini");
 }
