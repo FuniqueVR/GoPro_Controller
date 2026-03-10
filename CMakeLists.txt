@@ -121,6 +121,30 @@ if(BUILD_MASTER)
         set(OPENCV_FROM_SOURCE FALSE)
     else()
         message(STATUS "System OpenCV not found, building from source...")
+
+        if(WIN32)
+            set(GSTREAMER_DIR "C:/Program Files/gstreamer/1.0/msvc_x86_64" CACHE PATH "GStreamer installation directory")
+            
+            # Help CMake find GStreamer
+            list(APPEND CMAKE_PREFIX_PATH ${GSTREAMER_DIR})
+            set(ENV{PKG_CONFIG_PATH} "${GSTREAMER_DIR}/lib/pkgconfig")
+            set(ENV{GSTREAMER_ROOT_X86_64} ${GSTREAMER_DIR})
+            
+            message(STATUS "GStreamer directory: ${GSTREAMER_DIR}")
+            
+            # Verify GStreamer is installed
+            if(NOT EXISTS "${GSTREAMER_DIR}/lib/pkgconfig/gstreamer-1.0.pc")
+                message(WARNING "========================================")
+                message(WARNING "GStreamer NOT FOUND at ${GSTREAMER_DIR}!")
+                message(WARNING "Download from: https://gstreamer.freedesktop.org/download/")
+                message(WARNING "Install BOTH packages:")
+                message(WARNING "  - gstreamer-1.0-msvc-x86_64-1.24.x.msi (runtime)")
+                message(WARNING "  - gstreamer-1.0-devel-msvc-x86_64-1.24.x.msi (development)")
+                message(WARNING "========================================")
+            else()
+                message(STATUS "✓ GStreamer found at ${GSTREAMER_DIR}")
+            endif()
+        endif()
         
         # -------------------------------------------------------
         # Disable everything we don't need (faster build)
@@ -155,6 +179,7 @@ if(BUILD_MASTER)
         set(WITH_V4L               OFF CACHE BOOL "" FORCE)
         
         set(WITH_GSTREAMER         ON  CACHE BOOL "Enable GStreamer" FORCE)
+        set(WITH_GSTREAMER_0_10    OFF CACHE BOOL "Disable old GStreamer 0.10" FORCE)
         set(WITH_FFMPEG            ON  CACHE BOOL "" FORCE)
         set(WITH_JPEG              OFF  CACHE BOOL "" FORCE)
         set(WITH_PNG               OFF  CACHE BOOL "" FORCE)
