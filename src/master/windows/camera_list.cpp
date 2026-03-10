@@ -374,7 +374,7 @@ void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
         }
 
         if(preset == 0) preset_text = "V";
-        else if(preset == 65542) preset_text = "PB";
+        else if(preset == 65538) preset_text = "PB";
         else if(preset == 65536) preset_text = "PS";
         else if(preset == 131072) preset_text = "T";
         else if(preset == 131075) preset_text = "TT";
