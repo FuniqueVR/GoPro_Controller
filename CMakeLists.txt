@@ -20,8 +20,6 @@ option(BUILD_SERVER "Build the server (RPi) executable" ON)
 option(BUILD_MASTER "Build the master (PC) executable" ON)
 # Dependencies
 
-file(GLOB_RECURSE FONT_OTF "${CMAKE_SOURCE_DIR}/*.otf")
-
 # libhv (Required for Server, used in Master too if needed, but primarily Server)
 if(BUILD_SERVER OR BUILD_MASTER)
     # --- GLOBAL CURL CONFIGURATION (Apply to BOTH Server and Master) ---
@@ -291,6 +289,7 @@ if(BUILD_MASTER)
         )
 
         file(GLOB_RECURSE GSTREAM_DLL "${GSTREAMER_DIR}/bin/*.dll")
+        file(GLOB_RECURSE FONT_OTF "${CMAKE_SOURCE_DIR}/*.otf")
 
         message(STATUS "Master will be built WITH OpenCV support")
         add_custom_command(TARGET master POST_BUILD
