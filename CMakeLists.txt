@@ -235,12 +235,6 @@ if(BUILD_SERVER)
     )
     if(WIN32)
         target_compile_options(server PRIVATE "/std:c++17")
-        add_custom_command(TARGET server POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                ${FONT_OTF}
-                $<TARGET_FILE_DIR:server>
-                COMMENT "Copying Font to output directory"
-        )
         target_link_options(server PRIVATE "-static-libgcc" "-static-libstdc++" "-static")
     endif()
     target_link_libraries(server hv_static libcurl)
