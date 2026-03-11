@@ -1,5 +1,17 @@
 #include "preview_popwin.h"
+#include <format>
+#include <cstdlib>
 #include "../../common/camera_setting.h"
+
+void replaceAll(std::string& str, const std::string& from, const std::string& to) {
+    if(from.empty())
+        return;
+    size_t start_pos = 0;
+    while((start_pos = str.find(from, start_pos)) != std::string::npos) {
+        str.replace(start_pos, from.length(), to);
+        start_pos += to.length(); // Move past the replaced section to avoid infinite loops
+    }
+}
 
 PreviewPopup::PreviewPopup(
     SDL_Renderer* _renderer,
@@ -10,6 +22,14 @@ PreviewPopup::PreviewPopup(
     : BasePopWindow(_setting, _state, _master) {
     renderer = _renderer;
     title = "Preview##Popup";
+
+#ifdef _WIN32
+    _putenv("GST_DEBUG=2");  // Level 2 = warnings and errors
+    // Or for more detail:
+    // _putenv("GST_DEBUG=3");  // Level 3 = info + warnings + errors
+#else
+    setenv("GST_DEBUG", "2", 1);
+#endif
 }
 
 PreviewPopup::~PreviewPopup(){
@@ -55,12 +75,17 @@ void PreviewPopup::trigger(bool value){
 void PreviewPopup::update_decoder(){
     stream_open = false;
     int32_t retry = 0;
+    int32_t s = -1;
     const int32_t MAX_RETRY = 10;
+
+    std::cout << "===== OpenCV Build Info =====" << std::endl;
+    std::cout << cv::getBuildInformation() << std::endl;
+    std::cout << "=============================" << std::endl;
 
     std::cout << "[Preview Decoder] Update decoder start !" << " " << stream_open << " " << (retry < MAX_RETRY) << std::endl;
     {
         std::lock_guard<std::mutex> lock(master->camera_mtx);
-        int32_t s = master->findCamera(state->preview_ip);
+        s = master->findCamera(state->preview_ip);
         if(s == -1){
             std::cout << "[Preview Decoder] Cannot find camera: " << state->preview_ip << std::endl;
             return;
@@ -86,24 +111,29 @@ void PreviewPopup::update_decoder(){
         gl_texture = 0;
     }
 
+    bool g = false;
     while(!stream_open && retry < MAX_RETRY){
+        const std::shared_ptr<CameraInfo>& c = master->getCameras().at(s);
         retry++;
         std::cout << "[Preview Decoder] Attempt " << retry << "/" << MAX_RETRY << " opening pipeline..." << std::endl;
 
-        pipeline =
-            "udpsrc port=8554 buffer-size=41943040 "
-            "! queue max-size-buffers=0 max-size-bytes=0 max-size-time=2000000000 "
-            "! tsdemux " 
-            "! h264parse "
-            "! decodebin "
-            "! videoconvert "
-            "! video/x-raw,format=BGR "
-            "! appsink sync=false drop=true max-buffers=2";
-
-        cap.open(pipeline, cv::CAP_GSTREAMER);
+        if(!g){
+            pipeline = 
+                "udpsrc port=8554 buffer-size=41943040 "
+                "! queue max-size-buffers=0 max-size-bytes=0 max-size-time=2000000000 "
+                "! tsdemux " 
+                "! h264parse "
+                "! decodebin "
+                "! videoconvert "
+                "! video/x-raw,format=BGR "
+                "! appsink sync=false drop=true max-buffers=2";
+            //replaceAll(pipeline, "{0}", c->server.c_str());
+            cap.open(pipeline, cv::CAP_GSTREAMER);
+            std::cout << "[Preview Decoder] Pipeline use:" << std::endl << pipeline << std::endl;
+        }
+        g = true;
 
         if(cap.isOpened()){
-            // ✅ Try to grab one frame to confirm it actually works
             cv::Mat test;
             cap.grab();
             if(cap.retrieve(test) && !test.empty()){
@@ -169,8 +199,8 @@ void PreviewPopup::render(){
     ImVec2 display_size = io.DisplaySize;
     ImVec2 unit = ImVec2(display_size.x / 10.0f, display_size.y / 10.0f);
 
-    ImGui::SetNextWindowPos(ImVec2(unit.x * 0.5F, unit.y * 0.5F), ImGuiCond_Always);
-    ImGui::SetNextWindowSize(ImVec2(unit.x * 9.0F, unit.y * 9.0F), ImGuiCond_Always);
+    ImGui::SetNextWindowPos(ImVec2(unit.x * 0.5F, unit.y * 0.5F), wp_cond);
+    ImGui::SetNextWindowSize(ImVec2(unit.x * 9.0F, unit.y * 9.0F), wp_cond);
 
     int32_t target_w, target_h;
     if(dir == 0 || dir == 2){

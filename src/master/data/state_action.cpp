@@ -45,6 +45,10 @@ void init_state_setup(
         if(inspector_win_json.is_object()){
             windows[3]->set_window_data(inspector_win_json);
         }
+        json style_setting_win_win_json = (*servers)["window"]["style_setting_win"];
+        if(style_setting_win_win_json.is_object()){
+            windows[4]->set_window_data(style_setting_win_win_json);
+        }
     }
     if((*servers)["popwin"].is_object()){
         json preview_popwin_json = (*servers)["popwin"]["preview_popwin"];
@@ -65,6 +69,9 @@ void init_state_setup(
     }
     if((*gui)["inspector_win"].is_boolean() && (*gui)["inspector_win"].get<bool>()){
         windows[3]->trigger(true);
+    }
+    if((*gui)["style_setting_win"].is_boolean() && (*gui)["style_setting_win"].get<bool>()){
+        windows[4]->trigger(true);
     }
 }
 

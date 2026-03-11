@@ -15,6 +15,12 @@ public:
     json get_window_data() override;
     void set_window_data(json data) override;
     virtual void render() override;
+
+protected:
+    bool render_colors();
+    bool render_fields();
+    bool update_style();
+
 private:
     json buffer = json::object();
 };

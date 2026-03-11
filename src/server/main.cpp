@@ -26,8 +26,15 @@ GoProController controller;
 const int32_t listen_port = 8556;
 const int32_t broadcast_port = 8554;
 
+struct SenderStruct {
+    std::string host_ip;
+    std::string websocket_ip;
+    struct sockaddr_in bcsa;
+    int32_t sock_fd;
+};
+
 std::mutex broadcast_mtx;
-std::vector<std::pair<std::string, struct sockaddr_in>> broadcast_addrs = std::vector<std::pair<std::string, struct sockaddr_in>>();
+std::vector<SenderStruct> broadcast_addrs = std::vector<SenderStruct>();
 
 void ExecuteCommand(const WebSocketChannelPtr& channel, json j){
     std::string name = "";
@@ -294,23 +301,30 @@ void WebsocketServer(){
 
         int32_t f = -1;
         for(int32_t i = 0; i < broadcast_addrs.size(); i++){
-            if(broadcast_addrs.at(i).second == channel->peeraddr().c_str()){
+            if(broadcast_addrs.at(i).websocket_ip == channel->peeraddr().c_str()){
                 f = i;
                 break;
             }
         }
 
         if(f == -1){
-            struct sockaddr_in broadcast_sockaddr;
-            memset(&broadcast_sockaddr, 0, sizeof(broadcast_sockaddr));
-            broadcast_sockaddr.sin_family = AF_INET;
-            broadcast_sockaddr.sin_port = htons(broadcast_port);
-            broadcast_sockaddr.sin_addr.s_addr = inet_addr(channel->peeraddr().c_str());
+            SenderStruct sss = SenderStruct();
+            std::string addd = channel->peeraddr().c_str();
+            while(addd.at(addd.size() - 1) != ':'){
+                addd.pop_back();
+            }
+            addd.pop_back();
 
-            broadcast_addrs.push_back((
-                broadcast_sockaddr,
-                channel->peeraddr().c_str()
-            ))
+            sss.websocket_ip = channel->peeraddr().c_str();
+            sss.host_ip = addd.c_str();
+
+            sss.sock_fd = socket(AF_INET, SOCK_DGRAM, 0);
+            memset(&sss.bcsa, 0, sizeof(sss.bcsa));
+            sss.bcsa.sin_family = AF_INET;
+            sss.bcsa.sin_port = htons(broadcast_port);
+            sss.bcsa.sin_addr.s_addr = inet_addr(addd.c_str());
+        
+            broadcast_addrs.push_back((sss));
         }
     };
     ws.onmessage = [&](const WebSocketChannelPtr& channel, const std::string& msg) {
@@ -356,12 +370,14 @@ void WebsocketServer(){
         
         int32_t f = -1;
         for(int32_t i = 0; i < broadcast_addrs.size(); i++){
-            if(broadcast_addrs.at(i).second == channel->peeraddr().c_str()){
+            if(broadcast_addrs.at(i).websocket_ip == channel->peeraddr().c_str()){
                 f = i;
                 break;
             }
         }
         if(f >= 0){
+            SenderStruct& sss = broadcast_addrs.at(f);
+            closesocket(sss.sock_fd);
             broadcast_addrs.erase(broadcast_addrs.begin() + f);
         }
     };
@@ -439,37 +455,21 @@ void UDPProxyServer(){
         return;
     }
     std::cout << "UDP bind on port: " << listen_port << std::endl;
-
-    int32_t sock_fd = socket(AF_INET, SOCK_DGRAM, 0);
-    if(sock_fd == -1){
-        std::cerr << "Failed to create socket for broadcasting: " << std::endl;
-        return;
-    }
-    int32_t broadcast_enable = 1;
-#ifdef _WIN32
-    int32_t err = setsockopt(sock_fd, SOL_SOCKET, SO_BROADCAST, (const char*)&broadcast_enable, sizeof(broadcast_enable));
-#else
-    int32_t err = setsockopt(sock_fd, SOL_SOCKET, SO_BROADCAST, &broadcast_enable, sizeof(broadcast_enable));
-#endif
-    if(err == -1){
-        std::cerr << "Failed to set socket option for broadcasting: " << std::endl;
-        return;
-    }
     std::cout << "UDP Broadcast Relay started:" << std::endl;
     std::cout << "  Listening on: 0.0.0.0:" << listen_port << " (from GoPro)" << std::endl;
     std::cout << "  Broadcasting to: " << broadcast_port << " (to all Masters)" << std::endl;
 
-    us.onMessage = [sock_fd, broadcast_mtx, broadcast_addrs, broadcast_port, broadcast_sockaddr](const hv::SocketChannelPtr& channel, hv::Buffer* buf){
+    us.onMessage = [broadcast_mtx, broadcast_addrs](const hv::SocketChannelPtr& channel, hv::Buffer* buf){
         std::lock_guard<std::mutex> lock(broadcast_mtx);
-        for(auto& broadcast_addr : broadcast_addrs){
+        for(auto& sss : broadcast_addrs){
 #ifdef _WIN32
-            sendto(sock_fd, (const char*)buf->data(), buf->size(), 0,
-                (struct sockaddr*)&broadcast_sockaddr, 
-                sizeof(broadcast_sockaddr));
+            sendto(sss.sock_fd, (const char*)buf->data(), buf->size(), 0,
+                (struct sockaddr*)&sss.bcsa, 
+                sizeof(sss.bcsa));
 #else
-            sendto(sock_fd, buf->data(), buf->size(), 0,
-                (struct sockaddr*)&broadcast_sockaddr, 
-                sizeof(broadcast_sockaddr));
+            sendto(sss.sock_fd, buf->data(), buf->size(), 0,
+                (struct sockaddr*)&sss.bcsa, 
+                sizeof(sss.bcsa));
 #endif
         }
     };

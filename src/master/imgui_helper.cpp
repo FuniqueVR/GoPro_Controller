@@ -35,11 +35,6 @@
 #pragma comment(lib, "vfw32.lib")
 #pragma comment(lib, "msvfw32.lib")
 
-#ifdef _DEBUG
-#pragma comment(lib, "opencv_world4100d.lib")
-#else
-#pragma comment(lib, "opencv_world4100.lib")
-#endif
 #endif
 #include <SDL3/SDL.h>
 #if defined(IMGUI_IMPL_OPENGL_ES2)
@@ -63,7 +58,9 @@ void setup_imgui(){
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
-    io.Fonts->AddFontFromFileTTF("Roboto-Medium.ttf");
+    io.Fonts->AddFontFromFileTTF("SourceHanSans-Medium.otf", 0.0f, NULL, io.Fonts->GetGlyphRangesDefault());
+    io.Fonts->AddFontFromFileTTF("SourceHanSansK-Medium.otf", 0.0f, NULL, io.Fonts->GetGlyphRangesKorean());
+    io.Fonts->AddFontFromFileTTF("SourceHanSansTC-Medium.otf", 0.0f, NULL, io.Fonts->GetGlyphRangesChineseFull());
     io.FontGlobalScale = 1.0f;
     io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
     io.ConfigErrorRecovery = true;
@@ -83,6 +80,24 @@ void setup_imgui(){
     ImGui::StyleColorsDark();
     ImGuiStyle& style = ImGui::GetStyle();
     style.ScaleAllSizes(main_scale);
+#ifdef _WIN32
+    //ImGui_ImplWin32_EnableDpiAwareness();
+    DWORD wChar = wParam;
+    if (wChar <= 127)
+    {
+        io.AddInputCharacter(wChar);
+    }
+    else
+    {
+        // swap lower and upper part.
+        BYTE low = (BYTE)(wChar & 0x00FF);
+        BYTE high = (BYTE)((wChar & 0xFF00) >> 8);
+        wChar = MAKEWORD(high, low);
+        wchar_t ch[6];
+        MultiByteToWideChar(CP_OEMCP, 0, (LPCSTR)&wChar, 4, ch, 3);
+        io.AddInputCharacter(ch[0]);
+    }
+#endif
 }
 /**
  * Setup build-in theme
@@ -218,6 +233,10 @@ void begin_sdl(std::tuple<struct SDL_Window*, const char*>& r){
         printf("Error: SDL_Init(): %s\n", SDL_GetError());
         exit(1);
     }
+#ifdef _WIN32
+    SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengl");
+    SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
+#endif
 
     const char* video_driver = SDL_GetCurrentVideoDriver();
     std::cout << "SDL Video Driver: " << video_driver << std::endl;

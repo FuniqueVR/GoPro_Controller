@@ -95,12 +95,6 @@ if(BUILD_MASTER)
     # SDL3
     add_subdirectory(lib/SDL3 EXCLUDE_FROM_ALL)
 
-    if(WIN32)
-        message(STATUS "Using curl install the window prebuild binary for import here")
-    else()
-        find_package(OpenCV REQUIRED COMPONENTS core imgcodecs highgui)
-    endif()
-
     # ImGui
     set(IMGUI_DIR "lib/imgui")
     file(GLOB IMGUI_SOURCES
@@ -115,6 +109,113 @@ if(BUILD_MASTER)
     include_directories(${IMGUI_DIR})
     include_directories(${IMGUI_DIR}/backends)
     include_directories(lib/json/include)
+
+    # ============================================================
+    # OpenCV - Try system first, fallback to FetchContent
+    # ============================================================
+    find_package(OpenCV QUIET COMPONENTS core imgproc videoio imgcodecs)
+    
+    if(OpenCV_FOUND)
+        message(STATUS "Using system OpenCV: ${OpenCV_VERSION}")
+        set(HAVE_OPENCV TRUE)
+        set(OPENCV_FROM_SOURCE FALSE)
+    else()
+        message(STATUS "System OpenCV not found, building from source...")
+
+        if(WIN32)
+            set(GSTREAMER_DIR "C:/Program Files/gstreamer/1.0/msvc_x86_64" CACHE PATH "GStreamer installation directory")
+            
+            # Help CMake find GStreamer
+            list(APPEND CMAKE_PREFIX_PATH ${GSTREAMER_DIR})
+            set(ENV{PKG_CONFIG_PATH} "${GSTREAMER_DIR}/lib/pkgconfig")
+            set(ENV{GSTREAMER_ROOT_X86_64} ${GSTREAMER_DIR})
+            
+            message(STATUS "GStreamer directory: ${GSTREAMER_DIR}")
+            
+            # Verify GStreamer is installed
+            if(NOT EXISTS "${GSTREAMER_DIR}/lib/pkgconfig/gstreamer-1.0.pc")
+                message(WARNING "========================================")
+                message(WARNING "GStreamer NOT FOUND at ${GSTREAMER_DIR}!")
+                message(WARNING "Download from: https://gstreamer.freedesktop.org/download/")
+                message(WARNING "Install BOTH packages:")
+                message(WARNING "  - gstreamer-1.0-msvc-x86_64-1.24.x.msi (runtime)")
+                message(WARNING "  - gstreamer-1.0-devel-msvc-x86_64-1.24.x.msi (development)")
+                message(WARNING "========================================")
+            else()
+                message(STATUS "✓ GStreamer found at ${GSTREAMER_DIR}")
+            endif()
+        endif()
+        
+        # -------------------------------------------------------
+        # Disable everything we don't need (faster build)
+        # -------------------------------------------------------
+        set(BUILD_LIST "core,imgproc,videoio,imgcodecs" CACHE STRING "" FORCE)
+        
+        set(BUILD_EXAMPLES         OFF CACHE BOOL "" FORCE)
+        set(BUILD_TESTS            OFF CACHE BOOL "" FORCE)
+        set(BUILD_PERF_TESTS       OFF CACHE BOOL "" FORCE)
+        set(BUILD_opencv_apps      OFF CACHE BOOL "" FORCE)
+        set(BUILD_DOCS             OFF CACHE BOOL "" FORCE)
+        set(BUILD_opencv_java      OFF CACHE BOOL "" FORCE)
+        set(BUILD_opencv_python2   OFF CACHE BOOL "" FORCE)
+        set(BUILD_opencv_python3   OFF CACHE BOOL "" FORCE)
+        set(BUILD_PROTOBUF         OFF CACHE BOOL "" FORCE)
+        
+        set(WITH_CUDA              OFF CACHE BOOL "" FORCE)
+        set(WITH_OPENCL            OFF CACHE BOOL "" FORCE)
+        set(WITH_IPP               OFF CACHE BOOL "" FORCE)
+        set(WITH_ITT               OFF CACHE BOOL "" FORCE)
+        set(WITH_EIGEN             OFF CACHE BOOL "" FORCE)
+        set(WITH_TBB               OFF CACHE BOOL "" FORCE)
+        # Disable GUI toolkits
+        set(WITH_GTK OFF CACHE BOOL "" FORCE)
+        set(WITH_QT OFF CACHE BOOL "" FORCE)
+        set(WITH_WIN32UI OFF CACHE BOOL "" FORCE)
+        # Disable extra image formats
+        set(WITH_TIFF              OFF CACHE BOOL "" FORCE)
+        set(WITH_WEBP              OFF CACHE BOOL "" FORCE)
+        set(WITH_JASPER            OFF CACHE BOOL "" FORCE)
+        set(WITH_OPENEXR           OFF CACHE BOOL "" FORCE)
+        set(WITH_V4L               OFF CACHE BOOL "" FORCE)
+        
+        set(WITH_GSTREAMER         ON  CACHE BOOL "Enable GStreamer" FORCE)
+        set(WITH_GSTREAMER_0_10    OFF CACHE BOOL "Disable old GStreamer 0.10" FORCE)
+        set(WITH_FFMPEG            ON  CACHE BOOL "" FORCE)
+        set(WITH_JPEG              OFF  CACHE BOOL "" FORCE)
+        set(WITH_PNG               OFF  CACHE BOOL "" FORCE)
+
+        # Disable extra modules
+        set(BUILD_opencv_calib3d OFF CACHE BOOL "" FORCE)
+        set(BUILD_opencv_dnn OFF CACHE BOOL "" FORCE)
+        set(BUILD_opencv_features2d OFF CACHE BOOL "" FORCE)
+        set(BUILD_opencv_flann OFF CACHE BOOL "" FORCE)
+        set(BUILD_opencv_highgui OFF CACHE BOOL "" FORCE)
+        set(BUILD_opencv_ml OFF CACHE BOOL "" FORCE)
+        set(BUILD_opencv_photo OFF CACHE BOOL "" FORCE)
+        set(BUILD_opencv_stitching OFF CACHE BOOL "" FORCE)
+        set(BUILD_opencv_video OFF CACHE BOOL "" FORCE)
+        set(BUILD_opencv_videostab OFF CACHE BOOL "" FORCE)
+        set(BUILD_opencv_objdetect OFF CACHE BOOL "" FORCE)
+        
+        # Must be OFF to match your global static override
+        set(BUILD_SHARED_LIBS      OFF CACHE BOOL "" FORCE)
+        
+        FetchContent_Declare(
+            opencv
+            GIT_REPOSITORY https://github.com/opencv/opencv.git
+            GIT_TAG        4.10.0
+            GIT_SHALLOW    TRUE
+            GIT_PROGRESS   TRUE
+        )
+        
+        FetchContent_MakeAvailable(opencv)
+        
+        set(HAVE_OPENCV TRUE)
+        set(OPENCV_FROM_SOURCE TRUE)
+        
+        message(STATUS "OpenCV source dir: ${opencv_SOURCE_DIR}")
+        message(STATUS "OpenCV binary dir: ${opencv_BINARY_DIR}")
+    endif()
 endif()
 
 # --- Server Executable ---
@@ -161,17 +262,20 @@ if(BUILD_MASTER)
     )
 
     if (WIN32)
+        message(STATUS "Default WIN32 Build Master")
+
         set(OPENCV_DIR "${CMAKE_SOURCE_DIR}/lib/opencv")
         target_compile_options(master PRIVATE "/std:c++17")
 
-        target_link_directories(master PRIVATE
-            "${OPENCV_DIR}/build/x64/vc16/lib"
-        )
         set_property(TARGET master PROPERTY C_STANDARD 17)
         set_property(TARGET master PROPERTY CXX_STANDARD 17)
         set_property(TARGET master PROPERTY CXX_STANDARD_REQUIRED ON)
         target_link_libraries(master PRIVATE
-            $<IF:$<CONFIG:Debug>,opencv_world4100d,opencv_world4100>
+            ${OpenCV_LIBS}
+            opencv_core
+            opencv_imgproc
+            opencv_imgcodecs
+            opencv_videoio
             OpenGL::GL
             SDL3::SDL3
             hv_static
@@ -180,38 +284,24 @@ if(BUILD_MASTER)
         )
 
         target_include_directories(master PRIVATE
-            lib/opencv/build/include
+            ${opencv_SOURCE_DIR}/include
+            ${opencv_BINARY_DIR}
+            ${CMAKE_BINARY_DIR}
+            ${opencv_BINARY_DIR}/opencv2
+            ${opencv_SOURCE_DIR}/modules/core/include
+            ${opencv_SOURCE_DIR}/modules/imgproc/include
+            ${opencv_SOURCE_DIR}/modules/videoio/include
+            ${opencv_SOURCE_DIR}/modules/imgcodecs/include
         )
+
+        file(GLOB_RECURSE GSTREAM_DLL "${GSTREAMER_DIR}/bin/*.dll")
+
         message(STATUS "Master will be built WITH OpenCV support")
         add_custom_command(TARGET master POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                "${OPENCV_DIR}/build/x64/vc16/bin/opencv_world4100.dll"
+                ${GSTREAM_DLL}
                 $<TARGET_FILE_DIR:master>
-                COMMENT "Copying OpenCV DLL to output directory"
-        )
-        add_custom_command(TARGET master POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                "${OPENCV_DIR}/build/x64/vc16/bin/opencv_world4100d.dll"
-                $<TARGET_FILE_DIR:master>
-                COMMENT "Copying OpenCV Debug DLL to output directory"
-        )
-        add_custom_command(TARGET master POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                "${OPENCV_DIR}/build/x64/vc16/bin/opencv_videoio_ffmpeg4100_64.dll"
-                $<TARGET_FILE_DIR:master>
-                COMMENT "Copying OpenCV FFmpeg DLL to output directory"
-        )
-        add_custom_command(TARGET master POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                "${OPENCV_DIR}/build/x64/vc16/bin/opencv_videoio_msmf4100_64.dll"
-                $<TARGET_FILE_DIR:master>
-                COMMENT "Copying OpenCV Fsmf DLL to output directory"
-        )
-        add_custom_command(TARGET master POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                "${OPENCV_DIR}/build/x64/vc16/bin/opencv_videoio_msmf4100_64d.dll"
-                $<TARGET_FILE_DIR:master>
-                COMMENT "Copying OpenCV Fsmf Debug DLL to output directory"
+                COMMENT "Copying gstreamer dll to output directory"
         )
         add_custom_command(TARGET master POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
