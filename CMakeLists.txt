@@ -20,6 +20,8 @@ option(BUILD_SERVER "Build the server (RPi) executable" ON)
 option(BUILD_MASTER "Build the master (PC) executable" ON)
 # Dependencies
 
+file(GLOB_RECURSE FONT_OTF "${CMAKE_SOURCE_DIR}/*.otf")
+
 # libhv (Required for Server, used in Master too if needed, but primarily Server)
 if(BUILD_SERVER OR BUILD_MASTER)
     # --- GLOBAL CURL CONFIGURATION (Apply to BOTH Server and Master) ---
@@ -235,7 +237,7 @@ if(BUILD_SERVER)
         target_compile_options(server PRIVATE "/std:c++17")
         add_custom_command(TARGET server POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                "${CMAKE_SOURCE_DIR}/Roboto-Medium.ttf"
+                ${FONT_OTF}
                 $<TARGET_FILE_DIR:server>
                 COMMENT "Copying Font to output directory"
         )
@@ -305,7 +307,7 @@ if(BUILD_MASTER)
         )
         add_custom_command(TARGET master POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                "${CMAKE_SOURCE_DIR}/Roboto-Medium.ttf"
+                ${FONT_OTF}
                 $<TARGET_FILE_DIR:master>
                 COMMENT "Copying Font to output directory"
         )
