@@ -233,12 +233,6 @@ if(BUILD_SERVER)
     )
     if(WIN32)
         target_compile_options(server PRIVATE "/std:c++17")
-        add_custom_command(TARGET server POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                "${CMAKE_SOURCE_DIR}/Roboto-Medium.ttf"
-                $<TARGET_FILE_DIR:server>
-                COMMENT "Copying Font to output directory"
-        )
         target_link_options(server PRIVATE "-static-libgcc" "-static-libstdc++" "-static")
     endif()
     target_link_libraries(server hv_static libcurl)
@@ -295,6 +289,7 @@ if(BUILD_MASTER)
         )
 
         file(GLOB_RECURSE GSTREAM_DLL "${GSTREAMER_DIR}/bin/*.dll")
+        file(GLOB_RECURSE FONT_OTF "${CMAKE_SOURCE_DIR}/*.otf")
 
         message(STATUS "Master will be built WITH OpenCV support")
         add_custom_command(TARGET master POST_BUILD
@@ -305,7 +300,7 @@ if(BUILD_MASTER)
         )
         add_custom_command(TARGET master POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                "${CMAKE_SOURCE_DIR}/Roboto-Medium.ttf"
+                ${FONT_OTF}
                 $<TARGET_FILE_DIR:master>
                 COMMENT "Copying Font to output directory"
         )

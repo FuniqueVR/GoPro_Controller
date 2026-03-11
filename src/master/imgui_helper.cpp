@@ -80,24 +80,6 @@ void setup_imgui(){
     ImGui::StyleColorsDark();
     ImGuiStyle& style = ImGui::GetStyle();
     style.ScaleAllSizes(main_scale);
-#ifdef _WIN32
-    //ImGui_ImplWin32_EnableDpiAwareness();
-    DWORD wChar = wParam;
-    if (wChar <= 127)
-    {
-        io.AddInputCharacter(wChar);
-    }
-    else
-    {
-        // swap lower and upper part.
-        BYTE low = (BYTE)(wChar & 0x00FF);
-        BYTE high = (BYTE)((wChar & 0xFF00) >> 8);
-        wChar = MAKEWORD(high, low);
-        wchar_t ch[6];
-        MultiByteToWideChar(CP_OEMCP, 0, (LPCSTR)&wChar, 4, ch, 3);
-        io.AddInputCharacter(ch[0]);
-    }
-#endif
 }
 /**
  * Setup build-in theme
