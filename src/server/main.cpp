@@ -459,7 +459,7 @@ void UDPProxyServer(){
     std::cout << "  Listening on: 0.0.0.0:" << listen_port << " (from GoPro)" << std::endl;
     std::cout << "  Broadcasting to: " << broadcast_port << " (to all Masters)" << std::endl;
 
-    us.onMessage = [broadcast_mtx, broadcast_addrs](const hv::SocketChannelPtr& channel, hv::Buffer* buf){
+    us.onMessage = [&](const hv::SocketChannelPtr& channel, hv::Buffer* buf){
         std::lock_guard<std::mutex> lock(broadcast_mtx);
         for(auto& sss : broadcast_addrs){
 #ifdef _WIN32
