@@ -72,7 +72,7 @@ void CameraListWindow::render(){
     ImGui::Begin(title.c_str(), &enable, w_flag);
     {
         std::lock_guard<std::mutex> lock(master->camera_mtx);
-        changed = ImGui::SliderInt("Item Size##Camera_List_Size", &size, 0, 10);
+        changed = ImGui::SliderInt("Item Size##Camera_List_Size", &size, 0, 15);
 
         std::string filter_text = get_filter_string(filter);
         std::string sort_text = get_sort_string(sort);
@@ -122,7 +122,6 @@ void CameraListWindow::render(){
         int32_t limit = static_cast<int32_t>(width / rect_size.x);
         int32_t counter = 0;
         std::vector<std::shared_ptr<CameraInfo>> ciss = get_filtering_result();
-        int32_t size = ciss.size();
         ImGui::Text("Cal: %f/%f, Total: %d, Line: %d", width, rect_size.x, size, limit);
         for(const auto& c : ciss){
             if(c){
@@ -308,7 +307,7 @@ void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
     }
     // Center text
     {
-        std::string record_time;
+        std::string shutter_speed;
         std::string camera_title = c->name;
         std::string iso_setting;
         std::string white_balance_setting;
@@ -327,28 +326,29 @@ void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
         );
         draw_list->AddText(camera_title_min, col_white, camera_title.c_str());
         if(c->connected) {
-            if(status[std::to_string(VIDEO_ENCODING_DURATION_ID)].is_number_integer()){
-                int32_t re = status[std::to_string(VIDEO_ENCODING_DURATION_ID)].get<int32_t>();
-                record_time = std::to_string(re);
+            if(status[std::to_string(SHUTTER_SPEED_ID)].is_number_integer()){
+                int32_t re = status[std::to_string(SHUTTER_SPEED_ID)].get<int32_t>();
+                shutter_speed = SHUTTER_SPEED_STRING[re];
+                shutter_speed = "S: " + shutter_speed;
             }
             if(setting[std::to_string(ISO_MIN_ID)].is_number() && setting[std::to_string(ISO_MAX_ID)].is_number()){
                 int32_t iso_min = setting[std::to_string(ISO_MIN_ID)].get<int32_t>();
                 int32_t iso_max = setting[std::to_string(ISO_MAX_ID)].get<int32_t>();
                 std::string iso_min_text = ISO_STRING[iso_min];
                 std::string iso_max_text = ISO_STRING[iso_max];
-                iso_setting = "ISO " + iso_min_text + " " + iso_max_text;
+                iso_setting = "I: " + iso_min_text + " " + iso_max_text;
             }
             if(setting[std::to_string(WHITE_BALANCE_ID)].is_number()){
                 int32_t white_bal = setting[std::to_string(WHITE_BALANCE_ID)].get<int32_t>();
                 white_balance_setting = WHITE_BALANCE_STRING[white_bal];
             }
 
-            ImVec2 record_time_size = ImGui::CalcTextSize(record_time.c_str());
-            ImVec2 record_time_min = ImVec2(
-                center.x + ( record_time_size.x / -2.0F ),
-                center.y + ( record_time_size.y / -2.0F ) + (rect_size_unit.y * (spacing * -1.0F))
+            ImVec2 shutter_speed_size = ImGui::CalcTextSize(shutter_speed.c_str());
+            ImVec2 shutter_speed_min = ImVec2(
+                center.x + ( shutter_speed_size.x / -2.0F ),
+                center.y + ( shutter_speed_size.y / -2.0F ) + (rect_size_unit.y * (spacing * -1.0F))
             );
-            draw_list->AddText(record_time_min, col_white, record_time.c_str());
+            draw_list->AddText(shutter_speed_min, col_white, shutter_speed.c_str());
 
             ImVec2 iso_setting_size = ImGui::CalcTextSize(iso_setting.c_str());
             ImVec2 iso_setting_min = ImVec2(
@@ -364,6 +364,28 @@ void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
             );
             draw_list->AddText(white_balance_setting_min, col_white, white_balance_setting.c_str());
         }
+    }
+    // Record Time
+    if(c->connected){
+        ImVec2 frame_padding = ImVec2(10, 10);
+        ImVec2 center = ImVec2(
+            image_pos.x + (rect_size.x / 2.0F),
+            image_pos.y + (rect_size.y / 2.0F)
+        );
+
+        std::string record_time;
+
+        if(status[std::to_string(VIDEO_ENCODING_DURATION_ID)].is_number_integer()){
+            int32_t re = status[std::to_string(VIDEO_ENCODING_DURATION_ID)].get<int32_t>();
+            record_time = std::to_string(re);
+        }
+
+        ImVec2 record_time_size = ImGui::CalcTextSize(record_time.c_str());
+        ImVec2 record_time_min = ImVec2(
+            center.x + ( record_time_size.x / -2.0F ),
+            frame_padding.y
+        );
+        draw_list->AddText(record_time_min, col_white, record_time.c_str());
     }
     // Preset mode
     if(c->connected){
