@@ -4,7 +4,7 @@
 mkdir -p build_master
 cd build_master
 
-cp ../Roboto-Medium.ttf .
+cp ../*.otf .
 
 # Configure CMake
 cmake .. -DCMAKE_BUILD_TYPE=Debug -DBUILD_SERVER=OFF -DBUILD_MASTER=ON

@@ -270,6 +270,14 @@ void InspectorWindow::draw_media(){
     if(ImGui::Button("Single Download")){
         
     }
+
+    if(ImGui::Button("Open Home")){
+        master->download_last_media(state->current_download_location);
+    }
+    ImGui::SameLine();
+    if(ImGui::Button("Open Select Path")){
+        
+    }
     if(camera_ip >= 0){
         std::shared_ptr<CameraInfo> t = master->getCameras()[camera_ip];
         ImGui::LabelText("Server", "%s", t->server.c_str());

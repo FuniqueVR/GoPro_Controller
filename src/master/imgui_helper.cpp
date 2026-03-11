@@ -58,7 +58,9 @@ void setup_imgui(){
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
-    io.Fonts->AddFontFromFileTTF("Roboto-Medium.ttf");
+    io.Fonts->AddFontFromFileTTF("SourceHanSans-Medium.otf", 0.0f, NULL, io.Fonts->GetGlyphRangesDefault());
+    io.Fonts->AddFontFromFileTTF("SourceHanSansK-Medium.otf", 0.0f, NULL, io.Fonts->GetGlyphRangesKorean());
+    io.Fonts->AddFontFromFileTTF("SourceHanSansTC-Medium.otf", 0.0f, NULL, io.Fonts->GetGlyphRangesChineseFull());
     io.FontGlobalScale = 1.0f;
     io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
     io.ConfigErrorRecovery = true;
@@ -80,6 +82,21 @@ void setup_imgui(){
     style.ScaleAllSizes(main_scale);
 #ifdef _WIN32
     //ImGui_ImplWin32_EnableDpiAwareness();
+    DWORD wChar = wParam;
+    if (wChar <= 127)
+    {
+        io.AddInputCharacter(wChar);
+    }
+    else
+    {
+        // swap lower and upper part.
+        BYTE low = (BYTE)(wChar & 0x00FF);
+        BYTE high = (BYTE)((wChar & 0xFF00) >> 8);
+        wChar = MAKEWORD(high, low);
+        wchar_t ch[6];
+        MultiByteToWideChar(CP_OEMCP, 0, (LPCSTR)&wChar, 4, ch, 3);
+        io.AddInputCharacter(ch[0]);
+    }
 #endif
 }
 /**
