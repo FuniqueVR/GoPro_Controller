@@ -5,6 +5,39 @@
  * See the LICENSE file in the project root for more information.
 */
 #include "inspector.h"
+#include <iostream>
+#include <string>
+#include <cstdlib>      // For std::getenv
+#include <filesystem>
+#include <stdexcept>
+
+namespace fs = std::filesystem;
+
+std::filesystem::path get_home_directory() {
+    const char* home_dir = nullptr;
+
+#if defined(_WIN32) || defined(_WIN64)
+    // Windows: Check USERPROFILE or HOMEDRIVE/HOMEPATH
+    home_dir = std::getenv("USERPROFILE");
+    if (!home_dir) {
+        const char* drive = std::getenv("HOMEDRIVE");
+        const char* path = std::getenv("HOMEPATH");
+        if (drive && path) {
+            return std::filesystem::path(drive) / path;
+        }
+    }
+#else
+    // Unix-like systems (Linux, macOS, etc.): Check HOME
+    home_dir = std::getenv("HOME");
+#endif
+
+    if (home_dir) {
+        return std::filesystem::path(home_dir);
+    } else {
+        // Fallback or throw an error if the home directory cannot be found
+        throw std::runtime_error("Could not find home directory");
+    }
+}
 
 InspectorWindow::InspectorWindow(
     std::shared_ptr<json> _setting, 
@@ -272,11 +305,13 @@ void InspectorWindow::draw_media(){
     }
 
     if(ImGui::Button("Open Home")){
-        master->download_last_media(state->current_download_location);
+        std::system((std::string("open \"") + get_home_directory().string() + std::string("\"")).c_str());
     }
     ImGui::SameLine();
     if(ImGui::Button("Open Select Path")){
-        
+        if(fs::exists(state->current_download_location)){
+            std::system((std::string("open \"") + state->current_download_location + std::string("\"")).c_str());
+        }
     }
     if(camera_ip >= 0){
         std::shared_ptr<CameraInfo> t = master->getCameras()[camera_ip];
