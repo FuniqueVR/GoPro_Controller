@@ -128,7 +128,10 @@ void CameraListWindow::render(){
                 try{
                     if(size == 0) draw_line(c);
                     else {
+                        float s = ImGui::GetFontSize();
+                        ImGui::UpdateCurrentFontSize(((float)size / 20.0f + 0.7f) * s);
                         draw_group(c);
+                        ImGui::UpdateCurrentFontSize(s);
                         if(counter + 1 < limit){
                             ImGui::SameLine();
                             counter++;
@@ -326,8 +329,8 @@ void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
         );
         draw_list->AddText(camera_title_min, col_white, camera_title.c_str());
         if(c->connected) {
-            if(status[std::to_string(SHUTTER_SPEED_ID)].is_number_integer()){
-                int32_t re = status[std::to_string(SHUTTER_SPEED_ID)].get<int32_t>();
+            if(setting[std::to_string(SHUTTER_SPEED_ID)].is_number_integer()){
+                int32_t re = setting[std::to_string(SHUTTER_SPEED_ID)].get<int32_t>();
                 shutter_speed = SHUTTER_SPEED_STRING[re];
                 shutter_speed = "S: " + shutter_speed;
             }
@@ -383,7 +386,7 @@ void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
         ImVec2 record_time_size = ImGui::CalcTextSize(record_time.c_str());
         ImVec2 record_time_min = ImVec2(
             center.x + ( record_time_size.x / -2.0F ),
-            frame_padding.y
+            image_pos.y + frame_padding.y
         );
         draw_list->AddText(record_time_min, col_white, record_time.c_str());
     }
