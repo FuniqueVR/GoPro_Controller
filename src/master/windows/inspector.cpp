@@ -299,20 +299,24 @@ void InspectorWindow::draw_media(){
     if(ImGui::Button("All Download")){
         master->download_last_media(state->current_download_location);
     }
+    if(ImGui::IsItemHovered()) ImGui::SetTooltip("Download all exist camera instances");
     ImGui::SameLine();
     if(ImGui::Button("Single Download")){
         
     }
+    if(ImGui::IsItemHovered()) ImGui::SetTooltip("Download current select camera instance");
 
     if(ImGui::Button("Open Home")){
         std::system((std::string("open \"") + get_home_directory().string() + std::string("\"")).c_str());
     }
+    if(ImGui::IsItemHovered()) ImGui::SetTooltip("Open file explorer for home directory");
     ImGui::SameLine();
     if(ImGui::Button("Open Select Path")){
         if(fs::exists(state->current_download_location)){
             std::system((std::string("open \"") + state->current_download_location + std::string("\"")).c_str());
         }
     }
+    if(ImGui::IsItemHovered()) ImGui::SetTooltip("Open file explorer for path select directory");
     if(camera_ip >= 0){
         std::shared_ptr<CameraInfo> t = master->getCameras()[camera_ip];
         ImGui::LabelText("Server", "%s", t->server.c_str());
