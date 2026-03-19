@@ -10,13 +10,6 @@
 
 namespace fs = std::filesystem;
 
-bool directoryExists(const std::string& path) {
-    if (fs::exists(path) && fs::is_directory(path)) {
-        return true;
-    }
-    return false;
-}
-
 GoProMaster::GoProMaster() {
     t1 = std::thread(&GoProMaster::update, this);
     std::cout << "GoProMaster created" << std::endl;
@@ -273,10 +266,6 @@ void GoProMaster::media_only(const std::string command, std::string target){
 }
 
 void GoProMaster::download_last_media(const std::string dir, bool put_finish){
-    if(!directoryExists(dir)){
-        std::cerr << "Dir not exists: " << dir << std::endl;
-        return;
-    }
     std::thread([=](){
         std::vector<std::string> urls = std::vector<std::string>();
         std::vector<std::string> names = std::vector<std::string>();
@@ -340,6 +329,13 @@ void GoProMaster::applyAll(const std::string& ip, const json& res){
             s->client.send(get_status.dump());
         }
     }).detach();
+}
+
+bool GoProMaster::directoryExists(const std::string& path) {
+    if (fs::exists(path) && fs::is_directory(path)) {
+        return true;
+    }
+    return false;
 }
 
 void GoProMaster::registerCameraSettingFeedback(camera_setting_feedback v){

@@ -92,6 +92,8 @@ public:
     void apply(const std::string& ip, const int32_t id, const int32_t value);
     void applyAll(const std::string& ip, const json& res);
 
+    bool directoryExists(const std::string& path);
+
     /**
      * Register the feedback event
      * Called when fetch inspector setting data

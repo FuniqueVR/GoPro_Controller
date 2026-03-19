@@ -319,11 +319,14 @@ void InspectorWindow::draw_media(){
         while(buffer.size() > 0 && buffer.at(buffer.size() - 1) == '/'){
             buffer.pop_back();
         }
-        if(create_date_folder){
-            std::string date = getCurrentDateTimeString();
-            buffer.append("/" + date);
+        if(master->directoryExists(buffer)){
+            if(create_date_folder){
+                std::string date = getCurrentDateTimeString();
+                buffer.append("/" + date);
+            }
+            fs::create_directories(buffer);
+            master->download_last_media(buffer, put_finish);
         }
-        master->download_last_media(buffer, put_finish);
     }
     if(ImGui::IsItemHovered()) ImGui::SetTooltip("Download all exist camera instances");
     ImGui::SameLine();
