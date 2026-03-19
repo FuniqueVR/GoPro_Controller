@@ -58,6 +58,7 @@ InspectorWindow::~InspectorWindow(){
 
 json InspectorWindow::get_window_data() {
     json data = json::object();
+    data["create_date_folder"] = create_date_folder;
     data["current_download_location"] = state->current_download_location;
     data["setting_order"] = json::array();
     data["status_order"] = json::array();
@@ -71,6 +72,9 @@ json InspectorWindow::get_window_data() {
 }
 
 void InspectorWindow::set_window_data(json data) {
+    if(data["create_date_folder"].is_boolean()){
+        create_date_folder = data["create_date_folder"].get<bool>();
+    }
     if(data["current_download_location"].is_string()){
         state->current_download_location = data["current_download_location"].get<std::string>();
     }
@@ -299,11 +303,22 @@ void InspectorWindow::draw_status(){
 
 void InspectorWindow::draw_media(){
     int32_t camera_ip = master->findCamera(state->current_camera_item);
+    if(ImGui::Checkbox("Create Date Folder", &create_date_folder)){
+        state->update_server();
+    }
     if(ImGui::InputText("Media Download", &state->current_download_location)){
         state->update_server();
     }
     if(ImGui::Button("All Download")){
-        master->download_last_media(state->current_download_location);
+        std::string buffer = state->current_download_location;
+        while(buffer.size() > 0 && buffer.at(buffer.size() - 1) == '/'){
+            buffer.pop_back();
+        }
+        if(create_date_folder){
+            std::string date = getCurrentDateTimeString();
+            buffer.append("/" + date);
+        }
+        master->download_last_media(buffer);
     }
     if(ImGui::IsItemHovered()) ImGui::SetTooltip("Download all exist camera instances");
     ImGui::SameLine();

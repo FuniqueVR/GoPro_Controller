@@ -7,6 +7,9 @@
 #pragma once
 #ifndef IPHELPER_H
 #define IPHELPER_H
+#include <ctime>
+#include <chrono>
+#include <iomanip>
 #include <cstdio>
 #include <iostream>
 #include <memory>
@@ -139,6 +142,7 @@ inline size_t header_callback(char *buffer, size_t size, size_t nitems, void *us
             size_t dot = filename.find_last_of('.');
             if(dot != std::string::npos) {
                 state->extension = std::string(filename.substr(dot));
+                state->extension.pop_back();
                 state->extension.pop_back();
                 for(char& c : state->extension){
                     c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
@@ -394,6 +398,23 @@ inline std::string get_env_var( std::string const & key ) {
         retval = val;
     }
     return retval;
+}
+
+inline std::string getCurrentDateTimeString() {
+    // Get the current time point
+    auto now = std::chrono::system_clock::now();
+    // Convert to time_t for compatibility with std::tm
+    std::time_t t = std::chrono::system_clock::to_time_t(now);
+    // Convert to local time (or use std::gmtime for UTC)
+    std::tm tm = *std::localtime(&t);
+
+    // Use a stringstream to format the time
+    std::ostringstream oss;
+    // Format the time using std::put_time and a format specifier
+    oss << std::put_time(&tm, "%Y-%m-%d %H:%M:%S"); 
+    // Format specifier "%F %T" is a C++11 shortcut for "%Y-%m-%d %H:%M:%S"
+
+    return oss.str();
 }
 
 namespace uuid {

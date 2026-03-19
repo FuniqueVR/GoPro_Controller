@@ -28,4 +28,5 @@ public:
 private:
     std::vector<int32_t> setting_list_ordered;
     std::vector<int32_t> status_list_ordered;
+    bool create_date_folder;
 };
