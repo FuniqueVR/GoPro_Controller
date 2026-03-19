@@ -58,7 +58,7 @@ InspectorWindow::~InspectorWindow(){
 
 json InspectorWindow::get_window_data() {
     json data = json::object();
-    date["put_finish"] = put_finish;
+    data["put_finish"] = put_finish;
     data["create_date_folder"] = create_date_folder;
     data["current_download_location"] = state->current_download_location;
     data["setting_order"] = json::array();
