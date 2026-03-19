@@ -43,21 +43,27 @@
 
 # Build directories
 build_master/
-Build_master/
 build_master-*/
 build_master_win/
-Build_master_win/
 build_master_win-*/
 build_server/
-Build_server/
 build_server-*/
 build_server_win/
-Build_server_win/
 build_server_win-*/
 build_server_amd/
-Build_server_amd/
 build_server_amd-*/
 lib/*.exe
+
+package_master/
+package_master-*/
+package_master_win/
+package_master_win-*/
+package_server/
+package_server-*/
+package_server_win/
+package_server_win-*/
+package_server_amd/
+package_server_amd-*/
 
 # CMake generated files
 CMakeFiles/
