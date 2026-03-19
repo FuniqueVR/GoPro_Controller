@@ -88,11 +88,13 @@ inline size_t header_callback(char *buffer, size_t size, size_t nitems, void *us
     state->headers.append(buffer, numbytes);
     
     // Parse this header line
-    std::string line(buffer, numbytes);
+    std::string line = std::string(buffer, numbytes);
     
     // Convert to lowercase for case-insensitive comparison
     std::string line_lower = line;
-    std::transform(line_lower.begin(), line_lower.end(), line_lower.begin(), ::tolower);
+    for(char& c : line_lower){
+        c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+    }
     
     // Look for Content-Type header
     if(line_lower.find("content-type:") == 0) {
@@ -105,7 +107,7 @@ inline size_t header_callback(char *buffer, size_t size, size_t nitems, void *us
             state->extension = get_extension_from_content_type(content_type);
             
             std::cout << "Content-Type: " << content_type;
-            std::cout << "Extension: " << state->extension << std::endl;
+            std::cout << "Extension: " << state->extension.c_str() << std::endl;
             
             // ✅ Open file now that we know the extension
             if(!state->file_opened) {
@@ -136,8 +138,13 @@ inline size_t header_callback(char *buffer, size_t size, size_t nitems, void *us
             // Extract extension from filename
             size_t dot = filename.find_last_of('.');
             if(dot != std::string::npos) {
-                state->extension = filename.substr(dot);
-                std::cout << "Filename from header: " << filename << std::endl;
+                state->extension = std::string(filename.substr(dot));
+                state->extension.pop_back();
+                for(char& c : state->extension){
+                    c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+                }
+                std::cout << "Filename from header: " << filename.c_str() << std::endl;
+                std::cout << "Result from header: " << state->extension.c_str() << std::endl;
                 
                 // Re-open with correct extension if needed
                 if(state->file_opened) {
