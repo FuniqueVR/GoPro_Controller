@@ -24,7 +24,10 @@ sudo apt install g++-aarch64-linux-gnu
 sudo apt-get update
 sudo apt-get install libopencv-dev libavcodec-dev libavformat-dev libswscale-dev libavutil-dev
 sudo apt-get install gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly
+sudo apt install libgl1-mesa-dev libglu1-mesa-dev freeglut3-dev
 ```
+
+* [SDL3](https://wiki.libsdl.org/SDL3/README-linux)
 
 ### Windows 需要配置
 

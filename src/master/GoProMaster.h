@@ -86,11 +86,13 @@ public:
     void preview_start(std::string server, std::string target);
     void preview_end(std::string server, std::string target);
     void media_only(const std::string command, std::string target = "");
-    void download_last_media(const std::string dir);
+    void download_last_media(const std::string dir, bool put_finish);
 
     void presetSwitch(const std::string server, const std::string target, int32_t mode);
     void apply(const std::string& ip, const int32_t id, const int32_t value);
     void applyAll(const std::string& ip, const json& res);
+
+    bool directoryExists(const std::string& path);
 
     /**
      * Register the feedback event

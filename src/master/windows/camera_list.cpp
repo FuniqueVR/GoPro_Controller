@@ -5,11 +5,37 @@
  * See the LICENSE file in the project root for more information.
 */
 #include "camera_list.h"
+#include <iostream>
 #include <vector>
 #include <memory>
+#include <string>
+#include <sstream>
 #include "../data/camera_info.h"
 #include <algorithm>
 #include <functional> 
+
+std::string toTimeCode(int32_t timer){
+    std::string result = "";
+    int32_t mins = static_cast<int32_t>(((float)timer / 60.0f));
+    int32_t hours = static_cast<int32_t>(((float)mins / 60.0f));
+    mins = mins % 60;
+    timer = timer % 60;
+    std::ostringstream oss;
+    oss << std::setfill('0') << std::setw(2) << hours;
+    result += oss.str();
+    result += ":";
+
+    std::ostringstream oss2;
+    oss2 << std::setfill('0') << std::setw(2) << mins;
+    result += oss2.str();
+    result += ":";
+
+    std::ostringstream oss3;
+    oss3 << std::setfill('0') << std::setw(2) << timer;
+    result += oss3.str();
+
+    return result;
+}
 
 std::string bytesToGbString(long bytes) {
     // Define the value of one gigabyte (1024 * 1024 * 1024 bytes)
@@ -380,7 +406,7 @@ void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
 
         if(status[std::to_string(VIDEO_ENCODING_DURATION_ID)].is_number_integer()){
             int32_t re = status[std::to_string(VIDEO_ENCODING_DURATION_ID)].get<int32_t>();
-            record_time = std::to_string(re);
+            record_time = toTimeCode(re);
         }
 
         ImVec2 record_time_size = ImGui::CalcTextSize(record_time.c_str());
