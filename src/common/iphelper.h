@@ -154,6 +154,7 @@ inline void execs_download(std::vector<std::string> cmds, std::vector<std::strin
     int32_t msgs_left = 0;
     int32_t http_status_code = 0;
     std::vector<FILE*> fps = std::vector<FILE*>(cmds.size());
+    std::vector<std::string> fps_h = std::vector<std::string>(cmds.size());
     CURLMcode resm;
     CURLcode res;
     CURLMsg *msg=NULL;
@@ -164,7 +165,18 @@ inline void execs_download(std::vector<std::string> cmds, std::vector<std::strin
             CURL* curlb = curl_easy_init();
             fps[i] = fopen(ps[i].c_str(), "wb");
             curl_easy_setopt(curlb, CURLOPT_URL, cmds[i].c_str());
-            curl_easy_setopt(curlb, CURLOPT_WRITEFUNCTION, write_data);
+            curl_easy_setopt(curlb, CURLOPT_HEADERFUNCTION, [](char *buffer, size_t size, size_t nitems, void *userdata) -> size_t {
+                size_t total_size = size * nitems;
+                std::string* headers = static_cast<std::string*>(userdata);
+                headers->append(buffer, total_size);
+                std::cout << "Get header data: " << headers->c_str() << std::endl;
+                return total_size;
+            });
+            curl_easy_setopt(curlb, CURLOPT_WRITEFUNCTION, [](void *ptr, size_t size, size_t nmemb, FILE *stream) -> size_t{
+                size_t written = fwrite(ptr, size, nmemb, stream);
+                return written;
+            });
+            curl_easy_setopt(curlb, CURLOPT_HEADERDATA, fps_h[i]);
             curl_easy_setopt(curlb, CURLOPT_WRITEDATA, fps[i]);
             curl_easy_setopt(curlb, CURLOPT_TIMEOUT_MS, 60000L);
             curl_easy_setopt(curlb, CURLOPT_CONNECTTIMEOUT_MS, 5000L);

@@ -58,6 +58,7 @@ InspectorWindow::~InspectorWindow(){
 
 json InspectorWindow::get_window_data() {
     json data = json::object();
+    data["current_download_location"] = state->current_download_location;
     data["setting_order"] = json::array();
     data["status_order"] = json::array();
     for(int32_t i = 0; i < GOPRO_SETTING_SIZE; i++){
@@ -70,6 +71,9 @@ json InspectorWindow::get_window_data() {
 }
 
 void InspectorWindow::set_window_data(json data) {
+    if(data["current_download_location"].is_string()){
+        state->current_download_location = data["current_download_location"].get<std::string>();
+    }
     if(data["setting_order"].is_array() && data["setting_order"].size() == GOPRO_SETTING_SIZE){
         for(int32_t i = 0; i < GOPRO_SETTING_SIZE; i++){
             if(data["setting_order"].at(i).is_number_integer()){
@@ -295,7 +299,9 @@ void InspectorWindow::draw_status(){
 
 void InspectorWindow::draw_media(){
     int32_t camera_ip = master->findCamera(state->current_camera_item);
-    ImGui::InputText("Media Download", &state->current_download_location);
+    if(ImGui::InputText("Media Download", &state->current_download_location)){
+        state->update_server();
+    }
     if(ImGui::Button("All Download")){
         master->download_last_media(state->current_download_location);
     }
