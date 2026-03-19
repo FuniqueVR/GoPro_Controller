@@ -272,7 +272,7 @@ void GoProMaster::media_only(const std::string command, std::string target){
 
 }
 
-void GoProMaster::download_last_media(const std::string dir){
+void GoProMaster::download_last_media(const std::string dir, bool put_finish){
     if(!directoryExists(dir)){
         std::cerr << "Dir not exists: " << dir << std::endl;
         return;
@@ -290,6 +290,9 @@ void GoProMaster::download_last_media(const std::string dir){
             std::cout << "media download: " << _url.c_str() << "  " << _name.c_str() << std::endl;
         }
         execs_download(urls, names);
+        std::string finish_file = dir + "/" + "finish.txt";
+        FILE* f = fopen(finish_file.c_str(), "wb");
+        fclose(f);
     }).detach();
 }
 

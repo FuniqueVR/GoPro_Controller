@@ -323,7 +323,7 @@ void InspectorWindow::draw_media(){
             std::string date = getCurrentDateTimeString();
             buffer.append("/" + date);
         }
-        master->download_last_media(buffer);
+        master->download_last_media(buffer, put_finish);
     }
     if(ImGui::IsItemHovered()) ImGui::SetTooltip("Download all exist camera instances");
     ImGui::SameLine();
