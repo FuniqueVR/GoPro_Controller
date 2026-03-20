@@ -102,13 +102,16 @@ void CommandWindow::render_local(){
         if(ImGui::Button("Connect", button_4size)) master->command_only(info.server, "usb_on", info.ip); ImGui::SameLine();
         if(ImGui::Button("Disconnect", button_4size)) master->command_only(info.server, "usb_off", info.ip); ImGui::SameLine();
         if(ImGui::Button("Shutdown", button_4size)) master->command_only(info.server, "usb_on", info.ip); ImGui::SameLine();
-        if(ImGui::Button("Locate", button_4size)) master->presetSwitch(info.server, info.ip, 0);
+        int32_t lo = master->haslocate(info.server, info.ip);
+        if(lo == -1){
+            if(ImGui::Button("Locate", button_4size)) master->locate(info.server, info.ip);
+        }else{
+            if(ImGui::Button("UnLocate", button_4size)) master->locate(info.server, info.ip);
+        }
 
         ImGui::Dummy(ImVec2(0, 20));
         ImGui::Separator();
         ImGui::Dummy(ImVec2(0, 20));
-
-    
 
         if(state->current_status_items[std::to_string(PRESET_ID)].is_number_integer()){
 

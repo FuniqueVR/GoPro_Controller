@@ -301,6 +301,25 @@ void GoProMaster::presetSwitch(const std::string server, const std::string targe
     }).detach();
 }
 
+void GoProMaster::locate(const std::string server, const std::string target){
+    std::lock_guard<std::mutex> lock(locate_mtx);
+    int32_t index = haslocate(server, target);
+    if(index == -1){
+        locates.push_back(std::pair<std::string, std::string>(server, target));
+    }else{
+        locates.erase(locates.begin() + index);
+    }
+}
+
+int32_t GoProMaster::haslocate(const std::string server, const std::string target){
+    std::lock_guard<std::mutex> lock(locate_mtx);
+    for(int32_t i = 0; i < locates.size(); i++){
+        auto& s = locates.at(i);
+        if(s.first == server && s.second == target) return i;
+    }
+    return -1;
+}
+
 void GoProMaster::apply(const std::string& ip, const int32_t id, const int32_t value){
     std::thread([=](){    
         for (auto& s : servers) {
@@ -392,8 +411,13 @@ void GoProMaster::update(){
             mediaQueryFinish.insert_or_assign(s->ip, true);
             s->client.send(get_status.dump());
         }
+
+        std::lock_guard<std::mutex> lock(locate_mtx);
+        for (auto& s : locates) {
+            presetSwitch(s.first, s.second, 0);
+        }
         
-        std::this_thread::sleep_for(std::chrono::seconds(3));
+        std::this_thread::sleep_for(std::chrono::seconds(2));
     }
 }
 
