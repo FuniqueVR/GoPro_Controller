@@ -189,9 +189,14 @@ inline size_t write_callback(void *ptr, size_t size, size_t nmemb, void *userdat
     return written;
 }
 
-inline size_t write_callback_pure(void *ptr, size_t size, size_t nmemb, FILE* file) {
+inline size_t write_callback_file(void *ptr, size_t size, size_t nmemb, FILE* file) {
     size_t memsize = fwrite(ptr, size, nmemb, file);
     return memsize;
+}
+
+inline size_t write_callback_pure(void* contents, size_t size, size_t nmemb, std::string* userp) {
+    userp->append((char*)contents, size * nmemb);
+    return size * nmemb;
 }
 
 inline std::string GetRemoteIPBySerial(std::string serial){

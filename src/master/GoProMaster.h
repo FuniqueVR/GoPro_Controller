@@ -89,6 +89,8 @@ public:
     void download_last_media(const std::string dir, bool put_finish);
 
     void presetSwitch(const std::string server, const std::string target, int32_t mode);
+    void locate(const std::string server, const std::string target);
+    int32_t haslocate(const std::string server, const std::string target);
     void apply(const std::string& ip, const int32_t id, const int32_t value);
     void applyAll(const std::string& ip, const json& res);
 
@@ -111,6 +113,7 @@ public:
      * This will prevent race condition
      */
     std::mutex camera_mtx;
+    std::mutex locate_mtx;
 
     // ----------------------------------------------------------
     //
@@ -134,6 +137,10 @@ private:
      * All websocket servers record for master
     */
     std::vector<std::shared_ptr<ServerConnection>> servers;
+    /**
+     * All the locate records
+     */
+    std::vector<std::pair<std::string, std::string>> locates;
     /**
      * Basically a update thread, THere is a while true loop in it,
      * And when done is true, it automatically escape the loop
