@@ -417,7 +417,7 @@ void GoProMaster::update(){
             presetSwitch(s.first, s.second, 0);
         }
         
-        std::this_thread::sleep_for(std::chrono::seconds(2));
+        std::this_thread::sleep_for(std::chrono::seconds(5));
     }
 }
 
