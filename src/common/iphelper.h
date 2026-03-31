@@ -186,6 +186,13 @@ inline size_t write_callback(void *ptr, size_t size, size_t nmemb, void *userdat
     }
     
     size_t written = fwrite(ptr, size, nmemb, state->fp);
+    size_t expected = size * nmemb;
+
+    if(written != expected) {
+        std::cerr << "✗ Write error: expected " << expected << " bytes, wrote " << written << std::endl;
+        return 0;  // Signal error
+    }
+
     return written;
 }
 
@@ -333,14 +340,15 @@ inline void execs_download(std::vector<std::string> cmds, std::vector<std::strin
             handles[i] = curlb;
             states[i].url = cmds[i];
             states[i].base_path = ps[i];
+            //curl_easy_setopt(curlb, CURLOPT_MAX_RECV_SPEED_LARGE, 200 * 1024);
             curl_easy_setopt(curlb, CURLOPT_URL, cmds[i].c_str());
             curl_easy_setopt(curlb, CURLOPT_HEADERFUNCTION, header_callback);
             curl_easy_setopt(curlb, CURLOPT_WRITEFUNCTION, write_callback);
             curl_easy_setopt(curlb, CURLOPT_HEADERDATA, &states[i]);
             curl_easy_setopt(curlb, CURLOPT_WRITEDATA, &states[i]);
-            curl_multi_setopt(curlm, CURLMOPT_MAX_TOTAL_CONNECTIONS, 64L);
-            curl_easy_setopt(curlb, CURLOPT_TIMEOUT_MS, 60000L);
-            curl_easy_setopt(curlb, CURLOPT_CONNECTTIMEOUT_MS, 5000L);
+            curl_multi_setopt(curlm, CURLMOPT_MAX_TOTAL_CONNECTIONS, 128L);
+            curl_easy_setopt(curlb, CURLOPT_TIMEOUT_MS, 1200000L);
+            curl_easy_setopt(curlb, CURLOPT_CONNECTTIMEOUT_MS, 10000L);
             curl_easy_setopt(curlb, CURLOPT_FOLLOWLOCATION, 1L);
             curl_multi_add_handle(curlm, curlb);
         }

@@ -88,6 +88,10 @@ void ExecuteCommand(const WebSocketChannelPtr& channel, json j){
         r["data"] = json::parse(controller.getAllIP());
         channel->send(getPacket("command:ip", r));
     }
+    else if(name == "model"){
+        r["data"] = json::parse(controller.getAllModel());
+        channel->send(getPacket("command:model", r));
+    }
     else if(name == "scan"){
         controller.scanCameras();
         channel->send(getPacket("command:scan", r));
@@ -396,15 +400,18 @@ void HttpServer(){
     router.GET("/last_media", [](HttpRequest* req, HttpResponse* resp) {
         std::string target_ip = req->GetParam("ip");
 
+        std::cout << "Http GET /last_media " << target_ip << std::endl;
+
         if (target_ip.empty()) {
             resp->status_code = http_status::HTTP_STATUS_BAD_REQUEST;
             return resp->String("{\"error\": \"Missing ip parameter\"}");
         }
 
-        std::cout << "Http GET /last_media " << target_ip << std::endl;
-
         try{
             std::string res = exec("http://" + target_ip + ":8080/gopro/media/last_captured");
+            if(res.size() == 0) {
+                return resp->String("{\"error\": \"IP fetch failed\"}");
+            }
             json last_data = json::parse(res);
             if(!last_data["file"].is_string() || !last_data["folder"].is_string()){
                 resp->status_code = http_status::HTTP_STATUS_BAD_REQUEST;
@@ -413,7 +420,7 @@ void HttpServer(){
             std::string folder = last_data["folder"].get<std::string>();
             std::string file = last_data["file"].get<std::string>();
 
-            std::string gopro_url = "http://" + target_ip + ":8080/videos/DCIM/" + folder + "/" + file;
+            std::string gopro_url = "http://" + target_ip + ":8080/videos/DCIM/" + folder + "/" + file + "?download=true";
 
             std::cout << "Trying to proxy to file getter: " << gopro_url << std::endl;
 

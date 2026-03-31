@@ -49,6 +49,7 @@ public:
     void zoom(std::string target, int32_t value);
     void shutter(std::string target, bool isstart);
     std::string getAllIP();
+    std::string getAllModel();
     // Status part of calls
     std::string queryStatus(std::string target);
     std::string setSetting(std::string target, int32_t ID, std::string value);

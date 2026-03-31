@@ -188,6 +188,10 @@ std::string GoProController::getAllIP(){
     return result.dump();
 }
 
+std::string GoProController::getAllModel(){
+
+}
+
 std::string GoProController::queryStatus(std::string target){
     json arr = json::array();
     json res = json::object();

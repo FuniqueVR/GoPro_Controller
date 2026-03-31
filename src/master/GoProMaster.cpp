@@ -277,8 +277,17 @@ void GoProMaster::download_last_media(const std::string dir, bool put_finish){
             urls.push_back(_url);
             names.push_back(_name);
             std::cout << "media download: " << _url.c_str() << "  " << _name.c_str() << std::endl;
+            if(urls.size() >= 4){
+                execs_download(urls, names);
+                urls.clear();
+                names.clear();
+            }
         }
-        execs_download(urls, names);
+        if(urls.size() > 0){
+            execs_download(urls, names);
+            urls.clear();
+            names.clear();
+        }
         std::string finish_file = dir + "/" + "finish.txt";
         FILE* f = fopen(finish_file.c_str(), "wb");
         fclose(f);
