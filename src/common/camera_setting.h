@@ -3,10 +3,12 @@
 #define CAMERA_SETTING
 #include <cinttypes>
 #include <array>
+#include "camera_model.h"
 
 #define VIDEO_RESOLUTION_ID 2
 #define VIDEO_RESOLUTION_SIZE 27
 #define VIDEO_RESOLUTION_NAME "Video Resolution"
+#define VIDEO_RESOLUTION_AVA MODEL_9_ID&MODEL_10_ID&MODEL_11_ID&MODEL_11_BLACK_ID&MODEL_12_BLACK_ID&MODEL_13_BLACK_ID&MODEL_MAX2_ID
 
 const static char* VIDEO_RESOLUTION_STRING[] = {
     "4K",
