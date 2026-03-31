@@ -1,13 +1,3 @@
-/*
- * Copyright (c) [2026] [Elly/Funique]
- *
- * This software is licensed under the [MIT License].
- * See the LICENSE file in the project root for more information.
- * 
- * AUTO-GENERATED FILE - DO NOT EDIT MANUALLY
- * Generated from GoPro OpenGoPro HTTP API Documentation
- * Source: gopro_settings.json
-*/
 #pragma once
 #ifndef CAMERAMODEL_GENERATED_H
 #define CAMERAMODEL_GENERATED_H
