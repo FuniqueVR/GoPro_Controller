@@ -5,6 +5,7 @@
 #include <array>
 #include "camera_model.h"
 
+#pragma region Resolution
 #define VIDEO_RESOLUTION_ID 2
 #define VIDEO_RESOLUTION_SIZE 27
 #define VIDEO_RESOLUTION_NAME "Video Resolution"
@@ -96,7 +97,6 @@ const static int32_t VIDEO_RESOLUTION_SUPPORT[] = {
     MODEL_13&MODEL_12, // 4K 4:3 V2
     MODEL_13 // 5.3K 4:3 V
 }
-
 const static int32_t VIDEO_RESOLUTION_RES[][2] = {
     {3840, 2160},
     {2704, 1520},
@@ -126,11 +126,13 @@ const static int32_t VIDEO_RESOLUTION_RES[][2] = {
     {3840, 2880},
     {5312, 3984} 
 };
+#pragma endregion
 
+#pragma region FPS
 #define FRAMES_PER_SECOND_ID 3
 #define FRAMES_PER_SECOND_SIZE 13
 #define FRAMES_PER_SECOND_NAME "Frames Per Second"
-
+#define FRAMES_PER_SECOND_AVA MODEL_MAX2_ALL
 const static char* FRAMES_PER_SECOND_STRING[] = {
     "240.0",
     "120.0",
@@ -146,16 +148,43 @@ const static char* FRAMES_PER_SECOND_STRING[] = {
     "360.0",
     "300.0",
 };
-
 const static int32_t FRAMES_PER_SECOND_VALUE[] = {
-    0, 1, 2, 3, 5, 6, 8, 9, 10, 13,
-    15, 16, 17
+    0, // 240.0
+    1, // 120.0
+    2, // 100.0
+    3, // 90.0
+    5, // 60.0
+    6, // 50.0
+    8, // 30.0
+    9, // 25.0
+    10, // 24.0
+    13, // 200.0
+    15, // 400.0
+    16, // 360.0
+    17, // 300.0
 };
+const static int32_t FRAMES_PER_SECOND_SUPPORT[] = {
+    MODEL_13_ALL, // 240.0
+    MODEL_13_ALL, // 120.0
+    MODEL_MAX2_ALL, // 100.0
+    MODEL_MAX2, // 90.0
+    MODEL_MAX2_ALL, // 60.0
+    MODEL_MAX2_ALL, // 50.0
+    MODEL_MAX2_ALL, // 30.0
+    MODEL_MAX2_ALL, // 25.0
+    MODEL_MAX2_ALL, // 24.0
+    MODEL_13_ALL, // 200.0
+    MODEL_13, // 400.0
+    MODEL_13, // 360.0
+    MODEL_13, // 300.0
+};
+#pragma endregion
 
+#pragma region Video Time Lapse
 #define VIDEO_TIMELAPSE_RATE_ID 5
 #define VIDEO_TIMELAPSE_RATE_SIZE 12
 #define VIDEO_TIMELAPSE_RATE_NAME "Video Timelapse Rate"
-
+#define VIDEO_TIMELAPSE_RATE_AVA MODEL_MAX2_ALL
 const static char* VIDEO_TIMELAPSE_RATE_STRING[] = {
     "0.5 Sec",
     "1 Sec",
@@ -170,18 +199,42 @@ const static char* VIDEO_TIMELAPSE_RATE_STRING[] = {
     "60 Min",
     "30 Sec",
 };
-
 const static int32_t VIDEO_TIMELAPSE_RATE_VALUE[] = {
-    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+    0, // 0.5 Sec
+    1, // 1 Sec
+    2, // 2 Sec
+    3, // 5 Sec
+    4, // 10 Sec
+    5, // 30 Sec
+    6, // 60 Sec
+    7, // 2 Min
+    8, // 5 Min
+    9, // 30 Min
+    10, // 60 Min
+    11, // 30 Sec
 };
+const static int32_t VIDEO_TIMELAPSE_RATE_SUPPORT[] = {
+    MODEL_MAX2_ALL, // 0.5 Sec
+    MODEL_MAX2_ALL, // 1 Sec
+    MODEL_MAX2_ALL, // 2 Sec
+    MODEL_MAX2_ALL, // 5 Sec
+    MODEL_MAX2_ALL, // 10 Sec
+    MODEL_MAX2_ALL, // 30 Sec
+    MODEL_MAX2_ALL, // 60 Sec
+    MODEL_MAX2_ALL, // 2 Min
+    MODEL_MAX2_ALL, // 5 Min
+    MODEL_MAX2_ALL, // 30 Min
+    MODEL_MAX2_ALL, // 60 Min
+    MODEL_MAX2&MODEL_13&MODEL_12, // 30 Sec
+};
+#pragma endregion
 
-#define ISO_MIN_ID 102
-#define ISO_MAX_ID 13
-#define ISO_SIZE 8
-#define ISO_MIN_NAME "ISO Minimum"
-#define ISO_MAX_NAME "ISO Maximum"
-
-const static char* ISO_STRING[] = {
+#pragma region ISO Min 1
+#define ISO_MIN_1_ID 102
+#define ISO_MIN_1_SIZE 8
+#define ISO_MIN_1_NAME "ISO Minimum"
+#define ISO_MIN_1_AVA MODEL_MAX2_ALL
+const static char* ISO_MIN_1_STRING[] = {
     "Auto",
     "6400",
     "3200",
@@ -191,10 +244,35 @@ const static char* ISO_STRING[] = {
     "200",
     "100",
 };
-
 const static int32_t ISO_VALUE[] = {
     9, 0, 3, 1, 4, 2, 7, 8
 };
+#pragma endregion
+
+#pragma region ISO Max 1
+#define ISO_MAX_1_ID 13
+
+
+#pragma endregion
+
+#pragma region ISO Min 2
+#define ISO_MIN_2_ID 75
+#pragma endregion
+
+#pragma region ISO Max 2
+#define ISO_MAX_2_ID 37
+
+
+#pragma endregion
+
+#pragma region ISO Min 3
+#define ISO_MIN_3_ID 76
+
+#pragma endregion
+
+#pragma region ISO Max 3
+#define ISO_MAX_3_ID 24
+#pragma endregion
 
 #define PHOTO_TIMELAPSE_RATE_ID 30
 #define PHOTO_TIMELAPSE_RATE_SIZE 12
