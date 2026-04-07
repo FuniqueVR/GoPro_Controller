@@ -8,8 +8,7 @@
 #define VIDEO_RESOLUTION_ID 2
 #define VIDEO_RESOLUTION_SIZE 27
 #define VIDEO_RESOLUTION_NAME "Video Resolution"
-#define VIDEO_RESOLUTION_AVA MODEL_9_ID&MODEL_10_ID&MODEL_11_ID&MODEL_11_BLACK_ID&MODEL_12_BLACK_ID&MODEL_13_BLACK_ID&MODEL_MAX2_ID
-
+#define VIDEO_RESOLUTION_AVA MODEL_MAX2_ALL
 const static char* VIDEO_RESOLUTION_STRING[] = {
     "4K",
     "2.7K",
@@ -39,12 +38,64 @@ const static char* VIDEO_RESOLUTION_STRING[] = {
     "4K 4:3 V2",
     "5.3K 4:3 V2"
 };
-
 const static int32_t VIDEO_RESOLUTION_VALUE[] = {
-    1, 4, 6, 7, 9, 12, 18, 21, 24, 25,
-    26, 27, 28, 31, 35, 36, 37, 38, 39, 100,
-    107, 108, 109, 110, 111, 112, 113
+    1, // 4K
+    4, // 2.7K
+    6, // 2.7K 4:3
+    7, // 1440
+    9, // 1080
+    12, // 720
+    18, // 4K 4:3
+    21, // 5.6K
+    24, // 5K
+    25,// 5K 4:3
+    26, // 5.3K 8:7
+    27, // 5.3K 4:3
+    28, // 4K 8:7
+    31, // 8K
+    35, // 5.3K 21:9
+    36, // 4K 21:9
+    37, // 4K 1:1
+    38, // 900
+    39, // 4K SPH
+    100,// 5.3K
+    107, // 5.3K 8:7 V2
+    108, // 4K 8:7 V2
+    109, // 4K 9:16 V2
+    110, // 1080 9:16 V2
+    111, // 2.7K 4:3 V2
+    112, // 4K 4:3 V2
+    113// 5.3K 4:3 V
 };
+const static int32_t VIDEO_RESOLUTION_SUPPORT[] = {
+    MODEL_MAX2_ALL, // 4K
+    MODEL_13_ALL, // 2.7K
+    MODEL_11_ALL, // 2.7K 4:3
+    MODEL_9, // 1440
+    MODEL_MAX2_ALL, // 1080
+    MODEL_13, // 720
+    MODEL_12_ALL, // 4K 4:3
+    MODEL_MAX2, // 5.6K
+    MODEL_9, // 5K
+    MODEL_10, // 5K 4:3
+    MODEL_11S, // 5.3K 8:7
+    MODEL_11S, // 5.3K 4:3
+    MODEL_11S, // 4K 8:7
+    MODEL_MAX2, // 8K
+    MODEL_13, // 5.3K 21:9
+    MODEL_13, // 4K 21:9
+    MODEL_13, // 4K 1:1
+    MODEL_13, // 900
+    MODEL_MAX2, // 4K SPH
+    MODEL_13_ALL, // 5.3K
+    MODEL_13&MODEL_12, // 5.3K 8:7 V2
+    MODEL_13&MODEL_12, // 4K 8:7 V2
+    MODEL_MAX2&MODEL_13&MODEL_12, // 4K 9:16 V2
+    MODEL_MAX2&MODEL_13&MODEL_12, // 1080 9:16 V2
+    MODEL_13&MODEL_12, // 2.7K 4:3 V2
+    MODEL_13&MODEL_12, // 4K 4:3 V2
+    MODEL_13 // 5.3K 4:3 V
+}
 
 const static int32_t VIDEO_RESOLUTION_RES[][2] = {
     {3840, 2160},

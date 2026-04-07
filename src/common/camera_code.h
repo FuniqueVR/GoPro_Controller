@@ -404,6 +404,68 @@ inline const int32_t* GET_SETTING_VALUE_BY_ID(int32_t x) {
     }
 }
 
+inline const int32_t* GET_SETTING_SUPPORT_BY_ID(int32_t x) {
+    switch(x) {
+        case 2: return VIDEO_RESOLUTION_SUPPORT;
+        case 3: return FRAMES_PER_SECOND_SUPPORT;
+        case 5: return VIDEO_TIMELAPSE_RATE_SUPPORT;
+        case 13: return ISO_SUPPORT;
+        case 30: return PHOTO_TIMELAPSE_RATE_SUPPORT;
+        case 32: return NIGHTLAPSE_RATE_SUPPORT;
+        case 43: return WEBCAM_DIGITAL_LENSES_SUPPORT;
+        case 59: return AUTO_POWER_DOWN_SUPPORT;
+        case 83: return GPS_SUPPORT;
+        case 88: return LCD_BRIGHTNESS_SUPPORT;
+        case 91: return LED_SUPPORT;
+        case 102: return ISO_SUPPORT;
+        case 108: return VIDEO_ASPECT_RATIO_SUPPORT;
+        case 115: return WHITE_BALANCE_SUPPORT;
+        case 117: return SHARPNESS_SUPPORT;
+        case 118: return EXPOSURE_SUPPORT;
+        case 121: return VIDEO_LENS_SUPPORT;
+        case 122: return PHOTO_LENS_SUPPORT;
+        case 123: return TIME_LAPSE_DIGITAL_LENSES_SUPPORT;
+        case 125: return PHOTO_OUTPUT_SUPPORT;
+        case 128: return MEDIA_FORMAT_SUPPORT;
+        case 134: return ANTI_FLICKER_SUPPORT;
+        case 135: return HYPERSMOOTH_SUPPORT;
+        case 145: return SHUTTER_SPEED_SUPPORT;
+        case 150: return VIDEO_HORIZON_LEVELING_SUPPORT;
+        case 151: return PHOTO_HORIZON_LEVELING_SUPPORT;
+        case 156: return VIDEO_DURATION_SUPPORT;
+        case 157: return MULTISHOT_DURATION_SUPPORT;
+        case 162: return MAX_LENS_SUPPORT;
+        case 167: return HINDSIGHT_SUPPORT;
+        case 168: return SCHEDULED_CAPTURE_SUPPORT;
+        case 171: return PHOTO_SINGLE_INTERVAL_SUPPORT;
+        case 172: return PHOTO_SINGLE_DURATION_SUPPORT;
+        case 173: return VIDEO_PERFORMANCE_MODE_SUPPORT;
+        case 175: return CONTROL_MODE_SUPPORT;
+        case 176: return EASY_MODE_SPEED_SUPPORT;
+        case 177: return ENABLE_NIGHT_PHOTO_SUPPORT;
+        case 178: return WIRELESS_BAND_SUPPORT;
+        case 179: return STAR_TRAILS_LENGTH_SUPPORT;
+        case 180: return SYSTEM_VIDEO_MODE_SUPPORT;
+        case 182: return VIDEO_BIT_RATE_SUPPORT;
+        case 183: return BIT_DEPTH_SUPPORT;
+        case 184: return PROFILES_SUPPORT;
+        case 186: return VIDEO_EASY_MODE_SUPPORT;
+        case 187: return LAPSE_MODE_SUPPORT;
+        case 189: return MAX_LENS_MOD_SUPPORT;
+        case 190: return MAX_LENS_MOD_ENABLE_SUPPORT;
+        case 191: return EASY_NIGHT_PHOTO_SUPPORT;
+        case 192: return MULTI_SHOT_ASPECT_RATIO_SUPPORT;
+        case 193: return FRAMING_SUPPORT;
+        case 194: return CAMERA_MODE_SUPPORT;
+        case 196: return _360_PHOTO_FILES_EXTENSION_SUPPORT;
+        case 216: return BEEP_VOLUME_SUPPORT;
+        case 219: return SETUP_SCREEN_SAVER_SUPPORT;
+        case 232: return VIDEO_FRAMING_SUPPORT;
+        case 236: return AUTOMATIC_WI_FI_ACCESS_POINT_SUPPORT;
+        default: return nullptr;
+    }
+}
+
 inline const int32_t GET_STATUS_TYPE_BY_ID(int32_t x ){
     switch(x) {
         case BATTERY_PRESENT_ID:                    return (int32_t)BATTERY_PRESENT_TYPE;
