@@ -1789,76 +1789,285 @@ const static int32_t FRAMING_SUPPORT[] = {
 };
 #pragma endregion
 
+#pragma region Camera Mode
 #define CAMERA_MODE_ID 194
 #define CAMERA_MODE_SIZE 2
 #define CAMERA_MODE_NAME "Camera Mode"
-
+#define CAMERA_MODE_AVA MODEL_MAX2
 const static char* CAMERA_MODE_STRING[] = {
     "Single Lens",
-    "360"
+    "360", 
 };
-
 const static int32_t CAMERA_MODE_VALUE[] = {
-    0, 1
+    0, // Single Lens
+    1, // 360"
 };
+const static int32_t CAMERA_MODE_SUPPORT[] = {
+    MODEL_MAX2, // Single Lens
+    MODEL_MAX2, // 360"
+};
+#pragma endregion
 
+#pragma region _360 Photo files extension
 #define _360_PHOTO_FILES_EXTENSION_ID 196
 #define _360_PHOTO_FILES_EXTENSION_SIZE 2
 #define _360_PHOTO_FILES_EXTENSION_NAME "360 Photo Files Extension"
-
+#define _360_PHOTO_FILES_EXTENSION_AVA MODEL_MAX2
 const static char* _360_PHOTO_FILES_EXTENSION_STRING[] = {
     ".360",
-    ".jpg"
+    ".jpg",
 };
-
 const static int32_t _360_PHOTO_FILES_EXTENSION_VALUE[] = {
-    0, 1
+    0, // .360
+    1, // .jpg
 };
+const static int32_t _360_PHOTO_FILES_EXTENSION_SUPPORT[] = {
+    MODEL_MAX2, // .360
+    MODEL_MAX2, // .jpg
+};
+#pragma endregion
 
+#pragma region Beep Volume
 #define BEEP_VOLUME_ID 216
 #define BEEP_VOLUME_SIZE 4
 #define BEEP_VOLUME_NAME "Beep Volume"
-
+#define BEEP_VOLUME_AVA MODEL_MAX2|MODEL_13
 const static char* BEEP_VOLUME_STRING[] = {
     "Off",
     "Low",
     "Medium",
-    "High"
+    "High",
 };
-
 const static int32_t BEEP_VOLUME_VALUE[] = {
-    0, 1, 2, 3
+    0, // Off
+    1, // Low
+    2, // Medium
+    3, // High
 };
+const static int32_t BEEP_VOLUME_SUPPORT[] = {
+    MODEL_MAX2|MODEL_13, // Off
+    MODEL_MAX2|MODEL_13, // Low
+    MODEL_MAX2|MODEL_13, // Medium
+    MODEL_MAX2|MODEL_13, // High
+};
+#pragma endregion
 
+#pragma region Setup Screen Saver
 #define SETUP_SCREEN_SAVER_ID 219
 #define SETUP_SCREEN_SAVER_SIZE 5
 #define SETUP_SCREEN_SAVER_NAME "Setup Screen Saver"
-
+#define SETUP_SCREEN_SAVER_AvA MODEL_MAX2|MODEL_13
 const static char* SETUP_SCREEN_SAVER_STRING[] = {
     "Never",
     "1 Min",
     "2 Min",
     "3 Min",
-    "5 Min"
+    "5 Min",
 };
-
 const static int32_t SETUP_SCREEN_SAVER_VALUE[] = {
-    0, 1, 2, 3, 4
+    0, // Never
+    1, // 1 Min
+    2, // 2 Min
+    3, // 3 Min
+    4, // 5 Min
 };
+const static int32_t SETUP_SCREEN_SAVER_SUPPORt[] = {
+    MODEL_MAX2, // Never
+    MODEL_MAX2|MODEL_13, // 1 Min
+    MODEL_MAX2|MODEL_13, // 2 Min
+    MODEL_MAX2|MODEL_13, // 3 Min
+    MODEL_MAX2|MODEL_13, // 5 Min
+};
+#pragma endregion
 
+#pragma region Setup Language
+#define SETUP_LANGUAGE_ID 223
+#define SETUP_LANGUAGE_SIZE 15
+#define SETUP_LANGUAGE_NAME "Setup Language"
+#define SETUP_LANGUAGE_AVA MODEL_MAX2|MODEL_13
+const static char* SETUP_LANGUAGE_STRING[] = {
+    "English - US",
+    "English - UK",
+    "English - AUS",
+    "German",
+    "French",
+    "Italian",
+    "Spanish",
+    "Spanish - NA",
+    "Chinese",
+    "Japanese",
+    "Korean",
+    "Portuguese",
+    "Russian",
+    "English - IND",
+    "Swedish",
+};
+const static int32_t SETUP_LANGUAGE_VALUE[] = {
+    0, // English - US
+    1, // English - UK
+    2, // English - AUS
+    3, // German
+    4, // French
+    5, // Italian
+    6, // Spanish
+    7, // Spanish - NA
+    8, // Chinese
+    9, // Japanese
+    10, // Korean
+    11, // Portuguese
+    12, // Russian
+    13, // English - IND
+    14, // Swedish
+};
+const static int32_t SETUP_LANGUAGE_SUPPORT[] = {
+    MODEL_MAX2|MODEL_13, // English - US
+    MODEL_MAX2|MODEL_13, // English - UK
+    MODEL_MAX2|MODEL_13, // English - AUS
+    MODEL_MAX2|MODEL_13, // German
+    MODEL_MAX2|MODEL_13, // French
+    MODEL_MAX2|MODEL_13, // Italian
+    MODEL_MAX2|MODEL_13, // Spanish
+    MODEL_MAX2|MODEL_13, // Spanish - NA
+    MODEL_MAX2|MODEL_13, // Chinese
+    MODEL_MAX2|MODEL_13, // Japanese
+    MODEL_MAX2|MODEL_13, // Korean
+    MODEL_MAX2|MODEL_13, // Portuguese
+    MODEL_MAX2|MODEL_13, // Russian
+    MODEL_MAX2|MODEL_13, // English - IND
+    MODEL_MAX2|MODEL_13, // Swedish
+};
+#pragma endregion
+
+#pragma region Photo Mode
+#define PHOTO_MODE_ID 227
+#define PHOTO_MODE_SIZE 3
+#define PHOTO_MODE_NAME "Photo Mode"
+#define PHOTO_MODE_NAME MODEL_13
+const static char* PHOTO_MODE_STRING[] = {
+    "Super Photo",
+    "Night Photo",
+    "Burst",
+};
+const static int32_t PHOTO_MODE_VALUE[] = {
+    0, // Super Photo
+    1, // Night Photo
+    2, // Burst
+};
+const static int32_t PHOTO_MODE_SUPPORt[] = {
+    MODEL_13, // Super Photo
+    MODEL_13, // Night Photo
+    MODEL_13, // Burst
+};
+#pragma endregion
+
+#pragma region Video Framing
 #define VIDEO_FRAMING_ID 232
-#define VIDEO_FRAMING_SIZE 3
+#define VIDEO_FRAMING_SIZE 6
 #define VIDEO_FRAMING_NAME "Video Framing"
-
+#define VIDEO_FRAMING_NAME MODEL_13
 const static char* VIDEO_FRAMING_STRING[] = {
-    "Widescreen",
-    "Vertical",
-    "Full Frame"
+    "4:3",
+    "16:9",
+    "8:7",
+    "9:16",
+    "21:9",
+    "1:1",
 };
-
 const static int32_t VIDEO_FRAMING_VALUE[] = {
-    0, 1, 3
+    0, // 4:3
+    1, // 16:9
+    3, // 8:7
+    4, // 9:16
+    5, // 21:9
+    6, // 1:1
 };
+const static int32_t VIDEO_FRAMING_SUPPORt[] = {
+    MODEL_13, // 4:3
+    MODEL_13, // 16:9
+    MODEL_13, // 8:7
+    MODEL_13, // 9:16
+    MODEL_13, // 21:9
+    MODEL_13, // 1:1
+};
+#pragma endregion
+
+#pragma region Multi Shot Framing
+#define MULTISHOT_FRAMING_ID 233
+#define MULTISHOT_FRAMING_SIZE 4
+#define MULTISHOT_FRAMING_NAME "Multi Shot Framing"
+#define MULTISHOT_FRAMING_NAME MODEL_13
+const static char* MULTISHOT_FRAMING_STRING[] = {
+    "4:3",
+    "16:9",
+    "8:7",
+    "9:16",
+};
+const static int32_t MULTISHOT_FRAMING_VALUE[] = {
+    0, // 4:3
+    1, // 16:9
+    3, // 8:7
+    4, // 9:16
+};
+const static int32_t MULTISHOT_FRAMING_SUPPORt[] = {
+    MODEL_13, // 4:3
+    MODEL_13, // 16:9
+    MODEL_13, // 8:7
+    MODEL_13, // 9:16
+};
+#pragma endregion
+
+#pragma region Frame Rate
+#define FRAMERATE_ID 234
+#define FRAMERATE_SIZE 6
+#define FRAMERATE_NAME "Frame Rate"
+#define FRAMERATE_NAME MODEL_MAX2|MODEL_13
+const static char* FRAMERATE_STRING[] = {
+ 	"240.0",
+ 	"120.0",
+ 	"100.0",
+ 	"90.0",
+ 	"60.0",
+ 	"50.0",
+ 	"30.0",
+ 	"25.0",
+ 	"24.0",
+ 	"200.0",
+ 	"400.0",
+ 	"360.0",
+ 	"300.0",
+};
+const static int32_t FRAMERATE_VALUE[] = {
+    0, // 240.0
+    1, // 120.0
+    2, // 100.0
+    3, // 90.0
+    5, // 60.0
+    6, // 50.0
+    8, // 30.0
+    9, // 25.0
+    10, // 24.0
+    13, // 200.0
+    15, // 400.0
+    16, // 360.0
+    17, // 300.0
+};
+const static int32_t FRAMERATE_SUPPORt[] = {
+    MODEL_13, // 240.0
+    MODEL_13, // 120.0
+    MODEL_MAX2|MODEL_13, // 100.0
+    MODEL_MAX2, // 90.0
+    MODEL_MAX2|MODEL_13, // 60.0
+    MODEL_MAX2|MODEL_13, // 50.0
+    MODEL_MAX2|MODEL_13, // 30.0
+    MODEL_MAX2|MODEL_13, // 25.0
+    MODEL_MAX2|MODEL_13, // 24.0
+    MODEL_13, // 200.0
+    MODEL_13, // 400.0
+    MODEL_13, // 360.0
+    MODEL_13, // 300.0
+};
+#pragma endregion
+
 
 #define AUTOMATIC_WI_FI_ACCESS_POINT_ID 236
 #define AUTOMATIC_WI_FI_ACCESS_POINT_SIZE 2
