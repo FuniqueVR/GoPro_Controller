@@ -5,6 +5,8 @@
 #include <array>
 #include "camera_model.h"
 
+// Reference: https://gopro.github.io/OpenGoPro/http#schema/State
+
 #pragma region Resolution
 #define VIDEO_RESOLUTION_ID 2
 #define VIDEO_RESOLUTION_SIZE 27
@@ -2019,7 +2021,7 @@ const static int32_t AUTOMATIC_WI_FI_ACCESS_POINT_SUPPPORT[] = {
 };
 #pragma endregion
 
-// Another
+// Another Reference: https://github.com/KonradIT/goprowifihack/blob/master/HERO11/HERO11-Commands.md
 
 #pragma region White Balance
 #define WHITE_BALANCE_ID 115
