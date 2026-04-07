@@ -89,12 +89,12 @@ const static int32_t VIDEO_RESOLUTION_SUPPORT[] = {
     MODEL_13, // 900
     MODEL_MAX2, // 4K SPH
     MODEL_13_ALL, // 5.3K
-    MODEL_13&MODEL_12, // 5.3K 8:7 V2
-    MODEL_13&MODEL_12, // 4K 8:7 V2
-    MODEL_MAX2&MODEL_13&MODEL_12, // 4K 9:16 V2
-    MODEL_MAX2&MODEL_13&MODEL_12, // 1080 9:16 V2
-    MODEL_13&MODEL_12, // 2.7K 4:3 V2
-    MODEL_13&MODEL_12, // 4K 4:3 V2
+    MODEL_13|MODEL_12, // 5.3K 8:7 V2
+    MODEL_13|MODEL_12, // 4K 8:7 V2
+    MODEL_MAX2|MODEL_13|MODEL_12, // 4K 9:16 V2
+    MODEL_MAX2|MODEL_13|MODEL_12, // 1080 9:16 V2
+    MODEL_13|MODEL_12, // 2.7K 4:3 V2
+    MODEL_13|MODEL_12, // 4K 4:3 V2
     MODEL_13 // 5.3K 4:3 V
 }
 const static int32_t VIDEO_RESOLUTION_RES[][2] = {
@@ -225,7 +225,7 @@ const static int32_t VIDEO_TIMELAPSE_RATE_SUPPORT[] = {
     MODEL_MAX2_ALL, // 5 Min
     MODEL_MAX2_ALL, // 30 Min
     MODEL_MAX2_ALL, // 60 Min
-    MODEL_MAX2&MODEL_13&MODEL_12, // 30 Sec
+    MODEL_MAX2|MODEL_13|MODEL_12, // 30 Sec
 };
 #pragma endregion
 
@@ -251,8 +251,6 @@ const static int32_t ISO_VALUE[] = {
 
 #pragma region ISO Max 1
 #define ISO_MAX_1_ID 13
-
-
 #pragma endregion
 
 #pragma region ISO Min 2
@@ -261,23 +259,21 @@ const static int32_t ISO_VALUE[] = {
 
 #pragma region ISO Max 2
 #define ISO_MAX_2_ID 37
-
-
 #pragma endregion
 
 #pragma region ISO Min 3
 #define ISO_MIN_3_ID 76
-
 #pragma endregion
 
 #pragma region ISO Max 3
 #define ISO_MAX_3_ID 24
 #pragma endregion
 
+#pragma region Photo Time Lapse
 #define PHOTO_TIMELAPSE_RATE_ID 30
 #define PHOTO_TIMELAPSE_RATE_SIZE 12
 #define PHOTO_TIMELAPSE_RATE_NAME "Photo Timelapse Rate"
-
+#define PHOTO_TIMELAPSE_RATE_AVA MODEL_MAX2_ALL&(~MODEL_11)
 const static char* PHOTO_TIMELAPSE_RATE_STRING[] = {
     "3 Sec",
     "60 Min",
@@ -292,15 +288,41 @@ const static char* PHOTO_TIMELAPSE_RATE_STRING[] = {
     "1 Sec",
     "0.5 Sec",
 };
-
 const static int32_t PHOTO_TIMELAPSE_RATE_VALUE[] = {
-    11, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110
+    11, // 3 Sec
+    100, // 60 Min
+    101, // 30 Min
+    102, // 5 Min
+    103, // 2 Min
+    104, // 60 Sec
+    105, // 30 Sec
+    106, // 10 Sec
+    107, // 5 Sec
+    108, // 2 Sec
+    109, // 1 Sec
+    110, // 0.5 Sec
 };
+const static int32_t PHOTO_TIMELAPSE_RATE_SUPPORT[] = {
+    MODEL_MAX2|MODEL_13|MODEL_12, // 3 Sec
+    MODEL_MAX2_ALL&(~MODEL_11), // 60 Min
+    MODEL_MAX2_ALL&(~MODEL_11), // 30 Min
+    MODEL_MAX2_ALL&(~MODEL_11), // 5 Min
+    MODEL_MAX2_ALL&(~MODEL_11), // 2 Min
+    MODEL_MAX2_ALL&(~MODEL_11), // 60 Sec
+    MODEL_MAX2_ALL&(~MODEL_11), // 30 Sec
+    MODEL_MAX2_ALL&(~MODEL_11), // 10 Sec
+    MODEL_MAX2_ALL&(~MODEL_11), // 5 Sec
+    MODEL_MAX2_ALL&(~MODEL_11), // 2 Sec
+    MODEL_13_ALL&(~MODEL_11), // 1 Sec
+    MODEL_13_ALL&(~MODEL_11), // 0.5 Sec
+};
+#pragma endregion
 
+#pragma region Night Lapse Rate
 #define NIGHTLAPSE_RATE_ID 32
 #define NIGHTLAPSE_RATE_SIZE 12
 #define NIGHTLAPSE_RATE_NAME "Nightlapse Rate"
-
+#define NIGHTLAPSE_RATE_AVA MODEL_MAX2_ALL
 const static char* NIGHTLAPSE_RATE_STRING[] = {
     "4 Sec",
     "5 Sec",
@@ -315,30 +337,66 @@ const static char* NIGHTLAPSE_RATE_STRING[] = {
     "60 Min",
     "Auto",
 };
-
 const static int32_t NIGHTLAPSE_RATE_VALUE[] = {
-    4, 5, 10, 15, 20, 30, 100, 120, 300, 1800, 3600, 3601
+    4, // 4 Sec
+    5, // 5 Sec
+    10, // 10 Sec
+    15, // 15 Sec
+    20, // 20 Sec
+    30, // 30 Sec
+    100, // 60 Sec
+    120, // 2 Min
+    300, // 5 Min
+    1800, // 30 Min
+    3600, // 60 Min
+    3601, // Auto
 };
+const static int32_t NIGHTLAPSE_RATE_SUPPORT[] = {
+    MODEL_MAX2_ALL, // 4 Sec
+    MODEL_MAX2_ALL, // 5 Sec
+    MODEL_MAX2_ALL, // 10 Sec
+    MODEL_MAX2_ALL, // 15 Sec
+    MODEL_MAX2_ALL, // 20 Sec
+    MODEL_MAX2_ALL, // 30 Sec
+    MODEL_MAX2_ALL, // 60 Sec
+    MODEL_MAX2_ALL, // 2 Min
+    MODEL_MAX2_ALL, // 5 Min
+    MODEL_MAX2_ALL, // 30 Min
+    MODEL_MAX2_ALL, // 60 Min
+    MODEL_MAX2_ALL, // Auto
+};
+#pragma endregion
 
+#pragma region Webcam Digital Lenses
 #define WEBCAM_DIGITAL_LENSES_ID 43
 #define WEBCAM_DIGITAL_LENSES_SIZE 4
 #define WEBCAM_DIGITAL_LENSES_NAME "Webcam Digital Lenses"
-
+#define WEBCAM_DIGITAL_LENSES_AVA MODEL_MAX2_ALL
 const static char* WEBCAM_DIGITAL_LENSES_STRING[] = {
     "Wide",
     "Narrow",
     "Superview",
     "Linear",
 };
-
 const static int32_t WEBCAM_DIGITAL_LENSES_VALUE[] = {
-    0, 2, 3, 4
+    0, // Wide
+    2, // Narrow
+    3, // Superview
+    4, // Linear
 };
+const static int32_t WEBCAM_DIGITAL_LENSES_SUPPORT[] = {
+    MODEL_MAX2_ALL, // Wide
+    MODEL_MAX2_ALL, // Narrow
+    MODEL_MAX2_ALL, // Superview
+    MODEL_MAX2_ALL, // Linear
+};
+#pragma endregion
 
+#pragma region Auto Power Down
 #define AUTO_POWER_DOWN_ID 59
 #define AUTO_POWER_DOWN_SIZE 7
 #define AUTO_POWER_DOWN_NAME "Auto Power Down"
-
+#define AUTO_POWER_DOWN_AVA MODEL_MAX2_ALL
 const static char* AUTO_POWER_DOWN_STRING[] = {
     "Never",
     "1 Min",
@@ -348,28 +406,50 @@ const static char* AUTO_POWER_DOWN_STRING[] = {
     "8 Sec",
     "30 Sec",
 };
-
 const static int32_t AUTO_POWER_DOWN_VALUE[] = {
-    0, 1, 4, 6, 7, 11, 12
+    MODEL_MAX2_ALL, // Never
+    MODEL_MAX2_ALL&(~(MODEL_10|MODEL_9)), // 1 Min
+    MODEL_MAX2_ALL, // 5 Min
+    6, // 15 Min
+    7, // 30 Min
+    11, // 8 Sec
+    12, // 30 Sec
 };
+const static int32_t AUTO_POWER_DOWN_SUPPORT[] = {
+    0, // Never
+    1, // 1 Min
+    4, // 5 Min
+    6, // 15 Min
+    7, // 30 Min
+    11, // 8 Sec
+    12, // 30 Sec
+};
+#pragma endregion
 
+#pragma region GPS
 #define GPS_ID 83
 #define GPS_SIZE 2
 #define GPS_NAME "GPS"
-
+#define GPS_AVA MODEL_MAX2_ALL&(~(MODEL_12|MODEL_11))
 const static char* GPS_STRING[] = {
     "Off",
     "On"
 };
-
 const static int32_t GPS_VALUE[] = {
-    0, 1
+    0, // Off 
+    1, // On
 };
+const static int32_t GPS_SUPPORT[] = {
+    MODEL_MAX2_ALL&(~(MODEL_12|MODEL_11)), // Off
+    MODEL_MAX2_ALL&(~(MODEL_12|MODEL_11)), // On
+};
+#pragma endregion
 
+#pragma region LCE Brightness
 #define LCD_BRIGHTNESS_ID 88
 #define LCD_BRIGHTNESS_SIZE 10
 #define LCD_BRIGHTNESS_NAME "LCD Brightness"
-
+#define LCD_BRIGHTNESS_AVA MODEL_MAX2_ALL&(~MODEL_11)
 const static char* LCD_BRIGHTNESS_STRING[] = {
     "10%",
     "20%",
@@ -380,17 +460,39 @@ const static char* LCD_BRIGHTNESS_STRING[] = {
     "70%",
     "80%",
     "90%",
-    "100%"
+    "100%",
 };
-
 const static int32_t LCD_BRIGHTNESS_VALUE[] = {
-    10, 20, 30, 40, 50, 60, 70, 80, 90, 100
+    10, // 10%
+    20, // 20%
+    30, // 30%
+    40, // 40%
+    50, // 50%
+    60, // 60%
+    70, // 70%
+    80, // 80%
+    90, // 90%
+    100, // 100%
 };
+const static int32_t LCD_BRIGHTNESS_SUPPORT[] = {
+    MODEL_MAX2_ALL&(~MODEL_11), // 10%
+    MODEL_MAX2_ALL&(~MODEL_11), // 20%
+    MODEL_MAX2_ALL&(~MODEL_11), // 30%
+    MODEL_MAX2_ALL&(~MODEL_11), // 40%
+    MODEL_MAX2_ALL&(~MODEL_11), // 50%
+    MODEL_MAX2_ALL&(~MODEL_11), // 60%
+    MODEL_MAX2_ALL&(~MODEL_11), // 70%
+    MODEL_MAX2_ALL&(~MODEL_11), // 80%
+    MODEL_MAX2_ALL&(~MODEL_11), // 90%
+    MODEL_MAX2_ALL&(~MODEL_11), // 100%
+};
+#pragma endregion
 
+#pragma region LED
 #define LED_ID 91
 #define LED_SIZE 6
 #define LED_NAME "LED"
-
+#define LED_AVA MODEL_MAX2_ALL
 const static char* LED_STRING[] = {
     "Off",
     "On",
@@ -399,15 +501,29 @@ const static char* LED_STRING[] = {
     "Front Off Only",
     "Back Only",
 };
-
 const static int32_t LED_VALUE[] = {
-    0, 2, 3, 4, 5, 100
+    0, // Off
+    2, // On
+    3, // All On
+    4, // All Off
+    5, // Front Off Only
+    100, // Back Only
 };
+const static int32_t LED_SUPPORT[] = {
+    MODEL_11, // Off
+    MODEL_11, // On
+    MODEL_MAX2_ALL&(~MODEL_11), // All On
+    MODEL_MAX2_ALL&(~(MODEL_11|MODEL_13)), // All Off
+    MODEL_MAX2_ALL&(~(MODEL_11|MODEL_13)), // Front Off Only
+    MODEL_13, // Back Only
+};
+#pragma endregion
 
+#pragma region Video Aspect Ratio
 #define VIDEO_ASPECT_RATIO_ID 108
 #define VIDEO_ASPECT_RATIO_SIZE 6
 #define VIDEO_ASPECT_RATIO_NAME "Video Aspect Ratio"
-
+#define VIDEO_ASPECT_RATIO_AVA MODEL_MAX2|MODEL_13|MODEL_12_BLACK
 const static char* VIDEO_ASPECT_RATIO_STRING[] = {
     "4:3",
     "16:9",
@@ -416,15 +532,28 @@ const static char* VIDEO_ASPECT_RATIO_STRING[] = {
     "21:9",
     "1:1",
 };
-
 const static int32_t VIDEO_ASPECT_RATIO_VALUE[] = {
-    0, 1, 3, 4, 5, 6
+    0, // 4:3
+    1, // 16:9
+    3, // 8:7
+    4, // 9:16
+    5, // 21:9
+    6, // 1:1
 };
+const static int32_t VIDEO_ASPECT_RATIO_SUPPORT[] = {
+    MODEL_MAX2|MODEL_13|MODEL_12_BLACK, // 4:3
+    MODEL_MAX2|MODEL_13|MODEL_12_BLACK, // 16:9
+    MODEL_13|MODEL_12_BLACK, // 8:7
+    MODEL_MAX2|MODEL_13|MODEL_12_BLACK, // 9:16
+    MODEL_13, // 21:9
+    MODEL_13, // 1:1
+};
+#pragma endregion
 
+#pragma region White Balance
 #define WHITE_BALANCE_ID 115
 #define WHITE_BALANCE_SIZE 11
 #define WHITE_BALANCE_NAME "White Balance"
-
 const static char* WHITE_BALANCE_STRING[] = {
     "6500K",
     "6000K",
@@ -438,29 +567,41 @@ const static char* WHITE_BALANCE_STRING[] = {
     "2800K",
     "2300K",
 };
-
 const static int32_t WHITE_BALANCE_VALUE[] = {
-    3, 7, 2, 12, 11, 0, 4, 5, 10, 9, 8,
+    3, 
+    7, 
+    2, 
+    12, 
+    11, 
+    0, 
+    4, 
+    5, 
+    10, 
+    9, 
+    ,
 };
+#pragma endregion
 
+#pragma region Sharpness
 #define SHARPNESS_ID 117
 #define SHARPNESS_SIZE 3
 #define SHARPNESS_NAME "Sharpness"
-
+#define SHARPNESS_AVA
 const static char* SHARPNESS_STRING[] = {
     "High",
     "Midium",
     "Low"
 };
-
 const static int32_t SHARPNESS_VALUE[] = {
     0, 1, 2
 };
+#pragma endregion
 
+#pragma region Exposure
 #define EXPOSURE_ID 118
 #define EXPOSURE_SIZE 9
 #define EXPOSURE_NAME "Exposure"
-
+#define EXPOSURE_AVA
 const static char* EXPOSURE_STRING[] = {
     "-2.0",
     "-1.5",
@@ -472,15 +613,16 @@ const static char* EXPOSURE_STRING[] = {
     "1.5",
     "2.0",
 };
-
 const static int32_t EXPOSURE_VALUE[] = {
     8, 7, 6, 5, 4, 3, 2, 1, 0
 };
+#pragma endregion
 
+#pragma region Video Lens
 #define VIDEO_LENS_ID 121
 #define VIDEO_LENS_SIZE 13
 #define VIDEO_LENS_NAME "Video Lens"
-
+#define VIDEO_LENS_AVA MODEL_MAX2_ALL
 const static char* VIDEO_LENS_STRING[] = {
     "Wide",
     "Narrow",
@@ -496,10 +638,37 @@ const static char* VIDEO_LENS_STRING[] = {
     "Ultra Linear",
     "Ultra HyperView",
 };
-
 const static int32_t VIDEO_LENS_VALUE[] = {
-    0, 2, 3, 4, 7, 8, 9, 10, 11, 12, 13, 14, 104
+    0, // Wide",
+    2, // Narrow",
+    3, // Superview",
+    4, // Linear",
+    7, // Max Superview",
+    8, // Linear + Horizon Leveling",
+    9, // HyperView",
+    10, // Linear + Horizon Lock",
+    11, // Max HyperView",
+    12, // Ultra SuperView",
+    13, // Ultra Wide",
+    14, // Ultra Linear",
+    104, // Ultra HyperView",
 };
+const static int32_t VIDEO_LENS_SUPPORT[] = {
+    MODEL_MAX2_ALL, // Wide",
+    2, // Narrow",
+    3, // Superview",
+    MODEL_MAX2_ALL, // Linear",
+    7, // Max Superview",
+    8, // Linear + Horizon Leveling",
+    9, // HyperView",
+    10, // Linear + Horizon Lock",
+    MODEL_MAX2|MODEL_12, // Max HyperView",
+    MODEL_13, // Ultra SuperView",
+    MODEL_MAX2|MODEL_13, // Ultra Wide",
+    MODEL_13, // Ultra Linear",
+    MODEL_13, // Ultra HyperView",
+};
+#pragma endregion
 
 #define PHOTO_LENS_ID 122
 #define PHOTO_LENS_SIZE 17
