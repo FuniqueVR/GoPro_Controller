@@ -11,20 +11,20 @@
 /** GoPro Model 11 Black ID */
 #define MODEL_11_BLACK 8
 /** GoPro Model 12 ID */
-#define MODEL_12_BLACK 16
+#define MODEL_12 16
 /** GoPro Model 13 ID */
-#define MODEL_13_BLACK 32
+#define MODEL_13 32
 /** GoPro Model MAX2 ID */
 #define MODEL_MAX2 64
 
 /** Two model 11 includes */
 #define MODEL_11S MODEL_11|MODEL_11_BLACK
 /** Fron Max2 to all the versions below includes */
-#define MODEL_MAX2_ALL MODEL_MAX2|MODEL_13_BLACK|MODEL_12_BLACK|MODEL_11_BLACK|MODEL_11|MODEL_10|MODEL_9
+#define MODEL_MAX2_ALL MODEL_MAX2|MODEL_13|MODEL_12|MODEL_11_BLACK|MODEL_11|MODEL_10|MODEL_9
 /** Fron 13 to all the versions below includes */
-#define MODEL_13_ALL MODEL_13_BLACK|MODEL_12_BLACK|MODEL_11_BLACK|MODEL_11|MODEL_10|MODEL_9
+#define MODEL_13_ALL MODEL_13|MODEL_12|MODEL_11_BLACK|MODEL_11|MODEL_10|MODEL_9
 /** Fron 12 to all the versions below includes */
-#define MODEL_12_ALL MODEL_12_BLACK|MODEL_11_BLACK|MODEL_11|MODEL_10|MODEL_9
+#define MODEL_12_ALL MODEL_12|MODEL_11_BLACK|MODEL_11|MODEL_10|MODEL_9
 /** Fron 11 to all the versions below includes */
 #define MODEL_11_ALL MODEL_11_BLACK|MODEL_11|MODEL_10|MODEL_9
 /** Fron 10 to all the versions below includes */

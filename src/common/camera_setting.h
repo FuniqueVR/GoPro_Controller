@@ -483,7 +483,7 @@ const static int32_t LED_SUPPORT[] = {
 #define VIDEO_ASPECT_RATIO_ID 108
 #define VIDEO_ASPECT_RATIO_SIZE 6
 #define VIDEO_ASPECT_RATIO_NAME "Video Aspect Ratio"
-#define VIDEO_ASPECT_RATIO_AVA MODEL_MAX2|MODEL_13|MODEL_12_BLACK
+#define VIDEO_ASPECT_RATIO_AVA MODEL_MAX2|MODEL_13|MODEL_12
 const static char* VIDEO_ASPECT_RATIO_STRING[] = {
     "4:3",
     "16:9",
@@ -501,10 +501,10 @@ const static int32_t VIDEO_ASPECT_RATIO_VALUE[] = {
     6, // 1:1
 };
 const static int32_t VIDEO_ASPECT_RATIO_SUPPORT[] = {
-    MODEL_MAX2|MODEL_13|MODEL_12_BLACK, // 4:3
-    MODEL_MAX2|MODEL_13|MODEL_12_BLACK, // 16:9
-    MODEL_13|MODEL_12_BLACK, // 8:7
-    MODEL_MAX2|MODEL_13|MODEL_12_BLACK, // 9:16
+    MODEL_MAX2|MODEL_13|MODEL_12, // 4:3
+    MODEL_MAX2|MODEL_13|MODEL_12, // 16:9
+    MODEL_13|MODEL_12, // 8:7
+    MODEL_MAX2|MODEL_13|MODEL_12, // 9:16
     MODEL_13, // 21:9
     MODEL_13, // 1:1
 };
@@ -1116,23 +1116,30 @@ const static int32_t VIDEO_PERFORMANCE_MODE_SUPPORT[] = {
 };
 #pragma endregion
 
+#pragma region Control Mode
 #define CONTROL_MODE_ID 175
 #define CONTROL_MODE_SIZE 2
 #define CONTROL_MODE_NAME "Control Mode"
-
+#define CONTROL_MODE_AVA MODEL_13|MODEL_12|MODEL_11_BLACK
 const static char* CONTROL_MODE_STRING[] = {
     "Easy",
-    "Pro"
+    "Pro", 
 };
-
 const static int32_t CONTROL_MODE_VALUE[] = {
-    0, 1
+    0, // Easy
+    1, // Pro"
 };
+const static int32_t CONTROL_MODE_SUPPORT[] = {
+    MODEL_13|MODEL_12|MODEL_11_BLACK, // Easy
+    MODEL_13|MODEL_12|MODEL_11_BLACK, // Pro"
+};
+#pragma endregion
 
+#pragma region Easy Mode Speed
 #define EASY_MODE_SPEED_ID 176
 #define EASY_MODE_SPEED_SIZE 88
 #define EASY_MODE_SPEED_NAME "Easy Mode Speed"
-
+#define EASY_MODE_SPEED_NAME MODEL_13|MODEL_12|MODEL_11_BLACK
 const static char* EASY_MODE_SPEED_STRING[] = {
     "8X Ultra Slo-Mo",
     "4X Super Slo-Mo",
@@ -1223,59 +1230,253 @@ const static char* EASY_MODE_SPEED_STRING[] = {
     "120 4X Super Slo-Mo Speed (2.7K) (4:3) (V2)",
     "100 4X Super Slo-Mo Speed (2.7K) (4:3) (V2)",
 };
-
 const static int32_t EASY_MODE_SPEED_VALUE[] = {
-    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
-    22, 23, 24, 25, 26, 27, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111,
-    112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128,
-    129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 
-    146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159
+    0, // 8X Ultra Slo-Mo
+    1, // 4X Super Slo-Mo
+    2, // 2X Slo-Mo
+    3, // 1X Speed (Low Light)
+    4, // 4X Super Slo-Mo (Ext. Batt.)
+    5, // 2X Slo-Mo (Ext. Batt.)
+    6, // 1X Speed (Ext. Batt.) (Low Light)
+    7, // 8X Ultra Slo-Mo (50Hz)
+    8, // 4X Super Slo-Mo (50Hz)
+    9, // 2X Slo-Mo (50Hz)
+    10, // 1X Speed (50Hz) (Low Light)
+    11, // 4X Super Slo-Mo (50Hz) (Ext. Batt.)
+    12, // 2X Slo-Mo (50Hz) (Ext. Batt.)
+    13, // 1X Speed (50Hz) (Ext. Batt.) (Low Light)
+    14, // 8X Ultra Slo-Mo (Ext. Batt.)
+    15, // 8X Ultra Slo-Mo (50Hz) (Ext. Batt.)
+    16, // 8X Ultra Slo-Mo (Long. Batt.)
+    17, // 4X Super Slo-Mo (Long. Batt.)
+    18, // 2X Slo-Mo (Long. Batt.)
+    19, // 1X Speed (Long. Batt.) (Low Light)
+    20, // 8X Ultra Slo-Mo (50Hz) (Long. Batt.)
+    21,// 4X Super Slo-Mo (50Hz) (Long. Batt.)
+    22, // 2X Slo-Mo (50Hz) (Long. Batt.)
+    23, // 1X Speed (50Hz) (Long. Batt.) (Low Light)
+    24, // 2X Slo-Mo (4K)
+    25, // 4X Super Slo-Mo (2.7K)
+    26, // 2X Slo-Mo (4K) (50Hz)
+    27, // 4X Super Slo-Mo (2.7K) (50Hz)
+    100, // 8X Ultra Slo-Mo (V2)
+    101, // 4X Super Slo-Mo (V2)
+    102, // 2X Slo-Mo (V2)
+    103, // 1X Speed (Low Light) (V2)
+    104, // 8X Ultra Slo-Mo (50Hz) (V2)
+    105, // 4X Super Slo-Mo (50Hz) (V2)
+    106, // 2X Slo-Mo (50Hz) (V2)
+    107, // 1X Speed (50Hz) (Low Light) (V2)
+    108, // 8X Ultra Slo-Mo (Long. Batt.) (V2)
+    109, // 4X Super Slo-Mo (Long. Batt.) (V2)
+    110, // 2X Slo-Mo (Long. Batt.) (V2)
+    111,// 1X Speed (Long. Batt.) (Low Light) (V2)
+    112, // 8X Ultra Slo-Mo (50Hz) (Long. Batt.) (V2)
+    113, // 4X Super Slo-Mo (50Hz) (Long. Batt.) (V2)
+    114, // 2X Slo-Mo (50Hz) (Long. Batt.) (V2)
+    115, // 1X Speed (50Hz) (Long. Batt.) (Low Light) (V2)
+    116, // 2X Slo-Mo (4K) (V2)
+    117, // 2X Slo-Mo (4K) (50Hz) (V2)
+    118, // 1X Speed (Low Light) (V2) (Vertical)
+    119, // 1X Speed (50Hz) (Low Light) (V2) (Vertical)
+    120, // 2X Slo-Mo (V2) (Vertical)
+    121, // 2X Slo-Mo (50Hz) (V2) (Vertical)
+    122, // 1X Speed (Full Frame) (Low Light) (V2)
+    123, // 1X Speed (50Hz) (Full Frame) (Low Light) (V2)
+    124, // 2X Slo-Mo (Full Frame) (V2)
+    125, // 2X Slo-Mo (50Hz) (Full Frame) (V2)
+    126, // 1X Speed (4K) (Low Light) (V2)
+    127, // 1X Speed (4K) (50Hz) (Low Light) (V2)
+    128,// 1X Speed (2.7K) (Low Light) (V2)
+    129, // 1X Speed (2.7K) (50Hz) (Low Light) (V2)
+    130, // 2X Slo-Mo (2.7K) (V2)
+    131, // 2X Slo-Mo (2.7K) (50Hz) (V2)
+    132, // 2X Slo-Mo (Long. Batt.) (V2) (Vertical)
+    133, // 2X Slo-Mo (50Hz) (Long. Batt.) (V2) (Vertical)
+    134, // 1X Speed (Long. Batt.) (Low Light) (V2) (Vertical)
+    135, // 1X Speed (50Hz) (Long. Batt.) (Low Light) (V2) (Vertical)
+    136, // 1X Speed (4K) (Full Frame) (Low Light) (V2)
+    137, // 1X Speed (4K) (50Hz) (Full Frame) (Low Light) (V2)
+    138, // 1X Normal Speed (1:1) (30 Fps) (4K) (V2)
+    139, // 1X Normal Speed (1:1) (25 Fps) (4K) (V2)
+    140, // 2X Slo-Mo Speed (1:1) (4K) (60 Fps) (V2)
+    141, // 2X Slo-Mo Speed (1:1) (4K) (50 Fps) (V2)
+    142, // 1X Normal Speed (21:9) (30 Fps) (5.3K) (V2)
+    143, // 1X Normal Speed (21:9) (25 Fps) (5.3K) (V2)
+    144, // 2X Slo-Mo Speed (21:9) (5.3K) (60 Fps) (V2)
+    145, // 2X Slo-Mo Speed (21:9) (5.3K) (50 Fps) (V2)
+    146, // 1X Normal Speed (21:9) (30 Fps) (4K) (V2)
+    147, // 1X Normal Speed (21:9) (25 Fps) (4K) (V2)
+    148, // 2X Slo-Mo Speed (21:9) (4K) (60 Fps) (V2)
+    149, // 2X Slo-Mo Speed (21:9) (4K) (50 Fps) (V2)
+    150, // 120 4X Super Slo-Mo Speed (21:9) (4K) (V2)
+    151, // 100 4X Super Slo-Mo Speed (21:9) (4K) (V2)
+    152, // 1X Normal Speed (30 Fps) (4:3) (5.3K) (V2)
+    153, // 1X Normal Speed (25 Fps) (4:3) (5.3K) (V2)
+    154, // 1X Normal Speed (30 Fps) (4:3) (4K) (V2)
+    155, // 1X Normal Speed (25 Fps) (4:3) (4K) (V2)
+    156, // 2X Slo-Mo Speed (4:3) (4K) (60 Fps) (V2)
+    157, // 2X Slo-Mo Speed (4:3) (4K) (50 Fps) (V2)
+    158, // 120 4X Super Slo-Mo Speed (2.7K) (4:3) (V2)
+    159, // 100 4X Super Slo-Mo Speed (2.7K) (4:3) (V2)
 };
+const static int32_t EASY_MODE_SPEED_SUPPORT[] = {
+    MODEL_11_BLACK, // 8X Ultra Slo-Mo
+    MODEL_11_BLACK, // 4X Super Slo-Mo
+    MODEL_11_BLACK, // 2X Slo-Mo
+    MODEL_11_BLACK, // 1X Speed (Low Light)
+    MODEL_11_BLACK, // 4X Super Slo-Mo (Ext. Batt.)
+    MODEL_11_BLACK, // 2X Slo-Mo (Ext. Batt.)
+    MODEL_11_BLACK, // 1X Speed (Ext. Batt.) (Low Light)
+    MODEL_11_BLACK, // 8X Ultra Slo-Mo (50Hz)
+    MODEL_11_BLACK, // 4X Super Slo-Mo (50Hz)
+    MODEL_11_BLACK, // 2X Slo-Mo (50Hz)
+    MODEL_11_BLACK, // 1X Speed (50Hz) (Low Light)
+    MODEL_11_BLACK, // 4X Super Slo-Mo (50Hz) (Ext. Batt.)
+    MODEL_11_BLACK, // 2X Slo-Mo (50Hz) (Ext. Batt.)
+    MODEL_11_BLACK, // 1X Speed (50Hz) (Ext. Batt.) (Low Light)
+    MODEL_11_BLACK, // 8X Ultra Slo-Mo (Ext. Batt.)
+    MODEL_11_BLACK, // 8X Ultra Slo-Mo (50Hz) (Ext. Batt.)
+    MODEL_11_BLACK, // 8X Ultra Slo-Mo (Long. Batt.)
+    MODEL_11_BLACK, // 4X Super Slo-Mo (Long. Batt.)
+    MODEL_11_BLACK, // 2X Slo-Mo (Long. Batt.)
+    MODEL_11_BLACK, // 1X Speed (Long. Batt.) (Low Light)
+    MODEL_11_BLACK, // 8X Ultra Slo-Mo (50Hz) (Long. Batt.)
+    MODEL_11_BLACK,// 4X Super Slo-Mo (50Hz) (Long. Batt.)
+    MODEL_11_BLACK, // 2X Slo-Mo (50Hz) (Long. Batt.)
+    MODEL_11_BLACK, // 1X Speed (50Hz) (Long. Batt.) (Low Light)
+    MODEL_11_BLACK, // 2X Slo-Mo (4K)
+    MODEL_11_BLACK, // 4X Super Slo-Mo (2.7K)
+    MODEL_11_BLACK, // 2X Slo-Mo (4K) (50Hz)
+    MODEL_11_BLACK, // 4X Super Slo-Mo (2.7K) (50Hz)
+    MODEL_13|MODEL_12, // 8X Ultra Slo-Mo (V2)
+    MODEL_13|MODEL_12, // 4X Super Slo-Mo (V2)
+    MODEL_13|MODEL_12, // 2X Slo-Mo (V2)
+    MODEL_13|MODEL_12, // 1X Speed (Low Light) (V2)
+    MODEL_13|MODEL_12, // 8X Ultra Slo-Mo (50Hz) (V2)
+    MODEL_13|MODEL_12, // 4X Super Slo-Mo (50Hz) (V2)
+    MODEL_13|MODEL_12, // 2X Slo-Mo (50Hz) (V2)
+    MODEL_13|MODEL_12, // 1X Speed (50Hz) (Low Light) (V2)
+    MODEL_13|MODEL_12, // 8X Ultra Slo-Mo (Long. Batt.) (V2)
+    MODEL_13|MODEL_12, // 4X Super Slo-Mo (Long. Batt.) (V2)
+    MODEL_13|MODEL_12, // 2X Slo-Mo (Long. Batt.) (V2)
+    MODEL_13|MODEL_12,// 1X Speed (Long. Batt.) (Low Light) (V2)
+    MODEL_13|MODEL_12, // 8X Ultra Slo-Mo (50Hz) (Long. Batt.) (V2)
+    MODEL_13|MODEL_12, // 4X Super Slo-Mo (50Hz) (Long. Batt.) (V2)
+    MODEL_13|MODEL_12, // 2X Slo-Mo (50Hz) (Long. Batt.) (V2)
+    MODEL_13|MODEL_12, // 1X Speed (50Hz) (Long. Batt.) (Low Light) (V2)
+    MODEL_13|MODEL_12, // 2X Slo-Mo (4K) (V2)
+    MODEL_13|MODEL_12, // 2X Slo-Mo (4K) (50Hz) (V2)
+    MODEL_13|MODEL_12, // 1X Speed (Low Light) (V2) (Vertical)
+    MODEL_13|MODEL_12, // 1X Speed (50Hz) (Low Light) (V2) (Vertical)
+    MODEL_13|MODEL_12, // 2X Slo-Mo (V2) (Vertical)
+    MODEL_13|MODEL_12, // 2X Slo-Mo (50Hz) (V2) (Vertical)
+    MODEL_13|MODEL_12, // 1X Speed (Full Frame) (Low Light) (V2)
+    MODEL_13|MODEL_12, // 1X Speed (50Hz) (Full Frame) (Low Light) (V2)
+    MODEL_13|MODEL_12, // 2X Slo-Mo (Full Frame) (V2)
+    MODEL_13|MODEL_12, // 2X Slo-Mo (50Hz) (Full Frame) (V2)
+    MODEL_13|MODEL_12, // 1X Speed (4K) (Low Light) (V2)
+    MODEL_13|MODEL_12, // 1X Speed (4K) (50Hz) (Low Light) (V2)
+    MODEL_12,// 1X Speed (2.7K) (Low Light) (V2)
+    MODEL_12, // 1X Speed (2.7K) (50Hz) (Low Light) (V2)
+    MODEL_12, // 2X Slo-Mo (2.7K) (V2)
+    MODEL_12, // 2X Slo-Mo (2.7K) (50Hz) (V2)
+    MODEL_13|MODEL_12, // 2X Slo-Mo (Long. Batt.) (V2) (Vertical)
+    MODEL_13|MODEL_12, // 2X Slo-Mo (50Hz) (Long. Batt.) (V2) (Vertical)
+    MODEL_13|MODEL_12, // 1X Speed (Long. Batt.) (Low Light) (V2) (Vertical)
+    MODEL_13|MODEL_12, // 1X Speed (50Hz) (Long. Batt.) (Low Light) (V2) (Vertical)
+    MODEL_13|MODEL_12, // 1X Speed (4K) (Full Frame) (Low Light) (V2)
+    MODEL_13|MODEL_12, // 1X Speed (4K) (50Hz) (Full Frame) (Low Light) (V2)
+    MODEL_13, // 1X Normal Speed (1:1) (30 Fps) (4K) (V2)
+    MODEL_13, // 1X Normal Speed (1:1) (25 Fps) (4K) (V2)
+    MODEL_13, // 2X Slo-Mo Speed (1:1) (4K) (60 Fps) (V2)
+    MODEL_13, // 2X Slo-Mo Speed (1:1) (4K) (50 Fps) (V2)
+    MODEL_13, // 1X Normal Speed (21:9) (30 Fps) (5.3K) (V2)
+    MODEL_13, // 1X Normal Speed (21:9) (25 Fps) (5.3K) (V2)
+    MODEL_13, // 2X Slo-Mo Speed (21:9) (5.3K) (60 Fps) (V2)
+    MODEL_13, // 2X Slo-Mo Speed (21:9) (5.3K) (50 Fps) (V2)
+    MODEL_13, // 1X Normal Speed (21:9) (30 Fps) (4K) (V2)
+    MODEL_13, // 1X Normal Speed (21:9) (25 Fps) (4K) (V2)
+    MODEL_13, // 2X Slo-Mo Speed (21:9) (4K) (60 Fps) (V2)
+    MODEL_13, // 2X Slo-Mo Speed (21:9) (4K) (50 Fps) (V2)
+    MODEL_13, // 120 4X Super Slo-Mo Speed (21:9) (4K) (V2)
+    MODEL_13, // 100 4X Super Slo-Mo Speed (21:9) (4K) (V2)
+    MODEL_13, // 1X Normal Speed (30 Fps) (4:3) (5.3K) (V2)
+    MODEL_13, // 1X Normal Speed (25 Fps) (4:3) (5.3K) (V2)
+    MODEL_13, // 1X Normal Speed (30 Fps) (4:3) (4K) (V2)
+    MODEL_13, // 1X Normal Speed (25 Fps) (4:3) (4K) (V2)
+    MODEL_13, // 2X Slo-Mo Speed (4:3) (4K) (60 Fps) (V2)
+    MODEL_13, // 2X Slo-Mo Speed (4:3) (4K) (50 Fps) (V2)
+    MODEL_13, // 120 4X Super Slo-Mo Speed (2.7K) (4:3) (V2)
+    MODEL_13, // 100 4X Super Slo-Mo Speed (2.7K) (4:3) (V2)
+};
+#pragma endregion
 
+#pragma region Enable Night Photo
 #define ENABLE_NIGHT_PHOTO_ID 177
 #define ENABLE_NIGHT_PHOTO_SIZE 2
 #define ENABLE_NIGHT_PHOTO_NAME "Enable Night Photo"
-
+#define ENABLE_NIGHT_PHOTO_AVA MODEL_11_BLACK
 const static char* ENABLE_NIGHT_PHOTO_STRING[] = {
     "Off",
-    "On"
+    "On",
 };
-
 const static int32_t ENABLE_NIGHT_PHOTO_VALUE[] = {
-    0, 1
+    0, // Off
+    1, // On
 };
+const static int32_t ENABLE_NIGHT_PHOTO_SUPPORT[] = {
+    MODEL_11_BLACK, // Off
+    MODEL_11_BLACK, // On
+};
+#pragma endregion
 
+#pragma region Wireless Band
 #define WIRELESS_BAND_ID 178
 #define WIRELESS_BAND_SIZE 2
 #define WIRELESS_BAND_NAME "Wireless Band"
-
+#define WIRELESS_BAND_AVA MODEL_MAX2_ALL&(~(MODEL_10|MODEL_9))
 const static char* WIRELESS_BAND_STRING[] = {
     "2.4 GHz",
     "5 GHz"
 };
-
 const static int32_t WIRELESS_BAND_VALUE[] = {
-    0, 1
+    0, // 2.4 GHz
+    1, // 5 GH
 };
+const static int32_t WIRELESS_BAND_SUPPORT[] = {
+    MODEL_MAX2_ALL&(~(MODEL_10|MODEL_9)), // 2.4 GHz
+    MODEL_MAX2_ALL&(~(MODEL_10|MODEL_9)), // 5 GH
+};
+#pragma endregion
 
+#pragma region Star Trails Length
 #define STAR_TRAILS_LENGTH_ID 179
 #define STAR_TRAILS_LENGTH_SIZE 3
 #define STAR_TRAILS_LENGTH_NAME "Star Trails Length"
-
+#define STAR_TRAILS_LENGTH_AVA MODEL_MAX2_ALL&(~(MODEL_10|MODEL_9))
 const static char* STAR_TRAILS_LENGTH_STRING[] = {
     "Short",
     "Long",
-    "Max"
+    "Max", 
 };
-
 const static int32_t STAR_TRAILS_LENGTH_VALUE[] = {
-    1, 2, 3
+    1, // Short",
+    2, // Long",
+    3, // Max", 
 };
+const static int32_t STAR_TRAILS_LENGTH_SUPPORT[] = {
+    MODEL_MAX2_ALL&(~(MODEL_10|MODEL_9)), // Short",
+    MODEL_MAX2_ALL&(~(MODEL_10|MODEL_9)), // Long",
+    MODEL_MAX2_ALL&(~(MODEL_10|MODEL_9)), // Max", 
+};
+#pragma endregion
 
+#pragma region System Video Mode
 #define SYSTEM_VIDEO_MODE_ID 180
 #define SYSTEM_VIDEO_MODE_SIZE 5
 #define SYSTEM_VIDEO_MODE_NAME "System Video Mode"
-
+#define SYSTEM_VIDEO_MODE_AVA MODEL_13|MODEL_11_BLACK
 const static char* SYSTEM_VIDEO_MODE_STRING[] = {
     "Highest Quality",
     "Extended Battery",
@@ -1283,72 +1484,118 @@ const static char* SYSTEM_VIDEO_MODE_STRING[] = {
     "Standard Quality",
     "Basic Quality",
 };
-
 const static int32_t SYSTEM_VIDEO_MODE_VALUE[] = {
-    0, 101, 102, 111, 112
+    0, // Highest Quality
+    101, // Extended Battery
+    102, // Longest Battery
+    111, // Standard Quality
+    112, // Basic Quality
 };
+const static int32_t SYSTEM_VIDEO_MODE_SUPPORT[] = {
+    MODEL_13|MODEL_11_BLACK, // Highest Quality
+    MODEL_11_BLACK, // Extended Battery
+    MODEL_11_BLACK, // Longest Battery
+    MODEL_13, // Standard Quality
+    MODEL_13, // Basic Quality
+};
+#pragma endregion
 
+#pragma region Video Bit Rate
 #define VIDEO_BIT_RATE_ID 182
 #define VIDEO_BIT_RATE_SIZE 2
 #define VIDEO_BIT_RATE_NAME "Video Bit Rate"
-
+#define VIDEO_BIT_RATE_AVA MODEL_MAX2|MODEL_13|MODEL_12
 const static char* VIDEO_BIT_RATE_STRING[] = {
     "Standard",
-    "High"
+    "High",
 };
-
 const static int32_t VIDEO_BIT_RATE_VALUE[] = {
-    0, 1
+    0, // Standard
+    1, // High
 };
+const static int32_t VIDEO_BIT_RATE_SUPPORT[] = {
+    MODEL_MAX2|MODEL_13|MODEL_12, // Standard
+    MODEL_MAX2|MODEL_13|MODEL_12, // High
+};
+#pragma endregion
 
+#pragma region Bit Depth
 #define BIT_DEPTH_ID 183
 #define BIT_DEPTH_SIZE 2
 #define BIT_DEPTH_NAME "Bit Depth"
-
+#define BIT_DEPTH_AVA MODEL_MAX2|MODEL_13|MODEL_12
 const static char* BIT_DEPTH_STRING[] = {
     "8-bit",
-    "10-bit"
+    "10-bit",
 };
-
 const static int32_t BIT_DEPTH_VALUE[] = {
-    0, 2
+    0, // 8-bit
+    2, // 10-bit
 };
+const static int32_t BIT_DEPTH_SUPPORT[] = {
+    MODEL_MAX2|MODEL_13|MODEL_12, // 8-bit
+    MODEL_MAX2|MODEL_13|MODEL_12, // 10-bit
+};
+#pragma endregion
 
+#pragma region Profiles
 #define PROFILES_ID 184
 #define PROFILES_SIZE 3
 #define PROFILES_NAME "Profiles"
-
+#define PROFILES_AVA MODEL_MAX2|MODEL_13|MODEL_12
 const static char* PROFILES_STRING[] = {
     "Standard",
     "HDR",
     "Log",
     "HLG HDR"
 };
-
 const static int32_t PROFILES_VALUE[] = {
-    0, 1, 2, 101
+    0, // Standard
+    1, // HDR
+    2, // Log
+    101, // HLG HD
 };
+const static int32_t PROFILES_SUPPORT[] = {
+    MODEL_MAX2|MODEL_13|MODEL_12, // Standard
+    MODEL_13|MODEL_12, // HDR
+    MODEL_MAX2|MODEL_13|MODEL_12, // Log
+    MODEL_13, // HLG HD
+};
+#pragma endregion
 
+#pragma region Video Easy Mode
 #define VIDEO_EASY_MODE_ID 186
 #define VIDEO_EASY_MODE_SIZE 5
 #define VIDEO_EASY_MODE_NAME "Video Easy Mode"
-
+#define VIDEO_EASY_MODE_AVA MODEL_13|MODEL_12
 const static char* VIDEO_EASY_MODE_STRING[] = {
     "Highest Quality",
     "Standard Quality",
     "Basic Quality",
     "Standard Video",
-    "HDR Video"
+    "HDR Video",
 };
-
 const static int32_t VIDEO_EASY_MODE_VALUE[] = {
-    0, 1, 2, 3, 4
+    0, // Highest Quality
+    1, // Standard Quality
+    2, // Basic Quality
+    3, // Standard Video
+    4, // HDR Video
 };
+const static int32_t VIDEO_EASY_MODE_SUPPORT[] = {
+    MODEL_12, // Highest Quality
+    MODEL_12, // Standard Quality
+    MODEL_12, // Basic Quality
+    MODEL_13, // Standard Video
+    MODEL_13, // HDR Video
+};
+#pragma endregion
 
+#pragma region Lapse Mode
 #define LAPSE_MODE_ID 187
 #define LAPSE_MODE_SIZE 5
 #define LAPSE_MODE_NAME "Lapse Mode"
-
+#define LAPSE_MODE_AVA MODEL_13|MODEL_12
 const static char* LAPSE_MODE_STRING[] = {
     "TimeWarp",
     "Star Trails",
@@ -1361,15 +1608,37 @@ const static char* LAPSE_MODE_STRING[] = {
     "Time Lapse Video",
     "Night Lapse Video",
 };
-
 const static int32_t LAPSE_MODE_VALUE[] = {
-    0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+    0, // TimeWarp
+    1, // Star Trails
+    2, // Light Painting
+    3, // Vehicle Lights
+    4, // Max TimeWarp
+    5, // Max Star Trails
+    6, // Max Light Painting
+    7, // Max Vehicle Lights
+    8, // Time Lapse Video
+    9, // Night Lapse Video
 };
+const static int32_t LAPSE_MODE_SUPPORT[] = {
+    MODEL_13|MODEL_12, // TimeWarp
+    MODEL_13|MODEL_12, // Star Trails
+    MODEL_13|MODEL_12, // Light Painting
+    MODEL_13|MODEL_12, // Vehicle Lights
+    MODEL_12, // Max TimeWarp
+    MODEL_12, // Max Star Trails
+    MODEL_12, // Max Light Painting
+    MODEL_12, // Max Vehicle Lights
+    MODEL_13, // Time Lapse Video
+    MODEL_13, // Night Lapse Video
+};
+#pragma endregion
 
+#pragma region Max Lens Mod
 #define MAX_LENS_MOD_ID 189
 #define MAX_LENS_MOD_SIZE 12
 #define MAX_LENS_MOD_NAME "Max Lens Mod"
-
+#define MAX_LENS_MOD_AVA MODEL_13|MODEL_12
 const static char* MAX_LENS_MOD_STRING[] = {
     "None",
     "Max Lens 1.0",
@@ -1384,70 +1653,141 @@ const static char* MAX_LENS_MOD_STRING[] = {
     "Standard Lens",
     "Auto Detect",
 };
-
 const static int32_t MAX_LENS_MOD_VALUE[] = {
-    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 100
+    0, // None
+    1, // Max Lens 1.0
+    2, // Max Lens 2.0
+    3, // Max Lens 2.5
+    4, // Macro
+    5, // Anamorphic
+    6, // ND 4
+    7, // ND 8
+    8, // ND 16
+    9, // ND 32
+    10, // Standard Lens
+    100, // Auto Detect
 };
+const static int32_t MAX_LENS_MOD_SUPPORT[] = {
+    MODEL_12, // None
+    MODEL_12, // Max Lens 1.0
+    MODEL_13|MODEL_12, // Max Lens 2.0
+    MODEL_13, // Max Lens 2.5
+    MODEL_13, // Macro
+    MODEL_13, // Anamorphic
+    MODEL_13, // ND 4
+    MODEL_13, // ND 8
+    MODEL_13, // ND 16
+    MODEL_13, // ND 32
+    MODEL_13, // Standard Lens
+    MODEL_13, // Auto Detect
+};
+#pragma endregion
 
+#pragma region Max Lens Mod Enable
 #define MAX_LENS_MOD_ENABLE_ID 190
 #define MAX_LENS_MOD_ENABLE_SIZE 2
 #define MAX_LENS_MOD_ENABLE_NAME "Max Lens Mod Enable"
-
-enum class MAX_LENS_MOD_ENABLE_ {
-    OFF,
-    ON
-};
-
+#define MAX_LENS_MOD_ENABLE_AVA MODEL_12
 const static char* MAX_LENS_MOD_ENABLE_STRING[] = {
     "Off",
-    "On"
+    "On",
 };
-
 const static int32_t MAX_LENS_MOD_ENABLE_VALUE[] = {
-    0, 1
+    0, // Off
+    1, // On
 };
+const static int32_t MAX_LENS_MOD_ENABLE_SUPPORT[] = {
+    MODEL_12, // Off
+    MODEL_12, // On
+};
+#pragma endregion
 
+#pragma region Easy Night Photo
 #define EASY_NIGHT_PHOTO_ID 191
-#define EASY_NIGHT_PHOTO_SIZE 2
+#define EASY_NIGHT_PHOTO_SIZE 3
 #define EASY_NIGHT_PHOTO_NAME "Easy Night Photo"
-
+#define EASY_NIGHT_PHOTO_AVA MODEL_13|MODEL_12
 const static char* EASY_NIGHT_PHOTO_STRING[] = {
-    "Off",
-    "On"
+    "Single Photo",
+    "Night Photo",
+    "Burst",
 };
-
 const static int32_t EASY_NIGHT_PHOTO_VALUE[] = {
-    0, 1
+    0, // Single Photo
+    1, // Night Photo
+    2, // Burst
 };
+const static int32_t EASY_NIGHT_PHOTO_SUPPORT[] = {
+    MODEL_13|MODEL_12, // Single Photo
+    MODEL_13|MODEL_12, // Night Photo
+    MODEL_13, // Burst
+};
+#pragma endregion
 
+#pragma region Multi Shot Aspect Ratio
 #define MULTI_SHOT_ASPECT_RATIO_ID 192
 #define MULTI_SHOT_ASPECT_RATIO_SIZE 4
 #define MULTI_SHOT_ASPECT_RATIO_NAME "Multi Shot Aspect Ratio"
-
+#define MULTI_SHOT_ASPECT_RATIO_AVA MODEL_13|MODEL_12
 const static char* MULTI_SHOT_ASPECT_RATIO_STRING[] = {
     "4:3",
     "16:9",
     "8:7",
-    "9:16"
+    "9:16",
 };
-
 const static int32_t MULTI_SHOT_ASPECT_RATIO_VALUE[] = {
-    0, 1, 3, 4
+    0, // 4:3
+    1, // 16:9
+    3, // 8:7
+    4, // 9:16
 };
+const static int32_t MULTI_SHOT_ASPECT_RATIO_SUPPORT[] = {
+    MODEL_13|MODEL_12, // 4:3
+    MODEL_13|MODEL_12, // 16:9
+    MODEL_13|MODEL_12, // 8:7
+    MODEL_13, // 9:16
+};
+#pragma endregion
 
+#pragma region Framing
 #define FRAMING_ID 193
-#define FRAMING_SIZE 3
+#define FRAMING_SIZE 9
 #define FRAMING_NAME "Framing"
-
-const static int32_t FRAMING_VALUE[] = {
-    0, 1, 2
-};
-
+#define FRAMING_AVA MODEL_13|MODEL_12
 const static char* FRAMING_STRING[] = {
     "Widescreen",
     "Vertical",
-    "Full Frame"
+    "Full Frame",
+    "Traditional 4:3 v2",
+    "Widescreen 16:9 v2",
+    "Full Frame 8:7 v2",
+    "Vertical 9:16 v2",
+    "Ultra Widescreen 21:9 v2",
+    "Full Frame 1:1 v2",
 };
+const static int32_t FRAMING_VALUE[] = {
+    0, // Widescreen
+    1, // Vertical
+    2, // Full Frame
+    100, // Traditional 4:3 v2
+    101, // Widescreen 16:9 v2
+    103, // Full Frame 8:7 v2
+    104, // Vertical 9:16 v2
+    105, // Ultra Widescreen 21:9 v2
+    106, // Full Frame 1:1 v2
+};
+const static int32_t FRAMING_SUPPORT[] = {
+    MODEL_12, // Widescreen
+    MODEL_12, // Vertical
+    MODEL_12, // Full Frame
+    MODEL_13, // Traditional 4:3 v2
+    MODEL_13, // Widescreen 16:9 v2
+    MODEL_13, // Full Frame 8:7 v2
+    MODEL_13, // Vertical 9:16 v2
+    MODEL_13, // Ultra Widescreen 21:9 v2
+    MODEL_13, // Full Frame 1:1 v2
+};
+#pragma endregion
 
 #define CAMERA_MODE_ID 194
 #define CAMERA_MODE_SIZE 2
