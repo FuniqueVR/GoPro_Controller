@@ -229,46 +229,6 @@ const static int32_t VIDEO_TIMELAPSE_RATE_SUPPORT[] = {
 };
 #pragma endregion
 
-#pragma region ISO Min 1
-#define ISO_MIN_1_ID 102
-#define ISO_MIN_1_SIZE 8
-#define ISO_MIN_1_NAME "ISO Minimum"
-#define ISO_MIN_1_AVA MODEL_MAX2_ALL
-const static char* ISO_MIN_1_STRING[] = {
-    "Auto",
-    "6400",
-    "3200",
-    "1600",
-    "800",
-    "400",
-    "200",
-    "100",
-};
-const static int32_t ISO_VALUE[] = {
-    9, 0, 3, 1, 4, 2, 7, 8
-};
-#pragma endregion
-
-#pragma region ISO Max 1
-#define ISO_MAX_1_ID 13
-#pragma endregion
-
-#pragma region ISO Min 2
-#define ISO_MIN_2_ID 75
-#pragma endregion
-
-#pragma region ISO Max 2
-#define ISO_MAX_2_ID 37
-#pragma endregion
-
-#pragma region ISO Min 3
-#define ISO_MIN_3_ID 76
-#pragma endregion
-
-#pragma region ISO Max 3
-#define ISO_MAX_3_ID 24
-#pragma endregion
-
 #pragma region Photo Time Lapse
 #define PHOTO_TIMELAPSE_RATE_ID 30
 #define PHOTO_TIMELAPSE_RATE_SIZE 12
@@ -815,104 +775,111 @@ const static int32_t MEDIA_FORMAT_SUPPORT[] = {
 };
 #pragma endregion
 
+#pragma region Anti Flicker
 #define ANTI_FLICKER_ID 134
 #define ANTI_FLICKER_SIZE 4
 #define ANTI_FLICKER_NAME "Anti-Flicker"
-
+#define ANTI_FLICKER_AVA MODEL_13_ALL
 const static char* ANTI_FLICKER_STRING[] = {
     "NTSC",
     "PAL",
     "60Hz",
-    "50Hz"
+    "50Hz",
 };
-
 const static int32_t ANTI_FLICKER_VALUE[] = {
-    0, 1, 2, 3
+    0, // NTSC 
+    1, // PAL 
+    2, // 60Hz 
+    3, // 50Hz
 };
+const static int32_t ANTI_FLICKER_SUPPORT[] = {
+    MODEL_13, // NTSC 
+    MODEL_13, // PAL 
+    MODEL_12_ALL, // 60Hz 
+    MODEL_12_ALL, // 50Hz
+};
+#pragma endregion
 
+#pragma region HyperSmooth
 #define HYPERSMOOTH_ID 135
 #define HYPERSMOOTH_SIZE 6
 #define HYPERSMOOTH_NAME "Hypersmooth"
-
+#define HYPERSMOOTH_AVA MODEL_MAX2_ALL
 const static char* HYPERSMOOTH_STRING[] = {
     "Off",
     "Low",
     "High",
     "Boost",
     "Auto Boost",
-    "Standard"
+    "Standard",
 };
-
 const static int32_t HYPERSMOOTH_VALUE[] = {
-    0, 1, 2, 3, 4, 100
+    0, // Off
+    1, // Low
+    2, // High
+    3, // Boost
+    4, // Auto Boost
+    100, // Standard
 };
-
-#define SHUTTER_SPEED_ID 145
-#define SHUTTER_SPEED_SIZE 22
-#define SHUTTER_SPEED_NAME "Shutter Speed"
-
-const static char* SHUTTER_SPEED_STRING[] = {
-    "Auto",
-    "1/24",
-    "1/25",
-    "1/30",
-    "1/48",
-    "1/50",
-    "1/60",
-    "1/96",
-    "1/100",
-    "1/120",
-    "1/192",
-    "1/200",
-    "1/240",
-    "1/384",
-    "1/400",
-    "1/480",
-    "1/800",
-    "1/900",
-    "1/1600",
-    "1/1920",
-    "1/3200",
-    "1/3840",
+const static int32_t HYPERSMOOTH_SUPPORT[] = {
+    MODEL_MAX2_ALL, // Off
+    MODEL_MAX2_ALL&(~MODEL_10), // Low
+    MODEL_10_ALL, // High
+    MODEL_11_ALL, // Boost
+    MODEL_MAX2_ALL&(~MODEL_10_ALL), // Auto Boost
+    MODEL_10, // Standard
 };
+#pragma endregion
 
-const static int32_t SHUTTER_SPEED_VALUE[] = {
-    0, 3, 4, 5, 6, 7, 8, 11, 12, 13, 16, 17, 18, 25, 21, 22, 28,
-    23, 29, 24, 30, 31
-};
-
+#pragma region Video Horizon leveling
 #define VIDEO_HORIZON_LEVELING_ID 150
 #define VIDEO_HORIZON_LEVELING_SIZE 3
 #define VIDEO_HORIZON_LEVELING_NAME "Video Horizon Leveling"
-
+#define VIDEO_HORIZON_LEVELING_AVA MODEL_11_BLACK
 const static char* VIDEO_HORIZON_LEVELING_STRING[] = {
     "Off",
     "On",
-    "Locked"
+    "Locked",
 };
-
 const static int32_t VIDEO_HORIZON_LEVELING_VALUE[] = {
-    0, 1, 2
+    0, // Off
+    1, // On
+    2, // Locked
 };
+const static int32_t VIDEO_HORIZON_LEVELING_SUPPORT[] = {
+    MODEL_11_BLACK, // Off
+    MODEL_11_BLACK, // On
+    MODEL_11_BLACK, // Locked
+};
+#pragma endregion
 
+#pragma region Photo Horizon leveling
 #define PHOTO_HORIZON_LEVELING_ID 151
 #define PHOTO_HORIZON_LEVELING_SIZE 3
 #define PHOTO_HORIZON_LEVELING_NAME "Photo Horizon Leveling"
-
+#define PHOTO_HORIZON_LEVELING_AVA MODEL_11_BLACK
 const static char* PHOTO_HORIZON_LEVELING_STRING[] = {
     "Off",
     "On",
-    "Locked"
+    "Locked",
 };
-
 const static int32_t PHOTO_HORIZON_LEVELING_VALUE[] = {
-    0, 1, 2
+    0, // Off
+    1, // On
+    2, // Locked
 };
+const static int32_t PHOTO_HORIZON_LEVELING_SUPPORT[] = {
+    MODEL_11_BLACK, // Off
+    MODEL_11_BLACK, // On
+    MODEL_11_BLACK, // Locked
+};
+#pragma endregion
 
+#pragma region Video Duration
 #define VIDEO_DURATION_ID 156
 #define VIDEO_DURATION_SIZE 11
 #define VIDEO_DURATION_NAME "Video Duration"
-
+#define VIDEO_DURATION_AVA MODEL_MAX2_ALL&(~MODEL_11)
 const static char* VIDEO_DURATION_STRING[] = {
     "15 Sec",
     "30 Sec",
@@ -926,15 +893,39 @@ const static char* VIDEO_DURATION_STRING[] = {
     "5 Sec",
     "No Limit",
 };
-
 const static int32_t VIDEO_DURATION_VALUE[] = {
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 100
+    1, // 15 Sec
+    2, // 30 Sec
+    3, // 1 Min
+    4, // 5 Min
+    5, // 15 Min
+    6, // 30 Min
+    7, // 1 Hour
+    8, // 2 Hour
+    9, // 3 Hour
+    10,// 5 Sec
+    100, // No Limit
 };
+const static int32_t VIDEO_DURATION_VALUE[] = {
+    MODEL_MAX2_ALL&(~MODEL_11), // 15 Sec
+    MODEL_MAX2_ALL&(~MODEL_11), // 30 Sec
+    MODEL_MAX2_ALL&(~MODEL_11), // 1 Min
+    MODEL_MAX2_ALL&(~MODEL_11), // 5 Min
+    MODEL_MAX2_ALL&(~MODEL_11), // 15 Min
+    MODEL_MAX2_ALL&(~MODEL_11), // 30 Min
+    MODEL_MAX2_ALL&(~MODEL_11), // 1 Hour
+    MODEL_MAX2_ALL&(~MODEL_11), // 2 Hour
+    MODEL_MAX2_ALL&(~MODEL_11), // 3 Hour
+    MODEL_13,// 5 Sec
+    MODEL_MAX2_ALL&(~MODEL_11), // No Limit
+};
+#pragma endregion
 
+#pragma region Multi Shot Duration
 #define MULTISHOT_DURATION_ID 157
 #define MULTISHOT_DURATION_SIZE 11
 #define MULTISHOT_DURATION_NAME "Multi Shot Duration"
-
+#define MULTISHOT_DURATION_AVA MODEL_MAX2_ALL&(~MODEL_11)
 const static char* MULTISHOT_DURATION_STRING[] = {
     "Off",
     "15 Sec",
@@ -948,55 +939,80 @@ const static char* MULTISHOT_DURATION_STRING[] = {
     "3 Hour",
     "No Limit",
 };
-
 const static int32_t MULTISHOT_DURATION_VALUE[] = {
-    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 100
+    0, // Off
+    1, // 15 Sec
+    2, // 30 Sec
+    3, // 1 Min
+    4, // 5 Min
+    5, // 15 Min
+    6, // 30 Min
+    7, // 1 Hour
+    8, // 2 Hour
+    9, // 3 Hour
+    100, // No Limit
 };
+const static int32_t MULTISHOT_DURATION_SUPPORT[] = {
+    MODEL_MAX2, // Off
+    MODEL_MAX2_ALL&(~MODEL_11), // 15 Sec
+    MODEL_MAX2_ALL&(~MODEL_11), // 30 Sec
+    MODEL_MAX2_ALL&(~MODEL_11), // 1 Min
+    MODEL_MAX2_ALL&(~MODEL_11), // 5 Min
+    MODEL_MAX2_ALL&(~MODEL_11), // 15 Min
+    MODEL_MAX2_ALL&(~MODEL_11), // 30 Min
+    MODEL_MAX2_ALL&(~MODEL_11), // 1 Hour
+    MODEL_MAX2_ALL&(~MODEL_11), // 2 Hour
+    MODEL_MAX2_ALL&(~MODEL_11), // 3 Hour
+    MODEL_13_ALL&(~MODEL_11), // No Limit
+};
+#pragma endregion
 
+#pragma region Max Lens
 #define MAX_LENS_ID 162
 #define MAX_LENS_SIZE 2
 #define MAX_LENS_NAME "Max Lens"
-
+#define MAX_LENS_AVA MODEL_11_BLACK|MODEL_10|MODEL_9
 const static char* MAX_LENS_STRING[] = {
     "Off",
-    "On"
+    "On", 
 };
-
 const static int32_t MAX_LENS_VALUE[] = {
-    0, 1
+    0, // Off
+    1, // On"
 };
+const static int32_t MAX_LENS_SUPPORT[] = {
+    MODEL_11_BLACK|MODEL_10|MODEL_9, // Off
+    MODEL_11_BLACK|MODEL_10|MODEL_9, // On"
+};
+#pragma endregion
 
+#pragma region Hind Sight
 #define HINDSIGHT_ID 167
 #define HINDSIGHT_SIZE 3
 #define HINDSIGHT_NAME "HindSight"
-
+#define HINDSIGHT_AVA MODEL_13_ALL&(~MODEL_11)
 const static char* HINDSIGHT_STRING[] = {
     "15 Sec",
     "30 Sec",
     "Off",
 };
-
 const static int32_t HINDSIGHT_VALUE[] = {
-    2, 3, 4
+    2, // 15 Sec
+    3, // 30 Sec
+    4, // Off
 };
-
-#define SCHEDULED_CAPTURE_ID 168
-#define SCHEDULED_CAPTURE_SIZE 2
-#define SCHEDULED_CAPTURE_NAME "Scheduled Capture"
-
-const static char* SCHEDULED_CAPTURE_STRING[] = {
-    "Off",
-    "On"
+const static int32_t HINDSIGHT_SUPPORT[] = {
+    MODEL_13_ALL&(~MODEL_11), // 15 Sec
+    MODEL_13_ALL&(~MODEL_11), // 30 Sec
+    MODEL_13_ALL&(~MODEL_11), // Off
 };
+#pragma endregion
 
-const static int32_t SCHEDULED_CAPTURE_VALUE[] = {
-    0, 1
-};
-
+#pragma region Photo Single Interval
 #define PHOTO_SINGLE_INTERVAL_ID 171
 #define PHOTO_SINGLE_INTERVAL_SIZE 10
 #define PHOTO_SINGLE_INTERVAL_NAME "Photo Single Interval"
-
+#define PHOTO_SINGLE_INTERVAL_AVA MODEL_MAX2|MODEL_13|MODEL_12
 const static char* PHOTO_SINGLE_INTERVAL_STRING[] = {
     "Off",
     "0.5s",
@@ -1009,15 +1025,37 @@ const static char* PHOTO_SINGLE_INTERVAL_STRING[] = {
     "120s",
     "3s",
 };
-
 const static int32_t PHOTO_SINGLE_INTERVAL_VALUE[] = {
-    0, 2, 3, 4, 5, 6, 7, 8, 9, 10
+    0, // Off
+    2, // 0.5s
+    3, // 1s
+    4, // 2s
+    5, // 5s
+    6, // 10s
+    7, // 30s
+    8, // 60s
+    9, // 120s
+    10, // 3s
 };
+const static int32_t PHOTO_SINGLE_INTERVAL_SUPPORT[] = {
+    MODEL_MAX2|MODEL_13|MODEL_12, // Off
+    MODEL_MAX2|MODEL_13|MODEL_12, // 0.5s
+    MODEL_MAX2|MODEL_13|MODEL_12, // 1s
+    MODEL_MAX2|MODEL_13|MODEL_12, // 2s
+    MODEL_MAX2|MODEL_13|MODEL_12, // 5s
+    MODEL_MAX2|MODEL_13|MODEL_12, // 10s
+    MODEL_MAX2|MODEL_13|MODEL_12, // 30s
+    MODEL_MAX2|MODEL_13|MODEL_12, // 60s
+    MODEL_MAX2|MODEL_13|MODEL_12, // 120s
+    MODEL_MAX2|MODEL_13|MODEL_12, // 3s
+};
+#pragma endregion
 
+#pragma region Photo single duration
 #define PHOTO_SINGLE_DURATION_ID 172
 #define PHOTO_SINGLE_DURATION_SIZE 10
 #define PHOTO_SINGLE_DURATION_NAME "Photo Single Duration"
-
+#define PHOTO_SINGLE_DURATION_AVA MODEL_MAX2|MODEL_13|MODEL_12
 const static char* PHOTO_SINGLE_DURATION_STRING[] = {
     "Off",
     "15 Sec",
@@ -1030,24 +1068,53 @@ const static char* PHOTO_SINGLE_DURATION_STRING[] = {
     "2 Hour",
     "3 Hour",
 };
-
 const static int32_t PHOTO_SINGLE_DURATION_VALUE[] = {
-    0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+    0, // Off
+    1, // 15 Sec
+    2, // 30 Sec
+    3, // 1 Min
+    4, // 5 Min
+    5, // 15 Min
+    6, // 30 Min
+    7, // 1 Hour
+    8, // 2 Hour
+    9, // 3 Hour
 };
+const static int32_t PHOTO_SINGLE_DURATION_SUPPORT[] = {
+    MODEL_MAX2|MODEL_13|MODEL_12, // Off
+    MODEL_MAX2|MODEL_13|MODEL_12, // 15 Sec
+    MODEL_MAX2|MODEL_13|MODEL_12, // 30 Sec
+    MODEL_MAX2|MODEL_13|MODEL_12, // 1 Min
+    MODEL_MAX2|MODEL_13|MODEL_12, // 5 Min
+    MODEL_MAX2|MODEL_13|MODEL_12, // 15 Min
+    MODEL_MAX2|MODEL_13|MODEL_12, // 30 Min
+    MODEL_MAX2|MODEL_13|MODEL_12, // 1 Hour
+    MODEL_MAX2|MODEL_13|MODEL_12, // 2 Hour
+    MODEL_MAX2|MODEL_13|MODEL_12, // 3 Hour
+};
+#pragma endregion
 
+#pragma region Video Performance Mode
 #define VIDEO_PERFORMANCE_MODE_ID 173
 #define VIDEO_PERFORMANCE_MODE_SIZE 3
 #define VIDEO_PERFORMANCE_MODE_NAME "Video Performance Mode"
-
+#define VIDEO_PERFORMANCE_MODE_AVA MODEL_10
 const static char* VIDEO_PERFORMANCE_MODE_STRING[] = {
     "Maximum Video Performance",
     "Extended Battery",
-    "Tripod / Stationary Video"
+    "Tripod / Stationary Video",
 };
-
 const static int32_t VIDEO_PERFORMANCE_MODE_VALUE[] = {
-    0, 1, 2
+    0, // Maximum Video Performance",
+    1, // Extended Battery",
+    2, // Tripod / Stationary Video",
 };
+const static int32_t VIDEO_PERFORMANCE_MODE_SUPPORT[] = {
+    MODEL_10, // Maximum Video Performance",
+    MODEL_10, // Extended Battery",
+    MODEL_10, // Tripod / Stationary Video",
+};
+#pragma endregion
 
 #define CONTROL_MODE_ID 175
 #define CONTROL_MODE_SIZE 2
@@ -1470,5 +1537,82 @@ const static int32_t AUTOMATIC_WI_FI_ACCESS_POINT_VALUE[] = {
 
 #define LENS_ID 121
 #define BITRATE_ID 124
+
+
+#pragma region ISO Min 1
+#define ISO_MIN_1_ID 102
+#define ISO_MIN_1_SIZE 8
+#define ISO_MIN_1_NAME "ISO Minimum"
+#define ISO_MIN_1_AVA MODEL_MAX2_ALL
+const static char* ISO_MIN_1_STRING[] = {
+    "Auto",
+    "6400",
+    "3200",
+    "1600",
+    "800",
+    "400",
+    "200",
+    "100",
+};
+const static int32_t ISO_VALUE[] = {
+    9, 0, 3, 1, 4, 2, 7, 8
+};
+#pragma endregion
+
+#pragma region ISO Max 1
+#define ISO_MAX_1_ID 13
+#pragma endregion
+
+#pragma region ISO Min 2
+#define ISO_MIN_2_ID 75
+#pragma endregion
+
+#pragma region ISO Max 2
+#define ISO_MAX_2_ID 37
+#pragma endregion
+
+#pragma region ISO Min 3
+#define ISO_MIN_3_ID 76
+#pragma endregion
+
+#pragma region ISO Max 3
+#define ISO_MAX_3_ID 24
+#pragma endregion
+
+#pragma region Shutter Speed
+#define SHUTTER_SPEED_ID 145
+#define SHUTTER_SPEED_SIZE 22
+#define SHUTTER_SPEED_NAME "Shutter Speed"
+
+const static char* SHUTTER_SPEED_STRING[] = {
+    "Auto",
+    "1/24",
+    "1/25",
+    "1/30",
+    "1/48",
+    "1/50",
+    "1/60",
+    "1/96",
+    "1/100",
+    "1/120",
+    "1/192",
+    "1/200",
+    "1/240",
+    "1/384",
+    "1/400",
+    "1/480",
+    "1/800",
+    "1/900",
+    "1/1600",
+    "1/1920",
+    "1/3200",
+    "1/3840",
+};
+
+const static int32_t SHUTTER_SPEED_VALUE[] = {
+    0, 3, 4, 5, 6, 7, 8, 11, 12, 13, 16, 17, 18, 25, 21, 22, 28,
+    23, 29, 24, 30, 31
+};
+#pragma endregion
 
 #endif
