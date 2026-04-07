@@ -731,6 +731,7 @@ const static int32_t PHOTO_OUTPUT_VALUE[] = {
     0, 1, 2, 3
 };
 
+#pragma region Media
 #define MEDIA_FORMAT_ID 128
 #define MEDIA_FORMAT_SIZE 4
 #define MEDIA_FORMAT_NAME "Media Format"
@@ -745,6 +746,7 @@ const static char* MEDIA_FORMAT_STRING[] = {
 const static int32_t MEDIA_FORMAT_VALUE[] = {
     13, 20, 21, 26
 };
+#pragma endregion
 
 #define ANTI_FLICKER_ID 134
 #define ANTI_FLICKER_SIZE 4
