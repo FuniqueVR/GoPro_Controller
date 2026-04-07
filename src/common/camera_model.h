@@ -28,6 +28,6 @@
 /** Fron 11 to all the versions below includes */
 #define MODEL_11_ALL MODEL_11_BLACK|MODEL_11|MODEL_10|MODEL_9
 /** Fron 10 to all the versions below includes */
-#define MODEL_10_ALL MODEL_11|MODEL_10|MODEL_9
+#define MODEL_10_ALL MODEL_10|MODEL_9
 
 #endif

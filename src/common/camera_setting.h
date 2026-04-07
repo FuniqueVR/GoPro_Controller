@@ -655,13 +655,13 @@ const static int32_t VIDEO_LENS_VALUE[] = {
 };
 const static int32_t VIDEO_LENS_SUPPORT[] = {
     MODEL_MAX2_ALL, // Wide",
-    2, // Narrow",
-    3, // Superview",
-    MODEL_MAX2_ALL, // Linear",
-    7, // Max Superview",
-    8, // Linear + Horizon Leveling",
-    9, // HyperView",
-    10, // Linear + Horizon Lock",
+    MODEL_13|MODEL_10_ALL, // Narrow",
+    MODEL_13_ALL, // Superview",
+    MODEL_MAX2_ALL&(~MODEL_13), // Linear",
+    MODEL_MAX2_ALL, // Max Superview",
+    MODEL_13_ALL, // Linear + Horizon Leveling",
+    MODEL_13|MODEL_12|MODEL_11S, // HyperView",
+    MODEL_13|MODEL_12|MODEL_11S, // Linear + Horizon Lock",
     MODEL_MAX2|MODEL_12, // Max HyperView",
     MODEL_13, // Ultra SuperView",
     MODEL_MAX2|MODEL_13, // Ultra Wide",
@@ -670,10 +670,11 @@ const static int32_t VIDEO_LENS_SUPPORT[] = {
 };
 #pragma endregion
 
+#pragma region Photo Lens
 #define PHOTO_LENS_ID 122
 #define PHOTO_LENS_SIZE 17
 #define PHOTO_LENS_NAME "Photo Lens"
-
+#define PHOTO_LENS_AVA MODEL_MAX2_ALL&(~MODEL_11)
 const static char* PHOTO_LENS_STRING[] = {
     "Wide 12 MP",
     "Linear 12 MP",
@@ -691,60 +692,126 @@ const static char* PHOTO_LENS_STRING[] = {
     "13MP Ultra Linear",
     "Max SuperView",
     "Wide",
-    "Linear"
+    "Linear",
 };
-
 const static int32_t PHOTO_LENS_VALUE[] = {
-    0, 10, 15, 19, 27, 28, 31, 32, 37, 38, 39, 40, 41, 44,
-    100, 101, 102
+    0, // Wide 12 MP
+    10, // Linear 12 MP
+    15, // 9MP Wide
+    19, // Narrow
+    27, // Wide 23 MP
+    28, // Linear 23 MP
+    31, // Wide 27 MP
+    32, // Linear 27 MP
+    37, // 9MP Linear
+    38, // 13MP Linear
+    39, // 13MP Wide
+    40, // 13MP Ultra Wide
+    41, // Ultra Wide 12 MP
+    44, // 13MP Ultra Linear
+    100, // Max SuperView
+    101, // Wide
+    102, // Linear
 };
+const static int32_t PHOTO_LENS_SUPPORT[] = {
+    MODEL_13, // Wide 12 MP
+    MODEL_13, // Linear 12 MP
+    MODEL_MAX2, // 9MP Wide
+    MODEL_10_ALL, // Narrow
+    MODEL_13, // Wide 23 MP
+    MODEL_13, // Linear 23 MP
+    MODEL_13, // Wide 27 MP
+    MODEL_13, // Linear 27 MP
+    MODEL_MAX2, // 9MP Linear
+    MODEL_13, // 13MP Linear
+    MODEL_13, // 13MP Wide
+    MODEL_13, // 13MP Ultra Wide
+    MODEL_MAX2|MODEL_13, // Ultra Wide 12 MP
+    MODEL_13, // 13MP Ultra Linear
+    MODEL_12_ALL&(~MODEL_11), // Max SuperView
+    MODEL_12_ALL&(~MODEL_11), // Wide
+    MODEL_12_ALL&(~MODEL_11), // Linear
+};
+#pragma endregion
 
+#pragma region Time Lapse Digital Lenses
 #define TIME_LAPSE_DIGITAL_LENSES_ID 123
 #define TIME_LAPSE_DIGITAL_LENSES_SIZE 6
 #define TIME_LAPSE_DIGITAL_LENSES_NAME "Time Lapse Digital Lenses"
-
+#define TIME_LAPSE_DIGITAL_LENSES_AVA MODEL_13_ALL&(~MODEL_11)
 const static char* TIME_LAPSE_DIGITAL_LENSES_STRING[] = {
     "Narrow",
     "Wide 27 MP",
     "Linear 27 MP",
     "Max SuperView",
     "Wide",
-    "Linear"
+    "Linear",
 };
-
 const static int32_t TIME_LAPSE_DIGITAL_LENSES_VALUE[] = {
-    19, 31, 32, 100, 101, 102
+    19, // Narrow
+    31, // Wide 27 MP
+    32, // Linear 27 MP
+    100, // Max SuperView
+    101, // Wide
+    102, // Linear
 };
+const static int32_t TIME_LAPSE_DIGITAL_LENSES_SUPPORT[] = {
+    MODEL_10_ALL, // Narrow
+    MODEL_13, // Wide 27 MP
+    MODEL_13, // Linear 27 MP
+    MODEL_10, // Max SuperView
+    MODEL_12_ALL&(~MODEL_11), // Wide
+    MODEL_12_ALL&(~MODEL_11), // Linear
+};
+#pragma endregion
 
+#pragma region Photo Output
 #define PHOTO_OUTPUT_ID 125
 #define PHOTO_OUTPUT_SIZE 4
 #define PHOTO_OUTPUT_NAME "Photo Output"
-
+#define PHOTO_OUTPUT_AVA MODEL_MAX2_ALL&(~MODEL_11)
 const static char* PHOTO_OUTPUT_STRING[] = {
     "Standard",
     "RAW",
     "HDR",
-    "SuperPhoto"
+    "SuperPhoto",
 };
-
 const static int32_t PHOTO_OUTPUT_VALUE[] = {
-    0, 1, 2, 3
+    0, // Standard 
+    1, // RAW 
+    2, // HDR 
+    3, // SuperPhoto
 };
+const static int32_t PHOTO_OUTPUT_SUPPORT[] = {
+    MODEL_MAX2_ALL&(~MODEL_11), // Standard 
+    MODEL_MAX2_ALL&(~MODEL_11), // RAW 
+    MODEL_13_ALL&(~MODEL_11), // HDR 
+    MODEL_13_ALL&(~MODEL_11), // SuperPhoto
+};
+#pragma endregion
 
 #pragma region Media
 #define MEDIA_FORMAT_ID 128
 #define MEDIA_FORMAT_SIZE 4
 #define MEDIA_FORMAT_NAME "Media Format"
-
+#define MEDIA_FORMAT_AVA MODEL_MAX2_ALL&(~MODEL_11)
 const static char* MEDIA_FORMAT_STRING[] = {
     "Time Lapse Video",
     "Time Lapse Photo",
     "Night Lapse Photo",
     "Night Lapse Video"
 };
-
 const static int32_t MEDIA_FORMAT_VALUE[] = {
-    13, 20, 21, 26
+    13, // Time Lapse Video 
+    20, // Time Lapse Photo 
+    21, // Night Lapse Photo 
+    26, // Night Lapse Video
+};
+const static int32_t MEDIA_FORMAT_SUPPORT[] = {
+    MODEL_MAX2_ALL&(~MODEL_11), // Time Lapse Video 
+    MODEL_MAX2_ALL&(~MODEL_11), // Time Lapse Photo 
+    MODEL_MAX2_ALL&(~MODEL_11), // Night Lapse Photo 
+    MODEL_MAX2_ALL&(~MODEL_11), // Night Lapse Video
 };
 #pragma endregion
 
