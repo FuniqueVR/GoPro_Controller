@@ -2068,19 +2068,24 @@ const static int32_t FRAMERATE_SUPPORt[] = {
 };
 #pragma endregion
 
-
+#pragma region Automatic Wifi Access Point
 #define AUTOMATIC_WI_FI_ACCESS_POINT_ID 236
 #define AUTOMATIC_WI_FI_ACCESS_POINT_SIZE 2
 #define AUTOMATIC_WI_FI_ACCESS_POINT_NAME "Automatic Wi-Fi Access Point"
-
+#define AUTOMATIC_WI_FI_ACCESS_POINT_AVA MODEL_MAX2
 const static char* AUTOMATIC_WI_FI_ACCESS_POINT_STRING[] = {
     "Off",
-    "On"
+    "On",
 };
-
 const static int32_t AUTOMATIC_WI_FI_ACCESS_POINT_VALUE[] = {
-    0, 1
+    0,  // Off
+    1, // On
 };
+const static int32_t AUTOMATIC_WI_FI_ACCESS_POINT_SUPPPORT[] = {
+    MODEL_MAX2,  // Off
+    MODEL_MAX2, // On
+};
+#pragma endregion
 
 #define COLOR_ID 116
 
