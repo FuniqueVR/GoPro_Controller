@@ -510,74 +510,6 @@ const static int32_t VIDEO_ASPECT_RATIO_SUPPORT[] = {
 };
 #pragma endregion
 
-#pragma region White Balance
-#define WHITE_BALANCE_ID 115
-#define WHITE_BALANCE_SIZE 11
-#define WHITE_BALANCE_NAME "White Balance"
-const static char* WHITE_BALANCE_STRING[] = {
-    "6500K",
-    "6000K",
-    "5500K",
-    "5000K",
-    "4500K",
-    "Auto",
-    "Native",
-    "4000K",
-    "3200K",
-    "2800K",
-    "2300K",
-};
-const static int32_t WHITE_BALANCE_VALUE[] = {
-    3, 
-    7, 
-    2, 
-    12, 
-    11, 
-    0, 
-    4, 
-    5, 
-    10, 
-    9, 
-    ,
-};
-#pragma endregion
-
-#pragma region Sharpness
-#define SHARPNESS_ID 117
-#define SHARPNESS_SIZE 3
-#define SHARPNESS_NAME "Sharpness"
-#define SHARPNESS_AVA
-const static char* SHARPNESS_STRING[] = {
-    "High",
-    "Midium",
-    "Low"
-};
-const static int32_t SHARPNESS_VALUE[] = {
-    0, 1, 2
-};
-#pragma endregion
-
-#pragma region Exposure
-#define EXPOSURE_ID 118
-#define EXPOSURE_SIZE 9
-#define EXPOSURE_NAME "Exposure"
-#define EXPOSURE_AVA
-const static char* EXPOSURE_STRING[] = {
-    "-2.0",
-    "-1.5",
-    "-1.0",
-    "-0.5",
-    "0.0",
-    "0.5",
-    "1.0",
-    "1.5",
-    "2.0",
-};
-const static int32_t EXPOSURE_VALUE[] = {
-    8, 7, 6, 5, 4, 3, 2, 1, 0
-};
-#pragma endregion
-
 #pragma region Video Lens
 #define VIDEO_LENS_ID 121
 #define VIDEO_LENS_SIZE 13
@@ -2087,11 +2019,75 @@ const static int32_t AUTOMATIC_WI_FI_ACCESS_POINT_SUPPPORT[] = {
 };
 #pragma endregion
 
-#define COLOR_ID 116
+// Another
 
-#define LENS_ID 121
-#define BITRATE_ID 124
+#pragma region White Balance
+#define WHITE_BALANCE_ID 115
+#define WHITE_BALANCE_SIZE 11
+#define WHITE_BALANCE_NAME "White Balance"
+const static char* WHITE_BALANCE_STRING[] = {
+    "6500K",
+    "6000K",
+    "5500K",
+    "5000K",
+    "4500K",
+    "Auto",
+    "Native",
+    "4000K",
+    "3200K",
+    "2800K",
+    "2300K",
+};
+const static int32_t WHITE_BALANCE_VALUE[] = {
+    3, 
+    7, 
+    2, 
+    12, 
+    11, 
+    0, 
+    4, 
+    5, 
+    10, 
+    9, 
+    ,
+};
+#pragma endregion
 
+#pragma region Sharpness
+#define SHARPNESS_ID 117
+#define SHARPNESS_SIZE 3
+#define SHARPNESS_NAME "Sharpness"
+#define SHARPNESS_AVA
+const static char* SHARPNESS_STRING[] = {
+    "High",
+    "Midium",
+    "Low"
+};
+const static int32_t SHARPNESS_VALUE[] = {
+    0, 1, 2
+};
+#pragma endregion
+
+#pragma region Exposure
+#define EXPOSURE_ID 118
+#define EXPOSURE_SIZE 9
+#define EXPOSURE_NAME "Exposure"
+#define EXPOSURE_AVA
+const static char* EXPOSURE_STRING[] = {
+    "-2.0",
+    "-1.5",
+    "-1.0",
+    "-0.5",
+    "0.0",
+    "0.5",
+    "1.0",
+    "1.5",
+    "2.0",
+};
+const static int32_t EXPOSURE_VALUE[] = {
+    8, 7, 6, 5, 4, 3, 2, 1, 0
+};
+#pragma endregion
 
 #pragma region ISO Min 1
 #define ISO_MIN_1_ID 102
@@ -2168,5 +2164,10 @@ const static int32_t SHUTTER_SPEED_VALUE[] = {
     23, 29, 24, 30, 31
 };
 #pragma endregion
+
+#define COLOR_ID 116
+
+#define LENS_ID 121
+#define BITRATE_ID 124
 
 #endif
