@@ -684,7 +684,7 @@ const static int32_t PHOTO_OUTPUT_SUPPORT[] = {
 };
 #pragma endregion
 
-#pragma region Media
+#pragma region Media Format
 #define MEDIA_FORMAT_ID 128
 #define MEDIA_FORMAT_SIZE 4
 #define MEDIA_FORMAT_NAME "Media Format"
@@ -2027,31 +2027,45 @@ const static int32_t AUTOMATIC_WI_FI_ACCESS_POINT_SUPPPORT[] = {
 #define WHITE_BALANCE_ID 115
 #define WHITE_BALANCE_SIZE 11
 #define WHITE_BALANCE_NAME "White Balance"
+#define WHITE_BALANCE_AVA MODEL_MAX2_ALL
 const static char* WHITE_BALANCE_STRING[] = {
-    "6500K",
-    "6000K",
-    "5500K",
-    "5000K",
-    "4500K",
     "Auto",
+    "5500K",
+    "6500K",
     "Native",
     "4000K",
-    "3200K",
-    "2800K",
+    "6000K",
     "2300K",
+    "2800K",
+    "3200K",
+    "4500K",
+    "5000K",
 };
 const static int32_t WHITE_BALANCE_VALUE[] = {
-    3, 
-    7, 
-    2, 
-    12, 
-    11, 
-    0, 
-    4, 
-    5, 
-    10, 
-    9, 
-    ,
+    0, // Auto
+    2, // 5500K
+    3, // 6500K
+    4, // Native
+    5, // 4000K
+    7, // 6000K
+    8, // 2300K
+    9, // 2800K
+    10, // 3200K
+    11, // 4500K
+    12, // 5000K
+};
+const static int32_t WHITE_BALANCE_SUPPORT[] = {
+    MODEL_MAX2_ALL, // Auto
+    MODEL_MAX2_ALL, // 5500K
+    MODEL_MAX2_ALL, // 6500K
+    MODEL_MAX2_ALL, // Native
+    MODEL_MAX2_ALL, // 4000K
+    MODEL_MAX2_ALL, // 6000K
+    MODEL_MAX2_ALL, // 2300K
+    MODEL_MAX2_ALL, // 2800K
+    MODEL_MAX2_ALL, // 3200K
+    MODEL_MAX2_ALL, // 4500K
+    MODEL_MAX2_ALL, // 5000K
 };
 #pragma endregion
 
@@ -2059,22 +2073,29 @@ const static int32_t WHITE_BALANCE_VALUE[] = {
 #define SHARPNESS_ID 117
 #define SHARPNESS_SIZE 3
 #define SHARPNESS_NAME "Sharpness"
-#define SHARPNESS_AVA
+#define SHARPNESS_AVA MODEL_MAX2_ALL
 const static char* SHARPNESS_STRING[] = {
     "High",
     "Midium",
     "Low"
 };
 const static int32_t SHARPNESS_VALUE[] = {
-    0, 1, 2
+    0, // High
+    1, // Midium
+    2, // Lo
+};
+const static int32_t SHARPNESS_SUPPORT[] = {
+    MODEL_MAX2_ALL, // High
+    MODEL_MAX2_ALL, // Midium
+    MODEL_MAX2_ALL, // Lo
 };
 #pragma endregion
 
 #pragma region Exposure
 #define EXPOSURE_ID 118
 #define EXPOSURE_SIZE 9
-#define EXPOSURE_NAME "Exposure"
-#define EXPOSURE_AVA
+#define EXPOSURE_NAME "EV Comp"
+#define EXPOSURE_AVA MODEL_MAX2_ALL
 const static char* EXPOSURE_STRING[] = {
     "-2.0",
     "-1.5",
@@ -2087,56 +2108,193 @@ const static char* EXPOSURE_STRING[] = {
     "2.0",
 };
 const static int32_t EXPOSURE_VALUE[] = {
-    8, 7, 6, 5, 4, 3, 2, 1, 0
+    8, // -2.0
+    7, // -1.5
+    6, // -1.0
+    5, // -0.5
+    4, // 0.0
+    3, // 0.5
+    2, // 1.0
+    1, // 1.5
+    0, // 2.0
+};
+const static int32_t EXPOSURE_SUPPORT[] = {
+    8, // -2.0
+    7, // -1.5
+    6, // -1.0
+    5, // -0.5
+    4, // 0.0
+    3, // 0.5
+    2, // 1.0
+    1, // 1.5
+    0, // 2.0
 };
 #pragma endregion
 
-#pragma region ISO Min 1
-#define ISO_MIN_1_ID 102
-#define ISO_MIN_1_SIZE 8
-#define ISO_MIN_1_NAME "ISO Minimum"
-#define ISO_MIN_1_AVA MODEL_MAX2_ALL
-const static char* ISO_MIN_1_STRING[] = {
-    "Auto",
+#pragma region Color
+#define COLOR_ID 116
+#define COLOR_SIZE 3
+#define COLOR_NAME "EV Comp"
+#define COLOR_AVA MODEL_MAX2_ALL
+const static char* COLOR_STRING[] = {
+    "Vibrant",
+    "Natural",
+    "Flat",
+};
+const static int32_t COLOR_VALUE[] = {
+    100, // Vibrant
+    2, // Natural
+    1, // Flat
+};
+const static int32_t COLOR_SUPPORT[] = {
+    MODEL_MAX2_ALL, // Vibrant
+    MODEL_MAX2_ALL, // Natural
+    MODEL_MAX2_ALL, // Flat
+};
+#pragma endregion
+
+#pragma region ISO Min Video
+#define ISO_MIN_VIDEO_ID 102
+#define ISO_MIN_VIDEO_SIZE 8
+#define ISO_MIN_VIDEO_NAME "ISO Minimum"
+#define ISO_MIN_VIDEO_AVA MODEL_MAX2_ALL
+const static char* ISO_MIN_VIDEO_STRING[] = {
     "6400",
-    "3200",
     "1600",
+    "400",
+    "3200",
+    "800",
+    "200",
+    "100",
+    "Auto",
+};
+const static int32_t ISO_MIN_VIDEO_VALUE[] = {
+    0, // 6400
+    1, // 1600
+    2, // 400
+    3, // 3200
+    4, // 800
+    7, // 200
+    8, // 100
+    9, // Auto
+};
+const static int32_t ISO_MIN_VIDEO_SUPPORT[] = {
+    MODEL_MAX2_ALL, // 6400
+    MODEL_MAX2_ALL, // 1600
+    MODEL_MAX2_ALL, // 400
+    MODEL_MAX2_ALL, // 3200
+    MODEL_MAX2_ALL, // 800
+    MODEL_MAX2_ALL, // 200
+    MODEL_MAX2_ALL, // 100
+    MODEL_MAX2_ALL, // Auto
+};
+#pragma endregion
+
+#pragma region ISO Max Video
+#define ISO_MAX_VIDEO_ID 13
+#define ISO_MAX_VIDEO_SIZE 8
+#define ISO_MAX_VIDEO_NAME "ISO Maximum"
+#define ISO_MAX_VIDEO_AVA MODEL_MAX2_ALL
+const static char* ISO_MAX_VIDEO_STRING[] = {
+    "6400",
+    "1600",
+    "400",
+    "3200",
+    "800",
+    "200",
+    "100",
+    "Auto",
+};
+const static int32_t ISO_MAX_VIDEO_VALUE[] = {
+    0, // 6400
+    1, // 1600
+    2, // 400
+    3, // 3200
+    4, // 800
+    7, // 200
+    8, // 100
+    9, // Auto
+};
+const static int32_t ISO_MAX_VIDEO_SUPPORT[] = {
+    MODEL_MAX2_ALL, // 6400
+    MODEL_MAX2_ALL, // 1600
+    MODEL_MAX2_ALL, // 400
+    MODEL_MAX2_ALL, // 3200
+    MODEL_MAX2_ALL, // 800
+    MODEL_MAX2_ALL, // 200
+    MODEL_MAX2_ALL, // 100
+    MODEL_MAX2_ALL, // Auto
+};
+#pragma endregion
+
+#pragma region ISO Min Photo
+#define ISO_MIN_PHOTO_ID 75
+#define ISO_MIN_PHOTO_SIZE 8
+#define ISO_MIN_PHOTO_NAME "ISO Minimum"
+#define ISO_MIN_PHOTO_AVA MODEL_MAX2_ALL
+const static char* ISO_MIN_PHOTO_STRING[] = {
     "800",
     "400",
     "200",
     "100",
+    "1600",
+    "3200",
 };
-const static int32_t ISO_VALUE[] = {
-    9, 0, 3, 1, 4, 2, 7, 8
+const static int32_t ISO_MIN_PHOTO_VALUE[] = {
+    0, // 800
+    1, // 400
+    2, // 200
+    3, // 100
+    4, // 1600
+    5, // 3200
+};
+const static int32_t ISO_MIN_PHOTO_SUPPORT[] = {
+    MODEL_MAX2_ALL, // 800
+    MODEL_MAX2_ALL, // 400
+    MODEL_MAX2_ALL, // 200
+    MODEL_MAX2_ALL, // 100
+    MODEL_MAX2_ALL, // 1600
+    MODEL_MAX2_ALL, // 3200
 };
 #pragma endregion
 
-#pragma region ISO Max 1
-#define ISO_MAX_1_ID 13
+#pragma region ISO Max Photo
+#define ISO_MAX_PHOTO_ID 24
+#define ISO_MAX_PHOTO_SIZE 8
+#define ISO_MAX_PHOTO_NAME "ISO Maximum"
+#define ISO_MAX_PHOTO_AVA MODEL_MAX2_ALL
+const static char* ISO_MAX_PHOTO_STRING[] = {
+    "800",
+    "400",
+    "200",
+    "100",
+    "1600",
+    "3200",
+};
+const static int32_t ISO_MAX_PHOTO_VALUE[] = {
+    0, // 800
+    1, // 400
+    2, // 200
+    3, // 100
+    4, // 1600
+    5, // 3200
+};
+const static int32_t ISO_MAX_PHOTO_VALUE[] = {
+    MODEL_MAX2_ALL, // 800
+    MODEL_MAX2_ALL, // 400
+    MODEL_MAX2_ALL, // 200
+    MODEL_MAX2_ALL, // 100
+    MODEL_MAX2_ALL, // 1600
+    MODEL_MAX2_ALL, // 3200
+};
 #pragma endregion
 
-#pragma region ISO Min 2
-#define ISO_MIN_2_ID 75
-#pragma endregion
-
-#pragma region ISO Max 2
-#define ISO_MAX_2_ID 37
-#pragma endregion
-
-#pragma region ISO Min 3
-#define ISO_MIN_3_ID 76
-#pragma endregion
-
-#pragma region ISO Max 3
-#define ISO_MAX_3_ID 24
-#pragma endregion
-
-#pragma region Shutter Speed
-#define SHUTTER_SPEED_ID 145
-#define SHUTTER_SPEED_SIZE 22
-#define SHUTTER_SPEED_NAME "Shutter Speed"
-
-const static char* SHUTTER_SPEED_STRING[] = {
+#pragma region Shutter Speed Video
+#define SHUTTER_SPEED_VIDEO_ID 145
+#define SHUTTER_SPEED_VIDEO_SIZE 22
+#define SHUTTER_SPEED_VIDEO_NAME "Shutter Speed"
+#define SHUTTER_SPEED_VIDEO_AVA MODEL_MAX2_ALL
+const static char* SHUTTER_SPEED_VIDEO_STRING[] = {
     "Auto",
     "1/24",
     "1/25",
@@ -2160,16 +2318,85 @@ const static char* SHUTTER_SPEED_STRING[] = {
     "1/3200",
     "1/3840",
 };
-
-const static int32_t SHUTTER_SPEED_VALUE[] = {
-    0, 3, 4, 5, 6, 7, 8, 11, 12, 13, 16, 17, 18, 25, 21, 22, 28,
-    23, 29, 24, 30, 31
+const static int32_t SHUTTER_SPEED_VIDEO_VALUE[] = {
+    0, // Auto
+    3, // 1/24
+    4, // 1/25
+    5, // 1/30
+    6, // 1/48
+    7, // 1/50
+    8, // 1/60
+    11, // 1/96
+    12, // 1/100
+    13, // 1/120
+    16, // 1/192
+    17, // 1/200
+    18, // 1/240
+    25, // 1/384
+    21, // 1/400
+    22, // 1/480
+    28, // 1/800
+    23, // 1/900
+    29, // 1/1600
+    24, // 1/1920
+    30, // 1/3200
+    31, // 1/3840
+};
+const static int32_t SHUTTER_SPEED_VIDEO_SUPPORt[] = {
+    MODEL_MAX2_ALL, // Auto
+    MODEL_MAX2_ALL, // 1/24
+    MODEL_MAX2_ALL, // 1/25
+    MODEL_MAX2_ALL, // 1/30
+    MODEL_MAX2_ALL, // 1/48
+    MODEL_MAX2_ALL, // 1/50
+    MODEL_MAX2_ALL, // 1/60
+    MODEL_MAX2_ALL, // 1/96
+    MODEL_MAX2_ALL, // 1/100
+    MODEL_MAX2_ALL, // 1/120
+    MODEL_MAX2_ALL, // 1/192
+    MODEL_MAX2_ALL, // 1/200
+    MODEL_MAX2_ALL, // 1/240
+    MODEL_MAX2_ALL, // 1/384
+    MODEL_MAX2_ALL, // 1/400
+    MODEL_MAX2_ALL, // 1/480
+    MODEL_MAX2_ALL, // 1/800
+    MODEL_MAX2_ALL, // 1/900
+    MODEL_MAX2_ALL, // 1/1600
+    MODEL_MAX2_ALL, // 1/1920
+    MODEL_MAX2_ALL, // 1/3200
+    MODEL_MAX2_ALL, // 1/3840
 };
 #pragma endregion
 
-#define COLOR_ID 116
-
-#define LENS_ID 121
-#define BITRATE_ID 124
+#pragma region Shutter Speed Photo
+#define SHUTTER_SPEED_PHOTO_ID 146
+#define SHUTTER_SPEED_PHOTO_SIZE 6
+#define SHUTTER_SPEED_PHOTO_NAME "Shutter Speed"
+#define SHUTTER_SPEED_PHOTO_AVA MODEL_MAX2_ALL
+const static char* SHUTTER_SPEED_PHOTO_STRING[] = {
+    "Auto",
+    "1/125",
+    "1/250",
+    "1/500",
+    "1/1000",
+    "1/2000",
+};
+const static int32_t SHUTTER_SPEED_PHOTO_VALUE[] = {
+    0, // Auto
+    1, // 1/125
+    2, // 1/250
+    3, // 1/500
+    4, // 1/1000
+    5, // 1/2000
+};
+const static int32_t SHUTTER_SPEED_PHOTO_SUPPORT[] = {
+    MODEL_MAX2_ALL, // Auto
+    MODEL_MAX2_ALL, // 1/125
+    MODEL_MAX2_ALL, // 1/250
+    MODEL_MAX2_ALL, // 1/500
+    MODEL_MAX2_ALL, // 1/1000
+    MODEL_MAX2_ALL, // 1/2000
+};
+#pragma endregion
 
 #endif

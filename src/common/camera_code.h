@@ -1,12 +1,12 @@
 /*
- * Copyright (c) [2026] [Elly/Funique]
- *
- * This software is licensed under the [MIT License].
- * See the LICENSE file in the project root for more information.
- * 
- * AUTO-GENERATED FILE - DO NOT EDIT MANUALLY
- * Generated from GoPro OpenGoPro HTTP API Documentation
- * Source: gopro_settings.json
+* Copyright (c) [2026] [Elly/Funique]
+*
+* This software is licensed under the [MIT License].
+* See the LICENSE file in the project root for more information.
+* 
+* AUTO-GENERATED FILE - DO NOT EDIT MANUALLY
+* Generated from GoPro OpenGoPro HTTP API Documentation
+* Source: gopro_settings.json
 */
 #pragma once
 #ifndef CAMERACODE_GENERATED_H
@@ -16,20 +16,14 @@
 #include "camera_status.h"
 #include "camera_other.h"
 
-#define GOPRO_SETTING_SIZE 56
+#define GOPRO_SETTING_SIZE 59
 const static int32_t GOPRO_SETTING_IDS[] = {
     VIDEO_RESOLUTION_ID,
     FRAMES_PER_SECOND_ID,
-    SHUTTER_SPEED_ID,
-    ISO_MAX_ID,
-    ISO_MIN_ID,
     VIDEO_LENS_ID,
     VIDEO_ASPECT_RATIO_ID,
     BIT_DEPTH_ID,
     VIDEO_BIT_RATE_ID,
-    WHITE_BALANCE_ID,
-    SHARPNESS_ID,
-    EXPOSURE_ID,
     PHOTO_LENS_ID,
     PHOTO_OUTPUT_ID,
     VIDEO_TIMELAPSE_RATE_ID,
@@ -50,7 +44,6 @@ const static int32_t GOPRO_SETTING_IDS[] = {
     MULTISHOT_DURATION_ID,
     MAX_LENS_ID,
     HINDSIGHT_ID,
-    SCHEDULED_CAPTURE_ID,
     PHOTO_SINGLE_INTERVAL_ID,
     PHOTO_SINGLE_DURATION_ID,
     VIDEO_PERFORMANCE_MODE_ID,
@@ -73,66 +66,75 @@ const static int32_t GOPRO_SETTING_IDS[] = {
     BEEP_VOLUME_ID,
     SETUP_SCREEN_SAVER_ID,
     VIDEO_FRAMING_ID,
-    AUTOMATIC_WI_FI_ACCESS_POINT_ID
+    AUTOMATIC_WI_FI_ACCESS_POINT_ID,
+    WHITE_BALANCE_ID,
+    SHARPNESS_ID,
+    EXPOSURE_ID,
+    COLOR_ID,
+    ISO_MIN_VIDEO_ID,
+    ISO_MAX_VIDEO_ID,
+    ISO_MIN_PHOTO_ID,
+    ISO_MAX_PHOTO_ID,
+    SHUTTER_SPEED_VIDEO_ID,
+    SHUTTER_SPEED_PHOTO_ID,
 };
 
-const static int32_t GOPRO_SETTING_IDS[] = {
-    VIDEO_RESOLUTION_AVA,
-    FRAMES_PER_SECOND_AVA,
-    SHUTTER_SPEED_AVA,
-    ISO_MAX_AVA,
-    ISO_MIN_AVA,
-    VIDEO_LENS_AVA,
-    VIDEO_ASPECT_RATIO_AVA,
-    BIT_DEPTH_AVA,
-    VIDEO_BIT_RATE_AVA,
-    WHITE_BALANCE_AVA,
-    SHARPNESS_AVA,
-    EXPOSURE_AVA,
-    PHOTO_LENS_AVA,
-    PHOTO_OUTPUT_AVA,
-    VIDEO_TIMELAPSE_RATE_AVA,
-    PHOTO_TIMELAPSE_RATE_AVA,
-    NIGHTLAPSE_RATE_AVA,
-    WEBCAM_DIGITAL_LENSES_AVA,
-    AUTO_POWER_DOWN_AVA,
-    GPS_AVA,
-    LCD_BRIGHTNESS_AVA,
-    LED_AVA,
-    TIME_LAPSE_DIGITAL_LENSES_AVA,
-    MEDIA_FORMAT_AVA,
-    ANTI_FLICKER_AVA,
-    HYPERSMOOTH_AVA,
-    VIDEO_HORIZON_LEVELING_AVA,
-    PHOTO_HORIZON_LEVELING_AVA,
-    VIDEO_DURATION_AVA,
-    MULTISHOT_DURATION_AVA,
-    MAX_LENS_AVA,
-    HINDSIGHT_AVA,
-    SCHEDULED_CAPTURE_AVA,
-    PHOTO_SINGLE_INTERVAL_AVA,
-    PHOTO_SINGLE_DURATION_AVA,
-    VIDEO_PERFORMANCE_MODE_AVA,
-    CONTROL_MODE_AVA,
-    EASY_MODE_SPEED_AVA,
-    ENABLE_NIGHT_PHOTO_AVA,
-    WIRELESS_BAND_AVA,
-    STAR_TRAILS_LENGTH_AVA,
-    SYSTEM_VIDEO_MODE_AVA,
-    PROFILES_AVA,
-    VIDEO_EASY_MODE_AVA,
-    LAPSE_MODE_AVA,
-    MAX_LENS_MOD_AVA,
-    MAX_LENS_MOD_ENABLE_AVA,
-    EASY_NIGHT_PHOTO_AVA,
-    MULTI_SHOT_ASPECT_RATIO_AVA,
-    FRAMING_AVA,
-    CAMERA_MODE_AVA,
-    _360_PHOTO_FILES_EXTENSION_AVA,
-    BEEP_VOLUME_AVA,
-    SETUP_SCREEN_SAVER_AVA,
-    VIDEO_FRAMING_AVA,
-    AUTOMATIC_WI_FI_ACCESS_POINT_AVA,
+const static int32_t GOPRO_SYSTEM_SETTING_IDS = {
+    CONTROL_MODE_ID,
+    AUTO_POWER_DOWN_ID,
+    GPS_ID,
+    LCD_BRIGHTNESS_ID,
+    LED_ID,
+    WIRELESS_BAND_ID,
+    PHOTO_OUTPUT_ID,
+    BEEP_VOLUME_ID,
+};
+
+const static int32_t GOPRO_VIDEO_PROTUNE_SETTING_IDS = {
+    VIDEO_RESOLUTION_ID,
+    FRAMES_PER_SECOND_ID,
+    VIDEO_LENS_ID,
+    VIDEO_ASPECT_RATIO_ID,
+    BIT_DEPTH_ID,
+    VIDEO_BIT_RATE_ID,
+    VIDEO_FRAMING_ID,
+    SYSTEM_VIDEO_MODE_ID,
+    VIDEO_PERFORMANCE_MODE_ID,
+    
+    PROFILES_ID,
+    VIDEO_EASY_MODE_ID,
+    
+    HYPERSMOOTH_ID,
+    BEEP_VOLUME_ID,
+    SETUP_SCREEN_SAVER_ID,
+    VIDEO_FRAMING_ID,
+};
+
+const static int32_t GOPRO_VIDEO_PROTUNE_SETTING_IDS = {
+    ISO_MIN_VIDEO_ID,
+    ISO_MAX_VIDEO_ID,
+    WHITE_BALANCE_ID,
+    SHARPNESS_ID,
+    EXPOSURE_ID,
+    COLOR_ID,
+    SHUTTER_SPEED_VIDEO_ID,
+};
+
+const static int32_t GOPRO_PHOTO_SETTING_IDS = {
+    PHOTO_LENS_ID,
+    PHOTO_OUTPUT_ID,
+    FRAMING_ID,
+    ENABLE_NIGHT_PHOTO_ID,
+};
+
+const static int32_t GOPRO_PHOTO_PROTUNE_SETTING_IDS = {
+    ISO_MIN_PHOTO_ID,
+    ISO_MAX_PHOTO_ID,
+    WHITE_BALANCE_ID,
+    SHARPNESS_ID,
+    EXPOSURE_ID,
+    COLOR_ID,
+    SHUTTER_SPEED_PHOTO_ID,
 };
 
 #define GOPRO_STATUS_SIZE 76
@@ -217,311 +219,391 @@ const static int32_t GOPRO_STATUS_IDS[] = {
 // Lookup functions
 inline const int32_t GET_SETTING_SIZE_BY_ID(int32_t x) {
     switch(x) {
-        case 2:     return VIDEO_RESOLUTION_SIZE;
-        case 3:     return FRAMES_PER_SECOND_SIZE;
-        case 5:     return VIDEO_TIMELAPSE_RATE_SIZE;
-        case 13:    return ISO_SIZE;
-        case 30:    return PHOTO_TIMELAPSE_RATE_SIZE;
-        case 32:    return NIGHTLAPSE_RATE_SIZE;
-        case 43:    return WEBCAM_DIGITAL_LENSES_SIZE;
-        case 59:    return AUTO_POWER_DOWN_SIZE;
-        case 83:    return GPS_SIZE;
-        case 88:    return LCD_BRIGHTNESS_SIZE;
-        case 91:    return LED_SIZE;
-        case 102:   return ISO_SIZE;
-        case 108:   return VIDEO_ASPECT_RATIO_SIZE;
-        case 115:   return WHITE_BALANCE_SIZE;
-        case 117:   return SHARPNESS_SIZE;
-        case 118:   return EXPOSURE_SIZE;
-        case 121:   return VIDEO_LENS_SIZE;
-        case 122:   return PHOTO_LENS_SIZE;
-        case 123:   return TIME_LAPSE_DIGITAL_LENSES_SIZE;
-        case 125:   return PHOTO_OUTPUT_SIZE;
-        case 128:   return MEDIA_FORMAT_SIZE;
-        case 134:   return ANTI_FLICKER_SIZE;
-        case 135:   return HYPERSMOOTH_SIZE;
-        case 145:   return SHUTTER_SPEED_SIZE;
-        case 150:   return VIDEO_HORIZON_LEVELING_SIZE;
-        case 151:   return PHOTO_HORIZON_LEVELING_SIZE;
-        case 156:   return VIDEO_DURATION_SIZE;
-        case 157:   return MULTISHOT_DURATION_SIZE;
-        case 162:   return MAX_LENS_SIZE;
-        case 167:   return HINDSIGHT_SIZE;
-        case 168:   return SCHEDULED_CAPTURE_SIZE;
-        case 171:   return PHOTO_SINGLE_INTERVAL_SIZE;
-        case 172:   return PHOTO_SINGLE_DURATION_SIZE;
-        case 173:   return VIDEO_PERFORMANCE_MODE_SIZE;
-        case 175:   return CONTROL_MODE_SIZE;
-        case 176:   return EASY_MODE_SPEED_SIZE;
-        case 177:   return ENABLE_NIGHT_PHOTO_SIZE;
-        case 178:   return WIRELESS_BAND_SIZE;
-        case 179:   return STAR_TRAILS_LENGTH_SIZE;
-        case 180:   return SYSTEM_VIDEO_MODE_SIZE;
-        case 182:   return VIDEO_BIT_RATE_SIZE;
-        case 183:   return BIT_DEPTH_SIZE;
-        case 184:   return PROFILES_SIZE;
-        case 186:   return VIDEO_EASY_MODE_SIZE;
-        case 187:   return LAPSE_MODE_SIZE;
-        case 189:   return MAX_LENS_MOD_SIZE;
-        case 190:   return MAX_LENS_MOD_ENABLE_SIZE;
-        case 191:   return EASY_NIGHT_PHOTO_SIZE;
-        case 192:   return MULTI_SHOT_ASPECT_RATIO_SIZE;
-        case 193:   return FRAMING_SIZE;
-        case 194:   return CAMERA_MODE_SIZE;
-        case 196:   return _360_PHOTO_FILES_EXTENSION_SIZE;
-        case 216:   return BEEP_VOLUME_SIZE;
-        case 219:   return SETUP_SCREEN_SAVER_SIZE;
-        case 232:   return VIDEO_FRAMING_SIZE;
-        case 236:   return AUTOMATIC_WI_FI_ACCESS_POINT_SIZE;
-        default: return 0;
+        case VIDEO_RESOLUTION_ID            : return VIDEO_RESOLUTION_SIZE;
+        case FRAMES_PER_SECOND_ID           : return FRAMES_PER_SECOND_SIZE;
+        case VIDEO_LENS_ID                  : return VIDEO_LENS_SIZE;
+        case VIDEO_ASPECT_RATIO_ID          : return VIDEO_ASPECT_RATIO_SIZE;
+        case BIT_DEPTH_ID                   : return BIT_DEPTH_SIZE;
+        case VIDEO_BIT_RATE_ID              : return VIDEO_BIT_RATE_SIZE;
+        case PHOTO_LENS_ID                  : return PHOTO_LENS_SIZE;
+        case PHOTO_OUTPUT_ID                : return PHOTO_OUTPUT_SIZE;
+        case VIDEO_TIMELAPSE_RATE_ID        : return VIDEO_TIMELAPSE_RATE_SIZE;
+        case PHOTO_TIMELAPSE_RATE_ID        : return PHOTO_TIMELAPSE_RATE_SIZE;
+        case NIGHTLAPSE_RATE_ID             : return NIGHTLAPSE_RATE_SIZE;
+        case WEBCAM_DIGITAL_LENSES_ID       : return WEBCAM_DIGITAL_LENSES_SIZE;
+        case AUTO_POWER_DOWN_ID             : return AUTO_POWER_DOWN_SIZE;
+        case GPS_ID                         : return GPS_SIZE;
+        case LCD_BRIGHTNESS_ID              : return LCD_BRIGHTNESS_SIZE;
+        case LED_ID                         : return LED_SIZE;
+        case TIME_LAPSE_DIGITAL_LENSES_ID   : return TIME_LAPSE_DIGITAL_LENSES_SIZE;
+        case MEDIA_FORMAT_ID                : return MEDIA_FORMAT_SIZE;
+        case ANTI_FLICKER_ID                : return ANTI_FLICKER_SIZE;
+        case HYPERSMOOTH_ID                 : return HYPERSMOOTH_SIZE;
+        case VIDEO_HORIZON_LEVELING_ID      : return VIDEO_HORIZON_LEVELING_SIZE;
+        case PHOTO_HORIZON_LEVELING_ID      : return PHOTO_HORIZON_LEVELING_SIZE;
+        case VIDEO_DURATION_ID              : return VIDEO_DURATION_SIZE;
+        case MULTISHOT_DURATION_ID          : return MULTISHOT_DURATION_SIZE;
+        case MAX_LENS_ID                    : return MAX_LENS_SIZE;
+        case HINDSIGHT_ID                   : return HINDSIGHT_SIZE;
+        case PHOTO_SINGLE_INTERVAL_ID       : return PHOTO_SINGLE_INTERVAL_SIZE;
+        case PHOTO_SINGLE_DURATION_ID       : return PHOTO_SINGLE_DURATION_SIZE;
+        case VIDEO_PERFORMANCE_MODE_ID      : return VIDEO_PERFORMANCE_MODE_SIZE;
+        case CONTROL_MODE_ID                : return CONTROL_MODE_SIZE;
+        case EASY_MODE_SPEED_ID             : return EASY_MODE_SPEED_SIZE;
+        case ENABLE_NIGHT_PHOTO_ID          : return ENABLE_NIGHT_PHOTO_SIZE;
+        case WIRELESS_BAND_ID               : return WIRELESS_BAND_SIZE;
+        case STAR_TRAILS_LENGTH_ID          : return STAR_TRAILS_LENGTH_SIZE;
+        case SYSTEM_VIDEO_MODE_ID           : return SYSTEM_VIDEO_MODE_SIZE;
+        case PROFILES_ID                    : return PROFILES_SIZE;
+        case VIDEO_EASY_MODE_ID             : return VIDEO_EASY_MODE_SIZE;
+        case LAPSE_MODE_ID                  : return LAPSE_MODE_SIZE;
+        case MAX_LENS_MOD_ID                : return MAX_LENS_MOD_SIZE;
+        case MAX_LENS_MOD_ENABLE_ID         : return MAX_LENS_MOD_ENABLE_SIZE;
+        case EASY_NIGHT_PHOTO_ID            : return EASY_NIGHT_PHOTO_SIZE;
+        case MULTI_SHOT_ASPECT_RATIO_ID     : return MULTI_SHOT_ASPECT_RATIO_SIZE;
+        case FRAMING_ID                     : return FRAMING_SIZE;
+        case CAMERA_MODE_ID                 : return CAMERA_MODE_SIZE;
+        case _360_PHOTO_FILES_EXTENSION_ID  : return _360_PHOTO_FILES_EXTENSION_SIZE;
+        case BEEP_VOLUME_ID                 : return BEEP_VOLUME_SIZE;
+        case SETUP_SCREEN_SAVER_ID          : return SETUP_SCREEN_SAVER_SIZE;
+        case VIDEO_FRAMING_ID               : return VIDEO_FRAMING_SIZE;
+        case AUTOMATIC_WI_FI_ACCESS_POINT_ID: return AUTOMATIC_WI_FI_ACCESS_POINT_SIZE;
+        case WHITE_BALANCE_ID               : return WHITE_BALANCE_SIZE;
+        case SHARPNESS_ID                   : return SHARPNESS_SIZE;
+        case EXPOSURE_ID                    : return EXPOSURE_SIZE;
+        case COLOR_ID                       : return COLOR_SIZE;
+        case ISO_MIN_VIDEO_ID               : return ISO_MIN_VIDEO_SIZE;
+        case ISO_MAX_VIDEO_ID               : return ISO_MAX_VIDEO_SIZE;
+        case ISO_MIN_PHOTO_ID               : return ISO_MIN_PHOTO_SIZE;
+        case ISO_MAX_PHOTO_ID               : return ISO_MAX_PHOTO_SIZE;
+        case SHUTTER_SPEED_VIDEO_ID         : return SHUTTER_SPEED_VIDEO_SIZE;
+        case SHUTTER_SPEED_PHOTO_ID         : return SHUTTER_SPEED_PHOTO_SIZE;
+             default                        : return 0;
+    }
+}
+
+inline const int32_t GET_SETTING_AVA_BY_ID(int32_t x) {
+    switch(x) {
+        case VIDEO_RESOLUTION_ID            : return VIDEO_RESOLUTION_AVA;
+        case FRAMES_PER_SECOND_ID           : return FRAMES_PER_SECOND_AVA;
+        case VIDEO_LENS_ID                  : return VIDEO_LENS_AVA;
+        case VIDEO_ASPECT_RATIO_ID          : return VIDEO_ASPECT_RATIO_AVA;
+        case BIT_DEPTH_ID                   : return BIT_DEPTH_AVA;
+        case VIDEO_BIT_RATE_ID              : return VIDEO_BIT_RATE_AVA;
+        case PHOTO_LENS_ID                  : return PHOTO_LENS_AVA;
+        case PHOTO_OUTPUT_ID                : return PHOTO_OUTPUT_AVA;
+        case VIDEO_TIMELAPSE_RATE_ID        : return VIDEO_TIMELAPSE_RATE_AVA;
+        case PHOTO_TIMELAPSE_RATE_ID        : return PHOTO_TIMELAPSE_RATE_AVA;
+        case NIGHTLAPSE_RATE_ID             : return NIGHTLAPSE_RATE_AVA;
+        case WEBCAM_DIGITAL_LENSES_ID       : return WEBCAM_DIGITAL_LENSES_AVA;
+        case AUTO_POWER_DOWN_ID             : return AUTO_POWER_DOWN_AVA;
+        case GPS_ID                         : return GPS_AVA;
+        case LCD_BRIGHTNESS_ID              : return LCD_BRIGHTNESS_AVA;
+        case LED_ID                         : return LED_AVA;
+        case TIME_LAPSE_DIGITAL_LENSES_ID   : return TIME_LAPSE_DIGITAL_LENSES_AVA;
+        case MEDIA_FORMAT_ID                : return MEDIA_FORMAT_AVA;
+        case ANTI_FLICKER_ID                : return ANTI_FLICKER_AVA;
+        case HYPERSMOOTH_ID                 : return HYPERSMOOTH_AVA;
+        case VIDEO_HORIZON_LEVELING_ID      : return VIDEO_HORIZON_LEVELING_AVA;
+        case PHOTO_HORIZON_LEVELING_ID      : return PHOTO_HORIZON_LEVELING_AVA;
+        case VIDEO_DURATION_ID              : return VIDEO_DURATION_AVA;
+        case MULTISHOT_DURATION_ID          : return MULTISHOT_DURATION_AVA;
+        case MAX_LENS_ID                    : return MAX_LENS_AVA;
+        case HINDSIGHT_ID                   : return HINDSIGHT_AVA;
+        case PHOTO_SINGLE_INTERVAL_ID       : return PHOTO_SINGLE_INTERVAL_AVA;
+        case PHOTO_SINGLE_DURATION_ID       : return PHOTO_SINGLE_DURATION_AVA;
+        case VIDEO_PERFORMANCE_MODE_ID      : return VIDEO_PERFORMANCE_MODE_AVA;
+        case CONTROL_MODE_ID                : return CONTROL_MODE_AVA;
+        case EASY_MODE_SPEED_ID             : return EASY_MODE_SPEED_AVA;
+        case ENABLE_NIGHT_PHOTO_ID          : return ENABLE_NIGHT_PHOTO_AVA;
+        case WIRELESS_BAND_ID               : return WIRELESS_BAND_AVA;
+        case STAR_TRAILS_LENGTH_ID          : return STAR_TRAILS_LENGTH_AVA;
+        case SYSTEM_VIDEO_MODE_ID           : return SYSTEM_VIDEO_MODE_AVA;
+        case PROFILES_ID                    : return PROFILES_AVA;
+        case VIDEO_EASY_MODE_ID             : return VIDEO_EASY_MODE_AVA;
+        case LAPSE_MODE_ID                  : return LAPSE_MODE_AVA;
+        case MAX_LENS_MOD_ID                : return MAX_LENS_MOD_AVA;
+        case MAX_LENS_MOD_ENABLE_ID         : return MAX_LENS_MOD_ENABLE_AVA;
+        case EASY_NIGHT_PHOTO_ID            : return EASY_NIGHT_PHOTO_AVA;
+        case MULTI_SHOT_ASPECT_RATIO_ID     : return MULTI_SHOT_ASPECT_RATIO_AVA;
+        case FRAMING_ID                     : return FRAMING_AVA;
+        case CAMERA_MODE_ID                 : return CAMERA_MODE_AVA;
+        case _360_PHOTO_FILES_EXTENSION_ID  : return _360_PHOTO_FILES_EXTENSION_AVA;
+        case BEEP_VOLUME_ID                 : return BEEP_VOLUME_AVA;
+        case SETUP_SCREEN_SAVER_ID          : return SETUP_SCREEN_SAVER_AVA;
+        case VIDEO_FRAMING_ID               : return VIDEO_FRAMING_AVA;
+        case AUTOMATIC_WI_FI_ACCESS_POINT_ID: return AUTOMATIC_WI_FI_ACCESS_POINT_AVA;
+        case WHITE_BALANCE_ID               : return WHITE_BALANCE_AVA;
+        case SHARPNESS_ID                   : return SHARPNESS_AVA;
+        case EXPOSURE_ID                    : return EXPOSURE_AVA;
+        case COLOR_ID                       : return COLOR_AVA;
+        case ISO_MIN_VIDEO_ID               : return ISO_MIN_VIDEO_AVA;
+        case ISO_MAX_VIDEO_ID               : return ISO_MAX_VIDEO_AVA;
+        case ISO_MIN_PHOTO_ID               : return ISO_MIN_PHOTO_AVA;
+        case ISO_MAX_PHOTO_ID               : return ISO_MAX_PHOTO_AVA;
+        case SHUTTER_SPEED_VIDEO_ID         : return SHUTTER_SPEED_VIDEO_AVA;
+        case SHUTTER_SPEED_PHOTO_ID         : return SHUTTER_SPEED_PHOTO_AVA;
+             default                        : return 0;
     }
 }
 
 inline const char* GET_SETTING_NAME_BY_ID(int32_t x) {
     switch(x) {
-        case 2: return VIDEO_RESOLUTION_NAME;
-        case 3: return FRAMES_PER_SECOND_NAME;
-        case 5: return VIDEO_TIMELAPSE_RATE_NAME;
-        case 13: return ISO_MIN_NAME;
-        case 30: return PHOTO_TIMELAPSE_RATE_NAME;
-        case 32: return NIGHTLAPSE_RATE_NAME;
-        case 43: return WEBCAM_DIGITAL_LENSES_NAME;
-        case 59: return AUTO_POWER_DOWN_NAME;
-        case 83: return GPS_NAME;
-        case 88: return LCD_BRIGHTNESS_NAME;
-        case 91: return LED_NAME;
-        case 102: return ISO_MAX_NAME;
-        case 108: return VIDEO_ASPECT_RATIO_NAME;
-        case 115: return WHITE_BALANCE_NAME;
-        case 117: return SHARPNESS_NAME;
-        case 118: return EXPOSURE_NAME;
-        case 121: return VIDEO_LENS_NAME;
-        case 122: return PHOTO_LENS_NAME;
-        case 123: return TIME_LAPSE_DIGITAL_LENSES_NAME;
-        case 125: return PHOTO_OUTPUT_NAME;
-        case 128: return MEDIA_FORMAT_NAME;
-        case 134: return ANTI_FLICKER_NAME;
-        case 135: return HYPERSMOOTH_NAME;
-        case 145: return SHUTTER_SPEED_NAME;
-        case 150: return VIDEO_HORIZON_LEVELING_NAME;
-        case 151: return PHOTO_HORIZON_LEVELING_NAME;
-        case 156: return VIDEO_DURATION_NAME;
-        case 157: return MULTISHOT_DURATION_NAME;
-        case 162: return MAX_LENS_NAME;
-        case 167: return HINDSIGHT_NAME;
-        case 168: return SCHEDULED_CAPTURE_NAME;
-        case 171: return PHOTO_SINGLE_INTERVAL_NAME;
-        case 172: return PHOTO_SINGLE_DURATION_NAME;
-        case 173: return VIDEO_PERFORMANCE_MODE_NAME;
-        case 175: return CONTROL_MODE_NAME;
-        case 176: return EASY_MODE_SPEED_NAME;
-        case 177: return ENABLE_NIGHT_PHOTO_NAME;
-        case 178: return WIRELESS_BAND_NAME;
-        case 179: return STAR_TRAILS_LENGTH_NAME;
-        case 180: return SYSTEM_VIDEO_MODE_NAME;
-        case 182: return VIDEO_BIT_RATE_NAME;
-        case 183: return BIT_DEPTH_NAME;
-        case 184: return PROFILES_NAME;
-        case 186: return VIDEO_EASY_MODE_NAME;
-        case 187: return LAPSE_MODE_NAME;
-        case 189: return MAX_LENS_MOD_NAME;
-        case 190: return MAX_LENS_MOD_ENABLE_NAME;
-        case 191: return EASY_NIGHT_PHOTO_NAME;
-        case 192: return MULTI_SHOT_ASPECT_RATIO_NAME;
-        case 193: return FRAMING_NAME;
-        case 194: return CAMERA_MODE_NAME;
-        case 196: return _360_PHOTO_FILES_EXTENSION_NAME;
-        case 216: return BEEP_VOLUME_NAME;
-        case 219: return SETUP_SCREEN_SAVER_NAME;
-        case 232: return VIDEO_FRAMING_NAME;
-        case 236: return AUTOMATIC_WI_FI_ACCESS_POINT_NAME;
-        default: return "";
+        case VIDEO_RESOLUTION_ID            : return VIDEO_RESOLUTION_NAME;
+        case FRAMES_PER_SECOND_ID           : return FRAMES_PER_SECOND_NAME;
+        case VIDEO_LENS_ID                  : return VIDEO_LENS_NAME;
+        case VIDEO_ASPECT_RATIO_ID          : return VIDEO_ASPECT_RATIO_NAME;
+        case BIT_DEPTH_ID                   : return BIT_DEPTH_NAME;
+        case VIDEO_BIT_RATE_ID              : return VIDEO_BIT_RATE_NAME;
+        case PHOTO_LENS_ID                  : return PHOTO_LENS_NAME;
+        case PHOTO_OUTPUT_ID                : return PHOTO_OUTPUT_NAME;
+        case VIDEO_TIMELAPSE_RATE_ID        : return VIDEO_TIMELAPSE_RATE_NAME;
+        case PHOTO_TIMELAPSE_RATE_ID        : return PHOTO_TIMELAPSE_RATE_NAME;
+        case NIGHTLAPSE_RATE_ID             : return NIGHTLAPSE_RATE_NAME;
+        case WEBCAM_DIGITAL_LENSES_ID       : return WEBCAM_DIGITAL_LENSES_NAME;
+        case AUTO_POWER_DOWN_ID             : return AUTO_POWER_DOWN_NAME;
+        case GPS_ID                         : return GPS_NAME;
+        case LCD_BRIGHTNESS_ID              : return LCD_BRIGHTNESS_NAME;
+        case LED_ID                         : return LED_NAME;
+        case TIME_LAPSE_DIGITAL_LENSES_ID   : return TIME_LAPSE_DIGITAL_LENSES_NAME;
+        case MEDIA_FORMAT_ID                : return MEDIA_FORMAT_NAME;
+        case ANTI_FLICKER_ID                : return ANTI_FLICKER_NAME;
+        case HYPERSMOOTH_ID                 : return HYPERSMOOTH_NAME;
+        case VIDEO_HORIZON_LEVELING_ID      : return VIDEO_HORIZON_LEVELING_NAME;
+        case PHOTO_HORIZON_LEVELING_ID      : return PHOTO_HORIZON_LEVELING_NAME;
+        case VIDEO_DURATION_ID              : return VIDEO_DURATION_NAME;
+        case MULTISHOT_DURATION_ID          : return MULTISHOT_DURATION_NAME;
+        case MAX_LENS_ID                    : return MAX_LENS_NAME;
+        case HINDSIGHT_ID                   : return HINDSIGHT_NAME;
+        case PHOTO_SINGLE_INTERVAL_ID       : return PHOTO_SINGLE_INTERVAL_NAME;
+        case PHOTO_SINGLE_DURATION_ID       : return PHOTO_SINGLE_DURATION_NAME;
+        case VIDEO_PERFORMANCE_MODE_ID      : return VIDEO_PERFORMANCE_MODE_NAME;
+        case CONTROL_MODE_ID                : return CONTROL_MODE_NAME;
+        case EASY_MODE_SPEED_ID             : return EASY_MODE_SPEED_NAME;
+        case ENABLE_NIGHT_PHOTO_ID          : return ENABLE_NIGHT_PHOTO_NAME;
+        case WIRELESS_BAND_ID               : return WIRELESS_BAND_NAME;
+        case STAR_TRAILS_LENGTH_ID          : return STAR_TRAILS_LENGTH_NAME;
+        case SYSTEM_VIDEO_MODE_ID           : return SYSTEM_VIDEO_MODE_NAME;
+        case PROFILES_ID                    : return PROFILES_NAME;
+        case VIDEO_EASY_MODE_ID             : return VIDEO_EASY_MODE_NAME;
+        case LAPSE_MODE_ID                  : return LAPSE_MODE_NAME;
+        case MAX_LENS_MOD_ID                : return MAX_LENS_MOD_NAME;
+        case MAX_LENS_MOD_ENABLE_ID         : return MAX_LENS_MOD_ENABLE_NAME;
+        case EASY_NIGHT_PHOTO_ID            : return EASY_NIGHT_PHOTO_NAME;
+        case MULTI_SHOT_ASPECT_RATIO_ID     : return MULTI_SHOT_ASPECT_RATIO_NAME;
+        case FRAMING_ID                     : return FRAMING_NAME;
+        case CAMERA_MODE_ID                 : return CAMERA_MODE_NAME;
+        case _360_PHOTO_FILES_EXTENSION_ID  : return _360_PHOTO_FILES_EXTENSION_NAME;
+        case BEEP_VOLUME_ID                 : return BEEP_VOLUME_NAME;
+        case SETUP_SCREEN_SAVER_ID          : return SETUP_SCREEN_SAVER_NAME;
+        case VIDEO_FRAMING_ID               : return VIDEO_FRAMING_NAME;
+        case AUTOMATIC_WI_FI_ACCESS_POINT_ID: return AUTOMATIC_WI_FI_ACCESS_POINT_NAME;
+        case WHITE_BALANCE_ID               : return WHITE_BALANCE_NAME;
+        case SHARPNESS_ID                   : return SHARPNESS_NAME;
+        case EXPOSURE_ID                    : return EXPOSURE_NAME;
+        case COLOR_ID                       : return COLOR_NAME;
+        case ISO_MIN_VIDEO_ID               : return ISO_MIN_VIDEO_NAME;
+        case ISO_MAX_VIDEO_ID               : return ISO_MAX_VIDEO_NAME;
+        case ISO_MIN_PHOTO_ID               : return ISO_MIN_PHOTO_NAME;
+        case ISO_MAX_PHOTO_ID               : return ISO_MAX_PHOTO_NAME;
+        case SHUTTER_SPEED_VIDEO_ID         : return SHUTTER_SPEED_VIDEO_NAME;
+        case SHUTTER_SPEED_PHOTO_ID         : return SHUTTER_SPEED_PHOTO_NAME;
+     default                        : return "";
     }
 }
 
 inline const char** GET_SETTING_STRING_BY_ID(int32_t x) {
     switch(x) {
-        case 2: return VIDEO_RESOLUTION_STRING;
-        case 3: return FRAMES_PER_SECOND_STRING;
-        case 5: return VIDEO_TIMELAPSE_RATE_STRING;
-        case 13: return ISO_STRING;
-        case 30: return PHOTO_TIMELAPSE_RATE_STRING;
-        case 32: return NIGHTLAPSE_RATE_STRING;
-        case 43: return WEBCAM_DIGITAL_LENSES_STRING;
-        case 59: return AUTO_POWER_DOWN_STRING;
-        case 83: return GPS_STRING;
-        case 88: return LCD_BRIGHTNESS_STRING;
-        case 91: return LED_STRING;
-        case 102: return ISO_STRING;
-        case 108: return VIDEO_ASPECT_RATIO_STRING;
-        case 115: return WHITE_BALANCE_STRING;
-        case 117: return SHARPNESS_STRING;
-        case 118: return EXPOSURE_STRING;
-        case 121: return VIDEO_LENS_STRING;
-        case 122: return PHOTO_LENS_STRING;
-        case 123: return TIME_LAPSE_DIGITAL_LENSES_STRING;
-        case 125: return PHOTO_OUTPUT_STRING;
-        case 128: return MEDIA_FORMAT_STRING;
-        case 134: return ANTI_FLICKER_STRING;
-        case 135: return HYPERSMOOTH_STRING;
-        case 145: return SHUTTER_SPEED_STRING;
-        case 150: return VIDEO_HORIZON_LEVELING_STRING;
-        case 151: return PHOTO_HORIZON_LEVELING_STRING;
-        case 156: return VIDEO_DURATION_STRING;
-        case 157: return MULTISHOT_DURATION_STRING;
-        case 162: return MAX_LENS_STRING;
-        case 167: return HINDSIGHT_STRING;
-        case 168: return SCHEDULED_CAPTURE_STRING;
-        case 171: return PHOTO_SINGLE_INTERVAL_STRING;
-        case 172: return PHOTO_SINGLE_DURATION_STRING;
-        case 173: return VIDEO_PERFORMANCE_MODE_STRING;
-        case 175: return CONTROL_MODE_STRING;
-        case 176: return EASY_MODE_SPEED_STRING;
-        case 177: return ENABLE_NIGHT_PHOTO_STRING;
-        case 178: return WIRELESS_BAND_STRING;
-        case 179: return STAR_TRAILS_LENGTH_STRING;
-        case 180: return SYSTEM_VIDEO_MODE_STRING;
-        case 182: return VIDEO_BIT_RATE_STRING;
-        case 183: return BIT_DEPTH_STRING;
-        case 184: return PROFILES_STRING;
-        case 186: return VIDEO_EASY_MODE_STRING;
-        case 187: return LAPSE_MODE_STRING;
-        case 189: return MAX_LENS_MOD_STRING;
-        case 190: return MAX_LENS_MOD_ENABLE_STRING;
-        case 191: return EASY_NIGHT_PHOTO_STRING;
-        case 192: return MULTI_SHOT_ASPECT_RATIO_STRING;
-        case 193: return FRAMING_STRING;
-        case 194: return CAMERA_MODE_STRING;
-        case 196: return _360_PHOTO_FILES_EXTENSION_STRING;
-        case 216: return BEEP_VOLUME_STRING;
-        case 219: return SETUP_SCREEN_SAVER_STRING;
-        case 232: return VIDEO_FRAMING_STRING;
-        case 236: return AUTOMATIC_WI_FI_ACCESS_POINT_STRING;
-        default: return nullptr;
+        case VIDEO_RESOLUTION_ID            : return VIDEO_RESOLUTION_STRING;
+        case FRAMES_PER_SECOND_ID           : return FRAMES_PER_SECOND_STRING;
+        case VIDEO_LENS_ID                  : return VIDEO_LENS_STRING;
+        case VIDEO_ASPECT_RATIO_ID          : return VIDEO_ASPECT_RATIO_STRING;
+        case BIT_DEPTH_ID                   : return BIT_DEPTH_STRING;
+        case VIDEO_BIT_RATE_ID              : return VIDEO_BIT_RATE_STRING;
+        case PHOTO_LENS_ID                  : return PHOTO_LENS_STRING;
+        case PHOTO_OUTPUT_ID                : return PHOTO_OUTPUT_STRING;
+        case VIDEO_TIMELAPSE_RATE_ID        : return VIDEO_TIMELAPSE_RATE_STRING;
+        case PHOTO_TIMELAPSE_RATE_ID        : return PHOTO_TIMELAPSE_RATE_STRING;
+        case NIGHTLAPSE_RATE_ID             : return NIGHTLAPSE_RATE_STRING;
+        case WEBCAM_DIGITAL_LENSES_ID       : return WEBCAM_DIGITAL_LENSES_STRING;
+        case AUTO_POWER_DOWN_ID             : return AUTO_POWER_DOWN_STRING;
+        case GPS_ID                         : return GPS_STRING;
+        case LCD_BRIGHTNESS_ID              : return LCD_BRIGHTNESS_STRING;
+        case LED_ID                         : return LED_STRING;
+        case TIME_LAPSE_DIGITAL_LENSES_ID   : return TIME_LAPSE_DIGITAL_LENSES_STRING;
+        case MEDIA_FORMAT_ID                : return MEDIA_FORMAT_STRING;
+        case ANTI_FLICKER_ID                : return ANTI_FLICKER_STRING;
+        case HYPERSMOOTH_ID                 : return HYPERSMOOTH_STRING;
+        case VIDEO_HORIZON_LEVELING_ID      : return VIDEO_HORIZON_LEVELING_STRING;
+        case PHOTO_HORIZON_LEVELING_ID      : return PHOTO_HORIZON_LEVELING_STRING;
+        case VIDEO_DURATION_ID              : return VIDEO_DURATION_STRING;
+        case MULTISHOT_DURATION_ID          : return MULTISHOT_DURATION_STRING;
+        case MAX_LENS_ID                    : return MAX_LENS_STRING;
+        case HINDSIGHT_ID                   : return HINDSIGHT_STRING;
+        case PHOTO_SINGLE_INTERVAL_ID       : return PHOTO_SINGLE_INTERVAL_STRING;
+        case PHOTO_SINGLE_DURATION_ID       : return PHOTO_SINGLE_DURATION_STRING;
+        case VIDEO_PERFORMANCE_MODE_ID      : return VIDEO_PERFORMANCE_MODE_STRING;
+        case CONTROL_MODE_ID                : return CONTROL_MODE_STRING;
+        case EASY_MODE_SPEED_ID             : return EASY_MODE_SPEED_STRING;
+        case ENABLE_NIGHT_PHOTO_ID          : return ENABLE_NIGHT_PHOTO_STRING;
+        case WIRELESS_BAND_ID               : return WIRELESS_BAND_STRING;
+        case STAR_TRAILS_LENGTH_ID          : return STAR_TRAILS_LENGTH_STRING;
+        case SYSTEM_VIDEO_MODE_ID           : return SYSTEM_VIDEO_MODE_STRING;
+        case PROFILES_ID                    : return PROFILES_STRING;
+        case VIDEO_EASY_MODE_ID             : return VIDEO_EASY_MODE_STRING;
+        case LAPSE_MODE_ID                  : return LAPSE_MODE_STRING;
+        case MAX_LENS_MOD_ID                : return MAX_LENS_MOD_STRING;
+        case MAX_LENS_MOD_ENABLE_ID         : return MAX_LENS_MOD_ENABLE_STRING;
+        case EASY_NIGHT_PHOTO_ID            : return EASY_NIGHT_PHOTO_STRING;
+        case MULTI_SHOT_ASPECT_RATIO_ID     : return MULTI_SHOT_ASPECT_RATIO_STRING;
+        case FRAMING_ID                     : return FRAMING_STRING;
+        case CAMERA_MODE_ID                 : return CAMERA_MODE_STRING;
+        case _360_PHOTO_FILES_EXTENSION_ID  : return _360_PHOTO_FILES_EXTENSION_STRING;
+        case BEEP_VOLUME_ID                 : return BEEP_VOLUME_STRING;
+        case SETUP_SCREEN_SAVER_ID          : return SETUP_SCREEN_SAVER_STRING;
+        case VIDEO_FRAMING_ID               : return VIDEO_FRAMING_STRING;
+        case AUTOMATIC_WI_FI_ACCESS_POINT_ID: return AUTOMATIC_WI_FI_ACCESS_POINT_STRING;
+        case WHITE_BALANCE_ID               : return WHITE_BALANCE_STRING;
+        case SHARPNESS_ID                   : return SHARPNESS_STRING;
+        case EXPOSURE_ID                    : return EXPOSURE_STRING;
+        case COLOR_ID                       : return COLOR_STRING;
+        case ISO_MIN_VIDEO_ID               : return ISO_MIN_VIDEO_STRING;
+        case ISO_MAX_VIDEO_ID               : return ISO_MAX_VIDEO_STRING;
+        case ISO_MIN_PHOTO_ID               : return ISO_MIN_PHOTO_STRING;
+        case ISO_MAX_PHOTO_ID               : return ISO_MAX_PHOTO_STRING;
+        case SHUTTER_SPEED_VIDEO_ID         : return SHUTTER_SPEED_VIDEO_STRING;
+        case SHUTTER_SPEED_PHOTO_ID         : return SHUTTER_SPEED_PHOTO_STRING;
+             default                        : return nullptr;
     }
 }
 
 inline const int32_t* GET_SETTING_VALUE_BY_ID(int32_t x) {
     switch(x) {
-        case 2: return VIDEO_RESOLUTION_VALUE;
-        case 3: return FRAMES_PER_SECOND_VALUE;
-        case 5: return VIDEO_TIMELAPSE_RATE_VALUE;
-        case 13: return ISO_VALUE;
-        case 30: return PHOTO_TIMELAPSE_RATE_VALUE;
-        case 32: return NIGHTLAPSE_RATE_VALUE;
-        case 43: return WEBCAM_DIGITAL_LENSES_VALUE;
-        case 59: return AUTO_POWER_DOWN_VALUE;
-        case 83: return GPS_VALUE;
-        case 88: return LCD_BRIGHTNESS_VALUE;
-        case 91: return LED_VALUE;
-        case 102: return ISO_VALUE;
-        case 108: return VIDEO_ASPECT_RATIO_VALUE;
-        case 115: return WHITE_BALANCE_VALUE;
-        case 117: return SHARPNESS_VALUE;
-        case 118: return EXPOSURE_VALUE;
-        case 121: return VIDEO_LENS_VALUE;
-        case 122: return PHOTO_LENS_VALUE;
-        case 123: return TIME_LAPSE_DIGITAL_LENSES_VALUE;
-        case 125: return PHOTO_OUTPUT_VALUE;
-        case 128: return MEDIA_FORMAT_VALUE;
-        case 134: return ANTI_FLICKER_VALUE;
-        case 135: return HYPERSMOOTH_VALUE;
-        case 145: return SHUTTER_SPEED_VALUE;
-        case 150: return VIDEO_HORIZON_LEVELING_VALUE;
-        case 151: return PHOTO_HORIZON_LEVELING_VALUE;
-        case 156: return VIDEO_DURATION_VALUE;
-        case 157: return MULTISHOT_DURATION_VALUE;
-        case 162: return MAX_LENS_VALUE;
-        case 167: return HINDSIGHT_VALUE;
-        case 168: return SCHEDULED_CAPTURE_VALUE;
-        case 171: return PHOTO_SINGLE_INTERVAL_VALUE;
-        case 172: return PHOTO_SINGLE_DURATION_VALUE;
-        case 173: return VIDEO_PERFORMANCE_MODE_VALUE;
-        case 175: return CONTROL_MODE_VALUE;
-        case 176: return EASY_MODE_SPEED_VALUE;
-        case 177: return ENABLE_NIGHT_PHOTO_VALUE;
-        case 178: return WIRELESS_BAND_VALUE;
-        case 179: return STAR_TRAILS_LENGTH_VALUE;
-        case 180: return SYSTEM_VIDEO_MODE_VALUE;
-        case 182: return VIDEO_BIT_RATE_VALUE;
-        case 183: return BIT_DEPTH_VALUE;
-        case 184: return PROFILES_VALUE;
-        case 186: return VIDEO_EASY_MODE_VALUE;
-        case 187: return LAPSE_MODE_VALUE;
-        case 189: return MAX_LENS_MOD_VALUE;
-        case 190: return MAX_LENS_MOD_ENABLE_VALUE;
-        case 191: return EASY_NIGHT_PHOTO_VALUE;
-        case 192: return MULTI_SHOT_ASPECT_RATIO_VALUE;
-        case 193: return FRAMING_VALUE;
-        case 194: return CAMERA_MODE_VALUE;
-        case 196: return _360_PHOTO_FILES_EXTENSION_VALUE;
-        case 216: return BEEP_VOLUME_VALUE;
-        case 219: return SETUP_SCREEN_SAVER_VALUE;
-        case 232: return VIDEO_FRAMING_VALUE;
-        case 236: return AUTOMATIC_WI_FI_ACCESS_POINT_VALUE;
-        default: return nullptr;
+        case VIDEO_RESOLUTION_ID            : return VIDEO_RESOLUTION_VALUE;
+        case FRAMES_PER_SECOND_ID           : return FRAMES_PER_SECOND_VALUE;
+        case VIDEO_LENS_ID                  : return VIDEO_LENS_VALUE;
+        case VIDEO_ASPECT_RATIO_ID          : return VIDEO_ASPECT_RATIO_VALUE;
+        case BIT_DEPTH_ID                   : return BIT_DEPTH_VALUE;
+        case VIDEO_BIT_RATE_ID              : return VIDEO_BIT_RATE_VALUE;
+        case PHOTO_LENS_ID                  : return PHOTO_LENS_VALUE;
+        case PHOTO_OUTPUT_ID                : return PHOTO_OUTPUT_VALUE;
+        case VIDEO_TIMELAPSE_RATE_ID        : return VIDEO_TIMELAPSE_RATE_VALUE;
+        case PHOTO_TIMELAPSE_RATE_ID        : return PHOTO_TIMELAPSE_RATE_VALUE;
+        case NIGHTLAPSE_RATE_ID             : return NIGHTLAPSE_RATE_VALUE;
+        case WEBCAM_DIGITAL_LENSES_ID       : return WEBCAM_DIGITAL_LENSES_VALUE;
+        case AUTO_POWER_DOWN_ID             : return AUTO_POWER_DOWN_VALUE;
+        case GPS_ID                         : return GPS_VALUE;
+        case LCD_BRIGHTNESS_ID              : return LCD_BRIGHTNESS_VALUE;
+        case LED_ID                         : return LED_VALUE;
+        case TIME_LAPSE_DIGITAL_LENSES_ID   : return TIME_LAPSE_DIGITAL_LENSES_VALUE;
+        case MEDIA_FORMAT_ID                : return MEDIA_FORMAT_VALUE;
+        case ANTI_FLICKER_ID                : return ANTI_FLICKER_VALUE;
+        case HYPERSMOOTH_ID                 : return HYPERSMOOTH_VALUE;
+        case VIDEO_HORIZON_LEVELING_ID      : return VIDEO_HORIZON_LEVELING_VALUE;
+        case PHOTO_HORIZON_LEVELING_ID      : return PHOTO_HORIZON_LEVELING_VALUE;
+        case VIDEO_DURATION_ID              : return VIDEO_DURATION_VALUE;
+        case MULTISHOT_DURATION_ID          : return MULTISHOT_DURATION_VALUE;
+        case MAX_LENS_ID                    : return MAX_LENS_VALUE;
+        case HINDSIGHT_ID                   : return HINDSIGHT_VALUE;
+        case PHOTO_SINGLE_INTERVAL_ID       : return PHOTO_SINGLE_INTERVAL_VALUE;
+        case PHOTO_SINGLE_DURATION_ID       : return PHOTO_SINGLE_DURATION_VALUE;
+        case VIDEO_PERFORMANCE_MODE_ID      : return VIDEO_PERFORMANCE_MODE_VALUE;
+        case CONTROL_MODE_ID                : return CONTROL_MODE_VALUE;
+        case EASY_MODE_SPEED_ID             : return EASY_MODE_SPEED_VALUE;
+        case ENABLE_NIGHT_PHOTO_ID          : return ENABLE_NIGHT_PHOTO_VALUE;
+        case WIRELESS_BAND_ID               : return WIRELESS_BAND_VALUE;
+        case STAR_TRAILS_LENGTH_ID          : return STAR_TRAILS_LENGTH_VALUE;
+        case SYSTEM_VIDEO_MODE_ID           : return SYSTEM_VIDEO_MODE_VALUE;
+        case PROFILES_ID                    : return PROFILES_VALUE;
+        case VIDEO_EASY_MODE_ID             : return VIDEO_EASY_MODE_VALUE;
+        case LAPSE_MODE_ID                  : return LAPSE_MODE_VALUE;
+        case MAX_LENS_MOD_ID                : return MAX_LENS_MOD_VALUE;
+        case MAX_LENS_MOD_ENABLE_ID         : return MAX_LENS_MOD_ENABLE_VALUE;
+        case EASY_NIGHT_PHOTO_ID            : return EASY_NIGHT_PHOTO_VALUE;
+        case MULTI_SHOT_ASPECT_RATIO_ID     : return MULTI_SHOT_ASPECT_RATIO_VALUE;
+        case FRAMING_ID                     : return FRAMING_VALUE;
+        case CAMERA_MODE_ID                 : return CAMERA_MODE_VALUE;
+        case _360_PHOTO_FILES_EXTENSION_ID  : return _360_PHOTO_FILES_EXTENSION_VALUE;
+        case BEEP_VOLUME_ID                 : return BEEP_VOLUME_VALUE;
+        case SETUP_SCREEN_SAVER_ID          : return SETUP_SCREEN_SAVER_VALUE;
+        case VIDEO_FRAMING_ID               : return VIDEO_FRAMING_VALUE;
+        case AUTOMATIC_WI_FI_ACCESS_POINT_ID: return AUTOMATIC_WI_FI_ACCESS_POINT_VALUE;
+        case WHITE_BALANCE_ID               : return WHITE_BALANCE_VALUE;
+        case SHARPNESS_ID                   : return SHARPNESS_VALUE;
+        case EXPOSURE_ID                    : return EXPOSURE_VALUE;
+        case COLOR_ID                       : return COLOR_VALUE;
+        case ISO_MIN_VIDEO_ID               : return ISO_MIN_VIDEO_VALUE;
+        case ISO_MAX_VIDEO_ID               : return ISO_MAX_VIDEO_VALUE;
+        case ISO_MIN_PHOTO_ID               : return ISO_MIN_PHOTO_VALUE;
+        case ISO_MAX_PHOTO_ID               : return ISO_MAX_PHOTO_VALUE;
+        case SHUTTER_SPEED_VIDEO_ID         : return SHUTTER_SPEED_VIDEO_VALUE;
+        case SHUTTER_SPEED_PHOTO_ID         : return SHUTTER_SPEED_PHOTO_VALUE;
+             default                        : return nullptr;
     }
 }
 
 inline const int32_t* GET_SETTING_SUPPORT_BY_ID(int32_t x) {
     switch(x) {
-        case 2: return VIDEO_RESOLUTION_SUPPORT;
-        case 3: return FRAMES_PER_SECOND_SUPPORT;
-        case 5: return VIDEO_TIMELAPSE_RATE_SUPPORT;
-        case 13: return ISO_SUPPORT;
-        case 30: return PHOTO_TIMELAPSE_RATE_SUPPORT;
-        case 32: return NIGHTLAPSE_RATE_SUPPORT;
-        case 43: return WEBCAM_DIGITAL_LENSES_SUPPORT;
-        case 59: return AUTO_POWER_DOWN_SUPPORT;
-        case 83: return GPS_SUPPORT;
-        case 88: return LCD_BRIGHTNESS_SUPPORT;
-        case 91: return LED_SUPPORT;
-        case 102: return ISO_SUPPORT;
-        case 108: return VIDEO_ASPECT_RATIO_SUPPORT;
-        case 115: return WHITE_BALANCE_SUPPORT;
-        case 117: return SHARPNESS_SUPPORT;
-        case 118: return EXPOSURE_SUPPORT;
-        case 121: return VIDEO_LENS_SUPPORT;
-        case 122: return PHOTO_LENS_SUPPORT;
-        case 123: return TIME_LAPSE_DIGITAL_LENSES_SUPPORT;
-        case 125: return PHOTO_OUTPUT_SUPPORT;
-        case 128: return MEDIA_FORMAT_SUPPORT;
-        case 134: return ANTI_FLICKER_SUPPORT;
-        case 135: return HYPERSMOOTH_SUPPORT;
-        case 145: return SHUTTER_SPEED_SUPPORT;
-        case 150: return VIDEO_HORIZON_LEVELING_SUPPORT;
-        case 151: return PHOTO_HORIZON_LEVELING_SUPPORT;
-        case 156: return VIDEO_DURATION_SUPPORT;
-        case 157: return MULTISHOT_DURATION_SUPPORT;
-        case 162: return MAX_LENS_SUPPORT;
-        case 167: return HINDSIGHT_SUPPORT;
-        case 168: return SCHEDULED_CAPTURE_SUPPORT;
-        case 171: return PHOTO_SINGLE_INTERVAL_SUPPORT;
-        case 172: return PHOTO_SINGLE_DURATION_SUPPORT;
-        case 173: return VIDEO_PERFORMANCE_MODE_SUPPORT;
-        case 175: return CONTROL_MODE_SUPPORT;
-        case 176: return EASY_MODE_SPEED_SUPPORT;
-        case 177: return ENABLE_NIGHT_PHOTO_SUPPORT;
-        case 178: return WIRELESS_BAND_SUPPORT;
-        case 179: return STAR_TRAILS_LENGTH_SUPPORT;
-        case 180: return SYSTEM_VIDEO_MODE_SUPPORT;
-        case 182: return VIDEO_BIT_RATE_SUPPORT;
-        case 183: return BIT_DEPTH_SUPPORT;
-        case 184: return PROFILES_SUPPORT;
-        case 186: return VIDEO_EASY_MODE_SUPPORT;
-        case 187: return LAPSE_MODE_SUPPORT;
-        case 189: return MAX_LENS_MOD_SUPPORT;
-        case 190: return MAX_LENS_MOD_ENABLE_SUPPORT;
-        case 191: return EASY_NIGHT_PHOTO_SUPPORT;
-        case 192: return MULTI_SHOT_ASPECT_RATIO_SUPPORT;
-        case 193: return FRAMING_SUPPORT;
-        case 194: return CAMERA_MODE_SUPPORT;
-        case 196: return _360_PHOTO_FILES_EXTENSION_SUPPORT;
-        case 216: return BEEP_VOLUME_SUPPORT;
-        case 219: return SETUP_SCREEN_SAVER_SUPPORT;
-        case 232: return VIDEO_FRAMING_SUPPORT;
-        case 236: return AUTOMATIC_WI_FI_ACCESS_POINT_SUPPORT;
-        default: return nullptr;
+        case VIDEO_RESOLUTION_ID            : return VIDEO_RESOLUTION_SUPPORT;
+        case FRAMES_PER_SECOND_ID           : return FRAMES_PER_SECOND_SUPPORT;
+        case VIDEO_LENS_ID                  : return VIDEO_LENS_SUPPORT;
+        case VIDEO_ASPECT_RATIO_ID          : return VIDEO_ASPECT_RATIO_SUPPORT;
+        case BIT_DEPTH_ID                   : return BIT_DEPTH_SUPPORT;
+        case VIDEO_BIT_RATE_ID              : return VIDEO_BIT_RATE_SUPPORT;
+        case PHOTO_LENS_ID                  : return PHOTO_LENS_SUPPORT;
+        case PHOTO_OUTPUT_ID                : return PHOTO_OUTPUT_SUPPORT;
+        case VIDEO_TIMELAPSE_RATE_ID        : return VIDEO_TIMELAPSE_RATE_SUPPORT;
+        case PHOTO_TIMELAPSE_RATE_ID        : return PHOTO_TIMELAPSE_RATE_SUPPORT;
+        case NIGHTLAPSE_RATE_ID             : return NIGHTLAPSE_RATE_SUPPORT;
+        case WEBCAM_DIGITAL_LENSES_ID       : return WEBCAM_DIGITAL_LENSES_SUPPORT;
+        case AUTO_POWER_DOWN_ID             : return AUTO_POWER_DOWN_SUPPORT;
+        case GPS_ID                         : return GPS_SUPPORT;
+        case LCD_BRIGHTNESS_ID              : return LCD_BRIGHTNESS_SUPPORT;
+        case LED_ID                         : return LED_SUPPORT;
+        case TIME_LAPSE_DIGITAL_LENSES_ID   : return TIME_LAPSE_DIGITAL_LENSES_SUPPORT;
+        case MEDIA_FORMAT_ID                : return MEDIA_FORMAT_SUPPORT;
+        case ANTI_FLICKER_ID                : return ANTI_FLICKER_SUPPORT;
+        case HYPERSMOOTH_ID                 : return HYPERSMOOTH_SUPPORT;
+        case VIDEO_HORIZON_LEVELING_ID      : return VIDEO_HORIZON_LEVELING_SUPPORT;
+        case PHOTO_HORIZON_LEVELING_ID      : return PHOTO_HORIZON_LEVELING_SUPPORT;
+        case VIDEO_DURATION_ID              : return VIDEO_DURATION_SUPPORT;
+        case MULTISHOT_DURATION_ID          : return MULTISHOT_DURATION_SUPPORT;
+        case MAX_LENS_ID                    : return MAX_LENS_SUPPORT;
+        case HINDSIGHT_ID                   : return HINDSIGHT_SUPPORT;
+        case PHOTO_SINGLE_INTERVAL_ID       : return PHOTO_SINGLE_INTERVAL_SUPPORT;
+        case PHOTO_SINGLE_DURATION_ID       : return PHOTO_SINGLE_DURATION_SUPPORT;
+        case VIDEO_PERFORMANCE_MODE_ID      : return VIDEO_PERFORMANCE_MODE_SUPPORT;
+        case CONTROL_MODE_ID                : return CONTROL_MODE_SUPPORT;
+        case EASY_MODE_SPEED_ID             : return EASY_MODE_SPEED_SUPPORT;
+        case ENABLE_NIGHT_PHOTO_ID          : return ENABLE_NIGHT_PHOTO_SUPPORT;
+        case WIRELESS_BAND_ID               : return WIRELESS_BAND_SUPPORT;
+        case STAR_TRAILS_LENGTH_ID          : return STAR_TRAILS_LENGTH_SUPPORT;
+        case SYSTEM_VIDEO_MODE_ID           : return SYSTEM_VIDEO_MODE_SUPPORT;
+        case PROFILES_ID                    : return PROFILES_SUPPORT;
+        case VIDEO_EASY_MODE_ID             : return VIDEO_EASY_MODE_SUPPORT;
+        case LAPSE_MODE_ID                  : return LAPSE_MODE_SUPPORT;
+        case MAX_LENS_MOD_ID                : return MAX_LENS_MOD_SUPPORT;
+        case MAX_LENS_MOD_ENABLE_ID         : return MAX_LENS_MOD_ENABLE_SUPPORT;
+        case EASY_NIGHT_PHOTO_ID            : return EASY_NIGHT_PHOTO_SUPPORT;
+        case MULTI_SHOT_ASPECT_RATIO_ID     : return MULTI_SHOT_ASPECT_RATIO_SUPPORT;
+        case FRAMING_ID                     : return FRAMING_SUPPORT;
+        case CAMERA_MODE_ID                 : return CAMERA_MODE_SUPPORT;
+        case _360_PHOTO_FILES_EXTENSION_ID  : return _360_PHOTO_FILES_EXTENSION_SUPPORT;
+        case BEEP_VOLUME_ID                 : return BEEP_VOLUME_SUPPORT;
+        case SETUP_SCREEN_SAVER_ID          : return SETUP_SCREEN_SAVER_SUPPORT;
+        case VIDEO_FRAMING_ID               : return VIDEO_FRAMING_SUPPORT;
+        case AUTOMATIC_WI_FI_ACCESS_POINT_ID: return AUTOMATIC_WI_FI_ACCESS_POINT_SUPPORT;
+        case WHITE_BALANCE_ID               : return WHITE_BALANCE_SUPPORT;
+        case SHARPNESS_ID                   : return SHARPNESS_SUPPORT;
+        case EXPOSURE_ID                    : return EXPOSURE_SUPPORT;
+        case COLOR_ID                       : return COLOR_SUPPORT;
+        case ISO_MIN_VIDEO_ID               : return ISO_MIN_VIDEO_SUPPORT;
+        case ISO_MAX_VIDEO_ID               : return ISO_MAX_VIDEO_SUPPORT;
+        case ISO_MIN_PHOTO_ID               : return ISO_MIN_PHOTO_SUPPORT;
+        case ISO_MAX_PHOTO_ID               : return ISO_MAX_PHOTO_SUPPORT;
+        case SHUTTER_SPEED_VIDEO_ID         : return SHUTTER_SPEED_VIDEO_SUPPORT;
+        case SHUTTER_SPEED_PHOTO_ID         : return SHUTTER_SPEED_PHOTO_SUPPORT;
+             default                        : return nullptr;
     }
 }
 
