@@ -105,32 +105,39 @@ void InspectorWindow::render(){
         int32_t camera_ip = master->findCamera(state->current_camera_item);
         bool should_disabled = state->current_camera_item.size() < 10 || camera_ip == -1 || !state->current_setting_items_bind;
 
-        ImGui::InputText("Camera Name", &state->current_camera_name);
-        if(ImGui::Button("Rename Camera")){
-            master->command_with_value("rename", state->current_camera_item, state->current_camera_name);
-        }
-        ImGui::Text("Name: %s, IP: %s", state->current_camera_name.c_str(), state->current_camera_item.c_str());
-
+        draw_header();
         ImGui::BeginDisabled(should_disabled);
-
-        if(ImGui::Button("Reset Setting Order")){
-            reset_setting_order();
-            state->update_server();
-        }
-        ImGui::SameLine();
-        if(ImGui::Button("Reset Status Order")){
-            reset_status_order();
-            state->update_server();
-        }
 
         ImGui::Separator();
 
-        if(ImGui::BeginTabBar("Inspector_Bar")){
+        if(ImGui::BeginTabBar("Inspector_Bar##Top")){
             if(ImGui::BeginTabItem("Setting##Inspector_Bar_Item")){
-                draw_setting();
+                if(ImGui::Button("Reset Setting Order")){
+                    reset_setting_order();
+                    state->update_server();
+                }
+                if(ImGui::BeginTabBar("Inspector_Bar##Second")){
+                    if(ImGui::BeginTabItem("System##Inspector_Bar_Item")){
+                        draw_system();
+                        ImGui::EndTabItem();
+                    }
+                    if(ImGui::BeginTabItem("Setting##Inspector_Bar_Item")){
+                        draw_setting();
+                        ImGui::EndTabItem();
+                    }
+                    if(ImGui::BeginTabItem("Protune##Inspector_Bar_Item")){
+                        draw_protune();
+                        ImGui::EndTabItem();
+                    }
+                    ImGui::EndTabBar();
+                }
                 ImGui::EndTabItem();
             }
             if(ImGui::BeginTabItem("Status##Inspector_Bar_Item")){
+                if(ImGui::Button("Reset Status Order")){
+                    reset_status_order();
+                    state->update_server();
+                }
                 draw_status();
                 ImGui::EndTabItem();
             }
@@ -144,6 +151,18 @@ void InspectorWindow::render(){
         ImGui::EndDisabled();
     }
     ImGui::End();
+}
+
+void InspectorWindow::draw_header(){
+    ImGui::InputText("Camera Name", &state->current_camera_name);
+    if(ImGui::Button("Rename Camera")){
+        master->command_with_value("rename", state->current_camera_item, state->current_camera_name);
+    }
+    ImGui::Text("Name: %s, IP: %s", state->current_camera_name.c_str(), state->current_camera_item.c_str());
+}
+
+void InspectorWindow::draw_system(){
+
 }
 
 void InspectorWindow::draw_setting(){
@@ -224,6 +243,10 @@ void InspectorWindow::draw_setting(){
         //ImGui::SetDragDropPayload("INSPECTOR_SETTING", &move_to, sizeof(int));
         state->update_server();
     }
+}
+
+void InspectorWindow::draw_protune(){
+
 }
 
 void InspectorWindow::draw_status(){
@@ -359,6 +382,14 @@ void InspectorWindow::draw_media(){
         ImGui::LabelText("Server", "%s", t->server.c_str());
         ImGui::LabelText("Last Media", "%s", t->last_media.c_str());
     }
+}
+
+void InspectorWindow::draw_command_local(){
+
+}
+
+void InspectorWindow::draw_command_global(){
+    
 }
 
 void InspectorWindow::reset_setting_order(){

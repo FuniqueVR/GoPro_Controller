@@ -19,9 +19,14 @@ public:
     void set_window_data(json data) override;
     virtual void render() override;
 
+    virtual void draw_header();
+    virtual void draw_system();
     virtual void draw_setting();
+    virtual void draw_protune();
     virtual void draw_status();
     virtual void draw_media();
+    virtual void draw_command_local();
+    virtual void draw_command_global();
 
     void reset_setting_order();
     void reset_status_order();
