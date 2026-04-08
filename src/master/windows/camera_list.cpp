@@ -191,6 +191,7 @@ void CameraListWindow::draw_line(const std::shared_ptr<CameraInfo>& c){
 void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
     json status = json::object();
     json setting = json::object();
+    int preset = 0;
     master->getStatusFromCamera(*c, status);
     master->getSettingsFromCamera(*c, setting);
 
@@ -213,6 +214,12 @@ void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
     uint32_t col_orange = IM_COL32(230, 230, 10, 255);
     uint32_t col_orange_dark = IM_COL32(80, 80, 10, 255);
     uint32_t col_greed = IM_COL32(10, 230, 10, 255);
+
+    {
+        if(status[std::to_string(PRESET_ID)].is_number_integer()){
+            preset = status[std::to_string(PRESET_ID)].get<int32_t>();
+        }
+    }
 
     // Drawing outline
     {
@@ -355,16 +362,25 @@ void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
         );
         draw_list->AddText(camera_title_min, col_white, camera_title.c_str());
         if(c->connected) {
+            int32_t SHUTTER_SPEED_ID = SHUTTER_SPEED_PHOTO_ID;
+            int32_t ISO_MIN_ID = ISO_MIN_PHOTO_ID;
+            int32_t ISO_MAX_ID = ISO_MAX_PHOTO_ID;
+            if(preset == 0){
+                SHUTTER_SPEED_ID = SHUTTER_SPEED_VIDEO_ID;
+                ISO_MIN_ID = ISO_MIN_VIDEO_ID;
+                ISO_MAX_ID = ISO_MAX_VIDEO_ID;
+            }
+
             if(setting[std::to_string(SHUTTER_SPEED_ID)].is_number_integer()){
                 int32_t re = setting[std::to_string(SHUTTER_SPEED_ID)].get<int32_t>();
-                shutter_speed = SHUTTER_SPEED_STRING[re];
+                shutter_speed = SHUTTER_SPEED_VIDEO_STRING[re];
                 shutter_speed = "S: " + shutter_speed;
             }
             if(setting[std::to_string(ISO_MIN_ID)].is_number() && setting[std::to_string(ISO_MAX_ID)].is_number()){
                 int32_t iso_min = setting[std::to_string(ISO_MIN_ID)].get<int32_t>();
                 int32_t iso_max = setting[std::to_string(ISO_MAX_ID)].get<int32_t>();
-                std::string iso_min_text = ISO_STRING[iso_min];
-                std::string iso_max_text = ISO_STRING[iso_max];
+                std::string iso_min_text = ISO_MIN_VIDEO_STRING[iso_min];
+                std::string iso_max_text = ISO_MAX_VIDEO_STRING[iso_max];
                 iso_setting = "I: " + iso_min_text + " " + iso_max_text;
             }
             if(setting[std::to_string(WHITE_BALANCE_ID)].is_number()){

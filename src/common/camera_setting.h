@@ -98,7 +98,7 @@ const static int32_t VIDEO_RESOLUTION_SUPPORT[] = {
     MODEL_13|MODEL_12, // 2.7K 4:3 V2
     MODEL_13|MODEL_12, // 4K 4:3 V2
     MODEL_13 // 5.3K 4:3 V
-}
+};
 const static int32_t VIDEO_RESOLUTION_RES[][2] = {
     {3840, 2160},
     {2704, 1520},
@@ -1876,7 +1876,7 @@ const static int32_t SETUP_LANGUAGE_SUPPORT[] = {
 #define PHOTO_MODE_ID 227
 #define PHOTO_MODE_SIZE 3
 #define PHOTO_MODE_NAME "Photo Mode"
-#define PHOTO_MODE_NAME MODEL_13
+#define PHOTO_MODE_AVA MODEL_13
 const static char* PHOTO_MODE_STRING[] = {
     "Super Photo",
     "Night Photo",
@@ -1929,7 +1929,7 @@ const static int32_t VIDEO_FRAMING_SUPPORT[] = {
 #define MULTISHOT_FRAMING_ID 233
 #define MULTISHOT_FRAMING_SIZE 4
 #define MULTISHOT_FRAMING_NAME "Multi Shot Framing"
-#define MULTISHOT_FRAMING_NAME MODEL_13
+#define MULTISHOT_FRAMING_AVA MODEL_13
 const static char* MULTISHOT_FRAMING_STRING[] = {
     "4:3",
     "16:9",
@@ -1954,7 +1954,7 @@ const static int32_t MULTISHOT_FRAMING_SUPPORT[] = {
 #define FRAMERATE_ID 234
 #define FRAMERATE_SIZE 6
 #define FRAMERATE_NAME "Frame Rate"
-#define FRAMERATE_NAME MODEL_MAX2|MODEL_13
+#define FRAMERATE_AVA MODEL_MAX2|MODEL_13
 const static char* FRAMERATE_STRING[] = {
  	"240.0",
  	"120.0",

@@ -16,7 +16,6 @@
 #include "camera_status.h"
 #include "camera_other.h"
 
-#define GOPRO_SETTING_SIZE 59
 const static int32_t GOPRO_SETTING_IDS[] = {
     VIDEO_RESOLUTION_ID,
     FRAMES_PER_SECOND_ID,
@@ -78,8 +77,9 @@ const static int32_t GOPRO_SETTING_IDS[] = {
     SHUTTER_SPEED_VIDEO_ID,
     SHUTTER_SPEED_PHOTO_ID,
 };
+#define GOPRO_SETTING_SIZE sizeof(GOPRO_SETTING_IDS)/sizeof(int32_t)
 
-const static int32_t GOPRO_SYSTEM_SETTING_IDS = {
+const static int32_t GOPRO_SYSTEM_SETTING_IDS[] = {
     CONTROL_MODE_ID,
     AUTO_POWER_DOWN_ID,
     GPS_ID,
@@ -89,8 +89,9 @@ const static int32_t GOPRO_SYSTEM_SETTING_IDS = {
     PHOTO_OUTPUT_ID,
     BEEP_VOLUME_ID,
 };
+#define GOPRO_SYSTEM_SETTING_SIZE sizeof(GOPRO_SYSTEM_SETTING_IDS)/sizeof(int32_t)
 
-const static int32_t GOPRO_VIDEO_PROTUNE_SETTING_IDS = {
+const static int32_t GOPRO_VIDEO_SETTING_IDS[] = {
     VIDEO_RESOLUTION_ID,
     FRAMES_PER_SECOND_ID,
     VIDEO_LENS_ID,
@@ -109,8 +110,9 @@ const static int32_t GOPRO_VIDEO_PROTUNE_SETTING_IDS = {
     SETUP_SCREEN_SAVER_ID,
     VIDEO_FRAMING_ID,
 };
+#define GOPRO_VIDEO_SETTING_SIZE sizeof(GOPRO_VIDEO_SETTING_IDS)/sizeof(int32_t)
 
-const static int32_t GOPRO_VIDEO_PROTUNE_SETTING_IDS = {
+const static int32_t GOPRO_VIDEO_PROTUNE_SETTING_IDS[] = {
     ISO_MIN_VIDEO_ID,
     ISO_MAX_VIDEO_ID,
     WHITE_BALANCE_ID,
@@ -119,15 +121,17 @@ const static int32_t GOPRO_VIDEO_PROTUNE_SETTING_IDS = {
     COLOR_ID,
     SHUTTER_SPEED_VIDEO_ID,
 };
+#define GOPRO_VIDEO_PROTUNE_SETTING_SIZE sizeof(GOPRO_VIDEO_PROTUNE_SETTING_IDS)/sizeof(int32_t)
 
-const static int32_t GOPRO_PHOTO_SETTING_IDS = {
+const static int32_t GOPRO_PHOTO_SETTING_IDS[] = {
     PHOTO_LENS_ID,
     PHOTO_OUTPUT_ID,
     FRAMING_ID,
     ENABLE_NIGHT_PHOTO_ID,
 };
+#define GOPRO_PHOTO_SETTING_SIZE sizeof(GOPRO_PHOTO_SETTING_IDS)/sizeof(int32_t)
 
-const static int32_t GOPRO_PHOTO_PROTUNE_SETTING_IDS = {
+const static int32_t GOPRO_PHOTO_PROTUNE_SETTING_IDS[] = {
     ISO_MIN_PHOTO_ID,
     ISO_MAX_PHOTO_ID,
     WHITE_BALANCE_ID,
@@ -136,8 +140,8 @@ const static int32_t GOPRO_PHOTO_PROTUNE_SETTING_IDS = {
     COLOR_ID,
     SHUTTER_SPEED_PHOTO_ID,
 };
+#define GOPRO_PHOTO_PROTUNE_SETTING_SIZE sizeof(GOPRO_PHOTO_PROTUNE_SETTING_IDS)/sizeof(int32_t)
 
-#define GOPRO_STATUS_SIZE 76
 const static int32_t GOPRO_STATUS_IDS[] = {
     BATTERY_PRESENT_ID,
     INTERNAL_BATTERY_BARS_ID,
@@ -215,6 +219,7 @@ const static int32_t GOPRO_STATUS_IDS[] = {
     USE_CONTROLLED_ID,
     SD_CARD_CAPACITY_ID
 };
+#define GOPRO_STATUS_SIZE sizeof(GOPRO_STATUS_IDS)/sizeof(int32_t)
 
 // Lookup functions
 inline const int32_t GET_SETTING_SIZE_BY_ID(int32_t x) {
