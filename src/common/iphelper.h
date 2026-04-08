@@ -264,7 +264,7 @@ inline std::vector<std::string> execs(std::vector<std::string> cmds) {
     CURLcode res;
     CURLMsg *msg=NULL;
     std::vector<std::string> result = std::vector<std::string>(cmds.size(), "");
-
+     
     if(curlm) {
         curl_multi_setopt(curlm, CURLMOPT_MAX_TOTAL_CONNECTIONS, 64L);
         for(int32_t i = 0; i < cmds.size(); i++){
