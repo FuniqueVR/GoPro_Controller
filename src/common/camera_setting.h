@@ -1763,23 +1763,20 @@ const static int32_t _360_PHOTO_FILES_EXTENSION_SUPPORT[] = {
 
 #pragma region Beep Volume
 #define BEEP_VOLUME_ID 216
-#define BEEP_VOLUME_SIZE 4
+#define BEEP_VOLUME_SIZE 3
 #define BEEP_VOLUME_NAME "Beep Volume"
 #define BEEP_VOLUME_AVA MODEL_MAX2|MODEL_13
 const static char* BEEP_VOLUME_STRING[] = {
-    "Off",
     "Low",
     "Medium",
     "High",
 };
 const static int32_t BEEP_VOLUME_VALUE[] = {
-    0, // Off
-    1, // Low
-    2, // Medium
-    3, // High
+    70, // Low
+    85, // Medium
+    100, // High
 };
 const static int32_t BEEP_VOLUME_SUPPORT[] = {
-    MODEL_MAX2|MODEL_13, // Off
     MODEL_MAX2|MODEL_13, // Low
     MODEL_MAX2|MODEL_13, // Medium
     MODEL_MAX2|MODEL_13, // High

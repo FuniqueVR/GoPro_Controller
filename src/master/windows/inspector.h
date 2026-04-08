@@ -30,8 +30,15 @@ public:
 
     void reset_setting_order();
     void reset_status_order();
+protected:
+    virtual void _draw_setting(std::vector<int32_t>& ordered);
+
 private:
-    std::vector<int32_t> setting_list_ordered;
+    std::vector<int32_t> system_list_ordered;
+    std::vector<int32_t> video_setting_list_ordered;
+    std::vector<int32_t> photo_setting_list_ordered;
+    std::vector<int32_t> video_protune_list_ordered;
+    std::vector<int32_t> photo_protune_list_ordered;
     std::vector<int32_t> status_list_ordered;
     bool create_date_folder;
     bool put_finish;
