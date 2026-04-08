@@ -13,6 +13,7 @@
 #endif
 #include <iostream>
 #include <vector>
+#include "common/config.h"
 #include "hv/WebSocketServer.h"
 #include "hv/EventLoop.h"
 #include "hv/UdpServer.h"
@@ -333,7 +334,7 @@ void WebsocketServer(){
     };
     ws.onmessage = [&](const WebSocketChannelPtr& channel, const std::string& msg) {
         std::thread([=]() {
-            printf("Received: %s\n", msg.c_str());
+            if(SERVER_QUERY_LOG) printf("Received: %s\n", msg.c_str());
             try{
                 json j = json::parse(msg.c_str());
                 // Simple command parsing
