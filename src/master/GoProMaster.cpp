@@ -531,6 +531,7 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
                 if(found == -1){
                     auto cam = std::make_shared<CameraInfo>();
                     cam->state = ip.value()["status"];
+                    cam->hw = ip.value()["hw"];
                     cam->connected = true;
                     _cam = *cam;
                     cameras.push_back(cam);
@@ -538,6 +539,7 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
                 }else{
                     auto cam = cameras[found];
                     cam->state = ip.value()["status"];
+                    cam->hw = ip.value()["hw"];
                     cam->connected = cam->state["settings"]["2"].is_number_integer();
                     _cam = *cam;
                 }
