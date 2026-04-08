@@ -2288,80 +2288,200 @@ const static int32_t ISO_MAX_PHOTO_SUPPORT[] = {
 
 #pragma region Shutter Speed Video
 #define SHUTTER_SPEED_VIDEO_ID 145
-#define SHUTTER_SPEED_VIDEO_SIZE 22
+#define SHUTTER_SPEED_VIDEO_SIZE 62
 #define SHUTTER_SPEED_VIDEO_NAME "Shutter Speed"
 #define SHUTTER_SPEED_VIDEO_AVA MODEL_MAX2_ALL
 const static char* SHUTTER_SPEED_VIDEO_STRING[] = {
     "Auto",
-    "1/24",
-    "1/25",
-    "1/30",
-    "1/48",
-    "1/50",
-    "1/60",
-    "1/96",
-    "1/100",
-    "1/120",
-    "1/192",
-    "1/200",
-    "1/240",
-    "1/384",
-    "1/400",
-    "1/480",
-    "1/800",
-    "1/900",
-    "1/1600",
-    "1/1920",
-    "1/3200",
+    "Auto Cinematic",
+    "1/8640",
+    "1/7680",
+    "1/7200",
+    "1/6400",
+    "1/6144",
+    "1/5760",
+    "1/4800",
+    "1/4608",
+    "1/4320",
     "1/3840",
+    "1/3600",
+    "1/3200",
+    "1/3072",
+    "1/2880",
+    "1/2400",
+    "1/2304",
+    "1/2160",
+    "1/1920",
+    "1/1800",
+    "1/1600",
+    "1/1536",
+    "1/1440",
+    "1/1200",
+    "1/1152",
+    "1/1080",
+    "1/960",
+    "1/900",
+    "1/800",
+    "1/768",
+    "1/720",
+    "1/600",
+    "1/576",
+    "1/540",
+    "1/480",
+    "1/450",
+    "1/400",
+    "1/384",
+    "1/360",
+    "1/300",
+    "1/288",
+    "1/240",
+    "1/200",
+    "1/192",
+    "1/180",
+    "1/150",
+    "1/144",
+    "1/120",
+    "1/100",
+    "1/96",
+    "1/90",
+    "1/75",
+    "1/72",
+    "1/60",
+    "1/50",
+    "1/48",
+    "1/45",
+    "1/36",
+    "1/30",
+    "1/25",
+    "1/24",
 };
 const static int32_t SHUTTER_SPEED_VIDEO_VALUE[] = {
-    0, // Auto
-    3, // 1/24
-    4, // 1/25
-    5, // 1/30
-    6, // 1/48
-    7, // 1/50
-    8, // 1/60
-    11, // 1/96
-    12, // 1/100
-    13, // 1/120
-    16, // 1/192
-    17, // 1/200
-    18, // 1/240
-    25, // 1/384
-    21, // 1/400
-    22, // 1/480
-    28, // 1/800
-    23, // 1/900
-    29, // 1/1600
-    24, // 1/1920
-    30, // 1/3200
+    0, // "Auto
+    57, // "Auto Cinematic
+    67, // 1/8640
+    56, // 1/7680
+    66, // 1/7200
+    51, // 1/6400
+    43, // 1/6144
+    55, // 1/5760
+    50, // 1/4800
+    42, // 1/4608
+    65, // 1/4320
     31, // 1/3840
+    64, // 1/3600
+    30, // 1/3200
+    34, // 1/3072
+    54, // 1/2880
+    49, // 1/2400
+    41, // 1/2304
+    63, // 1/2160
+    24, // 1/1920
+    62, // 1/1800
+    29, // 1/1600
+    33, // 1/1536
+    53, // 1/1440
+    48, // 1/1200
+    40, // 1/1152
+    61, // 1/1080
+    23, // 1/960
+    60, // 1/900
+    28, // 1/800
+    32, // 1/768
+    27, // 1/720
+    47, // 1/600
+    39, // 1/576
+    59, // 1/540
+    22, // 1/480
+    58, // 1/450
+    21, // 1/400
+    25, // 1/384
+    20, // 1/360
+    46, // 1/300
+    38, // 1/288
+    18, // 1/240
+    17, // 1/200
+    16, // 1/192
+    15, // 1/180
+    45, // 1/150
+    37, // 1/144
+    13, // 1/120
+    12, // 1/100
+    11, // 1/96
+    10, // 1/90
+    44, // 1/75
+    36, // 1/72
+    8, // 1/60
+    7, // 1/50
+    6, // 1/48
+    52, // 1/45
+    35, // 1/36
+    5, // 1/30
+    4, // 1/25
+    3, // 1/24
 };
 const static int32_t SHUTTER_SPEED_VIDEO_SUPPORT[] = {
-    MODEL_MAX2_ALL, // Auto
-    MODEL_MAX2_ALL, // 1/24
-    MODEL_MAX2_ALL, // 1/25
-    MODEL_MAX2_ALL, // 1/30
-    MODEL_MAX2_ALL, // 1/48
-    MODEL_MAX2_ALL, // 1/50
-    MODEL_MAX2_ALL, // 1/60
-    MODEL_MAX2_ALL, // 1/96
-    MODEL_MAX2_ALL, // 1/100
-    MODEL_MAX2_ALL, // 1/120
-    MODEL_MAX2_ALL, // 1/192
-    MODEL_MAX2_ALL, // 1/200
-    MODEL_MAX2_ALL, // 1/240
-    MODEL_MAX2_ALL, // 1/384
-    MODEL_MAX2_ALL, // 1/400
-    MODEL_MAX2_ALL, // 1/480
-    MODEL_MAX2_ALL, // 1/800
-    MODEL_MAX2_ALL, // 1/900
-    MODEL_MAX2_ALL, // 1/1600
-    MODEL_MAX2_ALL, // 1/1920
-    MODEL_MAX2_ALL, // 1/3200
+    MODEL_MAX2_ALL, // "Auto
+    MODEL_MAX2_ALL, // "Auto Cinematic
+    MODEL_MAX2_ALL, // 1/8640
+    MODEL_MAX2_ALL, // 1/7680
+    MODEL_MAX2_ALL, // 1/7200
+    MODEL_MAX2_ALL, // 1/6400
+    MODEL_MAX2_ALL, // 1/6144
+    MODEL_MAX2_ALL, // 1/5760
+    MODEL_MAX2_ALL, // 1/4800
+    MODEL_MAX2_ALL, // 1/4608
+    MODEL_MAX2_ALL, // 1/4320
     MODEL_MAX2_ALL, // 1/3840
+    MODEL_MAX2_ALL, // 1/3600
+    MODEL_MAX2_ALL, // 1/3200
+    MODEL_MAX2_ALL, // 1/3072
+    MODEL_MAX2_ALL, // 1/2880
+    MODEL_MAX2_ALL, // 1/2400
+    MODEL_MAX2_ALL, // 1/2304
+    MODEL_MAX2_ALL, // 1/2160
+    MODEL_MAX2_ALL, // 1/1920
+    MODEL_MAX2_ALL, // 1/1800
+    MODEL_MAX2_ALL, // 1/1600
+    MODEL_MAX2_ALL, // 1/1536
+    MODEL_MAX2_ALL, // 1/1440
+    MODEL_MAX2_ALL, // 1/1200
+    MODEL_MAX2_ALL, // 1/1152
+    MODEL_MAX2_ALL, // 1/1080
+    MODEL_MAX2_ALL, // 1/960
+    MODEL_MAX2_ALL, // 1/900
+    MODEL_MAX2_ALL, // 1/800
+    MODEL_MAX2_ALL, // 1/768
+    MODEL_MAX2_ALL, // 1/720
+    MODEL_MAX2_ALL, // 1/600
+    MODEL_MAX2_ALL, // 1/576
+    MODEL_MAX2_ALL, // 1/540
+    MODEL_MAX2_ALL, // 1/480
+    MODEL_MAX2_ALL, // 1/450
+    MODEL_MAX2_ALL, // 1/400
+    MODEL_MAX2_ALL, // 1/384
+    MODEL_MAX2_ALL, // 1/360
+    MODEL_MAX2_ALL, // 1/300
+    MODEL_MAX2_ALL, // 1/288
+    MODEL_MAX2_ALL, // 1/240
+    MODEL_MAX2_ALL, // 1/200
+    MODEL_MAX2_ALL, // 1/192
+    MODEL_MAX2_ALL, // 1/180
+    MODEL_MAX2_ALL, // 1/150
+    MODEL_MAX2_ALL, // 1/144
+    MODEL_MAX2_ALL, // 1/120
+    MODEL_MAX2_ALL, // 1/100
+    MODEL_MAX2_ALL, // 1/96
+    MODEL_MAX2_ALL, // 1/90
+    MODEL_MAX2_ALL, // 1/75
+    MODEL_MAX2_ALL, // 1/72
+    MODEL_MAX2_ALL, // 1/60
+    MODEL_MAX2_ALL, // 1/50
+    MODEL_MAX2_ALL, // 1/48
+    MODEL_MAX2_ALL, // 1/45
+    MODEL_MAX2_ALL, // 1/36
+    MODEL_MAX2_ALL, // 1/30
+    MODEL_MAX2_ALL, // 1/25
+    MODEL_MAX2_ALL, // 1/24
 };
 #pragma endregion
 
