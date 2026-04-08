@@ -840,7 +840,7 @@ const static int32_t VIDEO_DURATION_VALUE[] = {
     10,// 5 Sec
     100, // No Limit
 };
-const static int32_t VIDEO_DURATION_VALUE[] = {
+const static int32_t VIDEO_DURATION_SUPPORT[] = {
     MODEL_MAX2_ALL&(~MODEL_11), // 15 Sec
     MODEL_MAX2_ALL&(~MODEL_11), // 30 Sec
     MODEL_MAX2_ALL&(~MODEL_11), // 1 Min
@@ -1073,7 +1073,7 @@ const static int32_t CONTROL_MODE_SUPPORT[] = {
 #define EASY_MODE_SPEED_ID 176
 #define EASY_MODE_SPEED_SIZE 88
 #define EASY_MODE_SPEED_NAME "Easy Mode Speed"
-#define EASY_MODE_SPEED_NAME MODEL_13|MODEL_12|MODEL_11_BLACK
+#define EASY_MODE_SPEED_AVA MODEL_13|MODEL_12|MODEL_11_BLACK
 const static char* EASY_MODE_SPEED_STRING[] = {
     "8X Ultra Slo-Mo",
     "4X Super Slo-Mo",
@@ -1790,7 +1790,7 @@ const static int32_t BEEP_VOLUME_SUPPORT[] = {
 #define SETUP_SCREEN_SAVER_ID 219
 #define SETUP_SCREEN_SAVER_SIZE 5
 #define SETUP_SCREEN_SAVER_NAME "Setup Screen Saver"
-#define SETUP_SCREEN_SAVER_AvA MODEL_MAX2|MODEL_13
+#define SETUP_SCREEN_SAVER_AVA MODEL_MAX2|MODEL_13
 const static char* SETUP_SCREEN_SAVER_STRING[] = {
     "Never",
     "1 Min",
@@ -1805,7 +1805,7 @@ const static int32_t SETUP_SCREEN_SAVER_VALUE[] = {
     3, // 3 Min
     4, // 5 Min
 };
-const static int32_t SETUP_SCREEN_SAVER_SUPPORt[] = {
+const static int32_t SETUP_SCREEN_SAVER_SUPPORT[] = {
     MODEL_MAX2, // Never
     MODEL_MAX2|MODEL_13, // 1 Min
     MODEL_MAX2|MODEL_13, // 2 Min
@@ -1887,7 +1887,7 @@ const static int32_t PHOTO_MODE_VALUE[] = {
     1, // Night Photo
     2, // Burst
 };
-const static int32_t PHOTO_MODE_SUPPORt[] = {
+const static int32_t PHOTO_MODE_SUPPORT[] = {
     MODEL_13, // Super Photo
     MODEL_13, // Night Photo
     MODEL_13, // Burst
@@ -1898,7 +1898,7 @@ const static int32_t PHOTO_MODE_SUPPORt[] = {
 #define VIDEO_FRAMING_ID 232
 #define VIDEO_FRAMING_SIZE 6
 #define VIDEO_FRAMING_NAME "Video Framing"
-#define VIDEO_FRAMING_NAME MODEL_13
+#define VIDEO_FRAMING_AVA MODEL_13
 const static char* VIDEO_FRAMING_STRING[] = {
     "4:3",
     "16:9",
@@ -1915,7 +1915,7 @@ const static int32_t VIDEO_FRAMING_VALUE[] = {
     5, // 21:9
     6, // 1:1
 };
-const static int32_t VIDEO_FRAMING_SUPPORt[] = {
+const static int32_t VIDEO_FRAMING_SUPPORT[] = {
     MODEL_13, // 4:3
     MODEL_13, // 16:9
     MODEL_13, // 8:7
@@ -1942,7 +1942,7 @@ const static int32_t MULTISHOT_FRAMING_VALUE[] = {
     3, // 8:7
     4, // 9:16
 };
-const static int32_t MULTISHOT_FRAMING_SUPPORt[] = {
+const static int32_t MULTISHOT_FRAMING_SUPPORT[] = {
     MODEL_13, // 4:3
     MODEL_13, // 16:9
     MODEL_13, // 8:7
@@ -1985,7 +1985,7 @@ const static int32_t FRAMERATE_VALUE[] = {
     16, // 360.0
     17, // 300.0
 };
-const static int32_t FRAMERATE_SUPPORt[] = {
+const static int32_t FRAMERATE_SUPPORT[] = {
     MODEL_13, // 240.0
     MODEL_13, // 120.0
     MODEL_MAX2|MODEL_13, // 100.0
@@ -2015,7 +2015,7 @@ const static int32_t AUTOMATIC_WI_FI_ACCESS_POINT_VALUE[] = {
     0,  // Off
     1, // On
 };
-const static int32_t AUTOMATIC_WI_FI_ACCESS_POINT_SUPPPORT[] = {
+const static int32_t AUTOMATIC_WI_FI_ACCESS_POINT_SUPPORT[] = {
     MODEL_MAX2,  // Off
     MODEL_MAX2, // On
 };
@@ -2279,7 +2279,7 @@ const static int32_t ISO_MAX_PHOTO_VALUE[] = {
     4, // 1600
     5, // 3200
 };
-const static int32_t ISO_MAX_PHOTO_VALUE[] = {
+const static int32_t ISO_MAX_PHOTO_SUPPORT[] = {
     MODEL_MAX2_ALL, // 800
     MODEL_MAX2_ALL, // 400
     MODEL_MAX2_ALL, // 200
@@ -2342,7 +2342,7 @@ const static int32_t SHUTTER_SPEED_VIDEO_VALUE[] = {
     30, // 1/3200
     31, // 1/3840
 };
-const static int32_t SHUTTER_SPEED_VIDEO_SUPPORt[] = {
+const static int32_t SHUTTER_SPEED_VIDEO_SUPPORT[] = {
     MODEL_MAX2_ALL, // Auto
     MODEL_MAX2_ALL, // 1/24
     MODEL_MAX2_ALL, // 1/25
