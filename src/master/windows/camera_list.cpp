@@ -143,9 +143,9 @@ void CameraListWindow::render(){
             }
         }
 
-        ImVec2 rect_size = get_rect_size();
-        float width = ImGui::GetWindowSize().x;
-        int32_t limit = static_cast<int32_t>(width / rect_size.x);
+        ImVec2 rect_size = get_rect_size(); // Single cell size
+        float width = ImGui::GetWindowSize().x; // Total space size
+        int32_t limit = static_cast<int32_t>((width / rect_size.x) - 0.5f);
         int32_t counter = 0;
         std::vector<std::shared_ptr<CameraInfo>> ciss = get_filtering_result();
         ImGui::Text("Cal: %f/%f, Total: %d, Line: %d", width, rect_size.x, size, limit);
@@ -210,6 +210,7 @@ void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
     ImVec2 image_pos_max = image_pos + rect_size;
     uint32_t col_white = IM_COL32(255, 255, 255, 255);
     uint32_t col_grey = IM_COL32(210, 210, 210, 255);
+    uint32_t col_grey_light = IM_COL32(210, 210, 210, 50);
     uint32_t col_red = IM_COL32(230, 10, 10, 255);
     uint32_t col_orange = IM_COL32(230, 230, 10, 255);
     uint32_t col_orange_dark = IM_COL32(80, 80, 10, 255);
@@ -515,9 +516,13 @@ void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
     
     ImGui::PopID();
     ImGui::Dummy(rect_size);
+    bool is_select = state->current_camera_item == c->ip;
     if(ImGui::IsItemHovered()){
         ImGui::SetItemTooltip("%s", "Test\nTest");
         draw_list->AddRect(image_pos, image_pos_max, col_grey, 2.0F, 0, 5.0F);
+    }
+    else if(is_select){
+        draw_list->AddRect(image_pos, image_pos_max, col_grey_light, 2.0F, 0, 5.0F);
     }
     item_event( c);
     ImGui::EndGroup();
