@@ -47,10 +47,10 @@ InspectorWindow::InspectorWindow(
     : BaseWindow(_setting, _state, _master) {
     title = "Inspector";
     system_list_ordered = std::vector<int32_t>(GOPRO_SYSTEM_SETTING_SIZE);
-    video_setting_list_ordered = std::vector<int32_t>(GOPRO_VIDEO_SETTING_IDS);
-    photo_setting_list_ordered = std::vector<int32_t>(GOPRO_PHOTO_SETTING_IDS);
-    video_protune_list_ordered = std::vector<int32_t>(GOPRO_VIDEO_PROTUNE_SETTING_IDS);
-    photo_protune_list_ordered = std::vector<int32_t>(GOPRO_PHOTO_PROTUNE_SETTING_IDS);
+    video_setting_list_ordered = std::vector<int32_t>(GOPRO_VIDEO_SETTING_SIZE);
+    photo_setting_list_ordered = std::vector<int32_t>(GOPRO_PHOTO_SETTING_SIZE);
+    video_protune_list_ordered = std::vector<int32_t>(GOPRO_VIDEO_PROTUNE_SETTING_SIZE);
+    photo_protune_list_ordered = std::vector<int32_t>(GOPRO_PHOTO_PROTUNE_SETTING_SIZE);
     status_list_ordered = std::vector<int32_t>(GOPRO_STATUS_SIZE);
     reset_setting_order();
     reset_status_order();
@@ -65,10 +65,27 @@ json InspectorWindow::get_window_data() {
     data["put_finish"] = put_finish;
     data["create_date_folder"] = create_date_folder;
     data["current_download_location"] = state->current_download_location;
-    data["setting_order"] = json::array();
+    data["setting_order"] = json::object();
     data["status_order"] = json::array();
-    for(int32_t i = 0; i < GOPRO_SETTING_SIZE; i++){
-        data["setting_order"].push_back(setting_list_ordered[i]);
+    data["setting_order"]["system_list_ordered"] = json::array();
+    data["setting_order"]["video_setting_list_ordered"] = json::array();
+    data["setting_order"]["photo_setting_list_ordered"] = json::array();
+    data["setting_order"]["video_protune_list_ordered"] = json::array();
+    data["setting_order"]["photo_protune_list_ordered"] = json::array();
+    for(int32_t i = 0; i < system_list_ordered.size(); i++){
+        data["setting_order"]["system_list_ordered"].push_back(system_list_ordered[i]);
+    }
+    for(int32_t i = 0; i < video_setting_list_ordered.size(); i++){
+        data["setting_order"]["video_setting_list_ordered"].push_back(video_setting_list_ordered[i]);
+    }
+    for(int32_t i = 0; i < photo_setting_list_ordered.size(); i++){
+        data["setting_order"]["photo_setting_list_ordered"].push_back(photo_setting_list_ordered[i]);
+    }
+    for(int32_t i = 0; i < video_protune_list_ordered.size(); i++){
+        data["setting_order"]["video_protune_list_ordered"].push_back(video_protune_list_ordered[i]);
+    }
+    for(int32_t i = 0; i < photo_protune_list_ordered.size(); i++){
+        data["setting_order"]["photo_protune_list_ordered"].push_back(photo_protune_list_ordered[i]);
     }
     for(int32_t i = 0; i < GOPRO_STATUS_SIZE; i++){
         data["status_order"].push_back(status_list_ordered[i]);
@@ -86,10 +103,40 @@ void InspectorWindow::set_window_data(json data) {
     if(data["current_download_location"].is_string()){
         state->current_download_location = data["current_download_location"].get<std::string>();
     }
-    if(data["setting_order"].is_array() && data["setting_order"].size() == GOPRO_SETTING_SIZE){
-        for(int32_t i = 0; i < GOPRO_SETTING_SIZE; i++){
-            if(data["setting_order"].at(i).is_number_integer()){
-                setting_list_ordered[i] = data["setting_order"].at(i).get<int32_t>();
+    if(data["setting_order"].is_object()){
+        if(data["setting_order"]["system_list_ordered"].is_array() && data["setting_order"]["system_list_ordered"].size() == system_list_ordered.size()){
+            for(int32_t i = 0; i < system_list_ordered.size(); i++){
+                if(data["setting_order"]["system_list_ordered"].at(i).is_number_integer()){
+                    system_list_ordered[i] = data["setting_order"]["system_list_ordered"].at(i).get<int32_t>();
+                }
+            }
+        }
+        if(data["setting_order"]["video_setting_list_ordered"].is_array() && data["setting_order"]["video_setting_list_ordered"].size() == video_setting_list_ordered.size()){
+            for(int32_t i = 0; i < system_list_ordered.size(); i++){
+                if(data["setting_order"]["video_setting_list_ordered"].at(i).is_number_integer()){
+                    video_setting_list_ordered[i] = data["setting_order"]["video_setting_list_ordered"].at(i).get<int32_t>();
+                }
+            }
+        }
+        if(data["setting_order"]["photo_setting_list_ordered"].is_array() && data["setting_order"]["photo_setting_list_ordered"].size() == photo_setting_list_ordered.size()){
+            for(int32_t i = 0; i < photo_setting_list_ordered.size(); i++){
+                if(data["setting_order"]["photo_setting_list_ordered"].at(i).is_number_integer()){
+                    system_list_ordered[i] = data["setting_order"]["photo_setting_list_ordered"].at(i).get<int32_t>();
+                }
+            }
+        }
+        if(data["setting_order"]["video_protune_list_ordered"].is_array() && data["setting_order"]["video_protune_list_ordered"].size() == video_protune_list_ordered.size()){
+            for(int32_t i = 0; i < video_protune_list_ordered.size(); i++){
+                if(data["setting_order"]["video_protune_list_ordered"].at(i).is_number_integer()){
+                    video_protune_list_ordered[i] = data["setting_order"]["video_protune_list_ordered"].at(i).get<int32_t>();
+                }
+            }
+        }
+        if(data["setting_order"]["photo_protune_list_ordered"].is_array() && data["setting_order"]["photo_protune_list_ordered"].size() == photo_protune_list_ordered.size()){
+            for(int32_t i = 0; i < photo_protune_list_ordered.size(); i++){
+                if(data["setting_order"]["photo_protune_list_ordered"].at(i).is_number_integer()){
+                    photo_protune_list_ordered[i] = data["setting_order"]["photo_protune_list_ordered"].at(i).get<int32_t>();
+                }
             }
         }
     }
@@ -335,8 +382,20 @@ void InspectorWindow::draw_command_global(){
 }
 
 void InspectorWindow::reset_setting_order(){
-    for(int32_t i = 0; i < GOPRO_SETTING_SIZE; i++){
-        setting_list_ordered[i] = GOPRO_SETTING_IDS[i];
+    for(int32_t i = 0; i < system_list_ordered.size(); i++){
+        system_list_ordered[i] = GOPRO_SYSTEM_SETTING_IDS[i];
+    }
+    for(int32_t i = 0; i < video_setting_list_ordered.size(); i++){
+        video_setting_list_ordered[i] = GOPRO_VIDEO_SETTING_IDS[i];
+    }
+    for(int32_t i = 0; i < photo_setting_list_ordered.size(); i++){
+        photo_setting_list_ordered[i] = GOPRO_PHOTO_SETTING_IDS[i];
+    }
+    for(int32_t i = 0; i < video_protune_list_ordered.size(); i++){
+        video_protune_list_ordered[i] = GOPRO_VIDEO_PROTUNE_SETTING_IDS[i];
+    }
+    for(int32_t i = 0; i < photo_protune_list_ordered.size(); i++){
+        photo_protune_list_ordered[i] = GOPRO_PHOTO_PROTUNE_SETTING_IDS[i];
     }
 }
 
