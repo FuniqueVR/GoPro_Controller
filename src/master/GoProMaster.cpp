@@ -372,6 +372,10 @@ void GoProMaster::registerCameraStatusFeedback(camera_status_feedback v){
     _camera_status_feedback = v;
 }
 
+void GoProMaster::registerCameraHWFeedback(camera_hw_feedback v){
+    _camera_hw_feedback = v;
+}
+
 void GoProMaster::registerCameraLogFeedback(camera_log_feedback v){
     _camera_log_feedback = v;
 }
@@ -559,6 +563,11 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
                     }
                 }else{
                     std::cout << "Skip status feedback: Detect function pointer is NULL" << std::endl;
+                }
+                if(_camera_hw_feedback != NULL){
+                    _camera_hw_feedback(_cam.ip, _cam.hw);
+                }else{
+                    std::cout << "Skip hw feedback: Detect function pointer is NULL" << std::endl;
                 }
                 count++;
             }

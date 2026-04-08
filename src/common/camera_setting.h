@@ -2131,7 +2131,7 @@ const static int32_t EXPOSURE_SUPPORT[] = {
 #pragma region Color
 #define COLOR_ID 116
 #define COLOR_SIZE 3
-#define COLOR_NAME "EV Comp"
+#define COLOR_NAME "Color"
 #define COLOR_AVA MODEL_MAX2_ALL
 const static char* COLOR_STRING[] = {
     "Vibrant",

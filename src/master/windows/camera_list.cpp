@@ -380,8 +380,15 @@ void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
             if(setting[std::to_string(ISO_MIN_ID)].is_number() && setting[std::to_string(ISO_MAX_ID)].is_number()){
                 int32_t iso_min = setting[std::to_string(ISO_MIN_ID)].get<int32_t>();
                 int32_t iso_max = setting[std::to_string(ISO_MAX_ID)].get<int32_t>();
-                std::string iso_min_text = ISO_MIN_VIDEO_STRING[iso_min];
-                std::string iso_max_text = ISO_MAX_VIDEO_STRING[iso_max];
+                std::string iso_min_text = "ISO MIN";
+                std::string iso_max_text = "ISO MAX";
+                if(preset == 0){
+                    iso_min_text = ISO_MIN_VIDEO_STRING[iso_min];
+                    iso_max_text = ISO_MAX_VIDEO_STRING[iso_max];
+                }else{
+                    iso_min_text = ISO_MIN_PHOTO_STRING[iso_min];
+                    iso_max_text = ISO_MAX_PHOTO_STRING[iso_max];
+                }
                 iso_setting = "I: " + iso_min_text + " " + iso_max_text;
             }
             if(setting[std::to_string(WHITE_BALANCE_ID)].is_number()){

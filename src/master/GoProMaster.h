@@ -19,6 +19,7 @@
 
 typedef void (*camera_setting_feedback)(std::string ip, json setting);
 typedef void (*camera_status_feedback)(std::string ip, json status);
+typedef void (*camera_hw_feedback)(std::string ip, json hw);
 typedef void (*camera_log_feedback)(std::string key, std::string value);
 
 
@@ -106,6 +107,7 @@ public:
      * Called when fetch Monitor data
      */
     void registerCameraStatusFeedback(camera_status_feedback v);
+    void registerCameraHWFeedback(camera_hw_feedback v);
     void registerCameraLogFeedback(camera_log_feedback v);
 
     /**
@@ -159,6 +161,7 @@ private:
     std::unordered_map<std::string, bool> mediaQueryFinish = std::unordered_map<std::string, bool>();
     camera_setting_feedback _camera_setting_feedback = NULL;
     camera_status_feedback _camera_status_feedback = NULL;
+    camera_hw_feedback _camera_hw_feedback = NULL;
     camera_log_feedback _camera_log_feedback = NULL;
     /**
      * Is app exit or not flag

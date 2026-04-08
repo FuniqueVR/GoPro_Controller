@@ -121,7 +121,7 @@ void InspectorWindow::set_window_data(json data) {
         if(data["setting_order"]["photo_setting_list_ordered"].is_array() && data["setting_order"]["photo_setting_list_ordered"].size() == photo_setting_list_ordered.size()){
             for(int32_t i = 0; i < photo_setting_list_ordered.size(); i++){
                 if(data["setting_order"]["photo_setting_list_ordered"].at(i).is_number_integer()){
-                    system_list_ordered[i] = data["setting_order"]["photo_setting_list_ordered"].at(i).get<int32_t>();
+                    photo_setting_list_ordered[i] = data["setting_order"]["photo_setting_list_ordered"].at(i).get<int32_t>();
                 }
             }
         }
@@ -406,11 +406,16 @@ void InspectorWindow::reset_status_order(){
 }
 
 void InspectorWindow::_draw_setting(std::vector<int32_t>& ordered){
-    int move_from = -1, move_to = -1;
+    int32_t move_from = -1, move_to = -1;
+    int32_t model_enum = _get_current_model();
     for(int32_t i = 0; i < ordered.size(); i++){
         int32_t id = ordered[i];
         std::string name = GET_SETTING_NAME_BY_ID(id);
         size_t size = GET_SETTING_SIZE_BY_ID(id);
+        int32_t ava = GET_SETTING_AVA_BY_ID(id);
+        if((model_enum&ava) == 0){
+            continue;
+        }
         if (!state->current_setting_items[std::to_string(id)].is_number()) {
             continue;
         }
@@ -433,10 +438,16 @@ void InspectorWindow::_draw_setting(std::vector<int32_t>& ordered){
         if(select_string == nullptr) continue;
 
         const int32_t* values_id = GET_SETTING_VALUE_BY_ID(id);
+        const int32_t* support_id = GET_SETTING_SUPPORT_BY_ID(id);
 
         if(ImGui::BeginCombo(name.c_str(), select_string)){
             for (int n = 0; n < size; n++)
             {
+                int32_t supp = support_id[n];
+                if((model_enum&supp) == 0){
+                    continue;
+                }
+
                 std::string option = GET_SETTING_STRING_BY_ID(id)[n];
                 if(option.size() == 0) continue;
                 bool is_selected = (state->current_setting_items[std::to_string(id)] == n); // You can store your selection however you want, outside or inside your objects
@@ -483,4 +494,18 @@ void InspectorWindow::_draw_setting(std::vector<int32_t>& ordered){
         //ImGui::SetDragDropPayload("INSPECTOR_SETTING", &move_to, sizeof(int));
         state->update_server();
     }
+}
+
+int32_t InspectorWindow::_get_current_model(){
+    if(state->current_hw_items["model_name"].is_string()){
+        std::string model_name = state->current_hw_items["model_name"].get<std::string>();
+        if(model_name == "MAX 2") return MODEL_MAX2;
+        else if(model_name == "HERO13 Black") return MODEL_13;
+        else if(model_name == "HERO12 Black") return MODEL_12;
+        else if(model_name == "HERO11 Black") return MODEL_11_BLACK;
+        else if(model_name == "HERO11 Black Mini") return MODEL_11;
+        else if(model_name == "HERO10 Black") return MODEL_10;
+        else if(model_name == "HERO9 Black") return MODEL_9;
+    }
+    else return 0;
 }

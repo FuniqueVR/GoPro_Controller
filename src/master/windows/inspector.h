@@ -32,6 +32,7 @@ public:
     void reset_status_order();
 protected:
     virtual void _draw_setting(std::vector<int32_t>& ordered);
+    int32_t _get_current_model();
 
 private:
     std::vector<int32_t> system_list_ordered;
