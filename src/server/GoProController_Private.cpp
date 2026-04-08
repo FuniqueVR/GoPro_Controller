@@ -233,6 +233,14 @@ std::pair<std::string, std::string> GoProController::_queryStatus(std::string ta
     return _getSingleResponse(target, "/gopro/camera/state");
 }
 
+std::vector<std::pair<std::string, std::string>> GoProController::_queryAllHW(std::vector<std::string> targets){
+    return _getAllResponse(targets, "/gopro/camera/info");
+}
+
+std::pair<std::string, std::string> GoProController::_queryHW(std::string target){
+    return _getSingleResponse(target, "/gopro/camera/info");
+}
+
 std::vector<std::pair<std::string, std::string>> GoProController::_setAllSetting(std::vector<std::string> targets, int32_t ID, std::string value){
     std::string url = "/gopro/camera/setting?option=";
     url += value;

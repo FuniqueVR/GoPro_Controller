@@ -91,6 +91,8 @@ protected:
     // Status part of calls
     std::vector<std::pair<std::string, std::string>> _queryAllStatus(std::vector<std::string> targets);
     std::pair<std::string, std::string> _queryStatus(std::string target);
+    std::vector<std::pair<std::string, std::string>> _queryAllHW(std::vector<std::string> targets);
+    std::pair<std::string, std::string> _queryHW(std::string target);
     std::vector<std::pair<std::string, std::string>> _setAllSetting(std::vector<std::string> targets, int32_t ID, std::string value);
     std::pair<std::string, std::string> _setSetting(std::string target, int32_t ID, std::string value);
     // Webcam part of calls

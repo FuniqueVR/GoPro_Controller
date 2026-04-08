@@ -46,7 +46,11 @@ InspectorWindow::InspectorWindow(
 ) 
     : BaseWindow(_setting, _state, _master) {
     title = "Inspector";
-    setting_list_ordered = std::vector<int32_t>(GOPRO_SETTING_SIZE);
+    system_list_ordered = std::vector<int32_t>(GOPRO_SYSTEM_SETTING_SIZE);
+    video_setting_list_ordered = std::vector<int32_t>(GOPRO_VIDEO_SETTING_SIZE);
+    photo_setting_list_ordered = std::vector<int32_t>(GOPRO_PHOTO_SETTING_SIZE);
+    video_protune_list_ordered = std::vector<int32_t>(GOPRO_VIDEO_PROTUNE_SETTING_SIZE);
+    photo_protune_list_ordered = std::vector<int32_t>(GOPRO_PHOTO_PROTUNE_SETTING_SIZE);
     status_list_ordered = std::vector<int32_t>(GOPRO_STATUS_SIZE);
     reset_setting_order();
     reset_status_order();
@@ -61,10 +65,27 @@ json InspectorWindow::get_window_data() {
     data["put_finish"] = put_finish;
     data["create_date_folder"] = create_date_folder;
     data["current_download_location"] = state->current_download_location;
-    data["setting_order"] = json::array();
+    data["setting_order"] = json::object();
     data["status_order"] = json::array();
-    for(int32_t i = 0; i < GOPRO_SETTING_SIZE; i++){
-        data["setting_order"].push_back(setting_list_ordered[i]);
+    data["setting_order"]["system_list_ordered"] = json::array();
+    data["setting_order"]["video_setting_list_ordered"] = json::array();
+    data["setting_order"]["photo_setting_list_ordered"] = json::array();
+    data["setting_order"]["video_protune_list_ordered"] = json::array();
+    data["setting_order"]["photo_protune_list_ordered"] = json::array();
+    for(int32_t i = 0; i < system_list_ordered.size(); i++){
+        data["setting_order"]["system_list_ordered"].push_back(system_list_ordered[i]);
+    }
+    for(int32_t i = 0; i < video_setting_list_ordered.size(); i++){
+        data["setting_order"]["video_setting_list_ordered"].push_back(video_setting_list_ordered[i]);
+    }
+    for(int32_t i = 0; i < photo_setting_list_ordered.size(); i++){
+        data["setting_order"]["photo_setting_list_ordered"].push_back(photo_setting_list_ordered[i]);
+    }
+    for(int32_t i = 0; i < video_protune_list_ordered.size(); i++){
+        data["setting_order"]["video_protune_list_ordered"].push_back(video_protune_list_ordered[i]);
+    }
+    for(int32_t i = 0; i < photo_protune_list_ordered.size(); i++){
+        data["setting_order"]["photo_protune_list_ordered"].push_back(photo_protune_list_ordered[i]);
     }
     for(int32_t i = 0; i < GOPRO_STATUS_SIZE; i++){
         data["status_order"].push_back(status_list_ordered[i]);
@@ -82,10 +103,40 @@ void InspectorWindow::set_window_data(json data) {
     if(data["current_download_location"].is_string()){
         state->current_download_location = data["current_download_location"].get<std::string>();
     }
-    if(data["setting_order"].is_array() && data["setting_order"].size() == GOPRO_SETTING_SIZE){
-        for(int32_t i = 0; i < GOPRO_SETTING_SIZE; i++){
-            if(data["setting_order"].at(i).is_number_integer()){
-                setting_list_ordered[i] = data["setting_order"].at(i).get<int32_t>();
+    if(data["setting_order"].is_object()){
+        if(data["setting_order"]["system_list_ordered"].is_array() && data["setting_order"]["system_list_ordered"].size() == system_list_ordered.size()){
+            for(int32_t i = 0; i < system_list_ordered.size(); i++){
+                if(data["setting_order"]["system_list_ordered"].at(i).is_number_integer()){
+                    system_list_ordered[i] = data["setting_order"]["system_list_ordered"].at(i).get<int32_t>();
+                }
+            }
+        }
+        if(data["setting_order"]["video_setting_list_ordered"].is_array() && data["setting_order"]["video_setting_list_ordered"].size() == video_setting_list_ordered.size()){
+            for(int32_t i = 0; i < system_list_ordered.size(); i++){
+                if(data["setting_order"]["video_setting_list_ordered"].at(i).is_number_integer()){
+                    video_setting_list_ordered[i] = data["setting_order"]["video_setting_list_ordered"].at(i).get<int32_t>();
+                }
+            }
+        }
+        if(data["setting_order"]["photo_setting_list_ordered"].is_array() && data["setting_order"]["photo_setting_list_ordered"].size() == photo_setting_list_ordered.size()){
+            for(int32_t i = 0; i < photo_setting_list_ordered.size(); i++){
+                if(data["setting_order"]["photo_setting_list_ordered"].at(i).is_number_integer()){
+                    photo_setting_list_ordered[i] = data["setting_order"]["photo_setting_list_ordered"].at(i).get<int32_t>();
+                }
+            }
+        }
+        if(data["setting_order"]["video_protune_list_ordered"].is_array() && data["setting_order"]["video_protune_list_ordered"].size() == video_protune_list_ordered.size()){
+            for(int32_t i = 0; i < video_protune_list_ordered.size(); i++){
+                if(data["setting_order"]["video_protune_list_ordered"].at(i).is_number_integer()){
+                    video_protune_list_ordered[i] = data["setting_order"]["video_protune_list_ordered"].at(i).get<int32_t>();
+                }
+            }
+        }
+        if(data["setting_order"]["photo_protune_list_ordered"].is_array() && data["setting_order"]["photo_protune_list_ordered"].size() == photo_protune_list_ordered.size()){
+            for(int32_t i = 0; i < photo_protune_list_ordered.size(); i++){
+                if(data["setting_order"]["photo_protune_list_ordered"].at(i).is_number_integer()){
+                    photo_protune_list_ordered[i] = data["setting_order"]["photo_protune_list_ordered"].at(i).get<int32_t>();
+                }
             }
         }
     }
@@ -105,32 +156,39 @@ void InspectorWindow::render(){
         int32_t camera_ip = master->findCamera(state->current_camera_item);
         bool should_disabled = state->current_camera_item.size() < 10 || camera_ip == -1 || !state->current_setting_items_bind;
 
-        ImGui::InputText("Camera Name", &state->current_camera_name);
-        if(ImGui::Button("Rename Camera")){
-            master->command_with_value("rename", state->current_camera_item, state->current_camera_name);
-        }
-        ImGui::Text("Name: %s, IP: %s", state->current_camera_name.c_str(), state->current_camera_item.c_str());
-
+        draw_header();
         ImGui::BeginDisabled(should_disabled);
-
-        if(ImGui::Button("Reset Setting Order")){
-            reset_setting_order();
-            state->update_server();
-        }
-        ImGui::SameLine();
-        if(ImGui::Button("Reset Status Order")){
-            reset_status_order();
-            state->update_server();
-        }
 
         ImGui::Separator();
 
-        if(ImGui::BeginTabBar("Inspector_Bar")){
+        if(ImGui::BeginTabBar("Inspector_Bar##Top")){
             if(ImGui::BeginTabItem("Setting##Inspector_Bar_Item")){
-                draw_setting();
+                if(ImGui::Button("Reset Setting Order")){
+                    reset_setting_order();
+                    state->update_server();
+                }
+                if(ImGui::BeginTabBar("Inspector_Bar##Second")){
+                    if(ImGui::BeginTabItem("System##Inspector_Bar_Item")){
+                        draw_system();
+                        ImGui::EndTabItem();
+                    }
+                    if(ImGui::BeginTabItem("Setting##Inspector_Bar_Item")){
+                        draw_setting();
+                        ImGui::EndTabItem();
+                    }
+                    if(ImGui::BeginTabItem("Protune##Inspector_Bar_Item")){
+                        draw_protune();
+                        ImGui::EndTabItem();
+                    }
+                    ImGui::EndTabBar();
+                }
                 ImGui::EndTabItem();
             }
             if(ImGui::BeginTabItem("Status##Inspector_Bar_Item")){
+                if(ImGui::Button("Reset Status Order")){
+                    reset_status_order();
+                    state->update_server();
+                }
                 draw_status();
                 ImGui::EndTabItem();
             }
@@ -146,83 +204,37 @@ void InspectorWindow::render(){
     ImGui::End();
 }
 
+void InspectorWindow::draw_header(){
+    ImGui::InputText("Camera Name", &state->current_camera_name);
+    if(ImGui::Button("Rename Camera")){
+        master->command_with_value("rename", state->current_camera_item, state->current_camera_name);
+    }
+    ImGui::Text("Name: %s, IP: %s", state->current_camera_name.c_str(), state->current_camera_item.c_str());
+}
+
+void InspectorWindow::draw_system(){
+    _draw_setting(system_list_ordered);
+}
+
 void InspectorWindow::draw_setting(){
-    int move_from = -1, move_to = -1;
-    for(int32_t i = 0; i < GOPRO_SETTING_SIZE; i++){
-        int32_t id = setting_list_ordered[i];
-        std::string name = GET_SETTING_NAME_BY_ID(id);
-        size_t size = GET_SETTING_SIZE_BY_ID(id);
-        if (!state->current_setting_items[std::to_string(id)].is_number()) {
-            continue;
-        }
-        if (name.size() == 0) {
-            continue;
-        }
-
-        name += "##InspectorTitle";
-        int32_t select_index = state->current_setting_items[std::to_string(id)].get<int32_t>();
-        const char** select_string_list = GET_SETTING_STRING_BY_ID(id);
-        if(select_string_list == nullptr) {
-            std::cerr << "Inspector: select_string_list == nullptr" << std::endl;
-            continue;
-        }
-        if(select_index >= size) {
-            std::cerr << "Inspector: select_index >= size..." << id << "..." << select_index << "..." << size << std::endl;
-            continue;
-        }
-        const char* select_string = select_string_list[select_index];
-        if(select_string == nullptr) continue;
-
-        const int32_t* values_id = GET_SETTING_VALUE_BY_ID(id);
-
-        if(ImGui::BeginCombo(name.c_str(), select_string)){
-            for (int n = 0; n < size; n++)
-            {
-                std::string option = GET_SETTING_STRING_BY_ID(id)[n];
-                if(option.size() == 0) continue;
-                bool is_selected = (state->current_setting_items[std::to_string(id)] == n); // You can store your selection however you want, outside or inside your objects
-                option += ("##InspectorOption_" + name); 
-                if (ImGui::Selectable(option.c_str(), is_selected))
-                {
-                    state->current_setting_items[std::to_string(id)] = n; // Change index
-                    master->apply(state->current_camera_item, id, values_id[n]);
-                }
-                if (is_selected)
-                    ImGui::SetItemDefaultFocus();   // You may set the initial focus when opening the combo (scrolling + for keyboard navigation support)
-            }
-            ImGui::EndCombo();
-        }
-        
-        ImGuiDragDropFlags src_flags = 0;
-        src_flags |= ImGuiDragDropFlags_SourceNoDisableHover;
-        src_flags |= ImGuiDragDropFlags_SourceNoHoldToOpenOthers;
-        //src_flags |= ImGuiDragDropFlags_SourceNoPreviewTooltip;
-        if(ImGui::BeginDragDropSource(src_flags)){
-            if (!(src_flags & ImGuiDragDropFlags_SourceNoPreviewTooltip))
-                ImGui::Text("Moving \"%s\"", name.c_str());
-            ImGui::SetDragDropPayload("INSPECTOR_SETTING", &i, sizeof(int));
-            ImGui::EndDragDropSource();
-        }
-
-        if(ImGui::BeginDragDropTarget()){
-            ImGuiDragDropFlags target_flags = 0;
-            target_flags |= ImGuiDragDropFlags_AcceptBeforeDelivery;
-            target_flags |= ImGuiDragDropFlags_AcceptNoDrawDefaultRect;
-            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("INSPECTOR_SETTING", target_flags))
-            {
-                move_from = *(const int*)payload->Data;
-                move_to = i;
-            }
-            ImGui::EndDragDropTarget();
+    if (state->current_status_items[std::to_string(PRESET_ID)].is_number()) {
+        int32_t preset = state->current_status_items[std::to_string(PRESET_ID)].get<int32_t>();
+        if(preset == 0){
+            _draw_setting(video_setting_list_ordered);
+        }else{
+            _draw_setting(photo_setting_list_ordered);
         }
     }
-    if (move_from != -1 && move_to != -1)
-    {
-        const int32_t tmp = setting_list_ordered[move_from];
-        setting_list_ordered[move_from] = setting_list_ordered[move_to];
-        setting_list_ordered[move_to] = tmp;
-        //ImGui::SetDragDropPayload("INSPECTOR_SETTING", &move_to, sizeof(int));
-        state->update_server();
+}
+
+void InspectorWindow::draw_protune(){
+    if (state->current_status_items[std::to_string(PRESET_ID)].is_number()) {
+        int32_t preset = state->current_status_items[std::to_string(PRESET_ID)].get<int32_t>();
+        if(preset == 0){
+            _draw_setting(video_protune_list_ordered);
+        }else{
+            _draw_setting(photo_protune_list_ordered);       
+        }
     }
 }
 
@@ -361,9 +373,29 @@ void InspectorWindow::draw_media(){
     }
 }
 
+void InspectorWindow::draw_command_local(){
+
+}
+
+void InspectorWindow::draw_command_global(){
+    
+}
+
 void InspectorWindow::reset_setting_order(){
-    for(int32_t i = 0; i < GOPRO_SETTING_SIZE; i++){
-        setting_list_ordered[i] = GOPRO_SETTING_IDS[i];
+    for(int32_t i = 0; i < system_list_ordered.size(); i++){
+        system_list_ordered[i] = GOPRO_SYSTEM_SETTING_IDS[i];
+    }
+    for(int32_t i = 0; i < video_setting_list_ordered.size(); i++){
+        video_setting_list_ordered[i] = GOPRO_VIDEO_SETTING_IDS[i];
+    }
+    for(int32_t i = 0; i < photo_setting_list_ordered.size(); i++){
+        photo_setting_list_ordered[i] = GOPRO_PHOTO_SETTING_IDS[i];
+    }
+    for(int32_t i = 0; i < video_protune_list_ordered.size(); i++){
+        video_protune_list_ordered[i] = GOPRO_VIDEO_PROTUNE_SETTING_IDS[i];
+    }
+    for(int32_t i = 0; i < photo_protune_list_ordered.size(); i++){
+        photo_protune_list_ordered[i] = GOPRO_PHOTO_PROTUNE_SETTING_IDS[i];
     }
 }
 
@@ -371,4 +403,158 @@ void InspectorWindow::reset_status_order(){
     for(int32_t i = 0; i < GOPRO_STATUS_SIZE; i++){
         status_list_ordered[i] = GOPRO_STATUS_IDS[i];
     }
+}
+
+void InspectorWindow::_draw_setting(std::vector<int32_t>& ordered){
+    int32_t move_from = -1, move_to = -1;
+    int32_t model_enum = _get_current_model();
+    for(int32_t i = 0; i < ordered.size(); i++){
+        int32_t id = ordered[i];
+        std::string name = GET_SETTING_NAME_BY_ID(id);
+        size_t size = GET_SETTING_SIZE_BY_ID(id);
+        int32_t ava = GET_SETTING_AVA_BY_ID(id);
+        if((model_enum&ava) == 0){
+            continue;
+        }
+        if (!state->current_setting_items[std::to_string(id)].is_number()) {
+            continue;
+        }
+        if (name.size() == 0) {
+            continue;
+        }
+
+        name += "##InspectorTitle";
+        int32_t select_index = state->current_setting_items[std::to_string(id)].get<int32_t>();
+        const char** select_string_list = GET_SETTING_STRING_BY_ID(id);
+        if(select_string_list == nullptr) {
+            std::cerr << "Inspector: select_string_list == nullptr" << std::endl;
+            continue;
+        }
+        if(select_index >= size) {
+            std::cerr << "Inspector: select_index >= size..." << id << "..." << select_index << "..." << size << std::endl;
+            continue;
+        }
+        const char* select_string = select_string_list[select_index];
+        if(select_string == nullptr) continue;
+
+        const int32_t* values_id = GET_SETTING_VALUE_BY_ID(id);
+        const int32_t* support_id = GET_SETTING_SUPPORT_BY_ID(id);
+
+        if(ImGui::BeginCombo(name.c_str(), select_string)){
+            for (int n = 0; n < size; n++)
+            {
+                int32_t supp = support_id[n];
+                if((model_enum&supp) == 0){
+                    continue;
+                }
+                if(!conditional_filter(model_enum, id, n)){
+                    continue;
+                }
+
+                std::string option = GET_SETTING_STRING_BY_ID(id)[n];
+                if(option.size() == 0) continue;
+                bool is_selected = (state->current_setting_items[std::to_string(id)] == n); // You can store your selection however you want, outside or inside your objects
+                option += ("##InspectorOption_" + name); 
+                if (ImGui::Selectable(option.c_str(), is_selected))
+                {
+                    state->current_setting_items[std::to_string(id)] = n; // Change index
+                    master->apply(state->current_camera_item, id, values_id[n]);
+                }
+                if (is_selected)
+                    ImGui::SetItemDefaultFocus();   // You may set the initial focus when opening the combo (scrolling + for keyboard navigation support)
+            }
+            ImGui::EndCombo();
+        }
+        
+        ImGuiDragDropFlags src_flags = 0;
+        src_flags |= ImGuiDragDropFlags_SourceNoDisableHover;
+        src_flags |= ImGuiDragDropFlags_SourceNoHoldToOpenOthers;
+        //src_flags |= ImGuiDragDropFlags_SourceNoPreviewTooltip;
+        if(ImGui::BeginDragDropSource(src_flags)){
+            if (!(src_flags & ImGuiDragDropFlags_SourceNoPreviewTooltip))
+                ImGui::Text("Moving \"%s\"", name.c_str());
+            ImGui::SetDragDropPayload("INSPECTOR_SETTING", &i, sizeof(int));
+            ImGui::EndDragDropSource();
+        }
+
+        if(ImGui::BeginDragDropTarget()){
+            ImGuiDragDropFlags target_flags = 0;
+            target_flags |= ImGuiDragDropFlags_AcceptBeforeDelivery;
+            target_flags |= ImGuiDragDropFlags_AcceptNoDrawDefaultRect;
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("INSPECTOR_SETTING", target_flags))
+            {
+                move_from = *(const int*)payload->Data;
+                move_to = i;
+            }
+            ImGui::EndDragDropTarget();
+        }
+    }
+    if (move_from != -1 && move_to != -1)
+    {
+        const int32_t tmp = ordered[move_from];
+        ordered[move_from] = ordered[move_to];
+        ordered[move_to] = tmp;
+        //ImGui::SetDragDropPayload("INSPECTOR_SETTING", &move_to, sizeof(int));
+        state->update_server();
+    }
+}
+
+int32_t InspectorWindow::_get_current_model(){
+    if(state->current_hw_items["model_name"].is_string()){
+        std::string model_name = state->current_hw_items["model_name"].get<std::string>();
+        if(model_name == "MAX 2") return MODEL_MAX2;
+        else if(model_name == "HERO13 Black") return MODEL_13;
+        else if(model_name == "HERO12 Black") return MODEL_12;
+        else if(model_name == "HERO11 Black") return MODEL_11_BLACK;
+        else if(model_name == "HERO11 Black Mini") return MODEL_11;
+        else if(model_name == "HERO10 Black") return MODEL_10;
+        else if(model_name == "HERO9 Black") return MODEL_9;
+    }
+    else return 0;
+}
+
+bool InspectorWindow::conditional_filter(int32_t mymodel, int32_t setting_id, int32_t value_index){
+    if(setting_id == VIDEO_RESOLUTION_ID){
+        int32_t aspect = 0;
+        if(state->current_setting_items[std::to_string(VIDEO_ASPECT_RATIO_ID)].is_number()){
+            aspect = state->current_setting_items[std::to_string(VIDEO_ASPECT_RATIO_ID)].get<int32_t>();
+        }
+        int32_t res_id = VIDEO_RESOLUTION_VALUE[value_index];
+        int32_t aspect_id = VIDEO_ASPECT_RATIO_VALUE[aspect];
+        if(aspect_id == 0){ // "4:3"
+            if(res_id != 6 &&
+            res_id != 18 && res_id != 25 && res_id != 27 &&
+            res_id != 111 && res_id != 112 && res_id != 113){
+                return false;
+            }
+        }
+        else if(aspect_id == 1){ // "16:9"
+            if(res_id != 1 && res_id != 4 && res_id != 9 &&
+            res_id != 100){
+                return false;
+            }
+        }
+        else if(aspect_id == 3){ // "8:7"
+            if(res_id != 26 && res_id != 28 && res_id != 107 &&
+            res_id != 108){
+                return false;
+            }
+        }
+        else if(aspect_id == 4){ // "9:16"
+            if(res_id != 109 && res_id != 110){
+                return false;
+            }
+        }
+        else if(aspect_id == 5){ // "21:9"
+            if(res_id != 35 && res_id != 36){
+                return false;
+            }
+        }
+        else if(aspect_id == 6){ // "1:1"
+            if(res_id != 37){
+                return false;
+            }
+        }
+    }
+    return true;
 }

@@ -243,7 +243,7 @@ inline std::string exec(std::string cmd) {
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback_pure);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &result);
         curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, 1500L);
-
+        curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT_MS, 1000L);
         res = curl_easy_perform(curl);
         
         curl_easy_cleanup(curl);
@@ -273,6 +273,7 @@ inline std::vector<std::string> execs(std::vector<std::string> cmds) {
             curl_easy_setopt(curlb, CURLOPT_WRITEFUNCTION, write_callback_pure);
             curl_easy_setopt(curlb, CURLOPT_WRITEDATA, &result[i]);
             curl_easy_setopt(curlb, CURLOPT_TIMEOUT_MS, 1500L);
+            curl_easy_setopt(curlb, CURLOPT_CONNECTTIMEOUT_MS, 1000L);
             curl_multi_add_handle(curlm, curlb);
         }
 
@@ -280,7 +281,7 @@ inline std::vector<std::string> execs(std::vector<std::string> cmds) {
 
         do {
             int32_t numfds = 0;
-            resm = curl_multi_wait(curlm, NULL, 0, 1500, &numfds);
+            resm = curl_multi_wait(curlm, NULL, 0, 50, &numfds);
 
             if(res != CURLE_OK) {
                 //std::cerr << "GET failed curl_multi_wait: " << numfds << "/" << cmds.size() << std::endl;

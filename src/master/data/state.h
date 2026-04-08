@@ -31,7 +31,12 @@ struct GlobalState {
     bool current_setting_items_bind = false;
     json current_status_items;
     bool current_status_items_bind = false;
-    // Current select camera IP address
+    json current_hw_items;
+    bool current_hw_items_bind = false;
+    /**
+     * Current select camera IP address
+     * {server_ip}_{camera_ip}
+     */
     std::string current_camera_item = "";
     // Apply state
     std::string apply_all_item_string = "Video Resolution";

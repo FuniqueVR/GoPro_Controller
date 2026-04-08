@@ -195,6 +195,7 @@ std::string GoProController::getAllModel(){
 std::string GoProController::queryStatus(std::string target){
     json arr = json::array();
     json res = json::object();
+    json hw = json::object();
     std::string address;
     if(target.size() > 0){
         try{
@@ -204,23 +205,35 @@ std::string GoProController::queryStatus(std::string target){
         }catch(const std::exception& ex){
             res = json::object();
         }
-        json i;
+        try{
+            std::pair<std::string, std::string> result = _queryHW(target);
+            address = result.first;
+            hw = json::parse(result.second);
+        }catch(const std::exception& ex){
+            hw = json::object();
+        }
+        json i = json::object();
         i["ip"] = address;
         i["status"] = res;
+        i["hw"] = hw;
         arr.push_back(i);
     }else{
         std::lock_guard<std::mutex> lock(ips_mutex);
         std::vector<std::pair<std::string, std::string>> results = _queryAllStatus(camera_ips);
+        std::vector<std::pair<std::string, std::string>> hresults = _queryAllHW(camera_ips);
         for(int32_t i = 0; i < results.size(); i++){
             try{
                 address = results[i].first;
                 res = json::parse(results[i].second);
+                hw = json::parse(hresults[i].second);
             }catch(const std::exception& ex){
                 res = json::object();
+                hw = json::object();
             }
-            json j;
+            json j = json::object();
             j["ip"] = address;
             j["status"] = res;
+            j["hw"] = hw;
             arr.push_back(j);
         }
     }
