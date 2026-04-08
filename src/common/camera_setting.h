@@ -2226,7 +2226,7 @@ const static int32_t ISO_MAX_VIDEO_SUPPORT[] = {
 
 #pragma region ISO Min Photo
 #define ISO_MIN_PHOTO_ID 75
-#define ISO_MIN_PHOTO_SIZE 8
+#define ISO_MIN_PHOTO_SIZE 6
 #define ISO_MIN_PHOTO_NAME "ISO Minimum"
 #define ISO_MIN_PHOTO_AVA MODEL_MAX2_ALL
 const static char* ISO_MIN_PHOTO_STRING[] = {
@@ -2257,7 +2257,7 @@ const static int32_t ISO_MIN_PHOTO_SUPPORT[] = {
 
 #pragma region ISO Max Photo
 #define ISO_MAX_PHOTO_ID 24
-#define ISO_MAX_PHOTO_SIZE 8
+#define ISO_MAX_PHOTO_SIZE 6
 #define ISO_MAX_PHOTO_NAME "ISO Maximum"
 #define ISO_MAX_PHOTO_AVA MODEL_MAX2_ALL
 const static char* ISO_MAX_PHOTO_STRING[] = {

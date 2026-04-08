@@ -447,6 +447,9 @@ void InspectorWindow::_draw_setting(std::vector<int32_t>& ordered){
                 if((model_enum&supp) == 0){
                     continue;
                 }
+                if(!conditional_filter(model_enum, id, n)){
+                    continue;
+                }
 
                 std::string option = GET_SETTING_STRING_BY_ID(id)[n];
                 if(option.size() == 0) continue;
@@ -508,4 +511,50 @@ int32_t InspectorWindow::_get_current_model(){
         else if(model_name == "HERO9 Black") return MODEL_9;
     }
     else return 0;
+}
+
+bool InspectorWindow::conditional_filter(int32_t mymodel, int32_t setting_id, int32_t value_index){
+    if(setting_id == VIDEO_RESOLUTION_ID){
+        int32_t aspect = 0;
+        if(state->current_setting_items[std::to_string(VIDEO_ASPECT_RATIO_ID)].is_number()){
+            aspect = state->current_setting_items[std::to_string(VIDEO_ASPECT_RATIO_ID)].get<int32_t>();
+        }
+        int32_t res_id = VIDEO_RESOLUTION_VALUE[value_index];
+        int32_t aspect_id = VIDEO_ASPECT_RATIO_VALUE[aspect];
+        if(aspect_id == 0){ // "4:3"
+            if(res_id != 6 &&
+            res_id != 18 && res_id != 25 && res_id != 27 &&
+            res_id != 111 && res_id != 112 && res_id != 113){
+                return false;
+            }
+        }
+        else if(aspect_id == 1){ // "16:9"
+            if(res_id != 1 && res_id != 4 && res_id != 9 &&
+            res_id != 100){
+                return false;
+            }
+        }
+        else if(aspect_id == 3){ // "8:7"
+            if(res_id != 26 && res_id != 28 && res_id != 107 &&
+            res_id != 108){
+                return false;
+            }
+        }
+        else if(aspect_id == 4){ // "9:16"
+            if(res_id != 109 && res_id != 110){
+                return false;
+            }
+        }
+        else if(aspect_id == 5){ // "21:9"
+            if(res_id != 35 && res_id != 36){
+                return false;
+            }
+        }
+        else if(aspect_id == 6){ // "1:1"
+            if(res_id != 37){
+                return false;
+            }
+        }
+    }
+    return true;
 }
