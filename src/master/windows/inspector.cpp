@@ -722,11 +722,24 @@ bool InspectorWindow::conditional_filter_option(int32_t mymodel, int32_t setting
                     }
                 }
                 else if(aspect_id == 4){ // "9:16"
-                    
+                    if(aspect_id == 3){ // 8:7
+                        // 30, 60
+                        if(value_id != 8 && value_id != 5) return false;
+                    }else{ // 16:9
+                        if(res_id == 100 || videolen_id == 9) { // 5:3K, hyperview
+                            // 24, 30
+                            if(value_id != 10 && value_id != 8) return false;
+                        }else{ // 4K
+                            // 24, 30, 60
+                            if(value_id != 10 && value_id != 8 && value_id != 5) return false;
+                        }
+                    }
                 }
             }
             else if(profile == 1) { // HDR
-            
+                if()
+                // 24, 30
+                if(value_id != 10 && value_id != 8) return false;
             }
             else if(profile == 2) { // LOG
             
