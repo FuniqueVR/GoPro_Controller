@@ -13,7 +13,7 @@
 #endif
 #include <iostream>
 #include <vector>
-#include "common/config.h"
+#include "../common/config.h"
 #include "hv/WebSocketServer.h"
 #include "hv/EventLoop.h"
 #include "hv/UdpServer.h"

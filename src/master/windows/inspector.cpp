@@ -39,6 +39,58 @@ std::filesystem::path get_home_directory() {
     }
 }
 
+std::vector<int32_t> Decode_Schedule_Time(int32_t value){
+    std::vector<int32_t> a = std::vector<int32_t>();
+    a.push_back(0); a.push_back(0); a.push_back(0);
+
+    if(value % 4 == 0) return std::vector<int32_t>();
+    if((value - 1) % 4 == 0 && value < 3073) a[0] = 1;
+    else if((value - 1) % 4 == 0 && value >= 3073) a[0] = 2;
+    else if((value + 1) % 4 == 0) a[0] = 3;
+
+    if(a[0] == 3){ // 24H
+        for(int32_t i = 0; i < 24; i++){ // 256 gap
+            int32_t starter = 3 + (256 * i);
+            if(value >= starter && value <= starter + 236){
+                a[1] = i;
+                a[2] = (value - starter) / 4;
+                break;
+            }
+        }
+    }else{ // 12H
+        for(int32_t i = 0; i < 12; i++){ // 256 gap
+            int32_t starter = -1;
+            if(a[0] == 2){ // PM
+                starter = 3073 + (256 * i);
+            }else{ // AM
+                starter = 1 + (256 * i);
+            }
+
+            if(value >= starter && value <= starter + 236){
+                a[1] = i;
+                a[2] = (value - starter) / 4;
+                break;
+            }
+        }
+    }
+
+    return a;
+}
+
+int32_t Encode_Schedule_Time(std::vector<int32_t> value){
+    if(value.size() == 0) return 0;
+    int32_t a = 0;
+    if(value.at(0) == 0) return 0;
+
+    if(value.at(0) == 1) a = 1; // AM
+    if(value.at(0) == 2) a = 3073; // PM
+    if(value.at(0) == 3) a = 3; // 24H
+
+    a += value.at(1) * 256;
+    a += value.at(2) * 4;
+    return a;
+}
+
 InspectorWindow::InspectorWindow(
     std::shared_ptr<json> _setting, 
     std::shared_ptr<GlobalState> _state, 
@@ -422,6 +474,9 @@ void InspectorWindow::_draw_setting(std::vector<int32_t>& ordered){
         if (name.size() == 0) {
             continue;
         }
+        if(!conditional_filter(model_enum, id)){
+            continue;
+        }
 
         name += "##InspectorTitle";
         int32_t select_index = state->current_setting_items[std::to_string(id)].get<int32_t>();
@@ -447,7 +502,7 @@ void InspectorWindow::_draw_setting(std::vector<int32_t>& ordered){
                 if((model_enum&supp) == 0){
                     continue;
                 }
-                if(!conditional_filter(model_enum, id, n)){
+                if(!conditional_filter_option(model_enum, id, n)){
                     continue;
                 }
 
@@ -513,7 +568,18 @@ int32_t InspectorWindow::_get_current_model(){
     else return 0;
 }
 
-bool InspectorWindow::conditional_filter(int32_t mymodel, int32_t setting_id, int32_t value_index){
+bool InspectorWindow::conditional_filter(int32_t mymodel, int32_t setting_id){
+    if(setting_id == SHUTTER_SPEED_VIDEO_ID){
+        int32_t profile = 0;
+        if(state->current_setting_items[std::to_string(PROFILES_ID)].is_number()){
+            profile = state->current_setting_items[std::to_string(PROFILES_ID)].get<int32_t>();
+        }
+        if(profile == 1) return false;
+    }
+    return true;
+}
+
+bool InspectorWindow::conditional_filter_option(int32_t mymodel, int32_t setting_id, int32_t value_index){
     if(setting_id == VIDEO_RESOLUTION_ID){
         int32_t aspect = 0;
         if(state->current_setting_items[std::to_string(VIDEO_ASPECT_RATIO_ID)].is_number()){
@@ -553,6 +619,32 @@ bool InspectorWindow::conditional_filter(int32_t mymodel, int32_t setting_id, in
         else if(aspect_id == 6){ // "1:1"
             if(res_id != 37){
                 return false;
+            }
+        }
+    }
+    else if(setting_id == SHUTTER_SPEED_VIDEO_ID){
+        if(mymodel&(ANTI_FLICKER_V2_AVA) > 0){
+            int32_t antif = 0;
+            if(state->current_setting_items[std::to_string(ANTI_FLICKER_V2_ID)].is_number()){
+                antif = state->current_setting_items[std::to_string(ANTI_FLICKER_V2_ID)].get<int32_t>();
+            }
+            if(antif == 1){
+                if(value_index != 0 && value_index != 51 && value_index != 50 &&
+                value_index != 30 && value_index != 49 && value_index != 29 &&
+                value_index != 48 && value_index != 28 && value_index != 47 &&
+                value_index != 21 && value_index != 46 && value_index != 17 &&
+                value_index != 45 && value_index != 12 && value_index != 44){
+                    return false;
+                }
+            }else{
+                if(value_index != 0 && value_index != 56 && value_index != 55 &&
+                value_index != 31 && value_index != 54 && value_index != 24 &&
+                value_index != 53 && value_index != 23 && value_index != 27 &&
+                value_index != 22 && value_index != 20 && value_index != 18 &&
+                value_index != 15 && value_index != 13 && value_index != 10 &&
+                value_index != 8){
+                    return false;
+                }
             }
         }
     }

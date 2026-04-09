@@ -713,7 +713,7 @@ const static int32_t MEDIA_FORMAT_SUPPORT[] = {
 #define ANTI_FLICKER_ID 134
 #define ANTI_FLICKER_SIZE 4
 #define ANTI_FLICKER_NAME "Anti-Flicker"
-#define ANTI_FLICKER_AVA MODEL_13_ALL
+#define ANTI_FLICKER_AVA MODEL_11_ALL
 const static char* ANTI_FLICKER_STRING[] = {
     "NTSC",
     "PAL",
@@ -731,6 +731,25 @@ const static int32_t ANTI_FLICKER_SUPPORT[] = {
     MODEL_13, // PAL 
     MODEL_12_ALL, // 60Hz 
     MODEL_12_ALL, // 50Hz
+};
+#pragma endregion
+
+#pragma region Anti Flicker
+#define ANTI_FLICKER_V2_ID 213
+#define ANTI_FLICKER_V2_SIZE 4
+#define ANTI_FLICKER_V2_NAME "Anti-Flicker v2"
+#define ANTI_FLICKER_V2_AVA MODEL_13|MODEL_12
+const static char* ANTI_FLICKER_V2_STRING[] = {
+    "Off",
+    "On",
+};
+const static int32_t ANTI_FLICKER_V2_VALUE[] = {
+    0, // Off
+    1, // On
+};
+const static int32_t ANTI_FLICKER_V2_SUPPORT[] = {
+    MODEL_13|MODEL_12, // Off
+    MODEL_13|MODEL_12, // On
 };
 #pragma endregion
 
