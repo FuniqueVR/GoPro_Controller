@@ -581,42 +581,60 @@ bool InspectorWindow::conditional_filter(int32_t mymodel, int32_t setting_id){
 }
 
 bool InspectorWindow::conditional_filter_option(int32_t mymodel, int32_t setting_id, int32_t value_index){
+    int32_t preset = state->try_get_setting_int32_by_id(PRESET_ID);
     if(setting_id == VIDEO_RESOLUTION_ID){
-        int32_t aspect = state->try_get_setting_int32_by_id(VIDEO_ASPECT_RATIO_ID);
-        int32_t res_id = VIDEO_RESOLUTION_VALUE[value_index];
-        int32_t aspect_id = VIDEO_ASPECT_RATIO_VALUE[aspect];
-        if(aspect_id == 0){ // "4:3"
-            if(res_id != 6 &&
-            res_id != 18 && res_id != 25 && res_id != 27 &&
-            res_id != 111 && res_id != 112 && res_id != 113){
-                return false;
+        if(preset == 0){
+            int32_t profile = state->try_get_setting_int32_by_id(PROFILES_ID);
+            int32_t aspect = state->try_get_setting_int32_by_id(VIDEO_ASPECT_RATIO_ID);
+            int32_t fps = state->try_get_setting_int32_by_id(FRAMES_PER_SECOND_ID);
+            int32_t res_id = VIDEO_RESOLUTION_VALUE[value_index];
+            int32_t aspect_id = VIDEO_ASPECT_RATIO_VALUE[aspect];
+            int32_t fps_id = FRAMES_PER_SECOND_VALUE[fps];
+
+            if(profile == 0){ // Standard
+                if(aspect_id == 0){ // "4:3"
+                    if(res_id != 6) return false;
+                }
+                else if(aspect_id == 1){ // "16:9"
+                    if(res_id != 4 && res_id != 9) return false;
+                }
+                else if(aspect_id == 3){ // "8:7"
+                    if(res_id != 108) return false;
+                }
+                else if(aspect_id == 4){ // "9:16"
+                    if(res_id != 109 && res_id != 110) return false;
+                }
+            }
+            else if(profile == 1){ // HDR
+                if(aspect_id == 3){ // "8:7"
+                    if(res_id != 108) return false;
+                }
+                else if(aspect_id == 1){ // "16:9"
+                    if(res_id != 1 && res_id != 100) return false;
+                }
+            }
+            else if(profile == 2){ // LOG
+                if(aspect_id == 3){ // "8:7"
+                    if(res_id != 107 && res_id != 108) return false;
+                }
+                else if(aspect_id == 1){ // "16:9"
+                    if(res_id != 1 && res_id != 100) return false;
+                }
             }
         }
-        else if(aspect_id == 1){ // "16:9"
-            if(res_id != 1 && res_id != 4 && res_id != 9 &&
-            res_id != 100){
-                return false;
+    }
+    else if(setting_id == VIDEO_ASPECT_RATIO_ID){
+        int32_t profile = state->try_get_setting_int32_by_id(PROFILES_ID);
+        int32_t aspect_id = VIDEO_ASPECT_RATIO_VALUE[value_index];
+        if(preset == 0){ // Video
+            if(profile == 0){ // Standard
+                if(aspect_id > 4) return false;
             }
-        }
-        else if(aspect_id == 3){ // "8:7"
-            if(res_id != 26 && res_id != 28 && res_id != 107 &&
-            res_id != 108){
-                return false;
+            else if(profile == 1){ // HDR
+                if(aspect_id != 1 && aspect_id != 3) return false;
             }
-        }
-        else if(aspect_id == 4){ // "9:16"
-            if(res_id != 109 && res_id != 110){
-                return false;
-            }
-        }
-        else if(aspect_id == 5){ // "21:9"
-            if(res_id != 35 && res_id != 36){
-                return false;
-            }
-        }
-        else if(aspect_id == 6){ // "1:1"
-            if(res_id != 37){
-                return false;
+            else if(profile == 2){ // LOG
+                if(aspect_id != 1 && aspect_id != 3) return false;
             }
         }
     }
