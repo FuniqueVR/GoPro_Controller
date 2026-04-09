@@ -570,21 +570,19 @@ int32_t InspectorWindow::_get_current_model(){
 
 bool InspectorWindow::conditional_filter(int32_t mymodel, int32_t setting_id){
     if(setting_id == SHUTTER_SPEED_VIDEO_ID){
-        int32_t profile = 0;
-        if(state->current_setting_items[std::to_string(PROFILES_ID)].is_number()){
-            profile = state->current_setting_items[std::to_string(PROFILES_ID)].get<int32_t>();
-        }
+        int32_t profile = state->try_get_setting_int32_by_id(PROFILES_ID);
         if(profile == 1) return false;
+    }
+    else if(setting_id == EXPOSURE_ID){
+        int32_t shutter = state->try_get_setting_int32_by_id(SHUTTER_SPEED_VIDEO_ID);
+        if(shutter != 0) return false;
     }
     return true;
 }
 
 bool InspectorWindow::conditional_filter_option(int32_t mymodel, int32_t setting_id, int32_t value_index){
     if(setting_id == VIDEO_RESOLUTION_ID){
-        int32_t aspect = 0;
-        if(state->current_setting_items[std::to_string(VIDEO_ASPECT_RATIO_ID)].is_number()){
-            aspect = state->current_setting_items[std::to_string(VIDEO_ASPECT_RATIO_ID)].get<int32_t>();
-        }
+        int32_t aspect = state->try_get_setting_int32_by_id(VIDEO_ASPECT_RATIO_ID);
         int32_t res_id = VIDEO_RESOLUTION_VALUE[value_index];
         int32_t aspect_id = VIDEO_ASPECT_RATIO_VALUE[aspect];
         if(aspect_id == 0){ // "4:3"
@@ -623,26 +621,24 @@ bool InspectorWindow::conditional_filter_option(int32_t mymodel, int32_t setting
         }
     }
     else if(setting_id == SHUTTER_SPEED_VIDEO_ID){
-        if(mymodel&(ANTI_FLICKER_V2_AVA) > 0){
-            int32_t antif = 0;
-            if(state->current_setting_items[std::to_string(ANTI_FLICKER_V2_ID)].is_number()){
-                antif = state->current_setting_items[std::to_string(ANTI_FLICKER_V2_ID)].get<int32_t>();
-            }
+        if((mymodel&(ANTI_FLICKER_V2_AVA)) > 0){
+            int32_t antif = state->try_get_setting_int32_by_id(ANTI_FLICKER_V2_ID);
+            int32_t ss_id = SHUTTER_SPEED_VIDEO_VALUE[value_index];
             if(antif == 1){
-                if(value_index != 0 && value_index != 51 && value_index != 50 &&
-                value_index != 30 && value_index != 49 && value_index != 29 &&
-                value_index != 48 && value_index != 28 && value_index != 47 &&
-                value_index != 21 && value_index != 46 && value_index != 17 &&
-                value_index != 45 && value_index != 12 && value_index != 44){
+                if(ss_id != 0 && ss_id != 51 && ss_id != 50 &&
+                ss_id != 30 && ss_id != 49 && ss_id != 29 &&
+                ss_id != 48 && ss_id != 28 && ss_id != 47 &&
+                ss_id != 21 && ss_id != 46 && ss_id != 17 &&
+                ss_id != 45 && ss_id != 12 && ss_id != 44){
                     return false;
                 }
             }else{
-                if(value_index != 0 && value_index != 56 && value_index != 55 &&
-                value_index != 31 && value_index != 54 && value_index != 24 &&
-                value_index != 53 && value_index != 23 && value_index != 27 &&
-                value_index != 22 && value_index != 20 && value_index != 18 &&
-                value_index != 15 && value_index != 13 && value_index != 10 &&
-                value_index != 8){
+                if(ss_id != 0 && ss_id != 56 && ss_id != 55 &&
+                ss_id != 31 && ss_id != 54 && ss_id != 24 &&
+                ss_id != 53 && ss_id != 23 && ss_id != 27 &&
+                ss_id != 22 && ss_id != 20 && ss_id != 18 &&
+                ss_id != 15 && ss_id != 13 && ss_id != 10 &&
+                ss_id != 8){
                     return false;
                 }
             }

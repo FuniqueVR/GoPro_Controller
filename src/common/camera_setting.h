@@ -2135,15 +2135,15 @@ const static int32_t EXPOSURE_VALUE[] = {
     0, // 2.0
 };
 const static int32_t EXPOSURE_SUPPORT[] = {
-    8, // -2.0
-    7, // -1.5
-    6, // -1.0
-    5, // -0.5
-    4, // 0.0
-    3, // 0.5
-    2, // 1.0
-    1, // 1.5
-    0, // 2.0
+    MODEL_MAX2_ALL, // -2.0
+    MODEL_MAX2_ALL, // -1.5
+    MODEL_MAX2_ALL, // -1.0
+    MODEL_MAX2_ALL, // -0.5
+    MODEL_MAX2_ALL, // 0.0
+    MODEL_MAX2_ALL, // 0.5
+    MODEL_MAX2_ALL, // 1.0
+    MODEL_MAX2_ALL, // 1.5
+    MODEL_MAX2_ALL, // 2.0
 };
 #pragma endregion
 
