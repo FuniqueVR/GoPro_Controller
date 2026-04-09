@@ -571,11 +571,11 @@ int32_t InspectorWindow::_get_current_model(){
 bool InspectorWindow::conditional_filter(int32_t mymodel, int32_t setting_id){
     if(setting_id == SHUTTER_SPEED_VIDEO_ID){
         int32_t profile = state->try_get_setting_int32_by_id(PROFILES_ID);
-        if(profile == 1) return false;
+        if(profile == 1) return false; // HDR
     }
     else if(setting_id == EXPOSURE_ID){
         int32_t shutter = state->try_get_setting_int32_by_id(SHUTTER_SPEED_VIDEO_ID);
-        if(shutter != 0) return false;
+        if(shutter != 0) return false; // Auto
     }
     return true;
 }
