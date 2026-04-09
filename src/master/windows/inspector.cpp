@@ -777,6 +777,9 @@ bool InspectorWindow::conditional_filter_option(int32_t mymodel, int32_t setting
     }
     else if(setting_id == VIDEO_LENS_ID){
         int32_t value_id = VIDEO_LENS_VALUE[value_index];
+        if(preset == 0){ // video
+            
+        }
     }
     else if(setting_id == SHUTTER_SPEED_VIDEO_ID){
         if((mymodel&(ANTI_FLICKER_V2_AVA)) > 0){
