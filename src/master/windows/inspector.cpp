@@ -704,7 +704,13 @@ bool InspectorWindow::conditional_filter_option(int32_t mymodel, int32_t setting
                     if(value_id != 1) return false;
                 }
                 else if(aspect_id == 1){ // "16:9"
-                    if(res_id == 4){ // 2.7K
+                    if(res_id == 1){ // 4K
+                        // 30, 60, 120, 24
+                        if(value_id != 8 && value_id != 5 && value_id != 1 && value_id != 10) return false;
+                    }
+                    else if(res_id == 100){ // 5.3K
+                    }
+                    else if(res_id == 4){ // 2.7K
                         // 240
                         if(value_id != 0) return false;
                     }else{ // 1080
@@ -722,27 +728,48 @@ bool InspectorWindow::conditional_filter_option(int32_t mymodel, int32_t setting
                     }
                 }
                 else if(aspect_id == 4){ // "9:16"
-                    if(aspect_id == 3){ // 8:7
-                        // 30, 60
-                        if(value_id != 8 && value_id != 5) return false;
-                    }else{ // 16:9
-                        if(res_id == 100 || videolen_id == 9) { // 5:3K, hyperview
-                            // 24, 30
-                            if(value_id != 10 && value_id != 8) return false;
-                        }else{ // 4K
-                            // 24, 30, 60
-                            if(value_id != 10 && value_id != 8 && value_id != 5) return false;
-                        }
-                    }
+                    // 60, 30
+                    if(value_id != 5 && value_id != 8) return false;
                 }
             }
             else if(profile == 1) { // HDR
-                if()
-                // 24, 30
-                if(value_id != 10 && value_id != 8) return false;
+                if(aspect_id == 3){ // 8:7
+                    // 24, 30
+                    if(value_id != 10 && value_id != 8) return false;
+                }else{ // 16:9
+                    if(res_id == 100 || videolen_id == 9 || videolen_id == 3){ // 5.3K
+                        // 24, 30
+                        if(value_id != 10 && value_id != 8) return false;
+                    }else{ // 4K
+                        // 24, 30, 60
+                        if(value_id != 10 && value_id != 8 && value_id != 5) return false;
+                    }
+                }
             }
             else if(profile == 2) { // LOG
-            
+                if(aspect_id == 1){ // 16:9
+                    if(res_id == 100){ // 5.3K
+                        if(videolen_id == 9) { // Hyperview
+                            // 30, 24
+                            if(value_id != 8 && value_id != 10) return false;
+                        }else{
+                            // 30, 60, 24
+                            if(value_id != 8 && value_id != 5 && value_id != 10) return false;
+                        }
+                    }else{ // 4K
+                        if(videolen_id == 9) { // Hyperview
+                            // 30, 60, 24
+                            if(value_id != 8 && value_id != 5 && value_id != 10) return false;
+                        }else{
+                            // 30, 60, 120, 24
+                            if(value_id != 8 && value_id != 5 && value_id != 1 && value_id != 10) return false;
+                        }
+                    }
+                }
+                else if(aspect_id == 3){ // 8:7
+                    // 30, 60, 24
+                    if(value_id != 8 && value_id != 5 && value_id != 10) return false;                    
+                }
             }
         }
     }
