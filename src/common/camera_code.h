@@ -16,6 +16,9 @@
 #include "camera_status.h"
 #include "camera_other.h"
 
+/**
+ * Things must be register here, to the converter works
+ */
 const static int32_t GOPRO_SETTING_IDS[] = {
     VIDEO_RESOLUTION_ID,
     FRAMES_PER_SECOND_ID,
