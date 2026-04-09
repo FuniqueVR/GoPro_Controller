@@ -569,13 +569,15 @@ int32_t InspectorWindow::_get_current_model(){
 }
 
 bool InspectorWindow::conditional_filter(int32_t mymodel, int32_t setting_id){
+    int32_t preset = state->try_get_status_int32_by_id(PRESET_ID);
+
     if(setting_id == SHUTTER_SPEED_VIDEO_ID){
         int32_t profile = state->try_get_setting_int32_by_id(PROFILES_ID);
         if(profile == 1) return false; // HDR
     }
     else if(setting_id == EXPOSURE_ID){
         int32_t shutter = state->try_get_setting_int32_by_id(SHUTTER_SPEED_VIDEO_ID);
-        if(shutter != 0) return false; // Auto
+        if(shutter != 0 && preset == 0) return false; // Auto, and video mode
     }
     return true;
 }
@@ -799,6 +801,9 @@ bool InspectorWindow::conditional_filter_option(int32_t mymodel, int32_t setting
             }
         }
     }
-    
+    else if(setting_id == PHOTO_LENS_ID){
+        int32_t value_id = PHOTO_LENS_VALUE[value_index];
+        if(value_id != 31 && value_id != 32) return false;
+    }
     return true;
 }
