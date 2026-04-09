@@ -157,28 +157,28 @@ void InspectorWindow::set_window_data(json data) {
     }
     if(data["setting_order"].is_object()){
         if(data["setting_order"]["system_list_ordered"].is_array() && data["setting_order"]["system_list_ordered"].size() == system_list_ordered.size()){
-            for(int32_t i = 0; i < system_list_ordered.size(); i++){
+            for(int32_t i = 0; i < data["setting_order"]["system_list_ordered"].size(); i++){
                 if(data["setting_order"]["system_list_ordered"].at(i).is_number_integer()){
                     system_list_ordered[i] = data["setting_order"]["system_list_ordered"].at(i).get<int32_t>();
                 }
             }
         }
         if(data["setting_order"]["video_setting_list_ordered"].is_array() && data["setting_order"]["video_setting_list_ordered"].size() == video_setting_list_ordered.size()){
-            for(int32_t i = 0; i < system_list_ordered.size(); i++){
+            for(int32_t i = 0; i < data["setting_order"]["video_setting_list_ordered"].size(); i++){
                 if(data["setting_order"]["video_setting_list_ordered"].at(i).is_number_integer()){
                     video_setting_list_ordered[i] = data["setting_order"]["video_setting_list_ordered"].at(i).get<int32_t>();
                 }
             }
         }
         if(data["setting_order"]["photo_setting_list_ordered"].is_array() && data["setting_order"]["photo_setting_list_ordered"].size() == photo_setting_list_ordered.size()){
-            for(int32_t i = 0; i < photo_setting_list_ordered.size(); i++){
+            for(int32_t i = 0; i < data["setting_order"]["photo_setting_list_ordered"].size(); i++){
                 if(data["setting_order"]["photo_setting_list_ordered"].at(i).is_number_integer()){
                     photo_setting_list_ordered[i] = data["setting_order"]["photo_setting_list_ordered"].at(i).get<int32_t>();
                 }
             }
         }
         if(data["setting_order"]["video_protune_list_ordered"].is_array() && data["setting_order"]["video_protune_list_ordered"].size() == video_protune_list_ordered.size()){
-            for(int32_t i = 0; i < video_protune_list_ordered.size(); i++){
+            for(int32_t i = 0; i < data["setting_order"]["video_protune_list_ordered"].size(); i++){
                 if(data["setting_order"]["video_protune_list_ordered"].at(i).is_number_integer()){
                     video_protune_list_ordered[i] = data["setting_order"]["video_protune_list_ordered"].at(i).get<int32_t>();
                 }
@@ -581,86 +581,143 @@ bool InspectorWindow::conditional_filter(int32_t mymodel, int32_t setting_id){
 }
 
 bool InspectorWindow::conditional_filter_option(int32_t mymodel, int32_t setting_id, int32_t value_index){
-    int32_t preset = state->try_get_setting_int32_by_id(PRESET_ID);
-    if(setting_id == VIDEO_RESOLUTION_ID){
-        if(preset == 0){
-            int32_t profile = state->try_get_setting_int32_by_id(PROFILES_ID);
-            int32_t aspect = state->try_get_setting_int32_by_id(VIDEO_ASPECT_RATIO_ID);
-            int32_t fps = state->try_get_setting_int32_by_id(FRAMES_PER_SECOND_ID);
-            int32_t res_id = VIDEO_RESOLUTION_VALUE[value_index];
-            int32_t aspect_id = VIDEO_ASPECT_RATIO_VALUE[aspect];
-            int32_t fps_id = FRAMES_PER_SECOND_VALUE[fps];
+    int32_t preset = state->try_get_status_int32_by_id(PRESET_ID);
 
+    int32_t profile = state->try_get_setting_int32_by_id(PROFILES_ID);
+    int32_t aspect = state->try_get_setting_int32_by_id(VIDEO_ASPECT_RATIO_ID);
+    int32_t fps = state->try_get_setting_int32_by_id(FRAMES_PER_SECOND_ID);
+    int32_t antif = state->try_get_setting_int32_by_id(ANTI_FLICKER_V2_ID);
+    int32_t videolen = state->try_get_setting_int32_by_id(VIDEO_LENS_ID);
+    
+    int32_t aspect_id = VIDEO_ASPECT_RATIO_VALUE[aspect];
+    int32_t fps_id = FRAMES_PER_SECOND_VALUE[fps];
+    int32_t videolen_id = VIDEO_LENS_VALUE[videolen];
+
+    if(setting_id == VIDEO_RESOLUTION_ID){
+        int32_t value_id = VIDEO_RESOLUTION_VALUE[value_index];
+        if(preset == 0){
             if(profile == 0){ // Standard
                 if(aspect_id == 0){ // "4:3"
-                    if(res_id != 6) return false;
+                    if(value_id != 6) return false;
                 }
                 else if(aspect_id == 1){ // "16:9"
-                    if(res_id != 4 && res_id != 9) return false;
+                    if(fps_id == 0){ // 240
+                        // 2.7K, 1080
+                        if(value_id != 4 && value_id != 9) return false;
+                    }
+                    if(fps_id == 1){ // 120
+                        // 1080, 4K
+                        if(value_id != 9 && value_id != 1) return false;
+                    }
+                    if(fps_id == 5){ // 60
+                        if(videolen_id == 9){ // Hyperview
+                            // 4K
+                            if(value_id != 1) return false;
+                        }else{
+                            // 1080, 4K, 5.3K
+                            if(value_id != 9 && value_id != 1 && value_id != 100) return false;
+                        }
+                    }
+                    if(fps_id == 8){ // 30
+                        // 1080, 4K, 5.3K
+                        if(value_id != 9 && value_id != 1 && value_id != 100) return false;
+                    }
+                    else if(fps_id == 10){ // 24
+                        // 4K, 5.3K
+                        if(value_id != 1 && value_id != 100) return false;
+                    }
                 }
                 else if(aspect_id == 3){ // "8:7"
-                    if(res_id != 108) return false;
+                    // 60
+                    if(fps_id == 5){
+                        // 4K 8:7
+                        if(value_id != 108) return false;
+                    }else{
+                        // 4K 8:7, 5.3K 8:7
+                        if(value_id != 107 && value_id != 108) return false;
+                    }
                 }
                 else if(aspect_id == 4){ // "9:16"
-                    if(res_id != 109 && res_id != 110) return false;
+                    // 1080 9:16, 4K 9:16
+                    if(value_id != 109 && value_id != 110) return false;
                 }
             }
             else if(profile == 1){ // HDR
                 if(aspect_id == 3){ // "8:7"
-                    if(res_id != 108) return false;
+                    // 4K 8:7
+                    if(value_id != 108) return false;
                 }
                 else if(aspect_id == 1){ // "16:9"
-                    if(res_id != 1 && res_id != 100) return false;
+                    if(fps_id == 5 || videolen_id == 9) { // 60
+                        // 4K
+                        if(value_id != 1) return false;
+                    }else{
+                        // 4K, 5.3K
+                        if(value_id != 1 && value_id != 100) return false;
+                    }
                 }
             }
             else if(profile == 2){ // LOG
                 if(aspect_id == 3){ // "8:7"
-                    if(res_id != 107 && res_id != 108) return false;
+                    if(fps_id == 5){ // 60
+                        // 4K 8:7
+                        if(value_id != 108) return false;
+                    }else{
+                        // 5.3K 8:7, 4K 8:7
+                        if(value_id != 107 && value_id != 108) return false;
+                    }
                 }
                 else if(aspect_id == 1){ // "16:9"
-                    if(res_id != 1 && res_id != 100) return false;
+                    if(fps_id == 1 || videolen_id == 9){ // 120
+                        // 4K
+                        if(value_id != 1) return false;
+                    }else{
+                        // 4K, 5.3K
+                        if(value_id != 1 && value_id != 100) return false;
+                    }
                 }
             }
         }
     }
     else if(setting_id == VIDEO_ASPECT_RATIO_ID){
-        int32_t profile = state->try_get_setting_int32_by_id(PROFILES_ID);
-        int32_t aspect_id = VIDEO_ASPECT_RATIO_VALUE[value_index];
+        int32_t value_id = VIDEO_ASPECT_RATIO_VALUE[value_index];
         if(preset == 0){ // Video
             if(profile == 0){ // Standard
-                if(aspect_id > 4) return false;
+                if(value_id > 4) return false;
             }
             else if(profile == 1){ // HDR
-                if(aspect_id != 1 && aspect_id != 3) return false;
+                if(value_id != 1 && value_id != 3) return false;
             }
             else if(profile == 2){ // LOG
-                if(aspect_id != 1 && aspect_id != 3) return false;
+                if(value_id != 1 && value_id != 3) return false;
             }
         }
     }
     else if(setting_id == SHUTTER_SPEED_VIDEO_ID){
         if((mymodel&(ANTI_FLICKER_V2_AVA)) > 0){
-            int32_t antif = state->try_get_setting_int32_by_id(ANTI_FLICKER_V2_ID);
-            int32_t ss_id = SHUTTER_SPEED_VIDEO_VALUE[value_index];
+            int32_t value_id = SHUTTER_SPEED_VIDEO_VALUE[value_index];
             if(antif == 1){
-                if(ss_id != 0 && ss_id != 51 && ss_id != 50 &&
-                ss_id != 30 && ss_id != 49 && ss_id != 29 &&
-                ss_id != 48 && ss_id != 28 && ss_id != 47 &&
-                ss_id != 21 && ss_id != 46 && ss_id != 17 &&
-                ss_id != 45 && ss_id != 12 && ss_id != 44){
+                if(value_id != 0 && value_id != 51 && value_id != 50 &&
+                value_id != 30 && value_id != 49 && value_id != 29 &&
+                value_id != 48 && value_id != 28 && value_id != 47 &&
+                value_id != 21 && value_id != 46 && value_id != 17 &&
+                value_id != 45 && value_id != 12 && value_id != 44){
                     return false;
                 }
             }else{
-                if(ss_id != 0 && ss_id != 56 && ss_id != 55 &&
-                ss_id != 31 && ss_id != 54 && ss_id != 24 &&
-                ss_id != 53 && ss_id != 23 && ss_id != 27 &&
-                ss_id != 22 && ss_id != 20 && ss_id != 18 &&
-                ss_id != 15 && ss_id != 13 && ss_id != 10 &&
-                ss_id != 8){
+                if(value_id != 0 && value_id != 56 && value_id != 55 &&
+                value_id != 31 && value_id != 54 && value_id != 24 &&
+                value_id != 53 && value_id != 23 && value_id != 27 &&
+                value_id != 22 && value_id != 20 && value_id != 18 &&
+                value_id != 15 && value_id != 13 && value_id != 10 &&
+                value_id != 8){
                     return false;
                 }
             }
         }
+    }
+    else if(setting_id == FRAMES_PER_SECOND_ID){
+        int32_t fps_id = FRAMES_PER_SECOND_VALUE[value_index];
     }
     return true;
 }
