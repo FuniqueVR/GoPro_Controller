@@ -1520,7 +1520,7 @@ const static int32_t BIT_DEPTH_SUPPORT[] = {
 const static char* PROFILES_STRING[] = {
     "Standard",
     "HDR",
-    "HLG HDR"
+    "HLG HDR",
     "Log",
 };
 const static int32_t PROFILES_VALUE[] = {
