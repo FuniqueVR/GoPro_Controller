@@ -34,6 +34,7 @@ const static int32_t GOPRO_SETTING_IDS[] = {
     WEBCAM_DIGITAL_LENSES_ID,
     AUTO_POWER_DOWN_ID,
     GPS_ID,
+    HLG_ID,
     LCD_BRIGHTNESS_ID,
     LED_ID,
     TIME_LAPSE_DIGITAL_LENSES_ID,
@@ -72,6 +73,7 @@ const static int32_t GOPRO_SETTING_IDS[] = {
     AUTOMATIC_WI_FI_ACCESS_POINT_ID,
     WHITE_BALANCE_ID,
     SHARPNESS_ID,
+    DENOISE_ID,
     EXPOSURE_ID,
     COLOR_ID,
     ISO_MIN_VIDEO_ID,
@@ -102,6 +104,7 @@ const static int32_t GOPRO_SYSTEM_SETTING_IDS[] = {
 const static int32_t GOPRO_VIDEO_SETTING_IDS[] = {
     // Header
     PROFILES_ID,
+    HLG_ID,
     VIDEO_ASPECT_RATIO_ID,
     VIDEO_RESOLUTION_ID,
     FRAMES_PER_SECOND_ID,
@@ -125,6 +128,7 @@ const static int32_t GOPRO_VIDEO_PROTUNE_SETTING_IDS[] = {
     ISO_MIN_VIDEO_ID,
     ISO_MAX_VIDEO_ID,
     SHARPNESS_ID,
+    DENOISE_ID,
     COLOR_ID,
 };
 #define GOPRO_VIDEO_PROTUNE_SETTING_SIZE sizeof(GOPRO_VIDEO_PROTUNE_SETTING_IDS)/sizeof(int32_t)
@@ -149,6 +153,7 @@ const static int32_t GOPRO_PHOTO_PROTUNE_SETTING_IDS[] = {
     ISO_MIN_PHOTO_ID,
     ISO_MAX_PHOTO_ID,
     SHARPNESS_ID,
+    DENOISE_ID,
     COLOR_ID,
 };
 #define GOPRO_PHOTO_PROTUNE_SETTING_SIZE sizeof(GOPRO_PHOTO_PROTUNE_SETTING_IDS)/sizeof(int32_t)
@@ -249,6 +254,7 @@ inline const int32_t GET_SETTING_SIZE_BY_ID(int32_t x) {
         case WEBCAM_DIGITAL_LENSES_ID       : return WEBCAM_DIGITAL_LENSES_SIZE;
         case AUTO_POWER_DOWN_ID             : return AUTO_POWER_DOWN_SIZE;
         case GPS_ID                         : return GPS_SIZE;
+        case HLG_ID                         : return HLG_SIZE;
         case LCD_BRIGHTNESS_ID              : return LCD_BRIGHTNESS_SIZE;
         case LED_ID                         : return LED_SIZE;
         case TIME_LAPSE_DIGITAL_LENSES_ID   : return TIME_LAPSE_DIGITAL_LENSES_SIZE;
@@ -314,6 +320,7 @@ inline const int32_t GET_SETTING_AVA_BY_ID(int32_t x) {
         case WEBCAM_DIGITAL_LENSES_ID       : return WEBCAM_DIGITAL_LENSES_AVA;
         case AUTO_POWER_DOWN_ID             : return AUTO_POWER_DOWN_AVA;
         case GPS_ID                         : return GPS_AVA;
+        case HLG_ID                         : return HLG_AVA;
         case LCD_BRIGHTNESS_ID              : return LCD_BRIGHTNESS_AVA;
         case LED_ID                         : return LED_AVA;
         case TIME_LAPSE_DIGITAL_LENSES_ID   : return TIME_LAPSE_DIGITAL_LENSES_AVA;
@@ -379,6 +386,7 @@ inline const char* GET_SETTING_NAME_BY_ID(int32_t x) {
         case WEBCAM_DIGITAL_LENSES_ID       : return WEBCAM_DIGITAL_LENSES_NAME;
         case AUTO_POWER_DOWN_ID             : return AUTO_POWER_DOWN_NAME;
         case GPS_ID                         : return GPS_NAME;
+        case HLG_ID                         : return HLG_NAME;
         case LCD_BRIGHTNESS_ID              : return LCD_BRIGHTNESS_NAME;
         case LED_ID                         : return LED_NAME;
         case TIME_LAPSE_DIGITAL_LENSES_ID   : return TIME_LAPSE_DIGITAL_LENSES_NAME;
@@ -444,6 +452,7 @@ inline const char** GET_SETTING_STRING_BY_ID(int32_t x) {
         case WEBCAM_DIGITAL_LENSES_ID       : return WEBCAM_DIGITAL_LENSES_STRING;
         case AUTO_POWER_DOWN_ID             : return AUTO_POWER_DOWN_STRING;
         case GPS_ID                         : return GPS_STRING;
+        case HLG_ID                         : return HLG_STRING;
         case LCD_BRIGHTNESS_ID              : return LCD_BRIGHTNESS_STRING;
         case LED_ID                         : return LED_STRING;
         case TIME_LAPSE_DIGITAL_LENSES_ID   : return TIME_LAPSE_DIGITAL_LENSES_STRING;
@@ -509,6 +518,7 @@ inline const int32_t* GET_SETTING_VALUE_BY_ID(int32_t x) {
         case WEBCAM_DIGITAL_LENSES_ID       : return WEBCAM_DIGITAL_LENSES_VALUE;
         case AUTO_POWER_DOWN_ID             : return AUTO_POWER_DOWN_VALUE;
         case GPS_ID                         : return GPS_VALUE;
+        case HLG_ID                         : return HLG_VALUE;
         case LCD_BRIGHTNESS_ID              : return LCD_BRIGHTNESS_VALUE;
         case LED_ID                         : return LED_VALUE;
         case TIME_LAPSE_DIGITAL_LENSES_ID   : return TIME_LAPSE_DIGITAL_LENSES_VALUE;
@@ -574,6 +584,7 @@ inline const int32_t* GET_SETTING_SUPPORT_BY_ID(int32_t x) {
         case WEBCAM_DIGITAL_LENSES_ID       : return WEBCAM_DIGITAL_LENSES_SUPPORT;
         case AUTO_POWER_DOWN_ID             : return AUTO_POWER_DOWN_SUPPORT;
         case GPS_ID                         : return GPS_SUPPORT;
+        case HLG_ID                         : return HLG_SUPPORT;
         case LCD_BRIGHTNESS_ID              : return LCD_BRIGHTNESS_SUPPORT;
         case LED_ID                         : return LED_SUPPORT;
         case TIME_LAPSE_DIGITAL_LENSES_ID   : return TIME_LAPSE_DIGITAL_LENSES_SUPPORT;

@@ -21,22 +21,47 @@ bool InspectorWindow::conditional_filter(int32_t mymodel, int32_t setting_id){
 
     if(setting_id == SHUTTER_SPEED_VIDEO_ID){
         int32_t profile = state->try_get_setting_int32_by_id(PROFILES_ID);
-        if(profile == 1) return false; // HDR
-    }else if(setting_id == EXPOSURE_ID){
+        if(profile == 1 || profile == 101) return false; // HDR
+    }
+    else if(setting_id == EXPOSURE_ID){
         int32_t shutter = state->try_get_setting_int32_by_id(SHUTTER_SPEED_VIDEO_ID);
-        if(shutter != 0 && preset == 0) return false; // Auto, and video mode
-    }else if(setting_id == SHUTTER_SPEED_PHOTO_ID){
+        if(shutter != 0) return false; // Shutter Auto
+        if(preset == 0){ // Video
+            if(profile == 1 || profile == 101){ // HDR
+                return false; 
+            }
+        }
+    }
+    else if(setting_id == SHUTTER_SPEED_PHOTO_ID){
         if(photo_out_id == 2) return false;
-    }else if(setting_id == EXPOSURE_ID){
+    }
+    else if(setting_id == EXPOSURE_ID){
         if(preset == 0){ // Video
 
         }else { // Photo
             if(photo_out_id == 2) return false;
         }
-    }else if(setting_id == ISO_MAX_PHOTO_ID){
+    }
+    else if(setting_id == ISO_MAX_PHOTO_ID){
         if(photo_out_id == 2) return false;
-    }else if(setting_id == ISO_MIN_PHOTO_ID){
+    }
+    else if(setting_id == ISO_MIN_PHOTO_ID){
         if(photo_out_id == 2) return false;
+    }
+    else if(setting_id == ISO_MAX_VIDEO_ID){
+        if(profile == 1 || profile == 101) { // HDR
+            return false;
+        }
+    }
+    else if(setting_id == ISO_MIN_VIDEO_ID){
+        if(profile == 1 || profile == 101) { // HDR
+            return false;
+        }
+    }
+    else if(setting_id == HLG_ID){
+        if(profile != 1 && profile != 101) { // Must be HDR so the option will show up
+            return false;
+        }
     }
     return true;
 }
@@ -50,11 +75,13 @@ bool InspectorWindow::conditional_filter_option(int32_t mymodel, int32_t setting
     int32_t fps = state->try_get_setting_int32_by_id(FRAMES_PER_SECOND_ID);
     int32_t antif = state->try_get_setting_int32_by_id(ANTI_FLICKER_V2_ID);
     int32_t videolen = state->try_get_setting_int32_by_id(VIDEO_LENS_ID);
+    int32_t hlg = state->try_get_setting_int32_by_id(HLG_ID);
     
     int32_t res_id = VIDEO_RESOLUTION_VALUE[res];
     int32_t aspect_id = VIDEO_ASPECT_RATIO_VALUE[aspect];
     int32_t fps_id = FRAMES_PER_SECOND_VALUE[fps];
     int32_t videolen_id = VIDEO_LENS_VALUE[videolen];
+    int32_t hlg_id = HLG_VALUE[hlg];
 
     if(setting_id == VIDEO_RESOLUTION_ID){
         int32_t value_id = VIDEO_RESOLUTION_VALUE[value_index];
@@ -105,7 +132,7 @@ bool InspectorWindow::conditional_filter_option(int32_t mymodel, int32_t setting
                     if(value_id != 109 && value_id != 110) return false;
                 }
             }
-            else if(profile == 1){ // HDR
+            else if(profile == 1 || profile == 101){ // HDR
                 if(aspect_id == 3){ // "8:7"
                     // 4K 8:7
                     if(value_id != 108) return false;
@@ -148,7 +175,7 @@ bool InspectorWindow::conditional_filter_option(int32_t mymodel, int32_t setting
             if(profile == 0){ // Standard
                 if(value_id > 4) return false;
             }
-            else if(profile == 1){ // HDR
+            else if(profile == 1 || profile == 101){ // HDR
                 if(value_id != 1 && value_id != 3) return false;
             }
             else if(profile == 2){ // LOG
@@ -193,7 +220,7 @@ bool InspectorWindow::conditional_filter_option(int32_t mymodel, int32_t setting
                     if(value_id != 5 && value_id != 8) return false;
                 }
             }
-            else if(profile == 1) { // HDR
+            else if(profile == 1 || profile == 101) { // HDR
                 if(aspect_id == 3){ // 8:7
                     // 24, 30
                     if(value_id != 10 && value_id != 8) return false;
@@ -278,7 +305,7 @@ bool InspectorWindow::conditional_filter_option(int32_t mymodel, int32_t setting
                     if(value_id != 0) return false;
                 }
             }
-            else if(profile == 1){ // HDR
+            else if(profile == 1 || profile == 101){ // HDR
                 if(aspect_id == 1){ // 16:9
                     if(res_id == 1){ // 4K
                         if(fps_id == 5){ // 60
@@ -297,7 +324,7 @@ bool InspectorWindow::conditional_filter_option(int32_t mymodel, int32_t setting
                     if(value_id != 0) return false;
                 }
             }
-            else if(profile == 1){ // LOG
+            else if(profile == 1 || profile == 101){ // LOG
                 if(aspect_id == 1){ // 16:9
                     if(res_id == 1){ // 4K
                         if(fps_id == 1){ // 120
@@ -354,6 +381,20 @@ bool InspectorWindow::conditional_filter_option(int32_t mymodel, int32_t setting
 
         }else { // Photo
 
+        }
+    }
+    else if(setting_id == PROFILES_ID){
+        int32_t value_id = PROFILES_VALUE[value_index];
+        if(mymodel == MODEL_13){
+            // Standard, HDR, LOG
+            if(hlg_id == 1){
+                if(value_id != 0 && value_id != 101 && value_id != 2) return false;
+            }else{
+                if(value_id != 0 && value_id != 1 && value_id != 2) return false;
+            }
+        }else{
+            // Standard, HDR, LOG
+            if(value_id != 0 && value_id != 1 && value_id != 2) return false;
         }
     }
     return true;

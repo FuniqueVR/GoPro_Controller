@@ -89,5 +89,5 @@ int32_t InspectorWindow::_get_current_model(){
         else if(model_name == "HERO10 Black") return MODEL_10;
         else if(model_name == "HERO9 Black") return MODEL_9;
     }
-    else return 0;
+    return 0;
 }

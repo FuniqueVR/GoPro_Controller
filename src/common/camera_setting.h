@@ -407,6 +407,27 @@ const static int32_t GPS_SUPPORT[] = {
 };
 #pragma endregion
 
+
+#pragma region GPS
+#define HLG_ID 199
+#define HLG_SIZE 2
+#define HLG_NAME "HLG"
+#define HLG_AVA MODEL_13
+const static char* HLG_STRING[] = {
+    "Off",
+    "On"
+};
+const static int32_t HLG_VALUE[] = {
+    0, // Off 
+    1, // On
+};
+const static int32_t HLG_SUPPORT[] = {
+    MODEL_13, // Off
+    MODEL_13, // On
+};
+#pragma endregion
+
+
 #pragma region LCE Brightness
 #define LCD_BRIGHTNESS_ID 88
 #define LCD_BRIGHTNESS_SIZE 10
@@ -1493,7 +1514,7 @@ const static int32_t BIT_DEPTH_SUPPORT[] = {
 
 #pragma region Profiles
 #define PROFILES_ID 184
-#define PROFILES_SIZE 3
+#define PROFILES_SIZE 4
 #define PROFILES_NAME "Profiles"
 #define PROFILES_AVA MODEL_MAX2|MODEL_13|MODEL_12
 const static char* PROFILES_STRING[] = {
@@ -2106,6 +2127,28 @@ const static int32_t SHARPNESS_SUPPORT[] = {
     MODEL_MAX2_ALL, // Lo
 };
 #pragma endregion
+
+#pragma region Sharpness
+#define DENOISE_ID 198
+#define DENOISE_SIZE 3
+#define DENOISE_NAME "Denoise"
+#define DENOISE_AVA MODEL_MAX2_ALL
+const static char* DENOISE_STRING[] = {
+    "High",
+    "Midium",
+    "Low"
+};
+const static int32_t DENOISE_VALUE[] = {
+    2, // High
+    1, // Midium
+    1, // Low
+};
+const static int32_t DENOISE_SUPPORT[] = {
+    MODEL_MAX2_ALL, // High
+    MODEL_MAX2_ALL, // Midium
+    MODEL_MAX2_ALL, // Low
+};
+#pragma endregio
 
 #pragma region Exposure
 #define EXPOSURE_ID 118
