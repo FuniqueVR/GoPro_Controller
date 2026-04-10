@@ -45,4 +45,5 @@ private:
     std::vector<int32_t> status_list_ordered;
     bool create_date_folder;
     bool put_finish;
+    bool should_disabled;
 };

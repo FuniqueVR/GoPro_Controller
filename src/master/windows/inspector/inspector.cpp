@@ -116,10 +116,9 @@ void InspectorWindow::render(){
     {
         std::lock_guard<std::mutex> lock(master->camera_mtx);
         int32_t camera_ip = master->findCamera(state->current_camera_item);
-        bool should_disabled = state->current_camera_item.size() < 10 || camera_ip == -1 || !state->current_setting_items_bind;
+        should_disabled = state->current_camera_item.size() < 10 || camera_ip == -1 || !state->current_setting_items_bind;
 
         draw_header();
-        ImGui::BeginDisabled(should_disabled);
 
         ImGui::Separator();
 
@@ -131,7 +130,9 @@ void InspectorWindow::render(){
                         ImGui::EndTabItem();
                     }
                     if(ImGui::BeginTabItem("Local##Inspector_Bar_Item")){
+                        ImGui::BeginDisabled(should_disabled);
                         draw_command_local();
+                        ImGui::EndDisabled();
                         ImGui::EndTabItem();
                     }
                     ImGui::EndTabBar();
@@ -145,15 +146,21 @@ void InspectorWindow::render(){
                 }
                 if(ImGui::BeginTabBar("Inspector_Bar##Second")){
                     if(ImGui::BeginTabItem("System##Inspector_Bar_Item")){
+                        ImGui::BeginDisabled(should_disabled);
                         draw_system();
+                        ImGui::EndDisabled();
                         ImGui::EndTabItem();
                     }
                     if(ImGui::BeginTabItem("Setting##Inspector_Bar_Item")){
+                        ImGui::BeginDisabled(should_disabled);
                         draw_setting();
+                        ImGui::EndDisabled();
                         ImGui::EndTabItem();
                     }
                     if(ImGui::BeginTabItem("Protune##Inspector_Bar_Item")){
+                        ImGui::BeginDisabled(should_disabled);
                         draw_protune();
+                        ImGui::EndDisabled();
                         ImGui::EndTabItem();
                     }
                     ImGui::EndTabBar();
@@ -163,9 +170,12 @@ void InspectorWindow::render(){
             if(ImGui::BeginTabItem("Status##Inspector_Bar_Item")){
                 if(ImGui::Button("Reset Status Order")){
                     reset_status_order();
+                    
                     state->update_server();
                 }
+                ImGui::BeginDisabled(should_disabled);
                 draw_status();
+                ImGui::EndDisabled();
                 ImGui::EndTabItem();
             }
             if(ImGui::BeginTabItem("Media##Inspector_Bar_Item")){
@@ -174,8 +184,6 @@ void InspectorWindow::render(){
             }
             ImGui::EndTabBar();
         }
-        
-        ImGui::EndDisabled();
     }
     ImGui::End();
 }
@@ -185,5 +193,12 @@ void InspectorWindow::draw_header(){
     if(ImGui::Button("Rename Camera")){
         master->command_with_value("rename", state->current_camera_item, state->current_camera_name);
     }
-    ImGui::Text("Name: %s, IP: %s", state->current_camera_name.c_str(), state->current_camera_item.c_str());
+    std::string serial = "";
+    if(state->current_hw_items["serial_number"].is_string()){
+        serial = state->current_hw_items["serial_number"].get<std::string>();
+    }
+    ImGui::Text("Name: %s, IP: %s, Serial: %s", 
+        state->current_camera_name.c_str(), 
+        state->current_camera_item.c_str(),
+        serial.c_str());
 }
