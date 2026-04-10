@@ -1,5 +1,5 @@
 #include "../inspector.h"
-
+#include <exception>
 
 void InspectorWindow::draw_system(){
     _draw_setting(system_list_ordered);
@@ -76,7 +76,6 @@ void InspectorWindow::_draw_setting(std::vector<int32_t>& ordered){
                 if(!conditional_filter_option(model_enum, id, n)){
                     continue;
                 }
-
                 std::string option = GET_SETTING_STRING_BY_ID(id)[n];
                 if(option.size() == 0) continue;
                 bool is_selected = (state->current_setting_items[std::to_string(id)] == n); // You can store your selection however you want, outside or inside your objects

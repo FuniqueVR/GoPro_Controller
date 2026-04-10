@@ -1520,20 +1520,20 @@ const static int32_t BIT_DEPTH_SUPPORT[] = {
 const static char* PROFILES_STRING[] = {
     "Standard",
     "HDR",
-    "Log",
     "HLG HDR"
+    "Log",
 };
 const static int32_t PROFILES_VALUE[] = {
     0, // Standard
     1, // HDR
-    2, // Log
     101, // HLG HD
+    2, // Log
 };
 const static int32_t PROFILES_SUPPORT[] = {
     MODEL_MAX2|MODEL_13|MODEL_12, // Standard
     MODEL_13|MODEL_12, // HDR
-    MODEL_MAX2|MODEL_13|MODEL_12, // Log
     MODEL_13, // HLG HD
+    MODEL_MAX2|MODEL_13|MODEL_12, // Log
 };
 #pragma endregion
 
