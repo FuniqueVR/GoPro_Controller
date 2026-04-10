@@ -121,8 +121,8 @@ void PreviewPopup::update_decoder(){
 
         if(!g){
             pipeline = 
-                "udpsrc port=8554 buffer-size=41943040 "
-                "! queue max-size-buffers=0 max-size-bytes=0 max-size-time=2000000000 "
+                "udpsrc port=8554 "
+                "! queue max-size-buffers=0 max-size-bytes=0 max-size-time=1000000000 "
                 "! tsdemux "
                 "! decodebin "
                 "! videoconvert "
