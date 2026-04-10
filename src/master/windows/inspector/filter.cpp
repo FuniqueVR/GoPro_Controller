@@ -325,7 +325,7 @@ bool InspectorWindow::conditional_filter_option(int32_t mymodel, int32_t setting
                     if(value_id != 0) return false;
                 }
             }
-            else if(profile_id == 1 || profile_id == 101){ // LOG
+            else if(profile_id == 2){ // LOG
                 if(aspect_id == 1){ // 16:9
                     if(res_id == 1){ // 4K
                         if(fps_id == 1){ // 120

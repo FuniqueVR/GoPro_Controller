@@ -119,7 +119,7 @@ const static int32_t GOPRO_VIDEO_SETTING_IDS[] = {
 #define GOPRO_VIDEO_SETTING_SIZE sizeof(GOPRO_VIDEO_SETTING_IDS)/sizeof(int32_t)
 
 const static int32_t GOPRO_VIDEO_PROTUNE_SETTING_IDS[] = {
-    BIT_DEPTH_ID,
+    //BIT_DEPTH_ID,
     VIDEO_BIT_RATE_ID,
     SHUTTER_SPEED_VIDEO_ID,
 
@@ -147,7 +147,6 @@ const static int32_t GOPRO_PHOTO_SETTING_IDS[] = {
 
 const static int32_t GOPRO_PHOTO_PROTUNE_SETTING_IDS[] = {
     SHUTTER_SPEED_PHOTO_ID,
-    
     EXPOSURE_ID,
     WHITE_BALANCE_ID,
     ISO_MIN_PHOTO_ID,
