@@ -131,7 +131,7 @@ void PreviewPopup::update_decoder(){
                 "! decodebin "
                 "! videoconvert "
                 "! video/x-raw,format=BGR "
-                "! appsink sync=false drop=true max-buffers=2";
+                "! appsink sync=false drop=true max-buffers=1";
             //replaceAll(pipeline, "{0}", c->server.c_str());
             cap.open(pipeline, cv::CAP_GSTREAMER);
             std::cout << "[Preview Decoder] Pipeline use:" << std::endl << pipeline << std::endl;
