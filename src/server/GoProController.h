@@ -48,6 +48,7 @@ public:
     void datetime(std::string target);
     void zoom(std::string target, int32_t value);
     void shutter(std::string target, bool isstart);
+    void locate(std::string target, bool ison);
     std::string getAllIP();
     std::string getAllModel();
     // Status part of calls
@@ -88,6 +89,7 @@ protected:
     void _zoom(std::string target, int32_t value);
     void _shutterAll(std::vector<std::string> targets, bool isstart);
     void _shutter(std::string target, bool isstart);
+    void _locate(std::string target, bool ison);
     // Status part of calls
     std::vector<std::pair<std::string, std::string>> _queryAllStatus(std::vector<std::string> targets);
     std::pair<std::string, std::string> _queryStatus(std::string target);

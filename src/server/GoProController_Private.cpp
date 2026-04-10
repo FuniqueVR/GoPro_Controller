@@ -225,6 +225,13 @@ void GoProController::_shutter(std::string target, bool ison){
     _getSingleResponse(target, url);
 }
 
+void GoProController::_locate(std::string target, bool ison){
+    std::string url = "/gp/gpControl/command/system/locate?p=";
+    if(ison) url += "1";
+    else url += "0";
+    _getSingleResponse(target, url);
+}
+
 std::vector<std::pair<std::string, std::string>> GoProController::_queryAllStatus(std::vector<std::string> targets){
     return _getAllResponse(targets, "/gopro/camera/state");
 }

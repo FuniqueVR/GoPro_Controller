@@ -1,86 +1,8 @@
-/*
- * Copyright (c) [2026] [Elly/Funique]
- *
- * This software is licensed under the [MIT License].
- * See the LICENSE file in the project root for more information.
-*/
-#include "commands.h"
+#include "../inspector.h"
+#include <iostream>
+#include <string>
 
-CommandWindow::CommandWindow(
-    std::shared_ptr<json> _setting, 
-    std::shared_ptr<GlobalState> _state, 
-    std::shared_ptr<GoProMaster> _master
-) 
-    : BaseWindow(_setting, _state, _master) {
-    title = "Command Sender";
-}
-
-CommandWindow::~CommandWindow(){
-    
-}
-
-void CommandWindow::render(){
-    ImGui::Begin("Commands", &enable, w_flag);
-    {
-        if(ImGui::BeginTabBar("Bar##Command_Win")){
-            if(ImGui::BeginTabItem("Global Command##Command_Win")){
-                render_global();
-                ImGui::EndTabItem();
-            }
-            if(ImGui::BeginTabItem("Camera Command##Command_Win")){
-                render_local();
-                ImGui::EndTabItem();
-            }
-            ImGui::EndTabBar();
-        }
-    }
-    ImGui::End();
-}
-
-void CommandWindow::render_global(){
-    ImGui::Text("Global Controls");
-    ImGui::Text("Commands applied to all connected cameras");
-
-    ImGuiStyle& style = ImGui::GetStyle();
-    ImVec2 size = ImGui::GetWindowSize();
-    ImVec2 button_size = ImVec2(size.x / 2.0F - style.ItemSpacing.x, 0);
-    ImVec2 full_button_size = ImVec2(size.x - style.ItemSpacing.x, 0);
-    
-    if(ImGui::Button("Scan All", button_size)) master->command_only("scan"); ImGui::SameLine();
-    if(ImGui::IsItemHovered()) ImGui::SetTooltip("Scan all websocket server for cameras");
-    if(ImGui::Button("Scan Server", button_size)) state->command_sender("scan_server");
-    if(ImGui::IsItemHovered()) ImGui::SetTooltip("Scan one websocket server for cameras\nThis will popup a window for you to enter websocket server address to targeting");
-
-    if(ImGui::Button("Add Camera", button_size)) state->command_sender("add_camera"); ImGui::SameLine();
-    if(ImGui::IsItemHovered()) ImGui::SetTooltip("Menually add camera address to one websocket server list");
-    if(ImGui::Button("Clean Camera", button_size)) master->command_only("clean");
-    if(ImGui::IsItemHovered()) ImGui::SetTooltip("Clean all websocket server camera record");
-
-    if(ImGui::Button("Connect All", button_size)) master->command_only("usb_on"); ImGui::SameLine();
-    if(ImGui::IsItemHovered()) ImGui::SetTooltip("Tells all cameras usb control on");
-    if(ImGui::Button("Disconnect All", button_size)) master->command_only("usb_off");
-    if(ImGui::IsItemHovered()) ImGui::SetTooltip("Tells all cameras usb control off");
-
-    if(ImGui::Button("Reboot All", button_size)) master->command_only("reboot"); ImGui::SameLine();
-    if(ImGui::IsItemHovered()) ImGui::SetTooltip("Tells all cameras reboot right now");
-    if(ImGui::Button("Shutdown All", button_size)) master->command_only("shutdown");
-    if(ImGui::IsItemHovered()) ImGui::SetTooltip("Tells all cameras shutdown right now");
-
-    if(ImGui::Button("Record All", button_size)) master->command_only("shutter_on"); ImGui::SameLine();
-    if(ImGui::Button("Stop All", button_size)) master->command_only("shutter_off");
-
-    if(ImGui::Button("Enter Webcam", button_size)) master->webcam_only("preview"); ImGui::SameLine();
-    if(ImGui::Button("Exit Webcam", button_size)) master->webcam_only("exit");
-
-    if(ImGui::Button("Start Webcam", button_size)) state->command_sender("start_webcam"); ImGui::SameLine();
-    if(ImGui::Button("Sync Time", button_size)) master->command_only("datetime");
-
-    if(ImGui::Button("Last Media", button_size)) master->media_only("lastmedia"); ImGui::SameLine();
-    if(ImGui::Button("Close Preview", button_size)) master->preview_end("", "");
-}
-
-void CommandWindow::render_local(){
-    std::lock_guard<std::mutex> lock(master->camera_mtx);
+void InspectorWindow::draw_command_local(){
     ImGui::Text("Single Camera Control");
 
     int32_t current_camera = master->findCamera(state->current_camera_item);
@@ -209,4 +131,46 @@ void CommandWindow::render_local(){
         }
     }
     ImGui::EndDisabled();
+}
+
+void InspectorWindow::draw_command_global(){
+    ImGui::Text("Global Controls");
+    ImGui::Text("Commands applied to all connected cameras");
+
+    ImGuiStyle& style = ImGui::GetStyle();
+    ImVec2 size = ImGui::GetWindowSize();
+    ImVec2 button_size = ImVec2(size.x / 2.0F - style.ItemSpacing.x, 0);
+    ImVec2 full_button_size = ImVec2(size.x - style.ItemSpacing.x, 0);
+    
+    if(ImGui::Button("Scan All", button_size)) master->command_only("scan"); ImGui::SameLine();
+    if(ImGui::IsItemHovered()) ImGui::SetTooltip("Scan all websocket server for cameras");
+    if(ImGui::Button("Scan Server", button_size)) state->command_sender("scan_server");
+    if(ImGui::IsItemHovered()) ImGui::SetTooltip("Scan one websocket server for cameras\nThis will popup a window for you to enter websocket server address to targeting");
+
+    if(ImGui::Button("Add Camera", button_size)) state->command_sender("add_camera"); ImGui::SameLine();
+    if(ImGui::IsItemHovered()) ImGui::SetTooltip("Menually add camera address to one websocket server list");
+    if(ImGui::Button("Clean Camera", button_size)) master->command_only("clean");
+    if(ImGui::IsItemHovered()) ImGui::SetTooltip("Clean all websocket server camera record");
+
+    if(ImGui::Button("Connect All", button_size)) master->command_only("usb_on"); ImGui::SameLine();
+    if(ImGui::IsItemHovered()) ImGui::SetTooltip("Tells all cameras usb control on");
+    if(ImGui::Button("Disconnect All", button_size)) master->command_only("usb_off");
+    if(ImGui::IsItemHovered()) ImGui::SetTooltip("Tells all cameras usb control off");
+
+    if(ImGui::Button("Reboot All", button_size)) master->command_only("reboot"); ImGui::SameLine();
+    if(ImGui::IsItemHovered()) ImGui::SetTooltip("Tells all cameras reboot right now");
+    if(ImGui::Button("Shutdown All", button_size)) master->command_only("shutdown");
+    if(ImGui::IsItemHovered()) ImGui::SetTooltip("Tells all cameras shutdown right now");
+
+    if(ImGui::Button("Record All", button_size)) master->command_only("shutter_on"); ImGui::SameLine();
+    if(ImGui::Button("Stop All", button_size)) master->command_only("shutter_off");
+
+    if(ImGui::Button("Enter Webcam", button_size)) master->webcam_only("preview"); ImGui::SameLine();
+    if(ImGui::Button("Exit Webcam", button_size)) master->webcam_only("exit");
+
+    if(ImGui::Button("Start Webcam", button_size)) state->command_sender("start_webcam"); ImGui::SameLine();
+    if(ImGui::Button("Sync Time", button_size)) master->command_only("datetime");
+
+    if(ImGui::Button("Last Media", button_size)) master->media_only("lastmedia"); ImGui::SameLine();
+    if(ImGui::Button("Close Preview", button_size)) master->preview_end("", "");
 }

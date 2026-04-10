@@ -2,6 +2,7 @@
 *.d
 *._deps
 *._deps/
+test
 
 # Compiled Object files
 *.slo

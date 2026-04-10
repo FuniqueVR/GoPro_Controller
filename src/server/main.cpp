@@ -13,6 +13,7 @@
 #endif
 #include <iostream>
 #include <vector>
+#include "../common/config.h"
 #include "hv/WebSocketServer.h"
 #include "hv/EventLoop.h"
 #include "hv/UdpServer.h"
@@ -83,24 +84,25 @@ void ExecuteCommand(const WebSocketChannelPtr& channel, json j){
     }else if(name == "shutter_off"){
         controller.shutter(target, false);
         channel->send(getPacket("command:shutter_off", r));
-    }
-    else if(name == "ip"){
+    }else if(name == "ip"){
         r["data"] = json::parse(controller.getAllIP());
         channel->send(getPacket("command:ip", r));
-    }
-    else if(name == "model"){
+    }else if(name == "locate_on"){
+        r["data"] = json::parse(controller.locate(target, true));
+        channel->send(getPacket("command:locate_on", r));
+    }else if(name == "locate_off"){
+        r["data"] = json::parse(controller.locate(target, false));
+        channel->send(getPacket("command:locate_off", r));
+    }else if(name == "model"){
         r["data"] = json::parse(controller.getAllModel());
         channel->send(getPacket("command:model", r));
-    }
-    else if(name == "scan"){
+    }else if(name == "scan"){
         controller.scanCameras();
         channel->send(getPacket("command:scan", r));
-    }
-    else if(name == "clean"){
+    }else if(name == "clean"){
         controller.cleanCameras();
         channel->send(getPacket("command:clean", r));
-    }
-    else if(name == "add" && target.size() >= 3){
+    }else if(name == "add" && target.size() >= 3){
         controller.addCameras(target);
         channel->send(getPacket("command:add", r));
     }
@@ -333,7 +335,7 @@ void WebsocketServer(){
     };
     ws.onmessage = [&](const WebSocketChannelPtr& channel, const std::string& msg) {
         std::thread([=]() {
-            printf("Received: %s\n", msg.c_str());
+            if(SERVER_QUERY_LOG) printf("Received: %s\n", msg.c_str());
             try{
                 json j = json::parse(msg.c_str());
                 // Simple command parsing

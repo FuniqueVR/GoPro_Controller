@@ -49,5 +49,28 @@ struct GlobalState {
     ActionFunc update_server = NULL;
     // Inspector
     InspectorObjectType iot = InspectorObjectType::Camera;
+
+    /**
+     * This will trying to fetch data from current_setting_items variable
+     * If it fetch fail, it will return -1
+     */
+    int32_t try_get_setting_int32_by_id(int32_t id){
+        if(current_setting_items[std::to_string(id)].is_number()){
+            return current_setting_items[std::to_string(id)].get<int32_t>();
+        }
+        return -1;
+    }
+
+    /**
+     * This will trying to fetch data from current_status_items variable
+     * If it fetch fail, it will return -1
+     */
+    int32_t try_get_status_int32_by_id(int32_t id){
+        if(current_status_items[std::to_string(id)].is_number()){
+            return current_status_items[std::to_string(id)].get<int32_t>();
+        }
+        return -1;
+    }
+    
 };
 

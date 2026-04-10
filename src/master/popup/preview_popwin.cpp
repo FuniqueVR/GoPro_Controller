@@ -57,11 +57,11 @@ void PreviewPopup::trigger(bool value){
     }else{
         stream_open = false;
         isopen = false;
-        if(reader.joinable()){
-            reader.join();
-        }
         if (cap.isOpened()) {
             cap.release();
+        }
+        if(reader.joinable()){
+            reader.join();
         }
         if(gl_texture != 0){
             glDeleteTextures(1, &gl_texture);
@@ -84,8 +84,10 @@ void PreviewPopup::update_decoder(){
 
     std::cout << "[Preview Decoder] Update decoder start !" << " " << stream_open << " " << (retry < MAX_RETRY) << std::endl;
     {
-        std::lock_guard<std::mutex> lock(master->camera_mtx);
-        s = master->findCamera(state->preview_ip);
+        {
+            std::lock_guard<std::mutex> lock(master->camera_mtx);
+            s = master->findCamera(state->preview_ip);
+        }
         if(s == -1){
             std::cout << "[Preview Decoder] Cannot find camera: " << state->preview_ip << std::endl;
             return;
@@ -135,6 +137,7 @@ void PreviewPopup::update_decoder(){
 
         if(cap.isOpened()){
             cv::Mat test;
+            std::cout << "[Preview Decoder] Try cap.grab" << std::endl;
             cap.grab();
             if(cap.retrieve(test) && !test.empty()){
                 stream_open = true;
