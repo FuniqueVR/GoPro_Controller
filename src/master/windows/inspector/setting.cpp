@@ -76,7 +76,6 @@ void InspectorWindow::_draw_setting(std::vector<int32_t>& ordered){
                 if(!conditional_filter_option(model_enum, id, n)){
                     continue;
                 }
-                std::cout << id << std::endl;
                 std::string option = GET_SETTING_STRING_BY_ID(id)[n];
                 if(option.size() == 0) continue;
                 bool is_selected = (state->current_setting_items[std::to_string(id)] == n); // You can store your selection however you want, outside or inside your objects

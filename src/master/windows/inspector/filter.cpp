@@ -59,7 +59,7 @@ bool InspectorWindow::conditional_filter(int32_t mymodel, int32_t setting_id){
         }
     }
     else if(setting_id == HLG_ID){
-        if(profile != 1 && profile != 3) { // Must be HDR so the option will show up
+        if(profile_id != 1 && profile_id != 101) { // Must be HDR so the option will show up
             return false;
         }
     }
