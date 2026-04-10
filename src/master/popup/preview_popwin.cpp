@@ -121,16 +121,13 @@ void PreviewPopup::update_decoder(){
 
         if(!g){
             pipeline = 
-                "udpsrc port=8554 caps=\"video/mpegts\" buffer-size=41943040 "
+                "udpsrc port=8554 buffer-size=41943040 "
                 "! queue max-size-buffers=0 max-size-bytes=0 max-size-time=2000000000 "
-                "! tsdemux name=demux "
-                "demux. ! queue leaky=2 max-size-buffers=1 " // Leaky queue = zero lag
-                "! video/x-h264 "  // <--- CRITICAL: Forces it to pick the video stream
-                "! h264parse "
-                "! avdec_h264 "    // <--- Faster than decodebin
+                "! tsdemux "
+                "! decodebin "
                 "! videoconvert "
                 "! video/x-raw,format=BGR "
-                "! appsink sync=false drop=true max-buffers=1";
+                "! appsink sync=false drop=true max-buffers=2";
             //replaceAll(pipeline, "{0}", c->server.c_str());
             cap.open(pipeline, cv::CAP_GSTREAMER);
             std::cout << "[Preview Decoder] Pipeline use:" << std::endl << pipeline << std::endl;
