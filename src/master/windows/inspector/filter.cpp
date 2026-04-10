@@ -5,13 +5,38 @@
 bool InspectorWindow::conditional_filter(int32_t mymodel, int32_t setting_id){
     int32_t preset = state->try_get_status_int32_by_id(PRESET_ID);
 
+    int32_t profile = state->try_get_setting_int32_by_id(PROFILES_ID);
+    int32_t res = state->try_get_setting_int32_by_id(VIDEO_RESOLUTION_ID);
+    int32_t aspect = state->try_get_setting_int32_by_id(VIDEO_ASPECT_RATIO_ID);
+    int32_t fps = state->try_get_setting_int32_by_id(FRAMES_PER_SECOND_ID);
+    int32_t antif = state->try_get_setting_int32_by_id(ANTI_FLICKER_V2_ID);
+    int32_t videolen = state->try_get_setting_int32_by_id(VIDEO_LENS_ID);
+    int32_t photo_out = state->try_get_setting_int32_by_id(PHOTO_OUTPUT_ID);
+    
+    int32_t res_id = VIDEO_RESOLUTION_VALUE[res];
+    int32_t aspect_id = VIDEO_ASPECT_RATIO_VALUE[aspect];
+    int32_t fps_id = FRAMES_PER_SECOND_VALUE[fps];
+    int32_t videolen_id = VIDEO_LENS_VALUE[videolen];
+    int32_t photo_out_id = PHOTO_OUTPUT_VALUE[photo_out];
+
     if(setting_id == SHUTTER_SPEED_VIDEO_ID){
         int32_t profile = state->try_get_setting_int32_by_id(PROFILES_ID);
         if(profile == 1) return false; // HDR
-    }
-    else if(setting_id == EXPOSURE_ID){
+    }else if(setting_id == EXPOSURE_ID){
         int32_t shutter = state->try_get_setting_int32_by_id(SHUTTER_SPEED_VIDEO_ID);
         if(shutter != 0 && preset == 0) return false; // Auto, and video mode
+    }else if(setting_id == SHUTTER_SPEED_PHOTO_ID){
+        if(photo_out_id == 2) return false;
+    }else if(setting_id == EXPOSURE_ID){
+        if(preset == 0){ // Video
+
+        }else { // Photo
+            if(photo_out_id == 2) return false;
+        }
+    }else if(setting_id == ISO_MAX_PHOTO_ID){
+        if(photo_out_id == 2) return false;
+    }else if(setting_id == ISO_MIN_PHOTO_ID){
+        if(photo_out_id == 2) return false;
     }
     return true;
 }
@@ -323,6 +348,13 @@ bool InspectorWindow::conditional_filter_option(int32_t mymodel, int32_t setting
     else if(setting_id == PHOTO_LENS_ID){
         int32_t value_id = PHOTO_LENS_VALUE[value_index];
         if(value_id != 31 && value_id != 32) return false;
+    }
+    else if(setting_id == COLOR_ID){
+        if(preset == 0){ // Video
+
+        }else { // Photo
+
+        }
     }
     return true;
 }
