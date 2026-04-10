@@ -23,7 +23,7 @@ void InspectorWindow::draw_command_local(){
 
         if(ImGui::Button("Connect", button_4size)) master->command_only(info.server, "usb_on", info.ip); ImGui::SameLine();
         if(ImGui::Button("Disconnect", button_4size)) master->command_only(info.server, "usb_off", info.ip); ImGui::SameLine();
-        if(ImGui::Button("Shutdown", button_4size)) master->command_only(info.server, "usb_on", info.ip); ImGui::SameLine();
+        if(ImGui::Button("Shutdown", button_4size)) master->command_only(info.server, "shutdown", info.ip); ImGui::SameLine();
         int32_t lo = master->haslocate(info.server, info.ip);
         if(lo == -1){
             if(ImGui::Button("Locate", button_4size)) master->locate(info.server, info.ip);

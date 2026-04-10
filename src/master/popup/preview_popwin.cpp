@@ -121,31 +121,39 @@ void PreviewPopup::update_decoder(){
 
         if(!g){
             pipeline = 
-                "udpsrc port=8554 buffer-size=41943040 "
+                "udpsrc port=8554 caps=\"video/mpegts\" buffer-size=41943040 "
                 "! queue max-size-buffers=0 max-size-bytes=0 max-size-time=2000000000 "
-                "! tsdemux " 
+                "! tsdemux name=demux "
+                "demux. ! queue leaky=2 max-size-buffers=1 " // Leaky queue = zero lag
+                "! video/x-h264 "  // <--- CRITICAL: Forces it to pick the video stream
                 "! h264parse "
-                "! decodebin "
+                "! avdec_h264 "    // <--- Faster than decodebin
                 "! videoconvert "
                 "! video/x-raw,format=BGR "
-                "! appsink sync=false drop=true max-buffers=2";
+                "! appsink sync=false drop=true max-buffers=1";
             //replaceAll(pipeline, "{0}", c->server.c_str());
             cap.open(pipeline, cv::CAP_GSTREAMER);
             std::cout << "[Preview Decoder] Pipeline use:" << std::endl << pipeline << std::endl;
         }
-        g = true;
+        //g = true;
 
         if(cap.isOpened()){
             cv::Mat test;
-            std::cout << "[Preview Decoder] Try cap.grab" << std::endl;
-            cap.grab();
-            if(cap.retrieve(test) && !test.empty()){
-                stream_open = true;
-                std::cout << "[Preview Decoder] Pipeline opened successfully! " << test.cols << "x" << test.rows << std::endl;
-            } else {
-                std::cout << "[Preview Decoder] Pipeline opened but no frames yet, retrying..." << std::endl;
+            for(int i = 0; i < 30; i++) {
+                std::cout << "[Preview Decoder] Try cap.grab" << std::endl;
+                if(cap.grab()) {
+                    std::cout << "[Preview Decoder] cap.retrieve" << std::endl;
+                    if(cap.retrieve(test) && !test.empty()){
+                        stream_open = true;
+                        std::cout << "[Preview Decoder] Pipeline opened successfully! " << test.cols << "x" << test.rows << std::endl;
+                        break;
+                    }
+                }
+                std::this_thread::sleep_for(std::chrono::milliseconds(33)); // Match ~30fps
+            }
+            if(!stream_open){
+                std::cout << "[Preview Decoder] No valid frames in first 30 attempts, releasing..." << std::endl;
                 cap.release();
-                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             }
         } else {
             std::cout << "[Preview Decoder] Failed to open pipeline, retrying in 1s..." << std::endl;
