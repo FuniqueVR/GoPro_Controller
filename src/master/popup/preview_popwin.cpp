@@ -76,6 +76,7 @@ void PreviewPopup::update_decoder(){
     stream_open = false;
     int32_t retry = 0;
     int32_t s = -1;
+    int32_t model;
     const int32_t MAX_RETRY = 10;
 
     std::cout << "===== OpenCV Build Info =====" << std::endl;
@@ -88,11 +89,13 @@ void PreviewPopup::update_decoder(){
             std::lock_guard<std::mutex> lock(master->camera_mtx);
             s = master->findCamera(state->preview_ip);
         }
+
         if(s == -1){
             std::cout << "[Preview Decoder] Cannot find camera: " << state->preview_ip << std::endl;
             return;
         }
         const std::shared_ptr<CameraInfo>& c = master->getCameras().at(s);
+        model = _get_current_model(c->hw);
         json buffer_setting = json::object();
         master->getSettingsFromCamera(*c, buffer_setting);
         if(buffer_setting["2"].is_number_integer()){
@@ -267,6 +270,20 @@ void PreviewPopup::render(){
     if(remap){
       // Let's recreate the map here  
     }
+}
+
+int32_t PreviewPopup::_get_current_model(json target){
+    if(target["model_name"].is_string()){
+        std::string model_name = target["model_name"].get<std::string>();
+        if(model_name == "MAX 2") return MODEL_MAX2;
+        else if(model_name == "HERO13 Black") return MODEL_13;
+        else if(model_name == "HERO12 Black") return MODEL_12;
+        else if(model_name == "HERO11 Black") return MODEL_11_BLACK;
+        else if(model_name == "HERO11 Black Mini") return MODEL_11;
+        else if(model_name == "HERO10 Black") return MODEL_10;
+        else if(model_name == "HERO9 Black") return MODEL_9;
+    }
+    return 0;
 }
 
 cv::Mat PreviewPopup::get_latest_frame(){

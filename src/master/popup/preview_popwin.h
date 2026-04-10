@@ -53,6 +53,10 @@ public:
     virtual void update_decoder();
     virtual void update() override;
     virtual void render() override;
+
+protected:
+    int32_t _get_current_model(json target);
+
 private:
     cv::VideoCapture cap;
     std::string pipeline;
