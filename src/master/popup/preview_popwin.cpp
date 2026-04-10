@@ -121,7 +121,8 @@ void PreviewPopup::update_decoder(){
 
         if(!g){
             pipeline = 
-                "udpsrc port=8554 "
+                "udpsrc port=8554 timeout=1000000000 "
+                "! watchdog timeout=1000 "
                 "! queue max-size-buffers=0 max-size-bytes=0 max-size-time=1000000000 "
                 "! tsdemux "
                 "! decodebin "

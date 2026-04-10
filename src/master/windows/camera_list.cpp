@@ -525,7 +525,37 @@ void CameraListWindow::draw_group(const std::shared_ptr<CameraInfo>& c){
     ImGui::Dummy(rect_size);
     bool is_select = state->current_camera_item == c->ip;
     if(ImGui::IsItemHovered()){
-        ImGui::SetItemTooltip("%s", "Test\nTest");
+        std::string displayText = "";
+        displayText += "name: ";
+        displayText += state->current_camera_name;
+        displayText += "\n";
+
+        displayText += "server: ";
+        displayText += c->server;
+        displayText += "\n";
+
+        displayText += "ip: ";
+        displayText += c->ip;
+        displayText += "\n";
+
+        displayText += "serial: ";
+        if(c->hw["serial_number"].is_string()){
+            displayText += c->hw["serial_number"].get<std::string>();
+        }
+        displayText += "\n";
+
+        displayText += "model: ";
+        if(c->hw["model_name"].is_string()){
+            displayText += c->hw["model_name"].get<std::string>();
+        }
+        displayText += "\n";
+
+        displayText += "firmware: ";
+        if(c->hw["firmware_version"].is_string()){
+            displayText += c->hw["firmware_version"].get<std::string>();
+        }
+        displayText += "\n";
+        ImGui::SetItemTooltip("%s", displayText.c_str());
         draw_list->AddRect(image_pos, image_pos_max, col_grey, 2.0F, 0, 5.0F);
     }
     else if(is_select){
