@@ -32,7 +32,6 @@ std::shared_ptr<json> servers;
 std::shared_ptr<GlobalState> global_state = std::make_shared<GlobalState>();
 
 std::shared_ptr<CameraListWindow> camera_list_win;
-std::shared_ptr<CommandWindow> commands_win;
 std::shared_ptr<InspectorWindow> inspector_win;
 std::shared_ptr<WebsocketWindow> websocket_win;
 std::shared_ptr<StyleSetting> style_setting_win;
@@ -115,7 +114,6 @@ void updateServerList(){
     data["global"] = get_global_state_data(*global_state);
     data["window"] = json::object();
     data["window"]["camera_list_win"] = camera_list_win->get_window_data();
-    data["window"]["commands_win"] = commands_win->get_window_data();
     data["window"]["inspector_win"] = inspector_win->get_window_data();
     data["window"]["websocket_win"] = websocket_win->get_window_data();
     data["popwin"]["style_setting_win"] = style_setting_win->get_window_data();
@@ -127,7 +125,6 @@ void updateServerList(){
 void updateGUIList(){
     (*gui)["websocket_server_window"] = websocket_win->is_enable();
     (*gui)["camera_list_win"] = camera_list_win->is_enable();
-    (*gui)["commands_win"] = commands_win->is_enable();
     (*gui)["inspector_win"] = inspector_win->is_enable();
     (*gui)["style_setting_win"] = style_setting_win->is_enable();
     saveGUI(*gui);
@@ -161,7 +158,6 @@ int main(int, char**)
     gui = std::make_shared<json>(loadGUI());
     // Win
     WIN_INIT(websocket_win, WebsocketWindow, windows_array, 0);
-    WIN_INIT(commands_win, CommandWindow, windows_array, 1);
     WIN_INIT(camera_list_win, CameraListWindow, windows_array, 2);
     WIN_INIT(inspector_win, InspectorWindow, windows_array, 3);
     WIN_INIT(style_setting_win, StyleSetting, windows_array, 4);
@@ -233,10 +229,6 @@ int main(int, char**)
                     websocket_win->trigger(!websocket_win->is_enable());
                     updateGUIList();
                 }
-                if (event.key.key == SDLK_W) {
-                    commands_win->trigger(!commands_win->is_enable());
-                    updateGUIList();
-                }
                 if (event.key.key == SDLK_E) {
                     camera_list_win->trigger(!camera_list_win->is_enable());
                     updateGUIList();
@@ -271,10 +263,6 @@ int main(int, char**)
             bool update_menu = false;
             if(ImGui::MenuItem("Websocket Dashboard (Q)", NULL, websocket_win->is_enable())){
                 websocket_win->trigger(!websocket_win->is_enable());
-                update_menu = true;
-            }
-            if(ImGui::MenuItem("Command Sender (W)", NULL, commands_win->is_enable())){
-                commands_win->trigger(!commands_win->is_enable());
                 update_menu = true;
             }
             if(ImGui::MenuItem("Camera List (E)", NULL, camera_list_win->is_enable())){
