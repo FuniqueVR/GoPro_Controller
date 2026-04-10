@@ -6,7 +6,6 @@
 */
 #pragma once
 #include "camera_list.h"
-#include "commands.h"
 #include "inspector.h"
 #include "websocket_server.h"
 #include "style_setting.h"
