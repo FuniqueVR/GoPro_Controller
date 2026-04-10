@@ -3,7 +3,6 @@
 #include <string>
 
 void InspectorWindow::draw_command_local(){
-    std::lock_guard<std::mutex> lock(master->camera_mtx);
     ImGui::Text("Single Camera Control");
 
     int32_t current_camera = master->findCamera(state->current_camera_item);

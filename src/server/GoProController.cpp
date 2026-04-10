@@ -175,6 +175,9 @@ void GoProController::shutter(std::string target, bool isstart){
         _shutterAll(camera_ips, isstart);
     }
 }
+void GoProController::locate(std::string target, bool ison){
+    if(target.size() > 0) _locate(target, ison); 
+}
 
 std::string GoProController::getAllIP(){
     json result = json::array();

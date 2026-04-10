@@ -124,6 +124,20 @@ void InspectorWindow::render(){
         ImGui::Separator();
 
         if(ImGui::BeginTabBar("Inspector_Bar##Top")){
+            if(ImGui::BeginTabItem("Command##Inspector_Bar_Item")){
+                if(ImGui::BeginTabBar("Inspector_Bar##Command")){
+                    if(ImGui::BeginTabItem("Global##Inspector_Bar_Item")){
+                        draw_command_global();
+                        ImGui::EndTabItem();
+                    }
+                    if(ImGui::BeginTabItem("Local##Inspector_Bar_Item")){
+                        draw_command_local();
+                        ImGui::EndTabItem();
+                    }
+                    ImGui::EndTabBar();
+                }
+                ImGui::EndTabItem();
+            }
             if(ImGui::BeginTabItem("Setting##Inspector_Bar_Item")){
                 if(ImGui::Button("Reset Setting Order")){
                     reset_setting_order();
