@@ -69,8 +69,21 @@ private:
     const size_t MAX_QUEUE_SIZE = 10;
     const size_t MAX_ATTEMPT = 300;
 
+    /**
+     * Is this the first time this window appear
+     * Shows the build info in console if it is
+     */
     bool first = true;
+    /**
+     * The state of the decoing thread is trying to get video frame from camera
+     * If false, it means failed
+     */
     bool trying = false;
+    /**
+     * Check if the rotating button is press
+     * The purpose of this is to print info in the next frame
+     */
+    bool remap = false;
     /**
      * Rotating flag
      */
