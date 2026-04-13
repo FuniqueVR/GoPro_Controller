@@ -63,6 +63,7 @@ private:
     FilterType filter = FilterType::None;
     SortType sort = SortType::None;
 
+    std::string search = "";
     std::string filter_ip = "";
     bool filter_connect = false;
 };
