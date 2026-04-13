@@ -232,9 +232,26 @@ const static int32_t GOPRO_STATUS_IDS[] = {
     STATUS_CAMERA_CONTROL_ID,
     USB_CONNECTED_ID,
     USE_CONTROLLED_ID,
-    SD_CARD_CAPACITY_ID
+    SD_CARD_CAPACITY_ID,
+    CAMERA_NAME_ID,
 };
 #define GOPRO_STATUS_SIZE sizeof(GOPRO_STATUS_IDS)/sizeof(int32_t)
+
+const static int32_t GOPRO_HARDWARE_STATUS_IDS[] = {
+
+}
+
+const static int32_t GOPRO_NETWORK_STATUS_IDS[] = {
+
+}
+
+const static int32_t GOPRO_ENCODE_STATUS_IDS[] = {
+
+}
+
+const static int32_t GOPRO_MEDIA_STATUS_IDS[] = {
+
+}
 
 // Lookup functions
 inline const int32_t GET_SETTING_SIZE_BY_ID(int32_t x) {
@@ -710,6 +727,7 @@ inline const int32_t GET_STATUS_TYPE_BY_ID(int32_t x ){
         case USB_CONNECTED_ID:                      return (int32_t)USB_CONNECTED_TYPE;
         case USE_CONTROLLED_ID:                     return (int32_t)USE_CONTROLLED_TYPE;
         case SD_CARD_CAPACITY_ID:                   return (int32_t)SD_CARD_CAPACITY_TYPE;
+        case CAMERA_NAME_ID:                        return (int32_t)CAMERA_NAME_TYPE;
         default: return 0;
     }
 }
@@ -791,6 +809,7 @@ inline const char* GET_STATUS_NAME_BY_ID(int32_t x ){
         case USB_CONNECTED_ID:                      return USB_CONNECTED_NAME;
         case USE_CONTROLLED_ID:                     return USE_CONTROLLED_NAME;
         case SD_CARD_CAPACITY_ID:                   return SD_CARD_CAPACITY_NAME;
+        case CAMERA_NAME_ID:                        return CAMERA_NAME_NAME;
         default: return "";
     }
 }
