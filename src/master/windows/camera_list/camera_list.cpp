@@ -38,13 +38,13 @@ json CameraListWindow::get_window_data() {
 }
 
 void CameraListWindow::set_window_data(json data){
-    if(data["size"].is_number_integer()){
+    if(data["size"].is_number()){
         size = data["size"].get<int32_t>();
     }
-    if(data["filter"].is_number_integer()){
+    if(data["filter"].is_number()){
         filter = (FilterType)data["filter"].get<int32_t>();
     }
-    if(data["sort"].is_number_integer()){
+    if(data["sort"].is_number()){
         sort = (SortType)data["sort"].get<int32_t>();
     }
     if(data["filter_connect"].is_boolean()){
@@ -63,7 +63,7 @@ void CameraListWindow::render(){
         std::lock_guard<std::mutex> lock(master->camera_mtx);
 
         changed = ImGui::SliderInt("Item Size##Camera_List_Size", &size, 0, 15);
-        changed = ImGui::InputText("Search", &search);
+        changed = changed || ImGui::InputText("Search", &search);
         std::string filter_text = get_filter_string(filter);
         std::string sort_text = get_sort_string(sort);
 
@@ -137,6 +137,7 @@ void CameraListWindow::render(){
     ImGui::End();
     if(changed){
         state->update_server();
+        changed = false;
     }
 }
 

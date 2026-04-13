@@ -104,6 +104,7 @@ void hwGetterFeedback(std::string ip, json hw){
 }
 
 void updateServerList(){
+    std::cout << "updateServerList" << std::endl;
     json data = json::object();
     data["data"] = json::array();
     for(const auto& s : master->getServers()){
