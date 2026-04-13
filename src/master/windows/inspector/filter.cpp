@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 
-bool InspectorWindow::conditional_filter(int32_t mymodel, int32_t setting_id){
+bool InspectorWindow::conditional_filter(const std::shared_ptr<GlobalState>& state, int32_t mymodel, int32_t setting_id){
     int32_t preset = state->try_get_status_int32_by_id(PRESET_ID);
 
     int32_t profile = state->try_get_setting_int32_by_id(PROFILES_ID);
@@ -66,7 +66,7 @@ bool InspectorWindow::conditional_filter(int32_t mymodel, int32_t setting_id){
     return true;
 }
 
-bool InspectorWindow::conditional_filter_option(int32_t mymodel, int32_t setting_id, int32_t value_index){
+bool InspectorWindow::conditional_filter_option(const std::shared_ptr<GlobalState>& state, int32_t mymodel, int32_t setting_id, int32_t value_index){
     int32_t preset = state->try_get_status_int32_by_id(PRESET_ID);
 
     int32_t profile = state->try_get_setting_int32_by_id(PROFILES_ID);

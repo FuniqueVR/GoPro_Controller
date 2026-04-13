@@ -48,6 +48,14 @@ void PreviewPopup::set_window_data(json data){
     }
 }
 
+void PreviewPopup::register_setting_drawer(std::function<void(std::shared_ptr<GlobalState>& state, std::shared_ptr<GoProMaster>& master, const std::shared_ptr<CameraInfo>& c)> caller){
+    setting_drawer = caller;
+}
+
+void PreviewPopup::register_protune_drawer(std::function<void(std::shared_ptr<GlobalState>& state, std::shared_ptr<GoProMaster>& master, const std::shared_ptr<CameraInfo>& c)> caller){
+    protune_drawer = caller;
+}
+
 void PreviewPopup::trigger(bool value){
     BasePopWindow::trigger(value);
     if(value){
@@ -144,6 +152,7 @@ void PreviewPopup::render(){
             ImGui::SameLine();
             {
                 ImGui::BeginChild("Detail##Preview_Camera_Inspector2", ImVec2(left_width, 0));
+                _draw_setting();
                 ImGui::EndChild();
             }
 
@@ -254,6 +263,28 @@ void PreviewPopup::_draw_bottom_button(){
             reader = std::thread([&]() {
                 update_decoder();
             });
+        }
+    }
+}
+
+void PreviewPopup::_draw_setting(){
+    if(setting_drawer != NULL){
+        int32_t s = -1;
+        std::lock_guard<std::mutex> lock(master->camera_mtx);
+        s = master->findCamera(state->preview_ip);
+        if(s != -1){
+            const std::shared_ptr<CameraInfo>& c = master->getCameras().at(s);
+            if(ImGui::BeginTabBar("TabBar##Preview_Popwin")){
+                if(ImGui::BeginTabItem("Setting##Preview_Popwin_Right")){
+                    setting_drawer(state, master, c);
+                    ImGui::EndTabItem();
+                }
+                if(ImGui::BeginTabItem("Protune##Preview_Popwin_Right")){
+                    protune_drawer(state, master, c);
+                    ImGui::EndTabItem();
+                }
+                ImGui::EndTabBar();
+            }
         }
     }
 }

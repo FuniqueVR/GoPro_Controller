@@ -2,6 +2,7 @@
 #include <queue>
 #include <mutex>
 #include <thread>
+#include <functional>
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -52,6 +53,9 @@ public:
     json get_window_data() override;
     void set_window_data(json data) override;
 
+    void register_setting_drawer(std::function<void(std::shared_ptr<GlobalState>& state, std::shared_ptr<GoProMaster>& master, const std::shared_ptr<CameraInfo>& c)> caller);
+    void register_protune_drawer(std::function<void(std::shared_ptr<GlobalState>& state, std::shared_ptr<GoProMaster>& master, const std::shared_ptr<CameraInfo>& c)> caller);
+
     virtual void trigger(bool value) override;
     virtual void update_decoder();
     virtual void update() override;
@@ -63,8 +67,11 @@ protected:
     void _draw_rotation_button();
     void _draw_camera_selection();
     void _draw_bottom_button();
+    void _draw_setting();
 
 private:
+    std::function<void(std::shared_ptr<GlobalState>& state, std::shared_ptr<GoProMaster>& master, const std::shared_ptr<CameraInfo>& c)> setting_drawer;
+    std::function<void(std::shared_ptr<GlobalState>& state, std::shared_ptr<GoProMaster>& master, const std::shared_ptr<CameraInfo>& c)> protune_drawer;
     cv::VideoCapture cap;
     std::string pipeline;
     std::queue<cv::Mat> frame_queue;

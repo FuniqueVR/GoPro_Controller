@@ -1,5 +1,11 @@
 #include "../inspector.h"
 
+std::vector<int32_t> InspectorWindow::system_list_ordered = std::vector<int32_t>(GOPRO_SYSTEM_SETTING_SIZE);
+std::vector<int32_t> InspectorWindow::video_setting_list_ordered = std::vector<int32_t>(GOPRO_VIDEO_SETTING_SIZE);
+std::vector<int32_t> InspectorWindow::photo_setting_list_ordered = std::vector<int32_t>(GOPRO_PHOTO_SETTING_SIZE);
+std::vector<int32_t> InspectorWindow::video_protune_list_ordered = std::vector<int32_t>(GOPRO_VIDEO_PROTUNE_SETTING_SIZE);
+std::vector<int32_t> InspectorWindow::photo_protune_list_ordered = std::vector<int32_t>(GOPRO_PHOTO_PROTUNE_SETTING_SIZE);
+std::vector<int32_t> InspectorWindow::status_list_ordered = std::vector<int32_t>(GOPRO_STATUS_SIZE);
 
 InspectorWindow::InspectorWindow(
     std::shared_ptr<json> _setting, 
@@ -8,12 +14,6 @@ InspectorWindow::InspectorWindow(
 ) 
     : BaseWindow(_setting, _state, _master) {
     title = "Inspector";
-    system_list_ordered = std::vector<int32_t>(GOPRO_SYSTEM_SETTING_SIZE);
-    video_setting_list_ordered = std::vector<int32_t>(GOPRO_VIDEO_SETTING_SIZE);
-    photo_setting_list_ordered = std::vector<int32_t>(GOPRO_PHOTO_SETTING_SIZE);
-    video_protune_list_ordered = std::vector<int32_t>(GOPRO_VIDEO_PROTUNE_SETTING_SIZE);
-    photo_protune_list_ordered = std::vector<int32_t>(GOPRO_PHOTO_PROTUNE_SETTING_SIZE);
-    status_list_ordered = std::vector<int32_t>(GOPRO_STATUS_SIZE);
     reset_setting_order();
     reset_status_order();
 }
