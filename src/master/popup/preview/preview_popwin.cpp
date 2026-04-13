@@ -55,19 +55,8 @@ void PreviewPopup::trigger(bool value){
             update_decoder();
         });
     }else{
-        stream_open = false;
+        _stop_thread();
         isopen = false;
-        if (cap.isOpened()) {
-            cap.release();
-        }
-        if(reader.joinable()){
-            reader.join();
-        }
-        if(gl_texture != 0){
-            glDeleteTextures(1, &gl_texture);
-            gl_texture = 0;
-        }
-        while(frame_queue.size() > 0) frame_queue.pop();
         master->preview_end(state->preview_server, state->preview_ip);
     }
 }
@@ -83,6 +72,7 @@ void PreviewPopup::render(){
     ImGuiIO& io = ImGui::GetIO();
     ImVec2 display_size = io.DisplaySize;
     ImVec2 unit = ImVec2(display_size.x / 10.0f, display_size.y / 10.0f);
+    float left_width;
 
     ImGui::SetNextWindowPos(ImVec2(unit.x * 0.5F, unit.y * 0.5F), wp_cond);
     ImGui::SetNextWindowSize(ImVec2(unit.x * 9.0F, unit.y * 9.0F), wp_cond);
@@ -133,24 +123,57 @@ void PreviewPopup::render(){
                     std::cout << "Rescale size: " << size.x << ", " << size.y << std::endl;
                     remap = false;
                 }
-                ImGui::Dummy(ImVec2(( (unit.x * 8.5f) - size.x) / 2.0f, 0.0f));
+                left_width = ( (unit.x * 8.5f) - size.x) / 2.0f;
+                ImGui::Dummy(ImVec2(left_width, 0.0f));
                 ImGui::SameLine();
                 ImGui::Image((ImTextureID)(intptr_t)gl_texture, size);
             }
             ImGui::SetCursorScreenPos(image_pos);
-            // Rotating button
-            {
-                if(ImGui::Button("<== Rotate##preview_button")){
-                    DirChange(true); remap = true;
-                }
-                ImGui::SameLine();
-                if(ImGui::Button("Rotate ==>##preview_button")){
-                    DirChange(false); remap = true;
-                }
-            }
             // Go Different camera
             {
+                ImGui::BeginChild("Detail##Preview_Camera_Inspector", ImVec2(left_width, 0));
 
+                // Rotating button
+                {
+                    if(ImGui::Button("<== Rotate##preview_button")){
+                        DirChange(true); remap = true;
+                    }
+                    ImGui::SameLine();
+                    if(ImGui::Button("Rotate ==>##preview_button")){
+                        DirChange(false); remap = true;
+                    }
+                }
+
+                int32_t s = -1;
+                std::lock_guard<std::mutex> lock(master->camera_mtx);
+                s = master->findCamera(state->preview_ip);
+                if(s != -1){
+                    const std::shared_ptr<CameraInfo>& c = master->getCameras().at(s);
+                    std::string display_name = c->name;
+                    display_name += " ";
+                    display_name += c->ip;
+                    if(ImGui::BeginCombo("Camera##Preview_Camera_Selection", display_name.c_str())){
+                        for(auto& cam : master->getCameras()){
+                            if(!cam->connected) continue;
+                            std::string display_name2 = cam->name;
+                            display_name2 += " ";
+                            display_name2 += cam->ip;
+                            bool selected = display_name == display_name2;
+                            if(ImGui::Selectable(display_name2.c_str(), selected)){
+                                _stop_thread();
+                                master->preview_end(state->preview_server, state->preview_ip);
+                                master->preview_start(cam->server, cam->ip);
+                                state->preview_ip = cam->ip;
+                                state->preview_server = cam->server;
+                                reader = std::thread([&]() {
+                                    update_decoder();
+                                });
+                            }
+                        }
+                        ImGui::EndCombo();
+                    }
+                }
+                ImGui::EndChild();
             }
         } else { // No frame QAQ
             ImGui::Dummy(ImVec2(800, 280));
@@ -181,18 +204,7 @@ void PreviewPopup::render(){
         ImGui::SameLine();
         if(!trying) {
             if(ImGui::Button("Retry")){
-                stream_open = false;
-                if (cap.isOpened()) {
-                    cap.release();
-                }
-                if(reader.joinable()){
-                    reader.join();
-                }
-                if(gl_texture != 0){
-                    glDeleteTextures(1, &gl_texture);
-                    gl_texture = 0;
-                }
-                while(frame_queue.size() > 0) frame_queue.pop();
+                _stop_thread();
                 reader = std::thread([&]() {
                     update_decoder();
                 });
@@ -215,6 +227,21 @@ int32_t PreviewPopup::_get_current_model(json target){
         else if(model_name == "HERO9 Black") return MODEL_9;
     }
     return 0;
+}
+
+void PreviewPopup::_stop_thread(){
+    stream_open = false;
+    if (cap.isOpened()) {
+        cap.release();
+    }
+    if(reader.joinable()){
+        reader.join();
+    }
+    if(gl_texture != 0){
+        glDeleteTextures(1, &gl_texture);
+        gl_texture = 0;
+    }
+    while(frame_queue.size() > 0) frame_queue.pop();
 }
 
 cv::Mat PreviewPopup::get_latest_frame(){

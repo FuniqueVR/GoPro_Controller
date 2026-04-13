@@ -59,6 +59,7 @@ public:
 
 protected:
     int32_t _get_current_model(json target);
+    void _stop_thread();
 
 private:
     cv::VideoCapture cap;
