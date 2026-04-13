@@ -7,6 +7,11 @@
 #pragma once
 #include "base_window.h"
 
+/**
+ * Display camera as a grid items or list items
+ * Includes some filter and sort function
+ * Use this window for camera selection
+*/
 class CameraListWindow : public BaseWindow {
 public:
     CameraListWindow(
@@ -16,7 +21,20 @@ public:
     virtual ~CameraListWindow();
 
     enum class FilterType {
-        None, Connect, Server
+        /**
+         * Do not filter anything, display everything out
+         */
+        None, 
+        /**
+         * Pass through connected filter
+         * This will display only with connected flag you choose
+         */
+        Connect, 
+        /**
+         * Pass through server filter
+         * This will display only camera with selected server
+         */
+        Server
     };
 
     enum class SortType {
@@ -28,7 +46,8 @@ public:
     virtual void render() override;
 
     virtual void draw_line(const std::shared_ptr<CameraInfo>& c);
-    virtual void draw_group(const std::shared_ptr<CameraInfo>& c);
+    virtual void draw_group_state(const std::shared_ptr<CameraInfo>& c);
+    virtual void draw_group_header(const std::shared_ptr<CameraInfo>& c);
     virtual void item_event(const std::shared_ptr<CameraInfo>& c);
     void onClick(const std::shared_ptr<CameraInfo>& c);
 
