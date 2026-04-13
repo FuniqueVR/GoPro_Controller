@@ -112,10 +112,19 @@ void PreviewPopup::render(){
             {
                 float ratio = (float)target_w / (float)target_h;
                 ImVec2 size;
+                // First we adjust the ratio
                 if(ratio >= 1.0f){ // Normal aspect, w > h
                     size = ImVec2((unit.y * 7.0f) * ratio, unit.y * 7.0f);
                 }else{ // h > w
                     size = ImVec2(unit.x * 7.0f, (unit.x * 7.0f) / ratio);
+                }
+                // Even if we adjust the ratio, the resolution might still out of screen
+                if(size.x > (unit.x * 8.0f)){
+                    float diff = (unit.x * 8.0f) / size.x;
+                    size *= diff;
+                }else if(size.y > (unit.y * 8.0f)){
+                    float diff = (unit.y * 8.0f) / size.y;
+                    size *= diff;
                 }
                 if(remap){
                     std::cout << "Window size: " << display_size.x << ", " << display_size.y << std::endl;
