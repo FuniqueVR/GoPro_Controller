@@ -73,6 +73,7 @@ void PreviewPopup::render(){
     ImVec2 display_size = io.DisplaySize;
     ImVec2 unit = ImVec2(display_size.x / 10.0f, display_size.y / 10.0f);
     float left_width;
+    float img_width;
 
     ImGui::SetNextWindowPos(ImVec2(unit.x * 0.5F, unit.y * 0.5F), wp_cond);
     ImGui::SetNextWindowSize(ImVec2(unit.x * 9.0F, unit.y * 9.0F), wp_cond);
@@ -124,6 +125,7 @@ void PreviewPopup::render(){
                     remap = false;
                 }
                 left_width = ( (unit.x * 8.5f) - size.x) / 2.0f;
+                img_width = size.x;
                 ImGui::Dummy(ImVec2(left_width, 0.0f));
                 ImGui::SameLine();
                 ImGui::Image((ImTextureID)(intptr_t)gl_texture, size);
@@ -132,49 +134,19 @@ void PreviewPopup::render(){
             // Go Different camera
             {
                 ImGui::BeginChild("Detail##Preview_Camera_Inspector", ImVec2(left_width, 0));
-
-                // Rotating button
-                {
-                    if(ImGui::Button("<== Rotate##preview_button")){
-                        DirChange(true); remap = true;
-                    }
-                    ImGui::SameLine();
-                    if(ImGui::Button("Rotate ==>##preview_button")){
-                        DirChange(false); remap = true;
-                    }
-                }
-
-                int32_t s = -1;
-                std::lock_guard<std::mutex> lock(master->camera_mtx);
-                s = master->findCamera(state->preview_ip);
-                if(s != -1){
-                    const std::shared_ptr<CameraInfo>& c = master->getCameras().at(s);
-                    std::string display_name = c->name;
-                    display_name += " ";
-                    display_name += c->ip;
-                    if(ImGui::BeginCombo("Camera##Preview_Camera_Selection", display_name.c_str())){
-                        for(auto& cam : master->getCameras()){
-                            if(!cam->connected) continue;
-                            std::string display_name2 = cam->name;
-                            display_name2 += " ";
-                            display_name2 += cam->ip;
-                            bool selected = display_name == display_name2;
-                            if(ImGui::Selectable(display_name2.c_str(), selected)){
-                                _stop_thread();
-                                master->preview_end(state->preview_server, state->preview_ip);
-                                master->preview_start(cam->server, cam->ip);
-                                state->preview_ip = cam->ip;
-                                state->preview_server = cam->server;
-                                reader = std::thread([&]() {
-                                    update_decoder();
-                                });
-                            }
-                        }
-                        ImGui::EndCombo();
-                    }
-                }
+                _draw_rotation_button();
+                _draw_camera_selection();
+                _draw_bottom_button();
                 ImGui::EndChild();
             }
+            ImGui::SameLine();
+            ImGui::Dummy(ImVec2(img_width, 0.0f));
+            ImGui::SameLine();
+            {
+                ImGui::BeginChild("Detail##Preview_Camera_Inspector2", ImVec2(left_width, 0));
+                ImGui::EndChild();
+            }
+
         } else { // No frame QAQ
             ImGui::Dummy(ImVec2(800, 280));
             float win_width = ImGui::GetContentRegionAvail().x;
@@ -193,24 +165,9 @@ void PreviewPopup::render(){
             std::string dot_str(dots, '.');
             ImGui::SameLine();
             ImGui::Text("%s", dot_str.c_str());
-        }
 
-        /**
-         * Bottom action for the preview 
-         */
-        if(ImGui::Button("Cancel")){
-            trigger(false);
+            _draw_bottom_button();
         }
-        ImGui::SameLine();
-        if(!trying) {
-            if(ImGui::Button("Retry")){
-                _stop_thread();
-                reader = std::thread([&]() {
-                    update_decoder();
-                });
-            }
-        }
-
         ImGui::EndPopup();
     }
 }
@@ -242,6 +199,63 @@ void PreviewPopup::_stop_thread(){
         gl_texture = 0;
     }
     while(frame_queue.size() > 0) frame_queue.pop();
+}
+
+void PreviewPopup::_draw_rotation_button(){
+    if(ImGui::Button("<== Rotate##preview_button")){
+        DirChange(true); remap = true;
+    }
+    ImGui::SameLine();
+    if(ImGui::Button("Rotate ==>##preview_button")){
+        DirChange(false); remap = true;
+    }
+}
+
+void PreviewPopup::_draw_camera_selection(){
+    int32_t s = -1;
+    std::lock_guard<std::mutex> lock(master->camera_mtx);
+    s = master->findCamera(state->preview_ip);
+    if(s != -1){
+        const std::shared_ptr<CameraInfo>& c = master->getCameras().at(s);
+        std::string display_name = c->name;
+        display_name += " ";
+        display_name += c->ip;
+        if(ImGui::BeginCombo("Camera##Preview_Camera_Selection", display_name.c_str())){
+            for(auto& cam : master->getCameras()){
+                if(!cam->connected) continue;
+                std::string display_name2 = cam->name;
+                display_name2 += " ";
+                display_name2 += cam->ip;
+                bool selected = display_name == display_name2;
+                if(ImGui::Selectable(display_name2.c_str(), selected)){
+                    _stop_thread();
+                    master->preview_end(state->preview_server, state->preview_ip);
+                    master->preview_start(cam->server, cam->ip);
+                    state->preview_ip = cam->ip;
+                    state->preview_server = cam->server;
+                    reader = std::thread([&]() {
+                        update_decoder();
+                    });
+                }
+            }
+            ImGui::EndCombo();
+        }
+    }
+}
+
+void PreviewPopup::_draw_bottom_button(){
+    if(ImGui::Button("Cancel")){
+        trigger(false);
+    }
+    ImGui::SameLine();
+    if(!trying) {
+        if(ImGui::Button("Retry")){
+            _stop_thread();
+            reader = std::thread([&]() {
+                update_decoder();
+            });
+        }
+    }
 }
 
 cv::Mat PreviewPopup::get_latest_frame(){

@@ -60,6 +60,9 @@ public:
 protected:
     int32_t _get_current_model(json target);
     void _stop_thread();
+    void _draw_rotation_button();
+    void _draw_camera_selection();
+    void _draw_bottom_button();
 
 private:
     cv::VideoCapture cap;
