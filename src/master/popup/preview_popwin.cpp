@@ -283,26 +283,26 @@ void PreviewPopup::render(){
             trigger(false);
         }
         ImGui::SameLine();
-        ImGui::BeginDisabled(trying);
-        if(ImGui::Button("Retry")){
-            stream_open = false;
-            isopen = false;
-            if (cap.isOpened()) {
-                cap.release();
+        if(!trying) {
+            if(ImGui::Button("Retry")){
+                stream_open = false;
+                isopen = false;
+                if (cap.isOpened()) {
+                    cap.release();
+                }
+                if(reader.joinable()){
+                    reader.join();
+                }
+                if(gl_texture != 0){
+                    glDeleteTextures(1, &gl_texture);
+                    gl_texture = 0;
+                }
+                while(frame_queue.size() > 0) frame_queue.pop();
+                reader = std::thread([&]() {
+                    update_decoder();
+                });
             }
-            if(reader.joinable()){
-                reader.join();
-            }
-            if(gl_texture != 0){
-                glDeleteTextures(1, &gl_texture);
-                gl_texture = 0;
-            }
-            while(frame_queue.size() > 0) frame_queue.pop();
-            reader = std::thread([&]() {
-                update_decoder();
-            });
         }
-        ImGui::EndDisabled();
 
         ImGui::EndPopup();
     }
