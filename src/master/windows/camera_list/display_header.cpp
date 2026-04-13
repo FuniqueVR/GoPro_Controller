@@ -1,6 +1,5 @@
 #include "../camera_list.h"
 
-
 void CameraListWindow::draw_group_header(const std::shared_ptr<CameraInfo>& c){
     json status = json::object();
     json setting = json::object();

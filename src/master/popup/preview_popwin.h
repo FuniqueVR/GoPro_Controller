@@ -37,6 +37,9 @@
 #include <opencv2/opencv.hpp>
 #include "base_pop_window.h"
 
+/**
+ * Display camera feed from select camera
+ */
 class PreviewPopup : public BasePopWindow {
 public:
     PreviewPopup(
@@ -64,6 +67,7 @@ private:
     std::mutex queue_mutex;
     std::thread reader;
     const size_t MAX_QUEUE_SIZE = 10;
+    const size_t MAX_ATTEMPT = 300;
 
     int32_t dir = 0;
     bool stream_open = false;

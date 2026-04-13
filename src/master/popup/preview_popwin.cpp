@@ -23,6 +23,7 @@ PreviewPopup::PreviewPopup(
     renderer = _renderer;
     title = "Preview##Popup";
 
+// LOG all the GStreamer debug info out of console
 #ifdef _WIN32
     _putenv("GST_DEBUG=2");  // Level 2 = warnings and errors
     // Or for more detail:
@@ -74,16 +75,13 @@ void PreviewPopup::trigger(bool value){
 
 void PreviewPopup::update_decoder(){
     stream_open = false;
-    int32_t retry = 0;
     int32_t s = -1;
     int32_t model;
-    const int32_t MAX_RETRY = 10;
 
     std::cout << "===== OpenCV Build Info =====" << std::endl;
     std::cout << cv::getBuildInformation() << std::endl;
     std::cout << "=============================" << std::endl;
 
-    std::cout << "[Preview Decoder] Update decoder start !" << " " << stream_open << " " << (retry < MAX_RETRY) << std::endl;
     {
         {
             std::lock_guard<std::mutex> lock(master->camera_mtx);
@@ -98,17 +96,6 @@ void PreviewPopup::update_decoder(){
         model = _get_current_model(c->hw);
         json buffer_setting = json::object();
         master->getSettingsFromCamera(*c, buffer_setting);
-        if(buffer_setting["2"].is_number_integer()){
-            int32_t res = buffer_setting["2"].get<int32_t>();
-            const int32_t* detail = VIDEO_RESOLUTION_RES[res];
-            texture_width = detail[0];
-            texture_height = detail[1];
-        }else{
-            std::cout << "[Preview Decoder] Cannot get resolution setting from camera: " << state->preview_ip << std::endl;
-            std::cout << "[Preview Decoder] Fallback to default HD resolution " << std::endl;
-            texture_width = 1920;
-            texture_height = 1080;
-        }
     }
 
     if(gl_texture != 0){
@@ -117,55 +104,60 @@ void PreviewPopup::update_decoder(){
     }
 
     bool g = false;
-    while(!stream_open && retry < MAX_RETRY){
-        const std::shared_ptr<CameraInfo>& c = master->getCameras().at(s);
-        retry++;
-        std::cout << "[Preview Decoder] Attempt " << retry << "/" << MAX_RETRY << " opening pipeline..." << std::endl;
+    const std::shared_ptr<CameraInfo>& c = master->getCameras().at(s);
+    if(!g){
+        pipeline = 
+            "udpsrc port=8554 timeout=1000000000 "
+            "! watchdog timeout=1000 "
+            "! queue max-size-buffers=0 max-size-bytes=0 max-size-time=1000000000 "
+            // Treet incoming UDP byte array as TS format
+            "! tsdemux "
+            /**
+             * We nned to use general decodebin, because GOPRO model might have use
+             * H265 or H264, We have no way to find out except fetch info from the incoming camera
+             * But i'm too lazy for that. so i just want GStreamer do the detection for me
+             */
+            "! decodebin "
+            // Convert to video feed
+            "! videoconvert "
+            // Leave video only and drop audio data
+            "! video/x-raw,format=BGR "
+            // Output to application use sink
+            "! appsink sync=false drop=true max-buffers=1";
+        //replaceAll(pipeline, "{0}", c->server.c_str());
+        cap.open(pipeline, cv::CAP_GSTREAMER);
+        std::cout << "[Preview Decoder] Pipeline use:" << std::endl << pipeline << std::endl;
+    }
+    //g = true;
 
-        if(!g){
-            pipeline = 
-                "udpsrc port=8554 timeout=1000000000 "
-                "! watchdog timeout=1000 "
-                "! queue max-size-buffers=0 max-size-bytes=0 max-size-time=1000000000 "
-                "! tsdemux "
-                "! decodebin "
-                "! videoconvert "
-                "! video/x-raw,format=BGR "
-                "! appsink sync=false drop=true max-buffers=1";
-            //replaceAll(pipeline, "{0}", c->server.c_str());
-            cap.open(pipeline, cv::CAP_GSTREAMER);
-            std::cout << "[Preview Decoder] Pipeline use:" << std::endl << pipeline << std::endl;
-        }
-        //g = true;
-
-        if(cap.isOpened()){
-            cv::Mat test;
-            for(int i = 0; i < 30; i++) {
-                std::cout << "[Preview Decoder] Try cap.grab" << std::endl;
-                if(cap.grab()) {
-                    std::cout << "[Preview Decoder] cap.retrieve" << std::endl;
-                    if(cap.retrieve(test) && !test.empty()){
-                        stream_open = true;
-                        std::cout << "[Preview Decoder] Pipeline opened successfully! " << test.cols << "x" << test.rows << std::endl;
-                        break;
-                    }
+    if(cap.isOpened()){
+        cv::Mat test;
+        for(int i = 0; i < MAX_ATTEMPT; i++) {
+            std::cout << "[Preview Decoder] Try cap.grab" << std::endl;
+            if(cap.grab()) {
+                std::cout << "[Preview Decoder] cap.retrieve" << std::endl;
+                if(cap.retrieve(test) && !test.empty()){
+                    stream_open = true;
+                    std::cout << "[Preview Decoder] Pipeline opened successfully! " << test.cols << "x" << test.rows << std::endl;
+                    texture_width = test.cols;
+                    texture_height = test.rows;
+                    std::cout << "[Preview Decoder] Get resolution setting from camera: " << texture_width << ", " << texture_height << std::endl;
+                    break;
                 }
-                std::this_thread::sleep_for(std::chrono::milliseconds(33)); // Match ~30fps
             }
-            if(!stream_open){
-                std::cout << "[Preview Decoder] No valid frames in first 30 attempts, releasing..." << std::endl;
-                cap.release();
-            }
-        } else {
-            std::cout << "[Preview Decoder] Failed to open pipeline, retrying in 1s..." << std::endl;
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            std::this_thread::sleep_for(std::chrono::milliseconds(33)); // Match ~30fps
         }
-
-        if(!isopen) break;
+        if(!stream_open){
+            std::cout << "[Preview Decoder] No valid frames in first " << MAX_ATTEMPT << " attempts, releasing..." << std::endl;
+            cap.release();
+        }
+    } else {
+        std::cout << "[Preview Decoder] Failed to open pipeline, retrying in 1s..." << std::endl;
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
 
     if(!stream_open){
-        std::cerr << "[Preview Decoder] Could not open pipeline after " << MAX_RETRY << " attempts!" << std::endl;
+        std::cerr << "[Preview Decoder] Could not open pipeline" << std::endl;
         return;
     }
     

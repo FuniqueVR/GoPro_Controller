@@ -14,44 +14,6 @@
 #include <algorithm>
 #include <functional> 
 
-std::string toTimeCode(int32_t timer){
-    std::string result = "";
-    int32_t mins = static_cast<int32_t>(((float)timer / 60.0f));
-    int32_t hours = static_cast<int32_t>(((float)mins / 60.0f));
-    mins = mins % 60;
-    timer = timer % 60;
-    std::ostringstream oss;
-    oss << std::setfill('0') << std::setw(2) << hours;
-    result += oss.str();
-    result += ":";
-
-    std::ostringstream oss2;
-    oss2 << std::setfill('0') << std::setw(2) << mins;
-    result += oss2.str();
-    result += ":";
-
-    std::ostringstream oss3;
-    oss3 << std::setfill('0') << std::setw(2) << timer;
-    result += oss3.str();
-
-    return result;
-}
-
-std::string bytesToGbString(long bytes) {
-    // Define the value of one gigabyte (1024 * 1024 * 1024 bytes)
-    const long GIGABYTE = 1024L * 1024L * 1024L; 
-
-    // Convert bytes to gigabytes as a double
-    double gigabytes = static_cast<double>(bytes) / GIGABYTE;
-
-    // Use std::stringstream to format the output with desired precision
-    std::stringstream ss;
-    ss << std::fixed << std::setprecision(2) << gigabytes << " GB";
-
-    // Return the formatted string
-    return ss.str();
-}
-
 CameraListWindow::CameraListWindow(
     std::shared_ptr<json> _setting, 
     std::shared_ptr<GlobalState> _state, 
@@ -296,4 +258,40 @@ std::string CameraListWindow::get_sort_string(SortType type){
     }
 }
 
+std::string CameraListWindow::toTimeCode(int32_t timer){
+    std::string result = "";
+    int32_t mins = static_cast<int32_t>(((float)timer / 60.0f));
+    int32_t hours = static_cast<int32_t>(((float)mins / 60.0f));
+    mins = mins % 60;
+    timer = timer % 60;
+    std::ostringstream oss;
+    oss << std::setfill('0') << std::setw(2) << hours;
+    result += oss.str();
+    result += ":";
 
+    std::ostringstream oss2;
+    oss2 << std::setfill('0') << std::setw(2) << mins;
+    result += oss2.str();
+    result += ":";
+
+    std::ostringstream oss3;
+    oss3 << std::setfill('0') << std::setw(2) << timer;
+    result += oss3.str();
+
+    return result;
+}
+
+std::string CameraListWindow::bytesToGbString(long bytes) {
+    // Define the value of one gigabyte (1024 * 1024 * 1024 bytes)
+    const long GIGABYTE = 1024L * 1024L * 1024L; 
+
+    // Convert bytes to gigabytes as a double
+    double gigabytes = static_cast<double>(bytes) / GIGABYTE;
+
+    // Use std::stringstream to format the output with desired precision
+    std::stringstream ss;
+    ss << std::fixed << std::setprecision(2) << gigabytes << " GB";
+
+    // Return the formatted string
+    return ss.str();
+}

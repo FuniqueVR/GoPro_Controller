@@ -56,6 +56,8 @@ private:
     std::vector<std::shared_ptr<CameraInfo>> get_filtering_result();
     std::string get_filter_string(FilterType type);
     std::string get_sort_string(SortType type);
+    std::string toTimeCode(int32_t timer);
+    std::string bytesToGbString(long bytes);
 
     int32_t size = 1;
     FilterType filter = FilterType::None;
