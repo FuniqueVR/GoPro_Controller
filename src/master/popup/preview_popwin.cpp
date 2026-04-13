@@ -75,6 +75,7 @@ void PreviewPopup::trigger(bool value){
 
 void PreviewPopup::update_decoder(){
     stream_open = false;
+    trying = true;
     int32_t s = -1;
     int32_t model;
 
@@ -93,6 +94,7 @@ void PreviewPopup::update_decoder(){
 
         if(s == -1){
             std::cout << "[Preview Decoder] Cannot find camera: " << state->preview_ip << std::endl;
+            trying = false;
             return;
         }
         const std::shared_ptr<CameraInfo>& c = master->getCameras().at(s);
@@ -152,7 +154,6 @@ void PreviewPopup::update_decoder(){
         }
         if(!stream_open){
             std::cout << "[Preview Decoder] No valid frames in first " << MAX_ATTEMPT << " attempts, releasing..." << std::endl;
-            cap.release();
         }
     } else {
         std::cout << "[Preview Decoder] Failed to open pipeline, retrying in 1s..." << std::endl;
@@ -161,6 +162,7 @@ void PreviewPopup::update_decoder(){
 
     if(!stream_open){
         std::cerr << "[Preview Decoder] Could not open pipeline" << std::endl;
+        trying = false;
         return;
     }
     
@@ -170,6 +172,7 @@ void PreviewPopup::update_decoder(){
     while(stream_open){
         if(!cap.isOpened()){
             std::cerr << "[Preview Decoder] Pipeline closed unexpectedly!" << std::endl;
+            trying = false;
             break;
         }
 
@@ -191,6 +194,7 @@ void PreviewPopup::update_decoder(){
     }
 
     std::cout << "[Preview Decoder] Update decoder end !" << std::endl;
+    trying = false;
 }
 
 void PreviewPopup::update(){
@@ -209,6 +213,11 @@ void PreviewPopup::render(){
     ImGui::SetNextWindowPos(ImVec2(unit.x * 0.5F, unit.y * 0.5F), wp_cond);
     ImGui::SetNextWindowSize(ImVec2(unit.x * 9.0F, unit.y * 9.0F), wp_cond);
 
+    /**
+     * The resolution we actually want to display on the screen
+     * The image is already rotate during ConvertTexture stage
+     * So we just have to figure out the display vector
+     */
     int32_t target_w, target_h;
     if(dir == 0 || dir == 2){
         // 0° or 180° - width/height unchanged
@@ -222,21 +231,31 @@ void PreviewPopup::render(){
 
     if(ImGui::BeginPopupModal(title.c_str(), NULL, wp_flag)){
         if(gl_texture != 0){ // We have frame to display
-            if(ImGui::Button("<== Rotate##preview_button")){
-                DirChange(true); remap = true;
+            ImVec2 image_pos = ImGui::GetCursorScreenPos();
+            ImVec2 window_size = ImGui::GetWindowSize();
+
+            // Image drawing
+            {
+                float ratio = (float)target_w / (float)target_h;
+                ImVec2 size;
+                if(ratio >= 1.0f){ // Normal aspect, w > h
+                    size = ImVec2((unit.y * 7.0f) * ratio, unit.y * 7.0f);
+                }else{ // h > w
+                    size = ImVec2(unit.x * 7.0f, (unit.x * 7.0f) / ratio);
+                }
+                ImGui::Image((ImTextureID)(intptr_t)gl_texture, size);
             }
-            ImGui::SameLine();
-            if(ImGui::Button("Rotate ==>##preview_button")){
-                DirChange(false); remap = true;
+            ImGui::SetCursorScreenPos(image_pos);
+            // Rotating button
+            {
+                if(ImGui::Button("<== Rotate##preview_button")){
+                    DirChange(true); remap = true;
+                }
+                ImGui::SameLine();
+                if(ImGui::Button("Rotate ==>##preview_button")){
+                    DirChange(false); remap = true;
+                }
             }
-            float ratio = (float)target_w / (float)target_h;
-            ImVec2 size;
-            if(target_w >= target_h){
-                size = ImVec2(unit.x * 7, (unit.x * 7) / ratio);
-            }else{
-                size = ImVec2((unit.y * 7) * ratio, unit.y * 7);
-            }
-            ImGui::Image((ImTextureID)(intptr_t)gl_texture, size);
         } else { // No frame QAQ
             ImGui::Dummy(ImVec2(800, 280));
             float win_width = ImGui::GetContentRegionAvail().x;
@@ -257,9 +276,34 @@ void PreviewPopup::render(){
             ImGui::Text("%s", dot_str.c_str());
         }
 
+        /**
+         * Bottom action for the preview 
+         */
         if(ImGui::Button("Cancel")){
             trigger(false);
         }
+        ImGui::SameLine();
+        ImGui::BeginDisabled(trying);
+        if(ImGui::Button("Retry")){
+            stream_open = false;
+            isopen = false;
+            if (cap.isOpened()) {
+                cap.release();
+            }
+            if(reader.joinable()){
+                reader.join();
+            }
+            if(gl_texture != 0){
+                glDeleteTextures(1, &gl_texture);
+                gl_texture = 0;
+            }
+            while(frame_queue.size() > 0) frame_queue.pop();
+            reader = std::thread([&]() {
+                update_decoder();
+            });
+        }
+        ImGui::EndDisabled();
+
         ImGui::EndPopup();
     }
     if(remap){

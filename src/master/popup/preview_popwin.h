@@ -70,6 +70,10 @@ private:
     const size_t MAX_ATTEMPT = 300;
 
     bool first = true;
+    bool trying = false;
+    /**
+     * Rotating flag
+     */
     int32_t dir = 0;
     bool stream_open = false;
     GLuint gl_texture = 0;
