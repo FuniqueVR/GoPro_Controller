@@ -818,6 +818,89 @@ inline const char* GET_STATUS_NAME_BY_ID(int32_t x ){
     }
 }
 
+inline const char* GET_STATUS_AVA_BY_ID(int32_t x ){
+    switch(x) {
+        case BATTERY_PRESENT_ID:                    return BATTERY_PRESENT_AVA;
+        case INTERNAL_BATTERY_BARS_ID:              return INTERNAL_BATTERY_BARS_AVA;
+        case OVERHEATING_ID:                        return OVERHEATING_AVA;
+        case BUSY_ID:                               return BUSY_AVA;
+        case QUICK_CAPTURE_ID:                      return QUICK_CAPTURE_AVA;
+        case ENCODING_ID:                           return ENCODING_AVA;
+        case LCD_LOCK_ID:                           return LCD_LOCK_AVA;
+        case VIDEO_ENCODING_DURATION_ID:            return VIDEO_ENCODING_DURATION_AVA;
+        case WIRELESS_CONNECTIONS_ENABLED_ID:       return WIRELESS_CONNECTIONS_ENABLED_AVA;
+        case PAIRING_STATE_ID:                      return PAIRING_STATE_AVA;
+        case LAST_PAIRING_TYPE_ID:                  return LAST_PAIRING_TYPE_AVA;
+        case LAST_PAIRING_SUCESS_ID:                return LAST_PAIRING_SUCESS_AVA;
+        case WIFI_SCAN_STATE_ID:                    return WIFI_SCAN_STATE_AVA;
+        case LAST_WIFI_SCAN_SUCESS_ID:              return LAST_WIFI_SCAN_SUCESS_AVA;
+        case WIFI_PROVISIONING_STATE_ID:            return WIFI_PROVISIONING_STATE_AVA;
+        case REMOTE_VERSION_ID:                     return REMOTE_VERSION_AVA;
+        case REMOTE_CONNECTED_ID:                   return REMOTE_CONNECTED_AVA;
+        case CONNECTED_WIFI_SSID_ID:                return CONNECTED_WIFI_SSID_AVA;
+        case ACCESS_POINT_SSID_ID:                  return ACCESS_POINT_SSID_AVA;
+        case CONNECTED_DEVICE_ID:                   return CONNECTED_DEVICE_AVA;
+        case PREVIEW_STREAM_ID:                     return PREVIEW_STREAM_AVA;
+        case PRIMARY_STORAGE_ID:                    return PRIMARY_STORAGE_AVA;
+        case REMAINING_PHOTOS_ID:                   return REMAINING_PHOTOS_AVA;
+        case REMAINING_VIDEO_TIME_ID:               return REMAINING_VIDEO_TIME_AVA;
+        case PHOTOS_ID:                             return PHOTOS_AVA;
+        case VIDEOS_ID:                             return VIDEOS_AVA;
+        case OTA_ID:                                return OTA_AVA;
+        case PENDING_FW_UPDATE_CANCEL_ID:           return PENDING_FW_UPDATE_CANCEL_AVA;
+        case LOCATE_ID:                             return LOCATE_AVA;
+        case TIMELAPSE_INTERVAL_COUNTDOWN_ID:       return TIMELAPSE_INTERVAL_COUNTDOWN_AVA;
+        case SD_CARD_REMAINING_ID:                  return SD_CARD_REMAINING_AVA;
+        case PREVIEW_STREAM_AVAILABLE_ID:           return PREVIEW_STREAM_AVAILABLE_AVA;
+        case WIFI_BARS_ID:                          return WIFI_BARS_AVA;
+        case ACTIVE_HILIGHTS_ID:                    return ACTIVE_HILIGHTS_AVA;
+        case TIME_SINCE_LAST_HILIGHT_ID:            return TIME_SINCE_LAST_HILIGHT_AVA;
+        case MINIMUM_STATUS_POLL_PREIOD_ID:         return MINIMUM_STATUS_POLL_PREIOD_AVA;
+        case LIVEVIEW_EXPOSURE_SELECT_MODE_ID:      return LIVEVIEW_EXPOSURE_SELECT_MODE_AVA;
+        case LIVEVIEW_Y_ID:                         return LIVEVIEW_Y_AVA;
+        case LIVEVIEW_X_ID:                         return LIVEVIEW_X_AVA;
+        case GPS_LOCK_ID:                           return GPS_LOCK_AVA;
+        case AP_MODE_ID:                            return AP_MODE_AVA;
+        case INTERNAL_BATTERY_PERCENTAGE_ID:        return INTERNAL_BATTERY_PERCENTAGE_AVA;
+        case MICROPHONE_ACCESSORY_ID:               return MICROPHONE_ACCESSORY_AVA;
+        case ZOOM_LEVEL_ID:                         return ZOOM_LEVEL_AVA;
+        case STATUS_WIRELESS_BAND_ID:               return STATUS_WIRELESS_BAND_AVA;
+        case ZOOM_AVAILABLE_ID:                     return ZOOM_AVAILABLE_AVA;
+        case MOBILE_FRIENDLY_ID:                    return MOBILE_FRIENDLY_AVA;
+        case FTU_ID:                                return FTU_AVA;
+        case _5GHZ_AVAILABLE_ID:                    return _5GHZ_AVAILABLE_AVA;
+        case READY_ID:                              return READY_AVA;
+        case OTA_CHANGED_ID:                        return OTA_CHANGED_AVA;
+        case COLD_ID:                               return COLD_AVA;
+        case ROTATION_ID:                           return ROTATION_AVA;
+        case ZOOM_WHILE_ENCODING_ID:                return ZOOM_WHILE_ENCODING_AVA;
+        case FLATMODE_ID:                           return FLATMODE_AVA;
+        case VIDEO_PRESET_ID:                       return VIDEO_PRESET_AVA;
+        case PHOTO_PRESET_ID:                       return PHOTO_PRESET_AVA;
+        case TIMELAPSE_PRESET_ID:                   return TIMELAPSE_PRESET_AVA;
+        case PRESET_GROUP_ID:                       return PRESET_GROUP_AVA;
+        case PRESET_ID:                             return PRESET_AVA;
+        case PRESET_MODIFIED_ID:                    return PRESET_MODIFIED_AVA;
+        case REMAINING_LIVE_BURSTS_ID:              return REMAINING_LIVE_BURSTS_AVA;
+        case LIVE_BURSTS_ID:                        return LIVE_BURSTS_AVA;
+        case CAPTURE_DELAY_ACTIVE_ID:               return CAPTURE_DELAY_ACTIVE_AVA;
+        case MEDIA_MOD_STATE_ID:                    return MEDIA_MOD_STATE_AVA;
+        case TIME_WARP_SPEED_ID:                    return TIME_WARP_SPEED_AVA;
+        case LENS_TYPE_ID:                          return LENS_TYPE_AVA;
+        case LINUX_CORE_ID:                         return LINUX_CORE_AVA;
+        case SCHEDULED_CAPTURE_PRESET_ID:           return SCHEDULED_CAPTURE_PRESET_AVA;
+        case STATUS_SCHEDULED_CAPTURE_ID:           return STATUS_SCHEDULED_CAPTURE_AVA;
+        case SD_CARD_WRITE_SPEED_ERROR_ID:          return SD_CARD_WRITE_SPEED_ERROR_AVA;
+        case SD_CARD_ERRORS_ID:                     return SD_CARD_ERRORS_AVA;
+        case STATUS_CAMERA_CONTROL_ID:              return STATUS_CAMERA_CONTROL_AVA;
+        case USB_CONNECTED_ID:                      return USB_CONNECTED_AVA;
+        case USE_CONTROLLED_ID:                     return USE_CONTROLLED_AVA;
+        case SD_CARD_CAPACITY_ID:                   return SD_CARD_CAPACITY_AVA;
+        case CAMERA_NAME_ID:                        return CAMERA_NAME_AVA;
+        default: return "";
+    }
+}
+
 inline const int32_t GET_STATUS_SIZE_BY_ID(int32_t x ){
     switch(x) {
         case INTERNAL_BATTERY_BARS_ID:              return INTERNAL_BATTERY_BARS_SIZE;
