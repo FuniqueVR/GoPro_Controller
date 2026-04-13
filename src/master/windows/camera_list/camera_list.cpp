@@ -59,11 +59,11 @@ void CameraListWindow::render(){
     bool changed = false;
     ImGui::Begin(title.c_str(), &enable, w_flag);
     {
+        ImVec2 window_size = ImGui::GetWindowSize();
         std::lock_guard<std::mutex> lock(master->camera_mtx);
+
         changed = ImGui::SliderInt("Item Size##Camera_List_Size", &size, 0, 15);
-
-        ImGui::InputText("Search", &search);
-
+        changed = ImGui::InputText("Search", &search);
         std::string filter_text = get_filter_string(filter);
         std::string sort_text = get_sort_string(sort);
 
@@ -76,7 +76,6 @@ void CameraListWindow::render(){
             }
             ImGui::EndCombo();
         }
-        ImGui::SameLine();
         if(ImGui::BeginCombo("Filter##Camera_List_combo", filter_text.c_str())){
             for(int32_t i = 0; i < 3; i++){
                 if(ImGui::Selectable((get_filter_string((FilterType)i) + "##filter_option").c_str())){
