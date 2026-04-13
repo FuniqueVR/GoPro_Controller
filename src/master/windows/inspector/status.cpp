@@ -2,23 +2,23 @@
 
 
 void InspectorWindow::draw_status(){
-    
+    _draw_status(status_software_list_ordered);
 }
 
 void InspectorWindow::draw_hardware(){
-
+    _draw_status(status_hardware_list_ordered);
 }
 
 void InspectorWindow::draw_network(){
-
+    _draw_status(status_network_list_ordered);
 }
 
 void InspectorWindow::draw_encode(){
-
+    _draw_status(status_encode_list_ordered);
 }
 
 void InspectorWindow::draw_media_status(){
-
+    _draw_status(status_media_list_ordered);
 }
 
 void InspectorWindow::_draw_status(std::vector<int32_t>& ordered){
@@ -100,9 +100,9 @@ void InspectorWindow::_draw_status(std::vector<int32_t>& ordered){
     }
     if (move_from != -1 && move_to != -1)
     {
-        const int32_t tmp = status_list_ordered[move_from];
-        status_list_ordered[move_from] = status_list_ordered[move_to];
-        status_list_ordered[move_to] = tmp;
+        const int32_t tmp = ordered[move_from];
+        ordered[move_from] = ordered[move_to];
+        ordered[move_to] = tmp;
         state->update_server();
     }
 }

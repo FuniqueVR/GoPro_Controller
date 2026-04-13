@@ -14,15 +14,15 @@ std::vector<int32_t> InspectorWindow::status_media_list_ordered = std::vector<in
 
 #define IO_DATA_GET(x, y) \
 data[#x][#y] = json::array();\
-for(int32_t i = 0; i < ##y.size(); i++){\
-    data[#x][#y].push_back(##y[i]);\
+for(int32_t i = 0; i < y.size(); i++){\
+    data[#x][#y].push_back(y[i]);\
 }\
 
 #define IO_DATA_SET(x, y) \
-if(data[#x][#y].is_array() && data[#x][#y].size() == ##y.size()){\
+if(data[#x][#y].is_array() && data[#x][#y].size() == y.size()){\
     for(int32_t i = 0; i < data[#x][#y].size(); i++){\
         if(data[#x][#y].at(i).is_number_integer()){\
-            ##y[i] = data[#x][#y].at(i).get<int32_t>();\
+            y[i] = data[#x][#y].at(i).get<int32_t>();\
         }\
     }\
 }\
@@ -147,12 +147,41 @@ void InspectorWindow::render(){
             if(ImGui::BeginTabItem("Status##Inspector_Bar_Item")){
                 if(ImGui::Button("Reset Status Order")){
                     reset_status_order();
-                    
                     state->update_server();
                 }
-                ImGui::BeginDisabled(should_disabled);
-                draw_status();
-                ImGui::EndDisabled();
+                if(ImGui::BeginTabBar("Inspector_Bar##Status")){
+                    if(ImGui::BeginTabItem("Software##Inspector_Bar_Item")){
+                        ImGui::BeginDisabled(should_disabled);
+                        draw_status();
+                        ImGui::EndDisabled();
+                        ImGui::EndTabItem();
+                    }
+                    if(ImGui::BeginTabItem("Hardware##Inspector_Bar_Item")){
+                        ImGui::BeginDisabled(should_disabled);
+                        draw_hardware();
+                        ImGui::EndDisabled();
+                        ImGui::EndTabItem();
+                    }
+                    if(ImGui::BeginTabItem("Encode##Inspector_Bar_Item")){
+                        ImGui::BeginDisabled(should_disabled);
+                        draw_encode();
+                        ImGui::EndDisabled();
+                        ImGui::EndTabItem();
+                    }
+                    if(ImGui::BeginTabItem("Network##Inspector_Bar_Item")){
+                        ImGui::BeginDisabled(should_disabled);
+                        draw_network();
+                        ImGui::EndDisabled();
+                        ImGui::EndTabItem();
+                    }
+                    if(ImGui::BeginTabItem("Media##Inspector_Bar_Item")){
+                        ImGui::BeginDisabled(should_disabled);
+                        draw_media_status();
+                        ImGui::EndDisabled();
+                        ImGui::EndTabItem();
+                    }
+                    ImGui::EndTabBar();
+                }
                 ImGui::EndTabItem();
             }
             if(ImGui::BeginTabItem("Media##Inspector_Bar_Item")){
