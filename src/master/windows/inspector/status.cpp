@@ -2,12 +2,39 @@
 
 
 void InspectorWindow::draw_status(){
+    
+}
+
+void InspectorWindow::draw_hardware(){
+
+}
+
+void InspectorWindow::draw_network(){
+
+}
+
+void InspectorWindow::draw_encode(){
+
+}
+
+void InspectorWindow::draw_media_status(){
+
+}
+
+void InspectorWindow::_draw_status(std::vector<int32_t>& ordered){
     int move_from = -1, move_to = -1;
-    for(int32_t i = 0; i < GOPRO_STATUS_SIZE; i++){
+    int32_t model_enum = _get_current_model(state->current_hw_items);
+    for(int32_t i = 0; i < ordered.size(); i++){
         float x = ImGui::GetCursorPosX();
-        int32_t id = status_list_ordered[i];
+        int32_t id = ordered.at(i);
         const int32_t type = GET_STATUS_TYPE_BY_ID(id);
         std::string name = GET_STATUS_NAME_BY_ID(id);
+        int32_t ava = GET_STATUS_AVA_BY_ID(id);
+
+        if((model_enum&ava) == 0){
+            continue;
+        }
+
         if (name.size() == 0) continue;
 
         name += "##InspectorTitle_status";
@@ -78,21 +105,5 @@ void InspectorWindow::draw_status(){
         status_list_ordered[move_to] = tmp;
         state->update_server();
     }
-}
-
-void InspectorWindow::draw_hardware(){
-
-}
-
-void InspectorWindow::draw_network(){
-
-}
-
-void InspectorWindow::draw_encode(){
-
-}
-
-void InspectorWindow::draw_media_status(){
-
 }
 

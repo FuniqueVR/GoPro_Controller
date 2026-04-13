@@ -47,11 +47,17 @@ protected:
 
 private:
     static std::vector<int32_t> system_list_ordered;
+    // Setting
     static std::vector<int32_t> video_setting_list_ordered;
     static std::vector<int32_t> photo_setting_list_ordered;
     static std::vector<int32_t> video_protune_list_ordered;
     static std::vector<int32_t> photo_protune_list_ordered;
-    static std::vector<int32_t> status_list_ordered;
+    // Status
+    static std::vector<int32_t> status_software_list_ordered;
+    static std::vector<int32_t> status_hardware_list_ordered;
+    static std::vector<int32_t> status_encode_list_ordered;
+    static std::vector<int32_t> status_network_list_ordered;
+    static std::vector<int32_t> status_media_list_ordered;
     bool create_date_folder;
     bool put_finish;
     bool should_disabled;
