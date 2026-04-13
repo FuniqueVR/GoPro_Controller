@@ -8,6 +8,7 @@ void PreviewPopup::render(){
     ImVec2 display_size = io.DisplaySize;
     ImVec2 unit = ImVec2(display_size.x / 12.0f, display_size.y / 12.0f);
     float left_width;
+    float top_width;
     float img_width;
 
     ImGui::SetNextWindowPos(ImVec2(unit.x * 0.5F, unit.y * 0.5F), wp_cond);
@@ -60,7 +61,9 @@ void PreviewPopup::render(){
                     remap = false;
                 }
                 left_width = ( (unit.x * 11.0f) - size.x) / 2.0f;
+                top_width = ( (unit.y * 9.0f) - size.y) / 2.0f;
                 img_width = size.x;
+                ImGui::Dummy(ImVec2(0.0f, top_width));
                 ImGui::Dummy(ImVec2(left_width, 0.0f));
                 ImGui::SameLine();
                 ImGui::Image((ImTextureID)(intptr_t)gl_texture, size);
