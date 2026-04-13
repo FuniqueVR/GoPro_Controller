@@ -196,6 +196,13 @@ cv::Mat PreviewPopup::get_latest_frame(){
 void PreviewPopup::ConvertTexture(cv::Mat& mat){
     if(mat.empty()) return;
 
+    if(texture_width != mat.cols || texture_height != mat.rows){
+        texture_width = mat.cols;
+        texture_height = mat.rows;
+        glDeleteTextures(1, &gl_texture);
+        gl_texture = 0;
+    }
+
     cv::Mat rotated_frame;
     if(dir == 0){
         rotated_frame = mat;  // No rotation
