@@ -224,7 +224,9 @@ const static int32_t GOPRO_STATUS_IDS[] = {
     CAPTURE_DELAY_ACTIVE_ID,
     MEDIA_MOD_STATE_ID,
     TIME_WARP_SPEED_ID,
-    LENS_TYPE_ID,STATUS_HINDSIGHT_ID,
+    LINUX_CORE_ID,
+    LENS_TYPE_ID,
+    STATUS_HINDSIGHT_ID,
     SCHEDULED_CAPTURE_PRESET_ID,
     STATUS_SCHEDULED_CAPTURE_ID,
     SD_CARD_WRITE_SPEED_ERROR_ID,
@@ -719,6 +721,7 @@ inline const int32_t GET_STATUS_TYPE_BY_ID(int32_t x ){
         case MEDIA_MOD_STATE_ID:                    return (int32_t)MEDIA_MOD_STATE_TYPE;
         case TIME_WARP_SPEED_ID:                    return (int32_t)TIME_WARP_SPEED_TYPE;
         case LENS_TYPE_ID:                          return (int32_t)STATUS_HINDSIGHT_TYPE;
+        case LINUX_CORE_ID:                         return (int32_t)LINUX_CORE_TYPE;
         case SCHEDULED_CAPTURE_PRESET_ID:           return (int32_t)SCHEDULED_CAPTURE_PRESET_TYPE;
         case STATUS_SCHEDULED_CAPTURE_ID:           return (int32_t)STATUS_SCHEDULED_CAPTURE_TYPE;
         case SD_CARD_WRITE_SPEED_ERROR_ID:          return (int32_t)SD_CARD_WRITE_SPEED_ERROR_TYPE;
@@ -800,7 +803,8 @@ inline const char* GET_STATUS_NAME_BY_ID(int32_t x ){
         case CAPTURE_DELAY_ACTIVE_ID:               return CAPTURE_DELAY_ACTIVE_NAME;
         case MEDIA_MOD_STATE_ID:                    return MEDIA_MOD_STATE_NAME;
         case TIME_WARP_SPEED_ID:                    return TIME_WARP_SPEED_NAME;
-        case LENS_TYPE_ID:                          return STATUS_HINDSIGHT_NAME;
+        case LENS_TYPE_ID:                          return LENS_TYPE_NAME;
+        case LINUX_CORE_ID:                         return LINUX_CORE_NAME;
         case SCHEDULED_CAPTURE_PRESET_ID:           return SCHEDULED_CAPTURE_PRESET_NAME;
         case STATUS_SCHEDULED_CAPTURE_ID:           return STATUS_SCHEDULED_CAPTURE_NAME;
         case SD_CARD_WRITE_SPEED_ERROR_ID:          return SD_CARD_WRITE_SPEED_ERROR_NAME;
