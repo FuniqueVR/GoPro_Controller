@@ -26,6 +26,10 @@ public:
     static void global_draw_setting(std::shared_ptr<GlobalState>& state, std::shared_ptr<GoProMaster>& master, const std::shared_ptr<CameraInfo>& c);
     static void global_draw_protune(std::shared_ptr<GlobalState>& state, std::shared_ptr<GoProMaster>& master, const std::shared_ptr<CameraInfo>& c);
     virtual void draw_status();
+    virtual void draw_hardware();
+    virtual void draw_network();
+    virtual void draw_encode();
+    virtual void draw_media_status();
     virtual void draw_media();
     virtual void draw_command_local();
     virtual void draw_command_global();
@@ -34,6 +38,7 @@ public:
     void reset_status_order();
 protected:
     virtual void _draw_setting(std::vector<int32_t>& ordered);
+    virtual void _draw_status(std::vector<int32_t>& ordered);
     static void _global_draw_setting(std::shared_ptr<GlobalState>& state, std::shared_ptr<GoProMaster>& master, const std::shared_ptr<CameraInfo>& c, std::vector<int32_t>& ordered);
     static bool _global_draw_setting_item(int32_t i, std::shared_ptr<GlobalState>& state, std::shared_ptr<GoProMaster>& master, const std::shared_ptr<CameraInfo>& c, std::vector<int32_t>& ordered);
     static int32_t _get_current_model(json hwinfo);

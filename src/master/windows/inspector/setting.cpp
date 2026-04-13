@@ -97,6 +97,10 @@ void InspectorWindow::_draw_setting(std::vector<int32_t>& ordered){
     }
 }
 
+void InspectorWindow::_draw_status(std::vector<int32_t>& ordered){
+    
+}
+
 void InspectorWindow::_global_draw_setting(std::shared_ptr<GlobalState>& state, std::shared_ptr<GoProMaster>& master, const std::shared_ptr<CameraInfo>& c, std::vector<int32_t>& ordered){
     for(int32_t i = 0; i < ordered.size(); i++){
         _global_draw_setting_item(i, state, master, c, ordered);

@@ -79,3 +79,20 @@ void InspectorWindow::draw_status(){
         state->update_server();
     }
 }
+
+void InspectorWindow::draw_hardware(){
+
+}
+
+void InspectorWindow::draw_network(){
+
+}
+
+void InspectorWindow::draw_encode(){
+
+}
+
+void InspectorWindow::draw_media_status(){
+
+}
+
