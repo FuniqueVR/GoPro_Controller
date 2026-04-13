@@ -64,7 +64,7 @@ bool InspectorWindow::conditional_filter(const std::shared_ptr<GlobalState>& sta
         }
     }
     else if(setting_id == COLOR_ID){
-        if(preset_id != 0) return false;
+        if(preset != 0) return false;
     }
     return true;
 }
