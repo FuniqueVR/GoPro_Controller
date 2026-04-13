@@ -35,7 +35,7 @@ std::shared_ptr<CameraListWindow> camera_list_win;
 std::shared_ptr<InspectorWindow> inspector_win;
 std::shared_ptr<WebsocketWindow> websocket_win;
 std::shared_ptr<StyleSetting> style_setting_win;
-std::shared_ptr<BaseWindow> windows_array[5];
+std::shared_ptr<BaseWindow> windows_array[4];
 
 std::shared_ptr<AddCameraPopup> add_camera_popwin;
 std::shared_ptr<ScanCameraPopup> scan_camera_popwin;
@@ -158,9 +158,9 @@ int main(int, char**)
     gui = std::make_shared<json>(loadGUI());
     // Win
     WIN_INIT(websocket_win, WebsocketWindow, windows_array, 0);
-    WIN_INIT(camera_list_win, CameraListWindow, windows_array, 2);
-    WIN_INIT(inspector_win, InspectorWindow, windows_array, 3);
-    WIN_INIT(style_setting_win, StyleSetting, windows_array, 4);
+    WIN_INIT(camera_list_win, CameraListWindow, windows_array, 1);
+    WIN_INIT(inspector_win, InspectorWindow, windows_array, 2);
+    WIN_INIT(style_setting_win, StyleSetting, windows_array, 3);
     // Popup
     WIN_INIT(add_camera_popwin, AddCameraPopup, pop_windows_array, 0);
     WIN_INIT(scan_camera_popwin, ScanCameraPopup, pop_windows_array, 1);
@@ -176,11 +176,11 @@ int main(int, char**)
     global_state->update_server = updateServerList;
     global_state->command_sender = pushCommand;
     std::thread bg_thread(background_worker);
-    // Init the windows
-    init_state_setup(servers, gui, global_state, master, windows_array, pop_windows_array);
 
     setup_imgui();
-    setup_catppuccin_mocha_theme();
+
+    // Init the windows
+    init_state_setup(servers, gui, global_state, master, windows_array, pop_windows_array);
     ImGuiIO& io = ImGui::GetIO(); (void)io;
 
     // Setup Platform/Renderer backends
