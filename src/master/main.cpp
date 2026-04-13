@@ -171,6 +171,8 @@ int main(int, char**)
     master->registerCameraStatusFeedback(statusGetterFeedback);
     master->registerCameraHWFeedback(hwGetterFeedback);
     master->registerCameraLogFeedback(assign_log);
+    preview_popwin->register_setting_drawer(InspectorWindow::global_draw_setting);
+    preview_popwin->register_protune_drawer(InspectorWindow::global_draw_protune);
     global_state->update_server = updateServerList;
     global_state->command_sender = pushCommand;
     std::thread bg_thread(background_worker);

@@ -23,6 +23,8 @@ public:
     virtual void draw_system();
     virtual void draw_setting();
     virtual void draw_protune();
+    static void global_draw_setting(std::shared_ptr<GlobalState>& state, std::shared_ptr<GoProMaster>& master, const std::shared_ptr<CameraInfo>& c);
+    static void global_draw_protune(std::shared_ptr<GlobalState>& state, std::shared_ptr<GoProMaster>& master, const std::shared_ptr<CameraInfo>& c);
     virtual void draw_status();
     virtual void draw_media();
     virtual void draw_command_local();
@@ -32,17 +34,19 @@ public:
     void reset_status_order();
 protected:
     virtual void _draw_setting(std::vector<int32_t>& ordered);
-    int32_t _get_current_model();
-    bool conditional_filter(int32_t mymodel, int32_t setting_id);
-    bool conditional_filter_option(int32_t mymodel, int32_t setting_id, int32_t value_index);
+    static void _global_draw_setting(std::shared_ptr<GlobalState>& state, std::shared_ptr<GoProMaster>& master, const std::shared_ptr<CameraInfo>& c, std::vector<int32_t>& ordered);
+    static bool _global_draw_setting_item(int32_t i, std::shared_ptr<GlobalState>& state, std::shared_ptr<GoProMaster>& master, const std::shared_ptr<CameraInfo>& c, std::vector<int32_t>& ordered);
+    static int32_t _get_current_model(json hwinfo);
+    static bool conditional_filter(const std::shared_ptr<GlobalState>& state, int32_t mymodel, int32_t setting_id);
+    static bool conditional_filter_option(const std::shared_ptr<GlobalState>& state, int32_t mymodel, int32_t setting_id, int32_t value_index);
 
 private:
-    std::vector<int32_t> system_list_ordered;
-    std::vector<int32_t> video_setting_list_ordered;
-    std::vector<int32_t> photo_setting_list_ordered;
-    std::vector<int32_t> video_protune_list_ordered;
-    std::vector<int32_t> photo_protune_list_ordered;
-    std::vector<int32_t> status_list_ordered;
+    static std::vector<int32_t> system_list_ordered;
+    static std::vector<int32_t> video_setting_list_ordered;
+    static std::vector<int32_t> photo_setting_list_ordered;
+    static std::vector<int32_t> video_protune_list_ordered;
+    static std::vector<int32_t> photo_protune_list_ordered;
+    static std::vector<int32_t> status_list_ordered;
     bool create_date_folder;
     bool put_finish;
     bool should_disabled;
