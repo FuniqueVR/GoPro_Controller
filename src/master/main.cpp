@@ -116,7 +116,7 @@ void updateServerList(){
     data["window"]["camera_list_win"] = camera_list_win->get_window_data();
     data["window"]["inspector_win"] = inspector_win->get_window_data();
     data["window"]["websocket_win"] = websocket_win->get_window_data();
-    data["popwin"]["style_setting_win"] = style_setting_win->get_window_data();
+    data["window"]["style_setting_win"] = style_setting_win->get_window_data();
     data["popwin"]["preview_popwin"] = preview_popwin->get_window_data();
     saveServerList(data);
     servers->swap(data);

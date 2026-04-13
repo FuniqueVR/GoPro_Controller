@@ -2581,4 +2581,72 @@ const static int32_t SHUTTER_SPEED_PHOTO_SUPPORT[] = {
 };
 #pragma endregion
 
+#pragma region ISO Both Video (Virtual)
+#define ISO_BOTH_VIDEO_ID 10000
+#define ISO_BOTH_VIDEO_SIZE 8
+#define ISO_BOTH_VIDEO_NAME "ISO Both"
+#define ISO_BOTH_VIDEO_AVA MODEL_MAX2_ALL
+const static char* ISO_BOTH_VIDEO_STRING[] = {
+    "6400",
+    "1600",
+    "400",
+    "3200",
+    "800",
+    "200",
+    "100",
+    "Auto",
+};
+const static int32_t ISO_BOTH_VIDEO_VALUE[] = {
+    0, // 6400
+    1, // 1600
+    2, // 400
+    3, // 3200
+    4, // 800
+    7, // 200
+    8, // 100
+    9, // Auto
+};
+const static int32_t ISO_BOTH_VIDEO_SUPPORT[] = {
+    MODEL_MAX2_ALL, // 6400
+    MODEL_MAX2_ALL, // 1600
+    MODEL_MAX2_ALL, // 400
+    MODEL_MAX2_ALL, // 3200
+    MODEL_MAX2_ALL, // 800
+    MODEL_MAX2_ALL, // 200
+    MODEL_MAX2_ALL, // 100
+    MODEL_MAX2_ALL, // Auto
+};
+#pragma endregion
+
+#pragma region ISO Both Photo (Virtual)
+#define ISO_BOTH_PHOTO_ID 10001
+#define ISO_BOTH_PHOTO_SIZE 6
+#define ISO_BOTH_PHOTO_NAME "ISO BOTH"
+#define ISO_BOTH_PHOTO_AVA MODEL_MAX2_ALL
+const static char* ISO_BOTH_PHOTO_STRING[] = {
+    "800",
+    "400",
+    "200",
+    "100",
+    "1600",
+    "3200",
+};
+const static int32_t ISO_BOTH_PHOTO_VALUE[] = {
+    0, // 800
+    1, // 400
+    2, // 200
+    3, // 100
+    4, // 1600
+    5, // 3200
+};
+const static int32_t ISO_BOTH_PHOTO_SUPPORT[] = {
+    MODEL_MAX2_ALL, // 800
+    MODEL_MAX2_ALL, // 400
+    MODEL_MAX2_ALL, // 200
+    MODEL_MAX2_ALL, // 100
+    MODEL_MAX2_ALL, // 1600
+    MODEL_MAX2_ALL, // 3200
+};
+#pragma endregion
+
 #endif

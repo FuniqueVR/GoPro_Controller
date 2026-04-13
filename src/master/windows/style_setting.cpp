@@ -162,18 +162,22 @@ void StyleSetting::set_window_data(json data) {
 void StyleSetting::render(){
     ImGuiStyle& style = ImGui::GetStyle();
     ImVec4* colors = style.Colors;
+    bool changed = false;
 
     ImGui::Begin("Style Setting", &enable, w_flag);
     {
         if(ImGui::BeginCombo("Theme##style_themes", "")){
             if(ImGui::Selectable("Dark Theme")){
                 ImGui::StyleColorsDark();
+                changed = true;
             }
             if(ImGui::Selectable("Light Theme")){
                 ImGui::StyleColorsLight();
+                changed = true;
             }
             if(ImGui::Selectable("Mocha Theme")){
                 setup_catppuccin_mocha_theme();
+                changed = true;
             }
             ImGui::EndCombo();
         }
@@ -181,7 +185,6 @@ void StyleSetting::render(){
         ImGui::Separator();
         
         if(ImGui::BeginTabBar("Style Fields##style_win")){
-            bool changed = false;
             if(ImGui::BeginTabItem("Colors##style_win")){
                 changed = changed | render_colors();
                 ImGui::EndTabItem();
