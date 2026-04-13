@@ -78,9 +78,12 @@ void PreviewPopup::update_decoder(){
     int32_t s = -1;
     int32_t model;
 
-    std::cout << "===== OpenCV Build Info =====" << std::endl;
-    std::cout << cv::getBuildInformation() << std::endl;
-    std::cout << "=============================" << std::endl;
+    if(first){
+        std::cout << "===== OpenCV Build Info =====" << std::endl;
+        std::cout << cv::getBuildInformation() << std::endl;
+        std::cout << "=============================" << std::endl;
+        first = false;
+    }
 
     {
         {
@@ -218,7 +221,7 @@ void PreviewPopup::render(){
     }
 
     if(ImGui::BeginPopupModal(title.c_str(), NULL, wp_flag)){
-        if(gl_texture != 0){
+        if(gl_texture != 0){ // We have frame to display
             if(ImGui::Button("<== Rotate##preview_button")){
                 DirChange(true); remap = true;
             }
@@ -234,7 +237,7 @@ void PreviewPopup::render(){
                 size = ImVec2((unit.y * 7) * ratio, unit.y * 7);
             }
             ImGui::Image((ImTextureID)(intptr_t)gl_texture, size);
-        } else {
+        } else { // No frame QAQ
             ImGui::Dummy(ImVec2(800, 280));
             float win_width = ImGui::GetContentRegionAvail().x;
             std::string msg = "Waiting for video stream...";

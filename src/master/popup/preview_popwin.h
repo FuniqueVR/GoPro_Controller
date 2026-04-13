@@ -69,6 +69,7 @@ private:
     const size_t MAX_QUEUE_SIZE = 10;
     const size_t MAX_ATTEMPT = 300;
 
+    bool first = true;
     int32_t dir = 0;
     bool stream_open = false;
     GLuint gl_texture = 0;
