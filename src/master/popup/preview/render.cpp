@@ -60,6 +60,7 @@ void PreviewPopup::render(){
                     std::cout << "Rescale size: " << size.x << ", " << size.y << std::endl;
                     remap = false;
                 }
+                
                 left_width = ( (unit.x * 11.0f) - size.x) / 2.0f;
                 top_width = ( (unit.y * 9.0f) - size.y) / 2.0f;
                 img_width = size.x;
