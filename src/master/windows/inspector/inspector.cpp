@@ -19,10 +19,10 @@ for(int32_t i = 0; i < ##y.size(); i++){\
 }\
 
 #define IO_DATA_SET(x, y) \
-if(data[#x][#y].is_array() && data[#x][#y].size() == #y.size()){\
+if(data[#x][#y].is_array() && data[#x][#y].size() == ##y.size()){\
     for(int32_t i = 0; i < data[#x][#y].size(); i++){\
         if(data[#x][#y].at(i).is_number_integer()){\
-            #y[i] = data[#x][#y].at(i).get<int32_t>();\
+            ##y[i] = data[#x][#y].at(i).get<int32_t>();\
         }\
     }\
 }\

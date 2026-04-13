@@ -248,7 +248,7 @@ const static int32_t GOPRO_SOFTWARE_STATUS_IDS[] = {
     LIVEVIEW_EXPOSURE_SELECT_MODE_ID,
     LIVEVIEW_Y_ID,
     LIVEVIEW_X_ID,
-}
+};
 #define GOPRO_SOFTWARE_STATUS_SIZE sizeof(GOPRO_SOFTWARE_STATUS_IDS)/sizeof(int32_t)
 
 const static int32_t GOPRO_HARDWARE_STATUS_IDS[] = {
@@ -261,26 +261,26 @@ const static int32_t GOPRO_HARDWARE_STATUS_IDS[] = {
     MICROPHONE_ACCESSORY_ID,
     USB_CONNECTED_ID,
     USE_CONTROLLED_ID,
-}
+};
 #define GOPRO_HARDWARE_STATUS_SIZE sizeof(GOPRO_HARDWARE_STATUS_IDS)/sizeof(int32_t)
 
 const static int32_t GOPRO_NETWORK_STATUS_IDS[] = {
     GPS_LOCK_ID,
     AP_MODE_ID,
-}
+};
 #define GOPRO_NETWORK_STATUS_SIZE sizeof(GOPRO_NETWORK_STATUS_IDS)/sizeof(int32_t)
 
 const static int32_t GOPRO_ENCODE_STATUS_IDS[] = {
     ENCODING_ID,
     BUSY_ID,
     VIDEO_ENCODING_DURATION_ID,
-}
+};
 #define GOPRO_ENCODE_STATUS_SIZE sizeof(GOPRO_ENCODE_STATUS_IDS)/sizeof(int32_t)
 
 const static int32_t GOPRO_MEDIA_STATUS_IDS[] = {
     SD_CARD_REMAINING_ID,
     SD_CARD_CAPACITY_ID,
-}
+};
 #define GOPRO_MEDIA_STATUS_SIZE sizeof(GOPRO_MEDIA_STATUS_IDS)/sizeof(int32_t)
 
 // Lookup functions
@@ -680,7 +680,7 @@ inline const int32_t* GET_SETTING_SUPPORT_BY_ID(int32_t x) {
     }
 }
 
-inline const int32_t GET_STATUS_TYPE_BY_ID(int32_t x ){
+inline const int32_t GET_STATUS_TYPE_BY_ID(int32_t x){
     switch(x) {
         case BATTERY_PRESENT_ID:                    return (int32_t)BATTERY_PRESENT_TYPE;
         case INTERNAL_BATTERY_BARS_ID:              return (int32_t)INTERNAL_BATTERY_BARS_TYPE;
@@ -763,7 +763,7 @@ inline const int32_t GET_STATUS_TYPE_BY_ID(int32_t x ){
     }
 }
 
-inline const char* GET_STATUS_NAME_BY_ID(int32_t x ){
+inline const char* GET_STATUS_NAME_BY_ID(int32_t x){
     switch(x) {
         case BATTERY_PRESENT_ID:                    return BATTERY_PRESENT_NAME;
         case INTERNAL_BATTERY_BARS_ID:              return INTERNAL_BATTERY_BARS_NAME;
@@ -846,7 +846,7 @@ inline const char* GET_STATUS_NAME_BY_ID(int32_t x ){
     }
 }
 
-inline const char* GET_STATUS_AVA_BY_ID(int32_t x ){
+inline const int32_t GET_STATUS_AVA_BY_ID(int32_t x){
     switch(x) {
         case BATTERY_PRESENT_ID:                    return BATTERY_PRESENT_AVA;
         case INTERNAL_BATTERY_BARS_ID:              return INTERNAL_BATTERY_BARS_AVA;
@@ -925,7 +925,7 @@ inline const char* GET_STATUS_AVA_BY_ID(int32_t x ){
         case USE_CONTROLLED_ID:                     return USE_CONTROLLED_AVA;
         case SD_CARD_CAPACITY_ID:                   return SD_CARD_CAPACITY_AVA;
         case CAMERA_NAME_ID:                        return CAMERA_NAME_AVA;
-        default: return "";
+        default: return 0;
     }
 }
 
