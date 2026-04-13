@@ -67,6 +67,7 @@ private:
     std::mutex queue_mutex;
     std::thread reader;
     const size_t MAX_QUEUE_SIZE = 10;
+    const size_t MAX_REDECODE = 2;
     const size_t MAX_ATTEMPT = 300;
 
     /**

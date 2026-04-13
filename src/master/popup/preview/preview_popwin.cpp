@@ -148,6 +148,10 @@ void PreviewPopup::render(){
                     DirChange(false); remap = true;
                 }
             }
+            // Go Different camera
+            {
+
+            }
         } else { // No frame QAQ
             ImGui::Dummy(ImVec2(800, 280));
             float win_width = ImGui::GetContentRegionAvail().x;
