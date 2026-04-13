@@ -133,6 +133,8 @@ void PreviewPopup::render(){
                     std::cout << "Rescale size: " << size.x << ", " << size.y << std::endl;
                     remap = false;
                 }
+                ImGui::Dummy(ImVec2(( (unit.x * 8.5f) - size.x) / 2.0f, 0.0f));
+                ImGui::SameLine();
                 ImGui::Image((ImTextureID)(intptr_t)gl_texture, size);
             }
             ImGui::SetCursorScreenPos(image_pos);
