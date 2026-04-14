@@ -192,7 +192,7 @@ std::string GoProController::getAllIP(){
 }
 
 std::string GoProController::getAllModel(){
-
+    return "";
 }
 
 std::string GoProController::queryStatus(std::string target){
