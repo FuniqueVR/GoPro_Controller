@@ -185,22 +185,20 @@ void InspectorWindow::render(){
                 ImGui::EndTabItem();
             }
             if(ImGui::BeginTabItem("Media##Inspector_Bar_Item")){
-                if(ImGui::BeginTabItem("Command##Inspector_Bar_Item_Media")){
-                    if(ImGui::BeginTabBar("Inspector_Bar##Media")){
-                        if(ImGui::BeginTabItem("Global##Inspector_Bar_Item_Media")){
-                            draw_media_global();
-                            ImGui::EndTabItem();
-                        }
-                        if(ImGui::BeginTabItem("Local##Inspector_Bar_Item_Media")){
-                            ImGui::BeginDisabled(should_disabled);
-                            draw_media_local();
-                            ImGui::EndDisabled();
-                            ImGui::EndTabItem();
-                        }
-                        ImGui::EndTabBar();
+                if(ImGui::BeginTabBar("Inspector_Bar##Media")){
+                    if(ImGui::BeginTabItem("Global##Inspector_Bar_Item_Media")){
+                        draw_media_global();
+                        ImGui::EndTabItem();
                     }
-                    ImGui::EndTabItem();
+                    if(ImGui::BeginTabItem("Local##Inspector_Bar_Item_Media")){
+                        ImGui::BeginDisabled(should_disabled);
+                        draw_media_local();
+                        ImGui::EndDisabled();
+                        ImGui::EndTabItem();
+                    }
+                    ImGui::EndTabBar();
                 }
+                ImGui::EndTabItem();
             }
             ImGui::EndTabBar();
         }
