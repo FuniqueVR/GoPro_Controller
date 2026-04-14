@@ -43,7 +43,7 @@ StyleSetting::StyleSetting(
     std::shared_ptr<GoProMaster> _master
 ) 
     : BaseWindow(_setting, _state, _master) {
-    title = "Style Setting";
+    title = "Style";
 }
 
 StyleSetting::~StyleSetting(){
@@ -237,7 +237,7 @@ void StyleSetting::render(){
     ImVec4* colors = style.Colors;
     bool changed = false;
 
-    ImGui::Begin("Style Setting", &enable, w_flag);
+    ImGui::Begin(title.c_str(), &enable, w_flag);
     {
         if(ImGui::BeginCombo("Theme##style_themes", "")){
             if(ImGui::Selectable("Dark Theme")){
