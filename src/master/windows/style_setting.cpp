@@ -113,6 +113,8 @@ json StyleSetting::get_window_data() {
     GET_DATA_COLOR4(buffer, colors, ImGuiCol_Text);
     GET_DATA_COLOR4(buffer, colors, ImGuiCol_TextDisabled);
     
+    GET_DATA_FLOAT(buffer, style, FontScaleMain);
+
     GET_DATA_FLOAT(buffer, style, WindowRounding);
     GET_DATA_FLOAT(buffer, style, ChildRounding);
     GET_DATA_FLOAT(buffer, style, FrameRounding);
@@ -142,6 +144,11 @@ json StyleSetting::get_window_data() {
 void StyleSetting::set_window_data(json data) {
     ImGuiStyle& style = ImGui::GetStyle();
     ImVec4* colors = style.Colors;
+
+    if(!data["colors"].is_object() || !data["fields"].is_object()){
+        setup_catppuccin_mocha_theme();
+        return;
+    }
 
     SET_DATA_COLOR4(data, colors, ImGuiCol_WindowBg);
     SET_DATA_COLOR4(data, colors, ImGuiCol_ChildBg);
@@ -198,6 +205,8 @@ void StyleSetting::set_window_data(json data) {
     SET_DATA_COLOR4(data, colors, ImGuiCol_ModalWindowDimBg);
     SET_DATA_COLOR4(data, colors, ImGuiCol_Text);
     SET_DATA_COLOR4(data, colors, ImGuiCol_TextDisabled);
+
+    SET_DATA_FLOAT(data, style, FontScaleMain);
 
     SET_DATA_FLOAT(data, style, WindowRounding);
     SET_DATA_FLOAT(data, style, ChildRounding);
@@ -259,6 +268,7 @@ void StyleSetting::render(){
             }
             if(changed){
                 update_style();
+                changed = false;
             }
             ImGui::EndTabBar();
         }
@@ -332,10 +342,38 @@ bool StyleSetting::render_fields(){
     ImGuiStyle& style = ImGui::GetStyle();
     ImVec4* colors = style.Colors;
     bool changed = false;
-    changed = changed | ImGui::InputFloat("Font Size Base##style_field", &style.FontSizeBase);
-    changed = changed | ImGui::SliderFloat("Font Scale Main##style_field", &style.FontScaleMain, 0.1f, 2.0f, "%.1f");
-    changed = changed | ImGui::InputFloat2("Window Padding##style_field", (float*)&style.WindowPadding);
-    changed = changed | ImGui::InputFloat("Window Padding##style_field", &style.WindowRounding);
+
+    changed = changed || ImGui::SliderFloat("Font Scale Main##style_field", &style.FontScaleMain, 0.1f, 2.0f, "%.1f");
+
+    ImGui::Separator();
+
+    changed = changed || ImGui::InputFloat("WindowRounding##style_field", &style.WindowRounding);
+    changed = changed || ImGui::InputFloat("ChildRounding##style_field", &style.ChildRounding);
+    changed = changed || ImGui::InputFloat("FrameRounding##style_field", &style.FrameRounding);
+    changed = changed || ImGui::InputFloat("PopupRounding##style_field", &style.PopupRounding);
+    changed = changed || ImGui::InputFloat("ScrollbarRounding##style_field", &style.ScrollbarRounding);
+    changed = changed || ImGui::InputFloat("GrabRounding##style_field", &style.GrabRounding);
+    changed = changed || ImGui::InputFloat("TabRounding##style_field", &style.TabRounding);
+
+    ImGui::Separator();
+
+    changed = changed || ImGui::InputFloat2("WindowPadding##style_field", (float*)&style.WindowPadding);
+    changed = changed || ImGui::InputFloat2("FramePadding##style_field", (float*)&style.FramePadding);
+    changed = changed || ImGui::InputFloat2("ItemSpacing##style_field", (float*)&style.ItemSpacing);
+    changed = changed || ImGui::InputFloat2("ItemInnerSpacing##style_field", (float*)&style.ItemInnerSpacing);
+    changed = changed || ImGui::InputFloat("IndentSpacing##style_field", &style.IndentSpacing);
+    changed = changed || ImGui::InputFloat("ScrollbarSize##style_field", &style.ScrollbarSize);
+    changed = changed || ImGui::InputFloat("GrabMinSize##style_field", &style.GrabMinSize);
+
+    ImGui::Separator();
+
+    changed = changed || ImGui::InputFloat("WindowBorderSize##style_field", &style.WindowBorderSize);
+    changed = changed || ImGui::InputFloat("ChildBorderSize##style_field", &style.ChildBorderSize);
+    changed = changed || ImGui::InputFloat("PopupBorderSize##style_field", &style.PopupBorderSize);
+    changed = changed || ImGui::InputFloat("FrameBorderSize##style_field", &style.FrameBorderSize);
+    changed = changed || ImGui::InputFloat("TabBorderSize##style_field", &style.TabBorderSize);
+    changed = changed || ImGui::InputFloat("TabRounding##style_field", &style.TabRounding);
+
     return changed;
 }
 
