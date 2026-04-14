@@ -88,10 +88,12 @@ void ExecuteCommand(const WebSocketChannelPtr& channel, json j){
         r["data"] = json::parse(controller.getAllIP());
         channel->send(getPacket("command:ip", r));
     }else if(name == "locate_on"){
-        r["data"] = json::parse(controller.locate(target, true));
+        controller.locate(target, true);
+        r["data"] = json::object();
         channel->send(getPacket("command:locate_on", r));
     }else if(name == "locate_off"){
-        r["data"] = json::parse(controller.locate(target, false));
+        controller.locate(target, false);
+        r["data"] = json::object();
         channel->send(getPacket("command:locate_off", r));
     }else if(name == "model"){
         r["data"] = json::parse(controller.getAllModel());
