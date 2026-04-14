@@ -1,6 +1,6 @@
-mkdir build_master_win
+mkdir build_master
 
-cd build_master_win
+cd build_master
 
 xcopy ..\*.otf . /Y
 
