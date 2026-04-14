@@ -30,7 +30,8 @@ public:
     virtual void draw_network();
     virtual void draw_encode();
     virtual void draw_media_status();
-    virtual void draw_media();
+    virtual void draw_media_global();
+    virtual void draw_media_local();
     virtual void draw_command_local();
     virtual void draw_command_global();
 

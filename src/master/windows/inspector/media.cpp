@@ -31,7 +31,7 @@ std::filesystem::path get_home_directory() {
     }
 }
 
-void InspectorWindow::draw_media(){
+void InspectorWindow::draw_media_global(){
     ImGuiStyle& style = ImGui::GetStyle();
     ImVec2 size = ImGui::GetWindowSize();
     ImVec2 button_size = ImVec2(size.x / 2.0F - style.ItemSpacing.x, 0);
@@ -85,4 +85,8 @@ void InspectorWindow::draw_media(){
         ImGui::LabelText("Server", "%s", t->server.c_str());
         ImGui::LabelText("Last Media", "%s", t->last_media.c_str());
     }
+}
+
+void InspectorWindow::draw_media_local(){
+
 }
