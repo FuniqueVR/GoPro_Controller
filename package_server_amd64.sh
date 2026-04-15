@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Create build directory
-mkdir -p package_server
-cd package_server
+mkdir -p package_server_amd64
+cd package_server_amd64
 
 mkdir -p go_pro_control_server
 cd go_pro_control_server
