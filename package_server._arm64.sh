@@ -7,11 +7,11 @@ cd package_server_arm64
 mkdir -p go_pro_control_server
 cd go_pro_control_server
 
-cp ../../build_server_arm64/server server_linux_arm64
-cp ../../LICENSE LICENSE
-cp ../../README.md README.md
+mkdir -p bin
 
-tar -czvf server_linux_arm64.tar.gz .
+cp ../../build_server_arm64/server bin/go-pro-server
+
+tar -czvf ../server_linux_arm64.tar.gz .
 
 mkdir -p DEBIAN
 
