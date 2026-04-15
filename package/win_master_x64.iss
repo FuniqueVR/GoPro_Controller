@@ -30,10 +30,10 @@ ArchitecturesAllowed=x64compatible
 ; the 64-bit view of the registry.
 ArchitecturesInstallIn64BitMode=x64compatible
 DisableProgramGroupPage=yes
-LicenseFile=C:\dev\GoPro_Controller\LICENSE
+LicenseFile=..\LICENSE
 ; Uncomment the following line to run in non administrative install mode (install for current user only).
 ;PrivilegesRequired=lowest
-OutputDir=C:\dev\GoPro_Controller\package_master_x64
+OutputDir=..\package_master_x64
 OutputBaseFilename=go-pro-master-installer
 SolidCompression=yes
 WizardStyle=modern dynamic
@@ -45,7 +45,10 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "C:\dev\GoPro_Controller\package_master_x64\go-pro-master.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\package_master_x64\go-pro-master.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\SourceHanSans-Medium.otf"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\SourceHanSansK-Medium.otf"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\SourceHanSansTC-Medium.otf"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
