@@ -2,7 +2,7 @@
 
 Tool for control multiple GoPro Cameras, The design is for above 100 cameras connection.
 
-[Wiki](https://github.com/Elly2018/GoPro_Controller/wiki)
+[Documentation](https://github.com/Elly2018/GoPro_Controller/wiki)
 
 ## Application Requirement
 
