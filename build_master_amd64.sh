@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Create build directory
-mkdir -p build_master
-cd build_master
+mkdir -p build_master_amd64
+cd build_master_amd64
 
 cp ../*.otf .
 
