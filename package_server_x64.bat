@@ -1,0 +1,4 @@
+mkdir package_server_x64
+cd package_server_x64
+
+xcopy ..\build_server_x64\Debug\server.exe . /Y
