@@ -45,9 +45,9 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "..\package_master_x64\bin\Debug\go-pro-master.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\package_master_x64\bin\Debug\*.otf"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\package_master_x64\bin\Debug\*.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\package_master_x64\go-pro-master.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\package_master_x64\*.otf"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\package_master_x64\*.dll"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
