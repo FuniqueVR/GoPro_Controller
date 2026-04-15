@@ -37,6 +37,13 @@ struct SenderStruct {
 std::mutex broadcast_mtx;
 std::vector<SenderStruct> broadcast_addrs = std::vector<SenderStruct>();
 
+std::string getPacket(std::string key, json data){
+    json response = json::object();
+    response["key"] = key;
+    response["value"] = data;
+    return response.dump();
+}
+
 void ExecuteCommand(const WebSocketChannelPtr& channel, json j){
     std::string name = "";
     std::string target = "";

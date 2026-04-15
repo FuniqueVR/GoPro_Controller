@@ -1,0 +1,89 @@
+/*
+ * Copyright (c) [2026] [Elly/Funique]
+ *
+ * This software is licensed under the [MIT License].
+ * See the LICENSE file in the project root for more information.
+*/
+#include "../GoProController.h"
+#include <fstream>
+#include <vector>
+#include <string>
+
+
+void GoProController::_loadRecord(){
+    std::string homedir = get_env_var("WS_ROOT");
+    if(homedir.size() > 0) homedir += "/";
+    homedir += "record.txt";
+    std::cout << "Trying load data from: " << homedir << std::endl;
+    std::ifstream inFile(homedir.c_str());
+    if (!inFile.is_open()) {
+        std::cerr << "Error: Could not open the file: " << homedir << std::endl;
+        return; // Return with an error code
+    }
+    std::string line;
+    while (std::getline(inFile, line)) {
+        std::vector<std::string> words = std::vector<std::string>();
+        std::stringstream ss(line);
+        std::string word;
+        while (ss >> word) { // Extracts words separated by any whitespace
+            words.push_back(word);
+        }
+        if(words.size() > 0){
+            camera_ips.push_back(words[0]);
+        }
+        if(words.size() > 1){
+            camera_name.insert_or_assign(words[0], words[1]);
+        }
+    }
+    inFile.close();
+}
+
+void GoProController::_updateRecord(){
+    std::string homedir = get_env_var("WS_ROOT");
+    if(homedir.size() > 0) homedir += "/";
+    homedir += "record.txt";
+    std::cout << "Trying export data to: " << homedir << std::endl;
+    std::ofstream outFile( homedir.c_str() );
+    
+    if (!outFile.is_open()) {
+        std::cerr << "Error: Could not open the file." << homedir << std::endl;
+        return; // Return with an error code
+    }
+    for(int32_t i = 0; i < camera_ips.size(); i++){
+        std::string& c = camera_ips.at(i);
+        if(camera_name.count(c)){
+            outFile << c << " " << camera_name.at(c)  << "\n";
+            std::cout << "  Export " << c << " with name " << camera_name.at(c) << std::endl;
+        }else{
+            outFile << c << "\n";
+            std::cout << "  Export " << c << std::endl;
+        }
+    }
+    outFile.close();
+}
+
+std::pair<std::string, std::string> GoProController::_getSingleResponse(std::string target, std::string suffix){
+    std::string url = GetRemoteURLByIP(target) + suffix;
+    return std::pair<std::string, std::string>(target, exec(url));
+}
+
+std::vector<std::pair<std::string, std::string>> GoProController::_getAllResponse(std::vector<std::string> targets, std::string suffix){
+    std::vector<std::string> urls = std::vector<std::string>();
+    std::vector<std::pair<std::string, std::string>> result = std::vector<std::pair<std::string, std::string>>();
+    for(int32_t i = 0; i < targets.size(); i++){
+        urls.push_back(GetRemoteURLByIP(targets[i]) + suffix);
+    }
+    std::vector<std::string> res = execs(urls);
+    std::cout << "query all: " << res.size() << "/" << targets.size() << std::endl;;
+    for(int32_t i = 0; i < targets.size(); i++){
+        if(res[i].size() == 0){
+            res[i] = "{}";
+        }
+        result.push_back(std::pair<std::string, std::string>(
+            targets[i],
+            res[i]
+        ));
+    }
+    return result;
+}
+
