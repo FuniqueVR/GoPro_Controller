@@ -6,3 +6,5 @@ xcopy ..\SourceHanSans-Medium.otf . /Y
 xcopy ..\SourceHanSansK-Medium.otf . /Y
 xcopy ..\SourceHanSansTC-Medium.otf . /Y
 ren master.exe go-pro-master.exe
+
+Compil32 /cc ../package/win_master_x64.iss
