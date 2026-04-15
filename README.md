@@ -6,6 +6,12 @@ Tool for control multiple GoPro Cameras, The design is for above 100 cameras con
 
 * Operating System: Debine / Windows
 
+## Screenshot
+
+![Setting](./docs/gopro_setting.png)
+![Preview](./docs/gopro_preview.png)
+![Theme](./docs/mocha_theme.png)
+
 ## Protocol
 
 * [Open GoPro Docs](https://gopro.github.io/OpenGoPro/http#tag/Webcam/operation/GPCAMERA_WEBCAM_START_OGP)

@@ -10,7 +10,10 @@
 
 using json = nlohmann::json;
 
+// Master application setting data
 void saveServerList(json data);
-void saveGUI(json data);
 json loadServerList();
+
+// GUI releated data
+void saveGUI(json data);
 json loadGUI();

@@ -35,7 +35,7 @@ std::shared_ptr<CameraListWindow> camera_list_win;
 std::shared_ptr<InspectorWindow> inspector_win;
 std::shared_ptr<WebsocketWindow> websocket_win;
 std::shared_ptr<StyleSetting> style_setting_win;
-std::shared_ptr<BaseWindow> windows_array[5];
+std::shared_ptr<BaseWindow> windows_array[4];
 
 std::shared_ptr<AddCameraPopup> add_camera_popwin;
 std::shared_ptr<ScanCameraPopup> scan_camera_popwin;
@@ -104,6 +104,7 @@ void hwGetterFeedback(std::string ip, json hw){
 }
 
 void updateServerList(){
+    std::cout << "updateServerList" << std::endl;
     json data = json::object();
     data["data"] = json::array();
     for(const auto& s : master->getServers()){
@@ -116,7 +117,7 @@ void updateServerList(){
     data["window"]["camera_list_win"] = camera_list_win->get_window_data();
     data["window"]["inspector_win"] = inspector_win->get_window_data();
     data["window"]["websocket_win"] = websocket_win->get_window_data();
-    data["popwin"]["style_setting_win"] = style_setting_win->get_window_data();
+    data["window"]["style_setting_win"] = style_setting_win->get_window_data();
     data["popwin"]["preview_popwin"] = preview_popwin->get_window_data();
     saveServerList(data);
     servers->swap(data);
@@ -158,9 +159,9 @@ int main(int, char**)
     gui = std::make_shared<json>(loadGUI());
     // Win
     WIN_INIT(websocket_win, WebsocketWindow, windows_array, 0);
-    WIN_INIT(camera_list_win, CameraListWindow, windows_array, 2);
-    WIN_INIT(inspector_win, InspectorWindow, windows_array, 3);
-    WIN_INIT(style_setting_win, StyleSetting, windows_array, 4);
+    WIN_INIT(camera_list_win, CameraListWindow, windows_array, 1);
+    WIN_INIT(inspector_win, InspectorWindow, windows_array, 2);
+    WIN_INIT(style_setting_win, StyleSetting, windows_array, 3);
     // Popup
     WIN_INIT(add_camera_popwin, AddCameraPopup, pop_windows_array, 0);
     WIN_INIT(scan_camera_popwin, ScanCameraPopup, pop_windows_array, 1);
@@ -176,11 +177,11 @@ int main(int, char**)
     global_state->update_server = updateServerList;
     global_state->command_sender = pushCommand;
     std::thread bg_thread(background_worker);
-    // Init the windows
-    init_state_setup(servers, gui, global_state, master, windows_array, pop_windows_array);
 
     setup_imgui();
-    setup_catppuccin_mocha_theme();
+
+    // Init the windows
+    init_state_setup(servers, gui, global_state, master, windows_array, pop_windows_array);
     ImGuiIO& io = ImGui::GetIO(); (void)io;
 
     // Setup Platform/Renderer backends
@@ -189,6 +190,7 @@ int main(int, char**)
     // Main loop
     while (!global_state->done)
     {
+        int focus = -1;
         // Poll and handle events
         SDL_Event event;
         while (SDL_PollEvent(&event))
@@ -228,20 +230,36 @@ int main(int, char**)
                     }
                 }
                 if (event.key.key == SDLK_Q) {
-                    websocket_win->trigger(!websocket_win->is_enable());
-                    updateGUIList();
+                    if(event.key.mod & SDL_KMOD_LSHIFT){
+                        focus = 0;
+                    }else{
+                        websocket_win->trigger(!websocket_win->is_enable());
+                        updateGUIList();
+                    }
+                }
+                if (event.key.key == SDLK_W) {
+                    if(event.key.mod & SDL_KMOD_LSHIFT){
+                        focus = 1;
+                    }else{
+                        camera_list_win->trigger(!camera_list_win->is_enable());
+                        updateGUIList();
+                    }
                 }
                 if (event.key.key == SDLK_E) {
-                    camera_list_win->trigger(!camera_list_win->is_enable());
-                    updateGUIList();
+                    if(event.key.mod & SDL_KMOD_LSHIFT){
+                        focus = 2;
+                    }else{
+                        inspector_win->trigger(!inspector_win->is_enable());
+                        updateGUIList();
+                    }
                 }
                 if (event.key.key == SDLK_R) {
-                    inspector_win->trigger(!inspector_win->is_enable());
-                    updateGUIList();
-                }
-                if (event.key.key == SDLK_T) {
-                    style_setting_win->trigger(!style_setting_win->is_enable());
-                    updateGUIList();
+                    if(event.key.mod & SDL_KMOD_LSHIFT){
+                        focus = 3;
+                    }else{
+                        style_setting_win->trigger(!style_setting_win->is_enable());
+                        updateGUIList();
+                    }
                 }
             }
         }
@@ -288,7 +306,11 @@ int main(int, char**)
         }
         ImGui::EndMainMenuBar();
 
+        int counter = 0;
         for(auto& w : windows_array){
+            if(focus != -1 && focus == counter){
+                ImGui::SetNextWindowFocus();
+            }
             if(w && w->is_enable()){
                 w->render();
                 if(w->is_close()){
@@ -296,6 +318,7 @@ int main(int, char**)
                     updateGUIList();
                 }
             }
+            counter++;
         }
 
         for(auto& w : pop_windows_array){

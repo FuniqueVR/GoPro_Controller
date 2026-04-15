@@ -43,28 +43,23 @@ test
 *.app
 
 # Build directories
-build_master/
-build_master-*/
-build_master_win/
-build_master_win-*/
-build_server/
-build_server-*/
-build_server_win/
-build_server_win-*/
-build_server_amd/
-build_server_amd-*/
 lib/*.exe
-
+build_master/
+build_master_*/
+build_server/
+build_server_*/
+build_master/**
+build_master_*/**
+build_server/**
+build_server_*/**
 package_master/
-package_master-*/
-package_master_win/
-package_master_win-*/
+package_master_*/
 package_server/
-package_server-*/
-package_server_win/
-package_server_win-*/
-package_server_amd/
-package_server_amd-*/
+package_server_*/
+package_master/**
+package_master_*/**
+package_server/**
+package_server_*/**
 
 # CMake generated files
 CMakeFiles/

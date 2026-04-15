@@ -224,7 +224,9 @@ const static int32_t GOPRO_STATUS_IDS[] = {
     CAPTURE_DELAY_ACTIVE_ID,
     MEDIA_MOD_STATE_ID,
     TIME_WARP_SPEED_ID,
-    LENS_TYPE_ID,STATUS_HINDSIGHT_ID,
+    LINUX_CORE_ID,
+    LENS_TYPE_ID,
+    STATUS_HINDSIGHT_ID,
     SCHEDULED_CAPTURE_PRESET_ID,
     STATUS_SCHEDULED_CAPTURE_ID,
     SD_CARD_WRITE_SPEED_ERROR_ID,
@@ -232,9 +234,54 @@ const static int32_t GOPRO_STATUS_IDS[] = {
     STATUS_CAMERA_CONTROL_ID,
     USB_CONNECTED_ID,
     USE_CONTROLLED_ID,
-    SD_CARD_CAPACITY_ID
+    SD_CARD_CAPACITY_ID,
+    CAMERA_NAME_ID,
 };
 #define GOPRO_STATUS_SIZE sizeof(GOPRO_STATUS_IDS)/sizeof(int32_t)
+
+const static int32_t GOPRO_SOFTWARE_STATUS_IDS[] = {
+    LINUX_CORE_ID,
+    LIVE_BURSTS_ID,
+    VIDEO_PRESET_ID,
+    PHOTO_PRESET_ID,
+    TIMELAPSE_PRESET_ID,
+    LIVEVIEW_EXPOSURE_SELECT_MODE_ID,
+    LIVEVIEW_Y_ID,
+    LIVEVIEW_X_ID,
+};
+#define GOPRO_SOFTWARE_STATUS_SIZE sizeof(GOPRO_SOFTWARE_STATUS_IDS)/sizeof(int32_t)
+
+const static int32_t GOPRO_HARDWARE_STATUS_IDS[] = {
+    BATTERY_PRESENT_ID,
+    INTERNAL_BATTERY_BARS_ID,
+    OVERHEATING_ID,
+    QUICK_CAPTURE_ID,
+    LCD_LOCK_ID,
+    INTERNAL_BATTERY_PERCENTAGE_ID,
+    MICROPHONE_ACCESSORY_ID,
+    USB_CONNECTED_ID,
+    USE_CONTROLLED_ID,
+};
+#define GOPRO_HARDWARE_STATUS_SIZE sizeof(GOPRO_HARDWARE_STATUS_IDS)/sizeof(int32_t)
+
+const static int32_t GOPRO_NETWORK_STATUS_IDS[] = {
+    GPS_LOCK_ID,
+    AP_MODE_ID,
+};
+#define GOPRO_NETWORK_STATUS_SIZE sizeof(GOPRO_NETWORK_STATUS_IDS)/sizeof(int32_t)
+
+const static int32_t GOPRO_ENCODE_STATUS_IDS[] = {
+    ENCODING_ID,
+    BUSY_ID,
+    VIDEO_ENCODING_DURATION_ID,
+};
+#define GOPRO_ENCODE_STATUS_SIZE sizeof(GOPRO_ENCODE_STATUS_IDS)/sizeof(int32_t)
+
+const static int32_t GOPRO_MEDIA_STATUS_IDS[] = {
+    SD_CARD_REMAINING_ID,
+    SD_CARD_CAPACITY_ID,
+};
+#define GOPRO_MEDIA_STATUS_SIZE sizeof(GOPRO_MEDIA_STATUS_IDS)/sizeof(int32_t)
 
 // Lookup functions
 inline const int32_t GET_SETTING_SIZE_BY_ID(int32_t x) {
@@ -633,7 +680,7 @@ inline const int32_t* GET_SETTING_SUPPORT_BY_ID(int32_t x) {
     }
 }
 
-inline const int32_t GET_STATUS_TYPE_BY_ID(int32_t x ){
+inline const int32_t GET_STATUS_TYPE_BY_ID(int32_t x){
     switch(x) {
         case BATTERY_PRESENT_ID:                    return (int32_t)BATTERY_PRESENT_TYPE;
         case INTERNAL_BATTERY_BARS_ID:              return (int32_t)INTERNAL_BATTERY_BARS_TYPE;
@@ -702,6 +749,7 @@ inline const int32_t GET_STATUS_TYPE_BY_ID(int32_t x ){
         case MEDIA_MOD_STATE_ID:                    return (int32_t)MEDIA_MOD_STATE_TYPE;
         case TIME_WARP_SPEED_ID:                    return (int32_t)TIME_WARP_SPEED_TYPE;
         case LENS_TYPE_ID:                          return (int32_t)STATUS_HINDSIGHT_TYPE;
+        case LINUX_CORE_ID:                         return (int32_t)LINUX_CORE_TYPE;
         case SCHEDULED_CAPTURE_PRESET_ID:           return (int32_t)SCHEDULED_CAPTURE_PRESET_TYPE;
         case STATUS_SCHEDULED_CAPTURE_ID:           return (int32_t)STATUS_SCHEDULED_CAPTURE_TYPE;
         case SD_CARD_WRITE_SPEED_ERROR_ID:          return (int32_t)SD_CARD_WRITE_SPEED_ERROR_TYPE;
@@ -710,11 +758,12 @@ inline const int32_t GET_STATUS_TYPE_BY_ID(int32_t x ){
         case USB_CONNECTED_ID:                      return (int32_t)USB_CONNECTED_TYPE;
         case USE_CONTROLLED_ID:                     return (int32_t)USE_CONTROLLED_TYPE;
         case SD_CARD_CAPACITY_ID:                   return (int32_t)SD_CARD_CAPACITY_TYPE;
+        case CAMERA_NAME_ID:                        return (int32_t)CAMERA_NAME_TYPE;
         default: return 0;
     }
 }
 
-inline const char* GET_STATUS_NAME_BY_ID(int32_t x ){
+inline const char* GET_STATUS_NAME_BY_ID(int32_t x){
     switch(x) {
         case BATTERY_PRESENT_ID:                    return BATTERY_PRESENT_NAME;
         case INTERNAL_BATTERY_BARS_ID:              return INTERNAL_BATTERY_BARS_NAME;
@@ -782,7 +831,8 @@ inline const char* GET_STATUS_NAME_BY_ID(int32_t x ){
         case CAPTURE_DELAY_ACTIVE_ID:               return CAPTURE_DELAY_ACTIVE_NAME;
         case MEDIA_MOD_STATE_ID:                    return MEDIA_MOD_STATE_NAME;
         case TIME_WARP_SPEED_ID:                    return TIME_WARP_SPEED_NAME;
-        case LENS_TYPE_ID:                          return STATUS_HINDSIGHT_NAME;
+        case LENS_TYPE_ID:                          return LENS_TYPE_NAME;
+        case LINUX_CORE_ID:                         return LINUX_CORE_NAME;
         case SCHEDULED_CAPTURE_PRESET_ID:           return SCHEDULED_CAPTURE_PRESET_NAME;
         case STATUS_SCHEDULED_CAPTURE_ID:           return STATUS_SCHEDULED_CAPTURE_NAME;
         case SD_CARD_WRITE_SPEED_ERROR_ID:          return SD_CARD_WRITE_SPEED_ERROR_NAME;
@@ -791,7 +841,91 @@ inline const char* GET_STATUS_NAME_BY_ID(int32_t x ){
         case USB_CONNECTED_ID:                      return USB_CONNECTED_NAME;
         case USE_CONTROLLED_ID:                     return USE_CONTROLLED_NAME;
         case SD_CARD_CAPACITY_ID:                   return SD_CARD_CAPACITY_NAME;
+        case CAMERA_NAME_ID:                        return CAMERA_NAME_NAME;
         default: return "";
+    }
+}
+
+inline const int32_t GET_STATUS_AVA_BY_ID(int32_t x){
+    switch(x) {
+        case BATTERY_PRESENT_ID:                    return BATTERY_PRESENT_AVA;
+        case INTERNAL_BATTERY_BARS_ID:              return INTERNAL_BATTERY_BARS_AVA;
+        case OVERHEATING_ID:                        return OVERHEATING_AVA;
+        case BUSY_ID:                               return BUSY_AVA;
+        case QUICK_CAPTURE_ID:                      return QUICK_CAPTURE_AVA;
+        case ENCODING_ID:                           return ENCODING_AVA;
+        case LCD_LOCK_ID:                           return LCD_LOCK_AVA;
+        case VIDEO_ENCODING_DURATION_ID:            return VIDEO_ENCODING_DURATION_AVA;
+        case WIRELESS_CONNECTIONS_ENABLED_ID:       return WIRELESS_CONNECTIONS_ENABLED_AVA;
+        case PAIRING_STATE_ID:                      return PAIRING_STATE_AVA;
+        case LAST_PAIRING_TYPE_ID:                  return LAST_PAIRING_TYPE_AVA;
+        case LAST_PAIRING_SUCESS_ID:                return LAST_PAIRING_SUCESS_AVA;
+        case WIFI_SCAN_STATE_ID:                    return WIFI_SCAN_STATE_AVA;
+        case LAST_WIFI_SCAN_SUCESS_ID:              return LAST_WIFI_SCAN_SUCESS_AVA;
+        case WIFI_PROVISIONING_STATE_ID:            return WIFI_PROVISIONING_STATE_AVA;
+        case REMOTE_VERSION_ID:                     return REMOTE_VERSION_AVA;
+        case REMOTE_CONNECTED_ID:                   return REMOTE_CONNECTED_AVA;
+        case CONNECTED_WIFI_SSID_ID:                return CONNECTED_WIFI_SSID_AVA;
+        case ACCESS_POINT_SSID_ID:                  return ACCESS_POINT_SSID_AVA;
+        case CONNECTED_DEVICE_ID:                   return CONNECTED_DEVICE_AVA;
+        case PREVIEW_STREAM_ID:                     return PREVIEW_STREAM_AVA;
+        case PRIMARY_STORAGE_ID:                    return PRIMARY_STORAGE_AVA;
+        case REMAINING_PHOTOS_ID:                   return REMAINING_PHOTOS_AVA;
+        case REMAINING_VIDEO_TIME_ID:               return REMAINING_VIDEO_TIME_AVA;
+        case PHOTOS_ID:                             return PHOTOS_AVA;
+        case VIDEOS_ID:                             return VIDEOS_AVA;
+        case OTA_ID:                                return OTA_AVA;
+        case PENDING_FW_UPDATE_CANCEL_ID:           return PENDING_FW_UPDATE_CANCEL_AVA;
+        case LOCATE_ID:                             return LOCATE_AVA;
+        case TIMELAPSE_INTERVAL_COUNTDOWN_ID:       return TIMELAPSE_INTERVAL_COUNTDOWN_AVA;
+        case SD_CARD_REMAINING_ID:                  return SD_CARD_REMAINING_AVA;
+        case PREVIEW_STREAM_AVAILABLE_ID:           return PREVIEW_STREAM_AVAILABLE_AVA;
+        case WIFI_BARS_ID:                          return WIFI_BARS_AVA;
+        case ACTIVE_HILIGHTS_ID:                    return ACTIVE_HILIGHTS_AVA;
+        case TIME_SINCE_LAST_HILIGHT_ID:            return TIME_SINCE_LAST_HILIGHT_AVA;
+        case MINIMUM_STATUS_POLL_PREIOD_ID:         return MINIMUM_STATUS_POLL_PREIOD_AVA;
+        case LIVEVIEW_EXPOSURE_SELECT_MODE_ID:      return LIVEVIEW_EXPOSURE_SELECT_MODE_AVA;
+        case LIVEVIEW_Y_ID:                         return LIVEVIEW_Y_AVA;
+        case LIVEVIEW_X_ID:                         return LIVEVIEW_X_AVA;
+        case GPS_LOCK_ID:                           return GPS_LOCK_AVA;
+        case AP_MODE_ID:                            return AP_MODE_AVA;
+        case INTERNAL_BATTERY_PERCENTAGE_ID:        return INTERNAL_BATTERY_PERCENTAGE_AVA;
+        case MICROPHONE_ACCESSORY_ID:               return MICROPHONE_ACCESSORY_AVA;
+        case ZOOM_LEVEL_ID:                         return ZOOM_LEVEL_AVA;
+        case STATUS_WIRELESS_BAND_ID:               return STATUS_WIRELESS_BAND_AVA;
+        case ZOOM_AVAILABLE_ID:                     return ZOOM_AVAILABLE_AVA;
+        case MOBILE_FRIENDLY_ID:                    return MOBILE_FRIENDLY_AVA;
+        case FTU_ID:                                return FTU_AVA;
+        case _5GHZ_AVAILABLE_ID:                    return _5GHZ_AVAILABLE_AVA;
+        case READY_ID:                              return READY_AVA;
+        case OTA_CHANGED_ID:                        return OTA_CHANGED_AVA;
+        case COLD_ID:                               return COLD_AVA;
+        case ROTATION_ID:                           return ROTATION_AVA;
+        case ZOOM_WHILE_ENCODING_ID:                return ZOOM_WHILE_ENCODING_AVA;
+        case FLATMODE_ID:                           return FLATMODE_AVA;
+        case VIDEO_PRESET_ID:                       return VIDEO_PRESET_AVA;
+        case PHOTO_PRESET_ID:                       return PHOTO_PRESET_AVA;
+        case TIMELAPSE_PRESET_ID:                   return TIMELAPSE_PRESET_AVA;
+        case PRESET_GROUP_ID:                       return PRESET_GROUP_AVA;
+        case PRESET_ID:                             return PRESET_AVA;
+        case PRESET_MODIFIED_ID:                    return PRESET_MODIFIED_AVA;
+        case REMAINING_LIVE_BURSTS_ID:              return REMAINING_LIVE_BURSTS_AVA;
+        case LIVE_BURSTS_ID:                        return LIVE_BURSTS_AVA;
+        case CAPTURE_DELAY_ACTIVE_ID:               return CAPTURE_DELAY_ACTIVE_AVA;
+        case MEDIA_MOD_STATE_ID:                    return MEDIA_MOD_STATE_AVA;
+        case TIME_WARP_SPEED_ID:                    return TIME_WARP_SPEED_AVA;
+        case LENS_TYPE_ID:                          return LENS_TYPE_AVA;
+        case LINUX_CORE_ID:                         return LINUX_CORE_AVA;
+        case SCHEDULED_CAPTURE_PRESET_ID:           return SCHEDULED_CAPTURE_PRESET_AVA;
+        case STATUS_SCHEDULED_CAPTURE_ID:           return STATUS_SCHEDULED_CAPTURE_AVA;
+        case SD_CARD_WRITE_SPEED_ERROR_ID:          return SD_CARD_WRITE_SPEED_ERROR_AVA;
+        case SD_CARD_ERRORS_ID:                     return SD_CARD_ERRORS_AVA;
+        case STATUS_CAMERA_CONTROL_ID:              return STATUS_CAMERA_CONTROL_AVA;
+        case USB_CONNECTED_ID:                      return USB_CONNECTED_AVA;
+        case USE_CONTROLLED_ID:                     return USE_CONTROLLED_AVA;
+        case SD_CARD_CAPACITY_ID:                   return SD_CARD_CAPACITY_AVA;
+        case CAMERA_NAME_ID:                        return CAMERA_NAME_AVA;
+        default: return 0;
     }
 }
 

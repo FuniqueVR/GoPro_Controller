@@ -26,7 +26,12 @@ public:
     static void global_draw_setting(std::shared_ptr<GlobalState>& state, std::shared_ptr<GoProMaster>& master, const std::shared_ptr<CameraInfo>& c);
     static void global_draw_protune(std::shared_ptr<GlobalState>& state, std::shared_ptr<GoProMaster>& master, const std::shared_ptr<CameraInfo>& c);
     virtual void draw_status();
-    virtual void draw_media();
+    virtual void draw_hardware();
+    virtual void draw_network();
+    virtual void draw_encode();
+    virtual void draw_media_status();
+    virtual void draw_media_global();
+    virtual void draw_media_local();
     virtual void draw_command_local();
     virtual void draw_command_global();
 
@@ -34,6 +39,7 @@ public:
     void reset_status_order();
 protected:
     virtual void _draw_setting(std::vector<int32_t>& ordered);
+    virtual void _draw_status(std::vector<int32_t>& ordered);
     static void _global_draw_setting(std::shared_ptr<GlobalState>& state, std::shared_ptr<GoProMaster>& master, const std::shared_ptr<CameraInfo>& c, std::vector<int32_t>& ordered);
     static bool _global_draw_setting_item(int32_t i, std::shared_ptr<GlobalState>& state, std::shared_ptr<GoProMaster>& master, const std::shared_ptr<CameraInfo>& c, std::vector<int32_t>& ordered);
     static int32_t _get_current_model(json hwinfo);
@@ -42,11 +48,17 @@ protected:
 
 private:
     static std::vector<int32_t> system_list_ordered;
+    // Setting
     static std::vector<int32_t> video_setting_list_ordered;
     static std::vector<int32_t> photo_setting_list_ordered;
     static std::vector<int32_t> video_protune_list_ordered;
     static std::vector<int32_t> photo_protune_list_ordered;
-    static std::vector<int32_t> status_list_ordered;
+    // Status
+    static std::vector<int32_t> status_software_list_ordered;
+    static std::vector<int32_t> status_hardware_list_ordered;
+    static std::vector<int32_t> status_encode_list_ordered;
+    static std::vector<int32_t> status_network_list_ordered;
+    static std::vector<int32_t> status_media_list_ordered;
     bool create_date_folder;
     bool put_finish;
     bool should_disabled;

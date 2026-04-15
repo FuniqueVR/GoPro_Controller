@@ -73,8 +73,20 @@ void InspectorWindow::reset_setting_order(){
 }
 
 void InspectorWindow::reset_status_order(){
-    for(int32_t i = 0; i < GOPRO_STATUS_SIZE; i++){
-        status_list_ordered[i] = GOPRO_STATUS_IDS[i];
+    for(int32_t i = 0; i < GOPRO_SOFTWARE_STATUS_SIZE; i++){
+        status_software_list_ordered[i] = GOPRO_SOFTWARE_STATUS_IDS[i];
+    }
+    for(int32_t i = 0; i < GOPRO_HARDWARE_STATUS_SIZE; i++){
+        status_hardware_list_ordered[i] = GOPRO_HARDWARE_STATUS_IDS[i];
+    }
+    for(int32_t i = 0; i < GOPRO_ENCODE_STATUS_SIZE; i++){
+        status_encode_list_ordered[i] = GOPRO_ENCODE_STATUS_IDS[i];
+    }
+    for(int32_t i = 0; i < GOPRO_NETWORK_STATUS_SIZE; i++){
+        status_network_list_ordered[i] = GOPRO_NETWORK_STATUS_IDS[i];
+    }
+    for(int32_t i = 0; i < GOPRO_MEDIA_STATUS_SIZE; i++){
+        status_media_list_ordered[i] = GOPRO_MEDIA_STATUS_IDS[i];
     }
 }
 

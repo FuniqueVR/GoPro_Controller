@@ -2,10 +2,19 @@
 #include <imgui.h>
 #include "../imgui_helper.h"
 
-#define GET_DATA_COLOR4(x, y) x["colors"][#y]=json::object();\
-store_vec4(x["colors"][#y],colors[y]);\
+#define GET_DATA_COLOR4(x, y, z) x["colors"][#z]=json::object();\
+store_vec4(x["colors"][#z],y[z]);\
 
-#define SET_DATA_COLOR4(x, y) fetch_vec4(x["colors"][#y],colors[y]);\
+#define GET_DATA_FLOAT(x, y, z) x["fields"][#z]=y.z;\
+
+#define GET_DATA_FLOAT2(x, y, z) x["fields"][#z]=json::object();\
+store_vec2(x["fields"][#z],y.z);\
+
+#define SET_DATA_COLOR4(x, y, z) fetch_vec4(x["colors"][#z],y[z]);\
+
+#define SET_DATA_FLOAT(x, y, z) y.z = x["fields"][#z].get<float>();\
+
+#define SET_DATA_FLOAT2(x, y, z) fetch_vec2(x["fields"][#z], y.z);\
 
 void store_vec4(json& j, ImVec4& value){
     j["x"] = value.x;
@@ -13,11 +22,19 @@ void store_vec4(json& j, ImVec4& value){
     j["z"] = value.z;
     j["w"] = value.w;
 }
+void store_vec2(json& j, ImVec2& value){
+    j["x"] = value.x;
+    j["y"] = value.y;
+}
 void fetch_vec4(json& j, ImVec4& value){
     value.x = j["x"];
     value.y = j["y"];
     value.z = j["z"];
     value.w = j["w"];
+}
+void fetch_vec2(json& j, ImVec2& value){
+    value.x = j["x"];
+    value.y = j["y"];
 }
 
 StyleSetting::StyleSetting(
@@ -26,7 +43,7 @@ StyleSetting::StyleSetting(
     std::shared_ptr<GoProMaster> _master
 ) 
     : BaseWindow(_setting, _state, _master) {
-    title = "Style Setting";
+    title = "Style";
 }
 
 StyleSetting::~StyleSetting(){
@@ -39,61 +56,87 @@ json StyleSetting::get_window_data() {
     json buffer = json::object();
 
     buffer["colors"] = json::object();
-    GET_DATA_COLOR4(buffer, ImGuiCol_WindowBg);
-    GET_DATA_COLOR4(buffer, ImGuiCol_ChildBg);
-    GET_DATA_COLOR4(buffer, ImGuiCol_PopupBg);
-    GET_DATA_COLOR4(buffer, ImGuiCol_Border);
-    GET_DATA_COLOR4(buffer, ImGuiCol_BorderShadow);
-    GET_DATA_COLOR4(buffer, ImGuiCol_FrameBg);
-    GET_DATA_COLOR4(buffer, ImGuiCol_FrameBgHovered);
-    GET_DATA_COLOR4(buffer, ImGuiCol_FrameBgActive);
-    GET_DATA_COLOR4(buffer, ImGuiCol_TitleBg);
-    GET_DATA_COLOR4(buffer, ImGuiCol_TitleBgActive);
-    GET_DATA_COLOR4(buffer, ImGuiCol_TitleBgCollapsed);
-    GET_DATA_COLOR4(buffer, ImGuiCol_MenuBarBg);
-    GET_DATA_COLOR4(buffer, ImGuiCol_ScrollbarBg);
-    GET_DATA_COLOR4(buffer, ImGuiCol_ScrollbarGrab);
-    GET_DATA_COLOR4(buffer, ImGuiCol_ScrollbarGrabHovered);
-    GET_DATA_COLOR4(buffer, ImGuiCol_ScrollbarGrabActive);
-    GET_DATA_COLOR4(buffer, ImGuiCol_CheckMark);
-    GET_DATA_COLOR4(buffer, ImGuiCol_SliderGrab);
-    GET_DATA_COLOR4(buffer, ImGuiCol_SliderGrabActive);
-    GET_DATA_COLOR4(buffer, ImGuiCol_Button);
-    GET_DATA_COLOR4(buffer, ImGuiCol_ButtonHovered);
-    GET_DATA_COLOR4(buffer, ImGuiCol_ButtonActive);
-    GET_DATA_COLOR4(buffer, ImGuiCol_Header);
-    GET_DATA_COLOR4(buffer, ImGuiCol_HeaderHovered);
-    GET_DATA_COLOR4(buffer, ImGuiCol_HeaderActive);
-    GET_DATA_COLOR4(buffer, ImGuiCol_Separator);
-    GET_DATA_COLOR4(buffer, ImGuiCol_SeparatorHovered);
-    GET_DATA_COLOR4(buffer, ImGuiCol_SeparatorActive);
-    GET_DATA_COLOR4(buffer, ImGuiCol_ResizeGrip);
-    GET_DATA_COLOR4(buffer, ImGuiCol_ResizeGripHovered);
-    GET_DATA_COLOR4(buffer, ImGuiCol_ResizeGripActive);
-    GET_DATA_COLOR4(buffer, ImGuiCol_Tab);
-    GET_DATA_COLOR4(buffer, ImGuiCol_TabHovered);
-    GET_DATA_COLOR4(buffer, ImGuiCol_TabActive);
-    GET_DATA_COLOR4(buffer, ImGuiCol_TabUnfocused);
-    GET_DATA_COLOR4(buffer, ImGuiCol_TabUnfocusedActive);
-    GET_DATA_COLOR4(buffer, ImGuiCol_DockingPreview);
-    GET_DATA_COLOR4(buffer, ImGuiCol_DockingEmptyBg);
-    GET_DATA_COLOR4(buffer, ImGuiCol_PlotLines);
-    GET_DATA_COLOR4(buffer, ImGuiCol_PlotLinesHovered);
-    GET_DATA_COLOR4(buffer, ImGuiCol_PlotHistogram);
-    GET_DATA_COLOR4(buffer, ImGuiCol_PlotHistogramHovered);
-    GET_DATA_COLOR4(buffer, ImGuiCol_TableHeaderBg);
-    GET_DATA_COLOR4(buffer, ImGuiCol_TableBorderStrong);
-    GET_DATA_COLOR4(buffer, ImGuiCol_TableBorderLight);
-    GET_DATA_COLOR4(buffer, ImGuiCol_TableRowBg);
-    GET_DATA_COLOR4(buffer, ImGuiCol_TableRowBgAlt);
-    GET_DATA_COLOR4(buffer, ImGuiCol_TextSelectedBg);
-    GET_DATA_COLOR4(buffer, ImGuiCol_DragDropTarget);
-    GET_DATA_COLOR4(buffer, ImGuiCol_NavHighlight);
-    GET_DATA_COLOR4(buffer, ImGuiCol_NavWindowingHighlight);
-    GET_DATA_COLOR4(buffer, ImGuiCol_NavWindowingDimBg);
-    GET_DATA_COLOR4(buffer, ImGuiCol_ModalWindowDimBg);
-    GET_DATA_COLOR4(buffer, ImGuiCol_Text);
-    GET_DATA_COLOR4(buffer, ImGuiCol_TextDisabled);
+    buffer["fields"] = json::object();
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_WindowBg);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_ChildBg);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_PopupBg);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_Border);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_BorderShadow);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_FrameBg);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_FrameBgHovered);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_FrameBgActive);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_TitleBg);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_TitleBgActive);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_TitleBgCollapsed);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_MenuBarBg);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_ScrollbarBg);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_ScrollbarGrab);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_ScrollbarGrabHovered);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_ScrollbarGrabActive);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_CheckMark);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_SliderGrab);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_SliderGrabActive);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_Button);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_ButtonHovered);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_ButtonActive);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_Header);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_HeaderHovered);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_HeaderActive);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_Separator);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_SeparatorHovered);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_SeparatorActive);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_ResizeGrip);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_ResizeGripHovered);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_ResizeGripActive);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_Tab);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_TabHovered);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_TabActive);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_TabUnfocused);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_TabUnfocusedActive);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_DockingPreview);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_DockingEmptyBg);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_PlotLines);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_PlotLinesHovered);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_PlotHistogram);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_PlotHistogramHovered);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_TableHeaderBg);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_TableBorderStrong);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_TableBorderLight);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_TableRowBg);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_TableRowBgAlt);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_TextSelectedBg);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_DragDropTarget);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_NavHighlight);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_NavWindowingHighlight);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_NavWindowingDimBg);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_ModalWindowDimBg);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_Text);
+    GET_DATA_COLOR4(buffer, colors, ImGuiCol_TextDisabled);
+    
+    GET_DATA_FLOAT(buffer, style, FontScaleMain);
+
+    GET_DATA_FLOAT(buffer, style, WindowRounding);
+    GET_DATA_FLOAT(buffer, style, ChildRounding);
+    GET_DATA_FLOAT(buffer, style, FrameRounding);
+    GET_DATA_FLOAT(buffer, style, PopupRounding);
+    GET_DATA_FLOAT(buffer, style, ScrollbarRounding);
+    GET_DATA_FLOAT(buffer, style, GrabRounding);
+    GET_DATA_FLOAT(buffer, style, TabRounding);
+
+    GET_DATA_FLOAT2(buffer, style, WindowPadding);
+    GET_DATA_FLOAT2(buffer, style, FramePadding);
+    GET_DATA_FLOAT2(buffer, style, ItemSpacing);
+    GET_DATA_FLOAT2(buffer, style, ItemInnerSpacing);
+    GET_DATA_FLOAT(buffer, style, IndentSpacing);
+    GET_DATA_FLOAT(buffer, style, ScrollbarSize);
+    GET_DATA_FLOAT(buffer, style, GrabMinSize);
+
+    GET_DATA_FLOAT(buffer, style, WindowBorderSize);
+    GET_DATA_FLOAT(buffer, style, ChildBorderSize);
+    GET_DATA_FLOAT(buffer, style, PopupBorderSize);
+    GET_DATA_FLOAT(buffer, style, FrameBorderSize);
+    GET_DATA_FLOAT(buffer, style, TabBorderSize);
+    GET_DATA_FLOAT(buffer, style, TabRounding);
 
     return buffer;
 }
@@ -102,78 +145,112 @@ void StyleSetting::set_window_data(json data) {
     ImGuiStyle& style = ImGui::GetStyle();
     ImVec4* colors = style.Colors;
 
-    SET_DATA_COLOR4(data, ImGuiCol_WindowBg);
-    SET_DATA_COLOR4(data, ImGuiCol_ChildBg);
-    SET_DATA_COLOR4(data, ImGuiCol_PopupBg);
-    SET_DATA_COLOR4(data, ImGuiCol_Border);
-    SET_DATA_COLOR4(data, ImGuiCol_BorderShadow);
-    SET_DATA_COLOR4(data, ImGuiCol_FrameBg);
-    SET_DATA_COLOR4(data, ImGuiCol_FrameBgHovered);
-    SET_DATA_COLOR4(data, ImGuiCol_FrameBgActive);
-    SET_DATA_COLOR4(data, ImGuiCol_TitleBg);
-    SET_DATA_COLOR4(data, ImGuiCol_TitleBgActive);
-    SET_DATA_COLOR4(data, ImGuiCol_TitleBgCollapsed);
-    SET_DATA_COLOR4(data, ImGuiCol_MenuBarBg);
-    SET_DATA_COLOR4(data, ImGuiCol_ScrollbarBg);
-    SET_DATA_COLOR4(data, ImGuiCol_ScrollbarGrab);
-    SET_DATA_COLOR4(data, ImGuiCol_ScrollbarGrabHovered);
-    SET_DATA_COLOR4(data, ImGuiCol_ScrollbarGrabActive);
-    SET_DATA_COLOR4(data, ImGuiCol_CheckMark);
-    SET_DATA_COLOR4(data, ImGuiCol_SliderGrab);
-    SET_DATA_COLOR4(data, ImGuiCol_SliderGrabActive);
-    SET_DATA_COLOR4(data, ImGuiCol_Button);
-    SET_DATA_COLOR4(data, ImGuiCol_ButtonHovered);
-    SET_DATA_COLOR4(data, ImGuiCol_ButtonActive);
-    SET_DATA_COLOR4(data, ImGuiCol_Header);
-    SET_DATA_COLOR4(data, ImGuiCol_HeaderHovered);
-    SET_DATA_COLOR4(data, ImGuiCol_HeaderActive);
-    SET_DATA_COLOR4(data, ImGuiCol_Separator);
-    SET_DATA_COLOR4(data, ImGuiCol_SeparatorHovered);
-    SET_DATA_COLOR4(data, ImGuiCol_SeparatorActive);
-    SET_DATA_COLOR4(data, ImGuiCol_ResizeGrip);
-    SET_DATA_COLOR4(data, ImGuiCol_ResizeGripHovered);
-    SET_DATA_COLOR4(data, ImGuiCol_ResizeGripActive);
-    SET_DATA_COLOR4(data, ImGuiCol_Tab);
-    SET_DATA_COLOR4(data, ImGuiCol_TabHovered);
-    SET_DATA_COLOR4(data, ImGuiCol_TabActive);
-    SET_DATA_COLOR4(data, ImGuiCol_TabUnfocused);
-    SET_DATA_COLOR4(data, ImGuiCol_TabUnfocusedActive);
-    SET_DATA_COLOR4(data, ImGuiCol_DockingPreview);
-    SET_DATA_COLOR4(data, ImGuiCol_DockingEmptyBg);
-    SET_DATA_COLOR4(data, ImGuiCol_PlotLines);
-    SET_DATA_COLOR4(data, ImGuiCol_PlotLinesHovered);
-    SET_DATA_COLOR4(data, ImGuiCol_PlotHistogram);
-    SET_DATA_COLOR4(data, ImGuiCol_PlotHistogramHovered);
-    SET_DATA_COLOR4(data, ImGuiCol_TableHeaderBg);
-    SET_DATA_COLOR4(data, ImGuiCol_TableBorderStrong);
-    SET_DATA_COLOR4(data, ImGuiCol_TableBorderLight);
-    SET_DATA_COLOR4(data, ImGuiCol_TableRowBg);
-    SET_DATA_COLOR4(data, ImGuiCol_TableRowBgAlt);
-    SET_DATA_COLOR4(data, ImGuiCol_TextSelectedBg);
-    SET_DATA_COLOR4(data, ImGuiCol_DragDropTarget);
-    SET_DATA_COLOR4(data, ImGuiCol_NavHighlight);
-    SET_DATA_COLOR4(data, ImGuiCol_NavWindowingHighlight);
-    SET_DATA_COLOR4(data, ImGuiCol_NavWindowingDimBg);
-    SET_DATA_COLOR4(data, ImGuiCol_ModalWindowDimBg);
-    SET_DATA_COLOR4(data, ImGuiCol_Text);
-    SET_DATA_COLOR4(data, ImGuiCol_TextDisabled);
+    if(!data["colors"].is_object() || !data["fields"].is_object()){
+        setup_catppuccin_mocha_theme();
+        return;
+    }
+
+    SET_DATA_COLOR4(data, colors, ImGuiCol_WindowBg);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_ChildBg);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_PopupBg);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_Border);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_BorderShadow);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_FrameBg);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_FrameBgHovered);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_FrameBgActive);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_TitleBg);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_TitleBgActive);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_TitleBgCollapsed);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_MenuBarBg);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_ScrollbarBg);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_ScrollbarGrab);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_ScrollbarGrabHovered);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_ScrollbarGrabActive);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_CheckMark);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_SliderGrab);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_SliderGrabActive);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_Button);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_ButtonHovered);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_ButtonActive);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_Header);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_HeaderHovered);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_HeaderActive);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_Separator);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_SeparatorHovered);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_SeparatorActive);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_ResizeGrip);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_ResizeGripHovered);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_ResizeGripActive);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_Tab);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_TabHovered);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_TabActive);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_TabUnfocused);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_TabUnfocusedActive);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_DockingPreview);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_DockingEmptyBg);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_PlotLines);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_PlotLinesHovered);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_PlotHistogram);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_PlotHistogramHovered);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_TableHeaderBg);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_TableBorderStrong);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_TableBorderLight);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_TableRowBg);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_TableRowBgAlt);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_TextSelectedBg);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_DragDropTarget);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_NavHighlight);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_NavWindowingHighlight);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_NavWindowingDimBg);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_ModalWindowDimBg);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_Text);
+    SET_DATA_COLOR4(data, colors, ImGuiCol_TextDisabled);
+
+    SET_DATA_FLOAT(data, style, FontScaleMain);
+
+    SET_DATA_FLOAT(data, style, WindowRounding);
+    SET_DATA_FLOAT(data, style, ChildRounding);
+    SET_DATA_FLOAT(data, style, FrameRounding);
+    SET_DATA_FLOAT(data, style, PopupRounding);
+    SET_DATA_FLOAT(data, style, ScrollbarRounding);
+    SET_DATA_FLOAT(data, style, GrabRounding);
+    SET_DATA_FLOAT(data, style, TabRounding);
+
+    SET_DATA_FLOAT2(data, style, WindowPadding);
+    SET_DATA_FLOAT2(data, style, FramePadding);
+    SET_DATA_FLOAT2(data, style, ItemSpacing);
+    SET_DATA_FLOAT2(data, style, ItemInnerSpacing);
+    SET_DATA_FLOAT(data, style, IndentSpacing);
+    SET_DATA_FLOAT(data, style, ScrollbarSize);
+    SET_DATA_FLOAT(data, style, GrabMinSize);
+
+    SET_DATA_FLOAT(data, style, WindowBorderSize);
+    SET_DATA_FLOAT(data, style, ChildBorderSize);
+    SET_DATA_FLOAT(data, style, PopupBorderSize);
+    SET_DATA_FLOAT(data, style, FrameBorderSize);
+    SET_DATA_FLOAT(data, style, TabBorderSize);
+    SET_DATA_FLOAT(data, style, TabRounding);
 }
 
 void StyleSetting::render(){
     ImGuiStyle& style = ImGui::GetStyle();
     ImVec4* colors = style.Colors;
+    bool changed = false;
 
-    ImGui::Begin("Style Setting", &enable, w_flag);
+    ImGui::Begin(title.c_str(), &enable, w_flag);
     {
         if(ImGui::BeginCombo("Theme##style_themes", "")){
             if(ImGui::Selectable("Dark Theme")){
                 ImGui::StyleColorsDark();
+                changed = true;
             }
             if(ImGui::Selectable("Light Theme")){
                 ImGui::StyleColorsLight();
+                changed = true;
             }
             if(ImGui::Selectable("Mocha Theme")){
                 setup_catppuccin_mocha_theme();
+                changed = true;
             }
             ImGui::EndCombo();
         }
@@ -181,7 +258,6 @@ void StyleSetting::render(){
         ImGui::Separator();
         
         if(ImGui::BeginTabBar("Style Fields##style_win")){
-            bool changed = false;
             if(ImGui::BeginTabItem("Colors##style_win")){
                 changed = changed | render_colors();
                 ImGui::EndTabItem();
@@ -192,6 +268,7 @@ void StyleSetting::render(){
             }
             if(changed){
                 update_style();
+                changed = false;
             }
             ImGui::EndTabBar();
         }
@@ -265,10 +342,38 @@ bool StyleSetting::render_fields(){
     ImGuiStyle& style = ImGui::GetStyle();
     ImVec4* colors = style.Colors;
     bool changed = false;
-    changed = changed | ImGui::InputFloat("Font Size Base##style_field", &style.FontSizeBase);
-    changed = changed | ImGui::SliderFloat("Font Scale Main##style_field", &style.FontScaleMain, 0.1f, 2.0f, "%.1f");
-    changed = changed | ImGui::InputFloat2("Window Padding##style_field", (float*)&style.WindowPadding);
-    changed = changed | ImGui::InputFloat("Window Padding##style_field", &style.WindowRounding);
+
+    changed = changed || ImGui::SliderFloat("Font Scale Main##style_field", &style.FontScaleMain, 0.1f, 2.0f, "%.1f");
+
+    ImGui::Separator();
+
+    changed = changed || ImGui::InputFloat("WindowRounding##style_field", &style.WindowRounding);
+    changed = changed || ImGui::InputFloat("ChildRounding##style_field", &style.ChildRounding);
+    changed = changed || ImGui::InputFloat("FrameRounding##style_field", &style.FrameRounding);
+    changed = changed || ImGui::InputFloat("PopupRounding##style_field", &style.PopupRounding);
+    changed = changed || ImGui::InputFloat("ScrollbarRounding##style_field", &style.ScrollbarRounding);
+    changed = changed || ImGui::InputFloat("GrabRounding##style_field", &style.GrabRounding);
+    changed = changed || ImGui::InputFloat("TabRounding##style_field", &style.TabRounding);
+
+    ImGui::Separator();
+
+    changed = changed || ImGui::InputFloat2("WindowPadding##style_field", (float*)&style.WindowPadding);
+    changed = changed || ImGui::InputFloat2("FramePadding##style_field", (float*)&style.FramePadding);
+    changed = changed || ImGui::InputFloat2("ItemSpacing##style_field", (float*)&style.ItemSpacing);
+    changed = changed || ImGui::InputFloat2("ItemInnerSpacing##style_field", (float*)&style.ItemInnerSpacing);
+    changed = changed || ImGui::InputFloat("IndentSpacing##style_field", &style.IndentSpacing);
+    changed = changed || ImGui::InputFloat("ScrollbarSize##style_field", &style.ScrollbarSize);
+    changed = changed || ImGui::InputFloat("GrabMinSize##style_field", &style.GrabMinSize);
+
+    ImGui::Separator();
+
+    changed = changed || ImGui::InputFloat("WindowBorderSize##style_field", &style.WindowBorderSize);
+    changed = changed || ImGui::InputFloat("ChildBorderSize##style_field", &style.ChildBorderSize);
+    changed = changed || ImGui::InputFloat("PopupBorderSize##style_field", &style.PopupBorderSize);
+    changed = changed || ImGui::InputFloat("FrameBorderSize##style_field", &style.FrameBorderSize);
+    changed = changed || ImGui::InputFloat("TabBorderSize##style_field", &style.TabBorderSize);
+    changed = changed || ImGui::InputFloat("TabRounding##style_field", &style.TabRounding);
+
     return changed;
 }
 

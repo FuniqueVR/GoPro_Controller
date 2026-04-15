@@ -38,13 +38,13 @@ json CameraListWindow::get_window_data() {
 }
 
 void CameraListWindow::set_window_data(json data){
-    if(data["size"].is_number_integer()){
+    if(data["size"].is_number()){
         size = data["size"].get<int32_t>();
     }
-    if(data["filter"].is_number_integer()){
+    if(data["filter"].is_number()){
         filter = (FilterType)data["filter"].get<int32_t>();
     }
-    if(data["sort"].is_number_integer()){
+    if(data["sort"].is_number()){
         sort = (SortType)data["sort"].get<int32_t>();
     }
     if(data["filter_connect"].is_boolean()){
@@ -59,9 +59,11 @@ void CameraListWindow::render(){
     bool changed = false;
     ImGui::Begin(title.c_str(), &enable, w_flag);
     {
+        ImVec2 window_size = ImGui::GetWindowSize();
         std::lock_guard<std::mutex> lock(master->camera_mtx);
-        changed = ImGui::SliderInt("Item Size##Camera_List_Size", &size, 0, 15);
 
+        changed = ImGui::SliderInt("Item Size##Camera_List_Size", &size, 0, 15);
+        changed = changed || ImGui::InputText("Search", &search);
         std::string filter_text = get_filter_string(filter);
         std::string sort_text = get_sort_string(sort);
 
@@ -74,7 +76,6 @@ void CameraListWindow::render(){
             }
             ImGui::EndCombo();
         }
-
         if(ImGui::BeginCombo("Filter##Camera_List_combo", filter_text.c_str())){
             for(int32_t i = 0; i < 3; i++){
                 if(ImGui::Selectable((get_filter_string((FilterType)i) + "##filter_option").c_str())){
@@ -136,6 +137,7 @@ void CameraListWindow::render(){
     ImGui::End();
     if(changed){
         state->update_server();
+        changed = false;
     }
 }
 
@@ -215,6 +217,13 @@ std::vector<std::shared_ptr<CameraInfo>> CameraListWindow::get_filtering_result(
     auto filtered = std::vector<std::shared_ptr<CameraInfo>>();
 
     for(auto& c : buffer){
+        if(search.size() > 0){
+            bool ip_contain = c->ip.find(search) != std::string::npos;
+            bool name_contain = c->name.find(search) != std::string::npos;
+            bool serial_contain = c->serial.find(search) != std::string::npos;
+            if(!ip_contain && !name_contain && !serial_contain) continue;
+        }
+
         if(filter == FilterType::Connect){
             if(c->connected == filter_connect){
                 filtered.push_back(c);
@@ -237,6 +246,7 @@ std::vector<std::shared_ptr<CameraInfo>> CameraListWindow::get_filtering_result(
             return a->ip < b->ip;
         });
     }
+    
     return filtered;
 }
 

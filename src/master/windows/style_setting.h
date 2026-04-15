@@ -20,7 +20,4 @@ protected:
     bool render_colors();
     bool render_fields();
     bool update_style();
-
-private:
-    json buffer = json::object();
 };

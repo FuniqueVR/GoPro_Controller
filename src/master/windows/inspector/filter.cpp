@@ -63,6 +63,14 @@ bool InspectorWindow::conditional_filter(const std::shared_ptr<GlobalState>& sta
             return false;
         }
     }
+    else if(setting_id == COLOR_ID){
+        if(preset != 0) return false;
+        if(preset == 0){ // Video
+            if(profile_id == 2){ // LOG
+                return false;
+            }
+        }
+    }
     return true;
 }
 
@@ -378,10 +386,15 @@ bool InspectorWindow::conditional_filter_option(const std::shared_ptr<GlobalStat
         if(value_id != 31 && value_id != 32) return false;
     }
     else if(setting_id == COLOR_ID){
+        int32_t value_id = COLOR_VALUE[value_index];
         if(preset == 0){ // Video
-
-        }else { // Photo
-
+            if(profile_id == 1){ // HDR
+                // Natural, Vibrant
+                if(value_id != 2 && value_id != 100) return false;
+            }else{
+                // Flat, Natural, Vibrant
+                if(value_id != 1 && value_id != 2 && value_id != 100) return false;
+            }
         }
     }
     else if(setting_id == PROFILES_ID){
