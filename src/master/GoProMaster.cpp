@@ -422,6 +422,73 @@ void GoProMaster::set_preset_data(std::shared_ptr<json> _preset){
     preset_ptr = _preset;
 }
 
+int32_t GoProMaster::add_preset(const std::string name, json data){
+    if(!(*preset_ptr)["data"].is_array()) {
+        (*preset_ptr)["data"] = json::array();
+    }else{
+        for(int32_t i = 0; i < (*preset_ptr)["data"].size(); i++){
+            json item = (*preset_ptr)["data"].at(i);
+            if(item["name"].is_string()){
+                if(item["name"].get<std::string>() == name){
+                    // Name repeat
+                    return 2;
+                }
+            }
+        }
+    }
+    (*preset_ptr)["data"].push_back(data);
+    return 0;
+}
+
+bool GoProMaster::get_preset(const std::string name, json& data){
+    if(!(*preset_ptr)["data"].is_array()) {
+        (*preset_ptr)["data"] = json::array();
+        return false;
+    }
+    for(int32_t i = 0; i < (*preset_ptr)["data"].size(); i++){
+        json item = (*preset_ptr)["data"].at(i);
+        if(item["name"].is_string()){
+            if(item["name"].get<std::string>() == name){
+                data = item;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool GoProMaster::remove_preset(const std::string name){
+    if(!(*preset_ptr)["data"].is_array()) {
+        (*preset_ptr)["data"] = json::array();
+        return false;
+    }else{
+        for(int32_t i = 0; i < (*preset_ptr)["data"].size(); i++){
+            json item = (*preset_ptr)["data"].at(i);
+            if(item["name"].is_string()){
+                if(item["name"].get<std::string>() == name){
+                    (*preset_ptr)["data"].erase((*preset_ptr)["data"].begin() + i);
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+std::vector<std::string> GoProMaster::get_preset_names(){
+    if(!(*preset_ptr)["data"].is_array()) {
+        (*preset_ptr)["data"] = json::array();
+        return std::vector<std::string>();
+    }
+    std::vector<std::string> a = std::vector<std::string>();
+    for(int32_t i = 0; i < (*preset_ptr)["data"].size(); i++){
+        json item = (*preset_ptr)["data"].at(i);
+        if(item["name"].is_string()){
+            a.push_back(item["name"].get<std::string>());
+        }
+    }
+    return a;
+}
+
 const std::vector<std::shared_ptr<CameraInfo>>& GoProMaster::getCameras() const {
     return cameras;
 }

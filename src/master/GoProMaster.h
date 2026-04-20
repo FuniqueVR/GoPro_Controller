@@ -114,6 +114,11 @@ public:
     void registerApplyAllFeedback(camera_apply_all_feedback v);
     void registerSavePreset(camera_preset_save v);
     void set_preset_data(std::shared_ptr<json> _preset);
+
+    int32_t add_preset(const std::string name, json data);
+    bool get_preset(const std::string name, json& data);
+    bool remove_preset(const std::string name);
+    std::vector<std::string> get_preset_names();
     /**
      * Camera list multithread lock guard
      * This will prevent race condition

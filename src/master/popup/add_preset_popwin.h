@@ -12,4 +12,6 @@ public:
     virtual void trigger(bool value) override;
     virtual void render() override;
 private:
+    std::string preset_name;
+    std::string msg;
 };
