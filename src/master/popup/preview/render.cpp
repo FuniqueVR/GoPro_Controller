@@ -71,7 +71,7 @@ void PreviewPopup::render(){
             }
             ImGui::SetCursorScreenPos(image_pos);
             // Go Different camera
-            {
+            { // Left side of the panel
                 ImGui::BeginChild("Detail##Preview_Camera_Inspector", ImVec2(left_width, 0));
                 _draw_rotation_button();
                 _draw_camera_selection();
@@ -81,7 +81,7 @@ void PreviewPopup::render(){
             ImGui::SameLine();
             ImGui::Dummy(ImVec2(img_width, 0.0f));
             ImGui::SameLine();
-            {
+            { // Right side of the panel
                 ImGui::BeginChild("Detail##Preview_Camera_Inspector2", ImVec2(left_width, 0));
                 _draw_setting();
                 ImGui::EndChild();

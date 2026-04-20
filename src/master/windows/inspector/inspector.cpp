@@ -92,9 +92,8 @@ void InspectorWindow::render(){
     ImGui::Begin("Inspector", &enable, w_flag);
     {
         std::lock_guard<std::mutex> lock(master->camera_mtx);
-        int32_t camera_ip = master->findCamera(state->current_camera_item);
-        should_disabled = state->current_camera_item.size() < 10 || camera_ip == -1 || !state->current_setting_items_bind;
-
+        int32_t s = master->findCamera(state->current_camera_item);
+        should_disabled = state->current_camera_item.size() < 10 || s == -1 || !state->current_setting_items_bind;
         draw_header();
 
         ImGui::Separator();
@@ -121,17 +120,24 @@ void InspectorWindow::render(){
                     reset_setting_order();
                     state->update_server();
                 }
+
+                ImGui::BeginDisabled(should_disabled);
                 if(ImGui::Button("Save Preset##Inspector_Bar_Item")){
                     
                 }
                 ImGui::SameLine();
                 if(ImGui::Button("Quick Apply All##Inspector_Bar_Item")){
-
+                    if(s != -1){
+                        const std::shared_ptr<CameraInfo>& c = master->getCameras().at(s);
+                        master->quickApplyAll(c);
+                    }
                 }
                 ImGui::SameLine();
                 if(ImGui::Button("Preset Manager##Inspector_Bar_Item")){
 
                 }
+                ImGui::EndDisabled();
+
                 if(ImGui::BeginTabBar("Inspector_Bar##Second")){
                     if(ImGui::BeginTabItem("System##Inspector_Bar_Item")){
                         ImGui::BeginDisabled(should_disabled);
