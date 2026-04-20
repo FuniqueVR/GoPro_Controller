@@ -29,6 +29,7 @@ std::queue<std::string> command_queue = std::queue<std::string>();
 std::shared_ptr<GoProMaster> master = std::make_shared<GoProMaster>();
 std::shared_ptr<json> gui;
 std::shared_ptr<json> servers;
+std::shared_ptr<json> presets;
 std::shared_ptr<GlobalState> global_state = std::make_shared<GlobalState>();
 
 std::shared_ptr<CameraListWindow> camera_list_win;
@@ -157,6 +158,7 @@ int main(int, char**)
 
     servers = std::make_shared<json>(loadServerList());
     gui = std::make_shared<json>(loadGUI());
+    presets= std::make_shared<json>(loadPresetList());
     // Win
     WIN_INIT(websocket_win, WebsocketWindow, windows_array, 0);
     WIN_INIT(camera_list_win, CameraListWindow, windows_array, 1);
