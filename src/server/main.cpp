@@ -130,6 +130,7 @@ void ExecuteCommand(const WebSocketChannelPtr& channel, json j){
 
 void QueryAction(const WebSocketChannelPtr& channel, json j){
     std::string name = "";
+    std::string source = "";
     std::string target = "";
     int id = 0;
     std::string value = "";
@@ -138,6 +139,9 @@ void QueryAction(const WebSocketChannelPtr& channel, json j){
     
     if(j["name"].is_string()){
         name = j["name"].get<std::string>();
+    }
+    if(j["source"].is_string()){
+        source = j["source"].get<std::string>();
     }
     if(j["target"].is_string()){
         target = j["target"].get<std::string>();

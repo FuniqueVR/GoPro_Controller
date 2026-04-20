@@ -363,11 +363,13 @@ void GoProMaster::applyAll(const std::string& ip, const json& res){
 
 void GoProMaster::quickApplyAll(const std::shared_ptr<CameraInfo>& target){
     int32_t model = InspectorWindow::_get_current_model(target->hw);
+    json root = json::object();
     json _set = json::object();
     if(getSettingsFromCamera(*target, _set)){
         // Execute the apply logic here
-        _set["model"] = model; // Added a model field for mark it's supported
-        applyAll(target->ip, _set);
+        root["model"] = model; // Added a model field for mark it's supported
+        root["setting"] = _set;
+        applyAll(target->ip, root);
     }
 }
 

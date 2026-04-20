@@ -54,7 +54,11 @@ public:
     // Status part of calls
     std::string queryStatus(std::string target);
     std::string setSetting(std::string target, int32_t ID, std::string value);
-    std::string setSettingAll(std::string target, json value);
+    /**
+     * If source is null, it does not matter anyway, it just for ignore apply reason.
+     * If target is null, it will the apply range to all of the clients.
+     */
+    std::string setSettingAll(const std::string source, const std::string target, json value);
     // Webcam part of calls
     void webcamMode(std::string target);
     void webcamUnMode(std::string target);
@@ -97,6 +101,9 @@ protected:
     std::pair<std::string, std::string> _queryHW(std::string target);
     std::vector<std::pair<std::string, std::string>> _setAllSetting(std::vector<std::string> targets, int32_t ID, std::string value);
     std::pair<std::string, std::string> _setSetting(std::string target, int32_t ID, std::string value);
+    std::vector<std::pair<std::string, std::string>> _setAllSetting(std::vector<std::string> targets, json res);
+    std::vector<std::pair<std::string, std::string>> _setSetting(std::string target, json res);
+    std::vector<std::pair<std::string, std::string>> _setSetting_utility(std::string target, json res, std::vector<int32_t> setting_ids);
     // Webcam part of calls
     void _webcamAllMode(std::vector<std::string> targets);
     void _webcamMode(std::string target);
