@@ -31,13 +31,27 @@ std::string getPacket(std::string key, json data);
 
 typedef std::pair<std::string,std::string> SingleResponse;
 
+/**
+ * The cpp files break into two folder, and base on implementation detail to seperate cpp files
+ * * controller (public methods)
+ * * private (private methods)
+ */
 class GoProController {
 public:
     GoProController();
     ~GoProController();
     // Camera part of calls
+    /**
+     * Using mdns feature to catch all gopro services and store the ip addresses
+     */
     void scanCameras();
+    /**
+     * Clear the array of IP address
+     */
     void cleanCameras();
+    /**
+     * Rename the camera by ip input
+     */
     void renameCameras(std::string ip, std::string name);
     void addCameras(std::string serial);
     void deleteCameras(std::string ip);
