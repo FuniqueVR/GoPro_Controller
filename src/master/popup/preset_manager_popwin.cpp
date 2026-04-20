@@ -21,6 +21,14 @@ void PresetManagerPopup::trigger(bool value){
 void PresetManagerPopup::render(){
     if(ImGui::BeginPopupModal(title.c_str(), NULL, wp_flag)){
         
+        if (ImGui::Button("Confirm")) {
+            
+        }
+        ImGui::SameLine();
+        if(ImGui::Button("Cancel")){
+            ImGui::CloseCurrentPopup();
+        }
+
         ImGui::EndPopup();
     }
 }
