@@ -133,6 +133,10 @@ void updateGUIList(){
     ImGui::SaveIniSettingsToDisk("imgui.ini");
 }
 
+void updatePresetList(){
+    savePresetList(*presets);
+}
+
 void pushCommand(const char* cmd){
     command_queue.push(cmd);
 }
@@ -174,6 +178,8 @@ int main(int, char**)
     master->registerCameraStatusFeedback(statusGetterFeedback);
     master->registerCameraHWFeedback(hwGetterFeedback);
     master->registerCameraLogFeedback(assign_log);
+    master->registerSavePreset(updatePresetList);
+    master->set_preset_data(presets);
     preview_popwin->register_setting_drawer(InspectorWindow::global_draw_setting);
     preview_popwin->register_protune_drawer(InspectorWindow::global_draw_protune);
     global_state->update_server = updateServerList;

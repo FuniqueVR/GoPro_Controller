@@ -125,6 +125,10 @@ void InspectorWindow::render(){
                     
                 }
                 ImGui::SameLine();
+                if(ImGui::Button("Quick Apply All##Inspector_Bar_Item")){
+
+                }
+                ImGui::SameLine();
                 if(ImGui::Button("Preset Manager##Inspector_Bar_Item")){
 
                 }
@@ -136,9 +140,6 @@ void InspectorWindow::render(){
                         ImGui::EndTabItem();
                     }
                     if(ImGui::BeginTabItem("Setting##Inspector_Bar_Item")){
-                        if(ImGui::Button("Quick Apply All##Inspector_Bar_Item_Apply_All")){
-
-                        }
                         ImGui::BeginDisabled(should_disabled);
                         draw_setting();
                         ImGui::EndDisabled();

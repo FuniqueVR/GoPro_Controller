@@ -357,6 +357,10 @@ void GoProMaster::applyAll(const std::string& ip, const json& res){
     }).detach();
 }
 
+void GoProMaster::quickApplyAll(const std::shared_ptr<CameraInfo>& target){
+
+}
+
 bool GoProMaster::directoryExists(const std::string& path) {
     if (fs::exists(path) && fs::is_directory(path)) {
         return true;
@@ -378,6 +382,14 @@ void GoProMaster::registerCameraHWFeedback(camera_hw_feedback v){
 
 void GoProMaster::registerCameraLogFeedback(camera_log_feedback v){
     _camera_log_feedback = v;
+}
+
+void GoProMaster::registerSavePreset(camera_preset_save v){
+    _camera_preset_save = v;
+}
+
+void GoProMaster::set_preset_data(std::shared_ptr<json> _preset){
+    preset_ptr = _preset;
 }
 
 const std::vector<std::shared_ptr<CameraInfo>>& GoProMaster::getCameras() const {

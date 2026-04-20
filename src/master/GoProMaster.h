@@ -21,7 +21,7 @@ typedef void (*camera_setting_feedback)(std::string ip, json setting);
 typedef void (*camera_status_feedback)(std::string ip, json status);
 typedef void (*camera_hw_feedback)(std::string ip, json hw);
 typedef void (*camera_log_feedback)(std::string key, std::string value);
-
+typedef void (*camera_preset_save)();
 
 /**
  * GoPro Master Worker
@@ -94,6 +94,7 @@ public:
     int32_t haslocate(const std::string server, const std::string target);
     void apply(const std::string& ip, const int32_t id, const int32_t value);
     void applyAll(const std::string& ip, const json& res);
+    void quickApplyAll(const std::shared_ptr<CameraInfo>& target);
 
     bool directoryExists(const std::string& path);
 
@@ -110,6 +111,8 @@ public:
     void registerCameraHWFeedback(camera_hw_feedback v);
     void registerCameraLogFeedback(camera_log_feedback v);
 
+    void registerSavePreset(camera_preset_save v);
+    void set_preset_data(std::shared_ptr<json> _preset);
     /**
      * Camera list multithread lock guard
      * This will prevent race condition
@@ -163,6 +166,9 @@ private:
     camera_status_feedback _camera_status_feedback = NULL;
     camera_hw_feedback _camera_hw_feedback = NULL;
     camera_log_feedback _camera_log_feedback = NULL;
+    camera_preset_save _camera_preset_save = NULL;
+    camera_preset_load _camera_preset_load = NULL;
+    std::shared_ptr<json> preset_ptr = NULL;
     /**
      * Is app exit or not flag
      */
