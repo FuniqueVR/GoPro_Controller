@@ -110,6 +110,7 @@ if(BUILD_MASTER)
     include_directories(${IMGUI_DIR})
     include_directories(${IMGUI_DIR}/backends)
     include_directories(lib/json/include)
+    include_directories(lib/NFD/src/include)
 
     # ============================================================
     # OpenCV - Try system first, fallback to FetchContent

@@ -2,6 +2,7 @@
 #include <cstdlib>      // For std::getenv
 #include <filesystem>
 #include <stdexcept>
+#include <nfd.h>
 
 namespace fs = std::filesystem;
 
