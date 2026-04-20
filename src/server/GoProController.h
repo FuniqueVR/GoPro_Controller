@@ -60,7 +60,7 @@ public:
      * If source is null, it does not matter anyway, it just for ignore apply reason.
      * If target is null, it will the apply range to all of the clients.
      */
-    std::string setSettingAll(const std::string source, const std::string target, json value);
+    std::string setSettingAll(const std::string source, const std::string target, int32_t preset, json value);
     // Webcam part of calls
     void webcamMode(std::string target);
     void webcamUnMode(std::string target);
@@ -103,8 +103,8 @@ protected:
     SingleResponse _queryHW(std::string target);
     std::vector<SingleResponse> _setAllSetting(std::vector<std::string> targets, int32_t ID, std::string value);
     SingleResponse _setSetting(std::string target, int32_t ID, std::string value);
-    std::vector<SingleResponse> _setAllSetting(std::vector<std::string> targets, json res);
-    std::vector<SingleResponse> _setSetting(std::string target, json res);
+    std::vector<SingleResponse> _setAllSetting(std::vector<std::string> targets, int32_t preset, json res);
+    std::vector<SingleResponse> _setSetting(std::string target, int32_t preset, json res);
     std::vector<SingleResponse> _setSetting_utility(std::string target, json res, std::vector<int32_t> setting_ids);
     // Webcam part of calls
     void _webcamAllMode(std::vector<std::string> targets);

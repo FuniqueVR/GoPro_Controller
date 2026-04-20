@@ -94,12 +94,12 @@ std::string GoProController::setSetting(std::string target, int32_t ID, std::str
     return arr.dump();
 }
 
-std::string GoProController::setSettingAll(const std::string source, const std::string target, json value){
+std::string GoProController::setSettingAll(const std::string source, const std::string target, int32_t preset, json value){
     json arr = json::array();
     json res = json::object();
     std::string address;
     if(target.size() > 0){ // Apply to single target
-        std::vector<SingleResponse> results = _setSetting(target, value);
+        std::vector<SingleResponse> results = _setSetting(target, preset, value);
         for(int32_t i = 0; i < results.size(); i++){
             try{
                 address = results[i].first;
@@ -118,7 +118,7 @@ std::string GoProController::setSettingAll(const std::string source, const std::
         for(int32_t i = 0; i < camera_ips.size(); i++){
             if(camera_ips[i] != target) tt.push_back(camera_ips[i]);
         }
-        std::vector<SingleResponse> results = _setAllSetting(tt, value);
+        std::vector<SingleResponse> results = _setAllSetting(tt, preset, value);
         for(int32_t i = 0; i < results.size(); i++){
             try{
                 address = results[i].first;

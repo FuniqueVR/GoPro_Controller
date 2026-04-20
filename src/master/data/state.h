@@ -19,6 +19,7 @@ enum class InspectorObjectType {
 
 struct GlobalState {
     bool done;
+    bool applying_all;
     // Selection
     std::string websocket_server_selection;
     std::string camera_selection;

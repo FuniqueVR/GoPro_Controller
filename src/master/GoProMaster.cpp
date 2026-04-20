@@ -365,9 +365,11 @@ void GoProMaster::quickApplyAll(const std::shared_ptr<CameraInfo>& target){
     int32_t model = InspectorWindow::_get_current_model(target->hw);
     json root = json::object();
     json _set = json::object();
-    if(getSettingsFromCamera(*target, _set)){
+    json _status = json::object();
+    if(getSettingsFromCamera(*target, _set) && getStatusFromCamera(*target, _status)){
         // Execute the apply logic here
         root["model"] = model; // Added a model field for mark it's supported
+        root["preset"] = _status[std::to_string(PRESET_ID)].get<int32_t>();
         root["setting"] = _set;
         applyAll(target->ip, root);
     }
@@ -394,6 +396,10 @@ void GoProMaster::registerCameraHWFeedback(camera_hw_feedback v){
 
 void GoProMaster::registerCameraLogFeedback(camera_log_feedback v){
     _camera_log_feedback = v;
+}
+
+void GoProMaster::registerApplyAllFeedback(camera_apply_all_feedback v){
+    _camera_apply_all_feedback = v;
 }
 
 void GoProMaster::registerSavePreset(camera_preset_save v){
@@ -599,6 +605,9 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
         else if(key == "query:set"){
             
         }
+        else if(key == "query:setall"){
+            if(_camera_apply_all_feedback != NULL) _camera_apply_all_feedback();
+        }
         else if(key == "media:lastmedia"){
             if(!data["value"]["data"].is_array()){
                 std::cerr << "Invalid message from " << server << ": " << msg << std::endl;
@@ -690,7 +699,6 @@ void GoProMaster::replaceCameraFromServer(const std::string server, const std::v
                 toast.set_title("New IP Detected");
                 toast.set_content("Detected ip: %s, from server: %s", new_ip.c_str(), server.c_str());
                 ImGui::InsertNotification(toast);
-                std::cout << "YYYYYYYY" << std::endl;
             }
         }
     }

@@ -114,6 +114,9 @@ void hwGetterFeedback(std::string ip, json hw){
         global_state->current_hw_items_bind = true;
     }
 }
+void applyAllFeedback(){
+    global_state->applying_all = false;
+}
 
 void updateServerList(){
     std::cout << "updateServerList" << std::endl;
@@ -193,6 +196,7 @@ int main(int, char**)
     master->registerCameraLogFeedback(assign_log);
     master->registerSavePreset(updatePresetList);
     master->set_preset_data(presets);
+    master->registerApplyAllFeedback(applyAllFeedback);
     preview_popwin->register_setting_drawer(InspectorWindow::global_draw_setting);
     preview_popwin->register_protune_drawer(InspectorWindow::global_draw_protune);
     global_state->update_server = updateServerList;

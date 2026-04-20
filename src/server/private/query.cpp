@@ -51,30 +51,36 @@ SingleResponse GoProController::_setSetting(std::string target, int32_t ID, std:
     return _getSingleResponse(target, url);
 }
 
-std::vector<SingleResponse> GoProController::_setAllSetting(std::vector<std::string> targets, json res){
+std::vector<SingleResponse> GoProController::_setAllSetting(std::vector<std::string> targets, int32_t preset, json res){
     std::vector<SingleResponse> r = std::vector<SingleResponse>();
     std::vector<SingleResponse> a = std::vector<SingleResponse>();
     std::vector<int32_t> buffer = std::vector<int32_t>();
 
     for(auto& target : targets){
-        SETTING_UTILITY_CALL(r, a, buffer, GOPRO_VIDEO_SETTING_SIZE, GOPRO_VIDEO_SETTING_IDS);
-        SETTING_UTILITY_CALL(r, a, buffer, GOPRO_PHOTO_SETTING_SIZE, GOPRO_PHOTO_SETTING_IDS);
-        SETTING_UTILITY_CALL(r, a, buffer, GOPRO_VIDEO_PROTUNE_SETTING_SIZE, GOPRO_VIDEO_PROTUNE_SETTING_IDS);
-        SETTING_UTILITY_CALL(r, a, buffer, GOPRO_PHOTO_PROTUNE_SETTING_SIZE, GOPRO_PHOTO_PROTUNE_SETTING_IDS);
+        if(preset == 0){
+            SETTING_UTILITY_CALL(r, a, buffer, GOPRO_VIDEO_SETTING_SIZE, GOPRO_VIDEO_SETTING_IDS);
+            SETTING_UTILITY_CALL(r, a, buffer, GOPRO_VIDEO_PROTUNE_SETTING_SIZE, GOPRO_VIDEO_PROTUNE_SETTING_IDS);
+        }else{
+            SETTING_UTILITY_CALL(r, a, buffer, GOPRO_PHOTO_SETTING_SIZE, GOPRO_PHOTO_SETTING_IDS);
+            SETTING_UTILITY_CALL(r, a, buffer, GOPRO_PHOTO_PROTUNE_SETTING_SIZE, GOPRO_PHOTO_PROTUNE_SETTING_IDS);
+        }
     }
 
     return r;
 }
 
-std::vector<SingleResponse> GoProController::_setSetting(std::string target, json res){
+std::vector<SingleResponse> GoProController::_setSetting(std::string target, int32_t preset, json res){
     std::vector<SingleResponse> r = std::vector<SingleResponse>();
     std::vector<SingleResponse> a = std::vector<SingleResponse>();
     std::vector<int32_t> buffer = std::vector<int32_t>();
     
-    SETTING_UTILITY_CALL(r, a, buffer, GOPRO_VIDEO_SETTING_SIZE, GOPRO_VIDEO_SETTING_IDS);
-    SETTING_UTILITY_CALL(r, a, buffer, GOPRO_PHOTO_SETTING_SIZE, GOPRO_PHOTO_SETTING_IDS);
-    SETTING_UTILITY_CALL(r, a, buffer, GOPRO_VIDEO_PROTUNE_SETTING_SIZE, GOPRO_VIDEO_PROTUNE_SETTING_IDS);
-    SETTING_UTILITY_CALL(r, a, buffer, GOPRO_PHOTO_PROTUNE_SETTING_SIZE, GOPRO_PHOTO_PROTUNE_SETTING_IDS);
+    if(preset == 0){
+        SETTING_UTILITY_CALL(r, a, buffer, GOPRO_VIDEO_SETTING_SIZE, GOPRO_VIDEO_SETTING_IDS);
+        SETTING_UTILITY_CALL(r, a, buffer, GOPRO_VIDEO_PROTUNE_SETTING_SIZE, GOPRO_VIDEO_PROTUNE_SETTING_IDS);
+    }else{
+        SETTING_UTILITY_CALL(r, a, buffer, GOPRO_PHOTO_SETTING_SIZE, GOPRO_PHOTO_SETTING_IDS);
+        SETTING_UTILITY_CALL(r, a, buffer, GOPRO_PHOTO_PROTUNE_SETTING_SIZE, GOPRO_PHOTO_PROTUNE_SETTING_IDS);
+    }
 
     return r;
 }
@@ -103,7 +109,13 @@ std::vector<SingleResponse> GoProController::_setSetting_utility(std::string tar
         if(!setting[std::to_string(id)].is_number()) continue;
 
         int32_t value = setting[std::to_string(id)].get<int32_t>();
-        std::string suburl = url + std::to_string(value);
+
+        size_t size = GET_SETTING_SIZE_BY_ID(id);
+        const int32_t* options = GET_SETTING_VALUE_BY_ID(id);
+
+        if(value >= size) continue;
+
+        std::string suburl = url + std::to_string(options[value]);
         suburl += "&setting=";
         suburl += std::to_string(id);
         r.push_back(_getSingleResponse(target, suburl));

@@ -62,4 +62,5 @@ private:
     bool create_date_folder;
     bool put_finish;
     bool should_disabled;
+    bool applying_all_last;
 };
