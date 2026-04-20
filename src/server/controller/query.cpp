@@ -35,9 +35,9 @@ std::string GoProController::queryStatus(std::string target){
         camera_hw[address] = hw;
         arr.push_back(i);
     }else{
-        std::lock_guard<std::mutex> lock(ips_mutex);
-        std::vector<SingleResponse> results = _queryAllStatus(camera_ips);
-        std::vector<SingleResponse> hresults = _queryAllHW(camera_ips);
+        std::lock_guard<std::mutex> lock(ips_alive_mutex);
+        std::vector<SingleResponse> results = _queryAllStatus(camera_alive_ips);
+        std::vector<SingleResponse> hresults = _queryAllHW(camera_alive_ips);
         for(int32_t i = 0; i < results.size(); i++){
             try{
                 address = results[i].first;

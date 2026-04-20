@@ -230,6 +230,7 @@ if(BUILD_SERVER)
         "${CMAKE_SOURCE_DIR}/src/server/*.cpp"
     )
     link_directories(/usr/lib/aarch64-linux-gnu)
+    include_directories(lib/icmplib)
     add_executable(server
         ${SERVER_SOURCE}
         ${MDNS_SOURCES}

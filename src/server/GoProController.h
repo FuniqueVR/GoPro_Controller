@@ -40,6 +40,7 @@ class GoProController {
 public:
     GoProController();
     ~GoProController();
+    void update();
     // Camera part of calls
     /**
      * Using mdns feature to catch all gopro services and store the ip addresses
@@ -151,6 +152,8 @@ private:
     bool mdns_scaned = false;
     std::vector<std::thread> scan_workers;
     std::vector<std::string> camera_ips;
+    std::vector<std::string> camera_alive_ips;
+    std::mutex ips_alive_mutex;
     std::unordered_map<std::string, json> camera_hw;
     std::unordered_map<std::string, std::string> camera_name;
     std::mutex ips_mutex;
