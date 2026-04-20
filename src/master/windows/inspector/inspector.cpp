@@ -123,7 +123,7 @@ void InspectorWindow::render(){
 
                 ImGui::BeginDisabled(should_disabled);
                 if(ImGui::Button("Save Preset##Inspector_Bar_Item")){
-                    
+                    state->command_sender("add_preset");
                 }
                 ImGui::SameLine();
                 if(ImGui::Button("Quick Apply All##Inspector_Bar_Item")){
@@ -132,11 +132,11 @@ void InspectorWindow::render(){
                         master->quickApplyAll(c);
                     }
                 }
+                ImGui::EndDisabled();
                 ImGui::SameLine();
                 if(ImGui::Button("Preset Manager##Inspector_Bar_Item")){
-
+                    state->command_sender("preset_manager");
                 }
-                ImGui::EndDisabled();
 
                 if(ImGui::BeginTabBar("Inspector_Bar##Second")){
                     if(ImGui::BeginTabItem("System##Inspector_Bar_Item")){

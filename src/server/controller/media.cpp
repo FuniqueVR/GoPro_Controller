@@ -17,7 +17,7 @@ std::string GoProController::getMediaList(std::string target){
     if(target.size() > 0){
         json res;
         try{
-            std::pair<std::string, std::string> result = _getMediaList(target);
+            SingleResponse result = _getMediaList(target);
             address = result.first;
             res = json::parse(result.second);
         }catch(const std::exception& ex){
@@ -28,8 +28,8 @@ std::string GoProController::getMediaList(std::string target){
         i["status"] = res;
         arr.push_back(i);
     }else{
-        std::vector<std::future<std::pair<std::string, std::string>>> calls = 
-            std::vector<std::future<std::pair<std::string, std::string>>>();
+        std::vector<std::future<SingleResponse>> calls = 
+            std::vector<std::future<SingleResponse>>();
         for(std::string ip : camera_ips){
             calls.push_back(std::async(std::launch::async, [this, ip]() {
                 return _getMediaList(ip);
@@ -38,7 +38,7 @@ std::string GoProController::getMediaList(std::string target){
 
         for(auto& call : calls){
             try{
-                std::pair<std::string, std::string> result = call.get();
+                SingleResponse result = call.get();
                 address = result.first;
                 res = json::parse(result.second);
             }catch(const std::exception& ex){
@@ -59,7 +59,7 @@ std::string GoProController::getLastMedia(std::string target){
     json arr = json::array();
     if(target.size() > 0){
         try{
-            std::pair<std::string, std::string> result = _getLastMedia(target);
+            SingleResponse result = _getLastMedia(target);
             address = result.first;
             res = json::parse(result.second);
         }catch(const std::exception& ex){
@@ -71,7 +71,7 @@ std::string GoProController::getLastMedia(std::string target){
         arr.push_back(i);
     }else{
         json res;
-        std::vector<std::pair<std::string, std::string>> results = _getAllLastMedia(camera_ips);
+        std::vector<SingleResponse> results = _getAllLastMedia(camera_ips);
         for(int32_t i = 0; i < results.size(); i++){
             address = results[i].first;
             res = json::parse(results[i].second);

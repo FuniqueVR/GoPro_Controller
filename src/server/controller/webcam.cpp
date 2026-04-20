@@ -49,7 +49,7 @@ std::string GoProController::webcamStatus(std::string target){
     if(target.size() > 0){
         json res;
         try{
-            std::pair<std::string, std::string> result = _webcamStatus(target);
+            SingleResponse result = _webcamStatus(target);
             address = result.first;
             res = json::parse(result.second);
         }catch(const std::exception& ex){
@@ -60,8 +60,8 @@ std::string GoProController::webcamStatus(std::string target){
         i["status"] = res;
         arr.push_back(i);
     }else{
-        std::vector<std::future<std::pair<std::string, std::string>>> calls = 
-            std::vector<std::future<std::pair<std::string, std::string>>>();
+        std::vector<std::future<SingleResponse>> calls = 
+            std::vector<std::future<SingleResponse>>();
         for(std::string ip : camera_ips){
             calls.push_back(std::async(std::launch::async, [this, ip]() {
                 return _webcamStatus(ip);
@@ -70,7 +70,7 @@ std::string GoProController::webcamStatus(std::string target){
 
         for(auto& call : calls){
             try{
-                std::pair<std::string, std::string> result = call.get();
+                SingleResponse result = call.get();
                 address = result.first;
                 res = json::parse(result.second);
             }catch(const std::exception& ex){
@@ -92,7 +92,7 @@ std::string GoProController::webcamVersion(std::string target){
     if(target.size() > 0){
         json res;
         try{
-            std::pair<std::string, std::string> result = _webcamVersion(target);
+            SingleResponse result = _webcamVersion(target);
             address = result.first;
             res = json::parse(result.second);
         }catch(const std::exception& ex){
@@ -103,8 +103,8 @@ std::string GoProController::webcamVersion(std::string target){
         i["status"] = res;
         arr.push_back(i);
     }else{
-        std::vector<std::future<std::pair<std::string, std::string>>> calls = 
-            std::vector<std::future<std::pair<std::string, std::string>>>();
+        std::vector<std::future<SingleResponse>> calls = 
+            std::vector<std::future<SingleResponse>>();
         for(std::string ip : camera_ips){
             calls.push_back(std::async(std::launch::async, [this, ip]() {
                 return _webcamVersion(ip);
@@ -113,7 +113,7 @@ std::string GoProController::webcamVersion(std::string target){
 
         for(auto& call : calls){
             try{
-                std::pair<std::string, std::string> result = call.get();
+                SingleResponse result = call.get();
                 address = result.first;
                 res = json::parse(result.second);
             }catch(const std::exception& ex){

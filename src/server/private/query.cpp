@@ -17,23 +17,23 @@ for(int32_t i = 0; i < size; i++){ \
 a = _setSetting_utility(target, res, buffer); \
 r.insert(a.end(), a.begin(), a.end()); \
 
-std::vector<std::pair<std::string, std::string>> GoProController::_queryAllStatus(std::vector<std::string> targets){
+std::vector<SingleResponse> GoProController::_queryAllStatus(std::vector<std::string> targets){
     return _getAllResponse(targets, "/gopro/camera/state");
 }
 
-std::pair<std::string, std::string> GoProController::_queryStatus(std::string target){
+SingleResponse GoProController::_queryStatus(std::string target){
     return _getSingleResponse(target, "/gopro/camera/state");
 }
 
-std::vector<std::pair<std::string, std::string>> GoProController::_queryAllHW(std::vector<std::string> targets){
+std::vector<SingleResponse> GoProController::_queryAllHW(std::vector<std::string> targets){
     return _getAllResponse(targets, "/gopro/camera/info");
 }
 
-std::pair<std::string, std::string> GoProController::_queryHW(std::string target){
+SingleResponse GoProController::_queryHW(std::string target){
     return _getSingleResponse(target, "/gopro/camera/info");
 }
 
-std::vector<std::pair<std::string, std::string>> GoProController::_setAllSetting(std::vector<std::string> targets, int32_t ID, std::string value){
+std::vector<SingleResponse> GoProController::_setAllSetting(std::vector<std::string> targets, int32_t ID, std::string value){
     std::string url = "/gopro/camera/setting?option=";
     url += value;
     url += "&setting=";
@@ -41,7 +41,7 @@ std::vector<std::pair<std::string, std::string>> GoProController::_setAllSetting
     return _getAllResponse(targets, url);
 }
 
-std::pair<std::string, std::string> GoProController::_setSetting(std::string target, int32_t ID, std::string value){
+SingleResponse GoProController::_setSetting(std::string target, int32_t ID, std::string value){
     std::string url = "/gopro/camera/setting?option=";
     url += value;
     url += "&setting=";
@@ -49,7 +49,7 @@ std::pair<std::string, std::string> GoProController::_setSetting(std::string tar
     return _getSingleResponse(target, url);
 }
 
-std::vector<std::pair<std::string, std::string>> GoProController::_setAllSetting(std::vector<std::string> targets, json res){
+std::vector<SingleResponse> GoProController::_setAllSetting(std::vector<std::string> targets, json res){
     int32_t model;
     json setting;
     if(res["model"].is_number()){
@@ -60,9 +60,9 @@ std::vector<std::pair<std::string, std::string>> GoProController::_setAllSetting
     }
 }
 
-std::vector<std::pair<std::string, std::string>> GoProController::_setSetting(std::string target, json res){
-    std::vector<std::pair<std::string, std::string>> r = std::vector<std::pair<std::string, std::string>>();
-    std::vector<std::pair<std::string, std::string>> a = std::vector<std::pair<std::string, std::string>>();
+std::vector<SingleResponse> GoProController::_setSetting(std::string target, json res){
+    std::vector<SingleResponse> r = std::vector<SingleResponse>();
+    std::vector<SingleResponse> a = std::vector<SingleResponse>();
     std::vector<int32_t> buffer = std::vector<int32_t>();
 
     SETTING_UTILITY_CALL(r, a, buffer, GOPRO_VIDEO_SETTING_SIZE, GOPRO_VIDEO_SETTING_IDS);
@@ -73,12 +73,18 @@ std::vector<std::pair<std::string, std::string>> GoProController::_setSetting(st
     return r;
 }
 
-std::vector<std::pair<std::string, std::string>> GoProController::_setSetting_utility(std::string target, json res, std::vector<int32_t> setting_ids){
-    std::vector<std::pair<std::string, std::string>> r = std::vector<std::pair<std::string, std::string>>();
+std::vector<SingleResponse> GoProController::_setSetting_utility(std::string target, json res, std::vector<int32_t> setting_ids){
+    std::vector<SingleResponse> r = std::vector<SingleResponse>();
     std::string url = "/gopro/camera/setting?option=";
 
     int32_t model;
+    int32_t target_model;
     json setting;
+    json target_hw;
+    if(camera_hw.count(target)){
+        target_hw = camera_hw.at(target);
+        target_model = _get_current_model(target_hw);
+    }
     if(res["model"].is_number()){
         model = res["model"].get<int32_t>();
     }
@@ -98,4 +104,18 @@ std::vector<std::pair<std::string, std::string>> GoProController::_setSetting_ut
     }
 
     return r;
+}
+
+int32_t GoProController::_get_current_model(json hwinfo){
+    if(hwinfo["model_name"].is_string()){
+        std::string model_name = hwinfo["model_name"].get<std::string>();
+        if(model_name == "MAX 2") return MODEL_MAX2;
+        else if(model_name == "HERO13 Black") return MODEL_13;
+        else if(model_name == "HERO12 Black") return MODEL_12;
+        else if(model_name == "HERO11 Black") return MODEL_11_BLACK;
+        else if(model_name == "HERO11 Black Mini") return MODEL_11;
+        else if(model_name == "HERO10 Black") return MODEL_10;
+        else if(model_name == "HERO9 Black") return MODEL_9;
+    }
+    return 0;
 }

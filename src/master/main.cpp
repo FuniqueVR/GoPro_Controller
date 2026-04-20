@@ -43,7 +43,9 @@ std::shared_ptr<AddCameraPopup> add_camera_popwin;
 std::shared_ptr<ScanCameraPopup> scan_camera_popwin;
 std::shared_ptr<StartWebcamPopup> start_webcam_popwin;
 std::shared_ptr<PreviewPopup> preview_popwin;
-std::shared_ptr<BasePopWindow> pop_windows_array[4];
+std::shared_ptr<AddPresetPopup> add_preset_popwin;
+std::shared_ptr<PresetManagerPopup> preset_manager_popwin;
+std::shared_ptr<BasePopWindow> pop_windows_array[6];
 
 // All the window flags
 ExecutionType execution_type = ExecutionType::SetAll;
@@ -71,6 +73,14 @@ void background_worker(){
             else if(cmd == "preview_start"){
                 preview_popwin->trigger(true);
                 std::cout << "Detect preview popup" << std::endl;
+            }
+            else if(cmd == "add_preset"){
+                add_preset_popwin->trigger(true);
+                std::cout << "Detect add_preset popup" << std::endl;
+            }
+            else if(cmd == "preset_manager"){
+                preset_manager_popwin->trigger(true);
+                std::cout << "Detect preset_manager popup" << std::endl;
             }
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -174,6 +184,8 @@ int main(int, char**)
     WIN_INIT(scan_camera_popwin, ScanCameraPopup, pop_windows_array, 1);
     WIN_INIT(start_webcam_popwin, StartWebcamPopup, pop_windows_array, 2);
     WIN_INIT2(preview_popwin, PreviewPopup, renderer, pop_windows_array, 3);
+    WIN_INIT(add_preset_popwin, AddPresetPopup, pop_windows_array, 4);
+    WIN_INIT(preset_manager_popwin, PresetManagerPopup, pop_windows_array, 5);
     // Register event for master
     master->registerCameraSettingFeedback(settingGetterFeedback);
     master->registerCameraStatusFeedback(statusGetterFeedback);
