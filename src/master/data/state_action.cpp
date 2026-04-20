@@ -43,11 +43,16 @@ void init_state_setup(
             windows[2]->set_window_data(inspector_win_json);
         }
         json style_setting_win_win_json = (*servers)["window"]["style_setting_win"];
-        if(style_setting_win_win_json.is_object()){
-            windows[3]->set_window_data(style_setting_win_win_json);
-        }else{
+        if(style_setting_win_win_json["colors"].is_null() || style_setting_win_win_json["fields"].is_null()){
+            std::cout << "Apply default theme" << std::endl;
             setup_catppuccin_mocha_theme();
+        }else{
+            std::cout << "Apply loaded theme" << std::endl;
+            windows[3]->set_window_data(style_setting_win_win_json);
         }
+    }else{
+        std::cout << "Apply default theme" << std::endl;
+        setup_catppuccin_mocha_theme();
     }
     if((*servers)["popwin"].is_object()){
         json preview_popwin_json = (*servers)["popwin"]["preview_popwin"];
