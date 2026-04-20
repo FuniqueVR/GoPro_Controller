@@ -97,18 +97,19 @@ std::string GoProController::setSettingAll(const std::string source, const std::
     json res = json::object();
     std::string address;
     if(target.size() > 0){ // Apply to single target
-        try{
-            std::pair<std::string, std::string> result = _setSetting(target, value);
-            address = result.first;
-            res = json::parse(result.second);
-        }catch(const std::exception& ex){
-            std::cerr << "setSetting failed: "  << ex.what() << std::endl;
-            res = json::object();
+        std::vector<std::pair<std::string, std::string>> results = _setSetting(target, value);
+        for(int32_t i = 0; i < results.size(); i++){
+            try{
+                address = results[i].first;
+                res = json::parse(results[i].second);
+            }catch(const std::exception& ex){
+                res = json::object();
+            }
+            json j;
+            j["ip"] = address;
+            j["status"] = res;
+            arr.push_back(j);
         }
-        json i;
-        i["ip"] = target;
-        i["status"] = res;
-        arr.push_back(i);
     }else{ // Apply to all
         std::lock_guard<std::mutex> lock(ips_mutex);
         std::vector<std::pair<std::string, std::string>> results = _setAllSetting(camera_ips, value);

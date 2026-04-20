@@ -174,7 +174,7 @@ void QueryAction(const WebSocketChannelPtr& channel, json j){
         channel->send(getPacket("query:set", r));
     }
     else if(name == "setall"){
-        r["data"] = json::parse(controller.setSettingAll(target, jvalue));
+        r["data"] = json::parse(controller.setSettingAll(source, target, jvalue));
         channel->send(getPacket("query:setall", r));
     }
     else{

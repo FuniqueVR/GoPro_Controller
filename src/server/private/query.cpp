@@ -7,6 +7,15 @@
 #include "../GoProController.h"
 #include <vector>
 #include <string>
+#include "../../common/camera_code.h"
+
+#define SETTING_UTILITY_CALL(r,a,buffer,size,field) \
+buffer = std::vector<int32_t>(size); \
+for(int32_t i = 0; i < size; i++){ \
+    buffer[i] = field[i]; \
+} \
+a = _setSetting_utility(target, res, buffer); \
+r.insert(a.end(), a.begin(), a.end()); \
 
 std::vector<std::pair<std::string, std::string>> GoProController::_queryAllStatus(std::vector<std::string> targets){
     return _getAllResponse(targets, "/gopro/camera/state");
@@ -53,19 +62,18 @@ std::vector<std::pair<std::string, std::string>> GoProController::_setAllSetting
 
 std::vector<std::pair<std::string, std::string>> GoProController::_setSetting(std::string target, json res){
     std::vector<std::pair<std::string, std::string>> r = std::vector<std::pair<std::string, std::string>>();
-    auto a = _setSetting_utility(target, res, GOPRO_VIDEO_SETTING_IDS);
-    r.insert(a.end(), a.begin(), a.end());
-    auto a = _setSetting_utility(target, res, GOPRO_PHOTO_SETTING_IDS);
-    r.insert(a.end(), a.begin(), a.end());
-    auto a = _setSetting_utility(target, res, GOPRO_VIDEO_PROTUNE_SETTING_IDS);
-    r.insert(a.end(), a.begin(), a.end());
-    auto a = _setSetting_utility(target, res, GOPRO_PHOTO_PROTUNE_SETTING_IDS);
-    r.insert(a.end(), a.begin(), a.end());
+    std::vector<std::pair<std::string, std::string>> a = std::vector<std::pair<std::string, std::string>>();
+    std::vector<int32_t> buffer = std::vector<int32_t>();
+
+    SETTING_UTILITY_CALL(r, a, buffer, GOPRO_VIDEO_SETTING_SIZE, GOPRO_VIDEO_SETTING_IDS);
+    SETTING_UTILITY_CALL(r, a, buffer, GOPRO_PHOTO_SETTING_SIZE, GOPRO_PHOTO_SETTING_IDS);
+    SETTING_UTILITY_CALL(r, a, buffer, GOPRO_VIDEO_PROTUNE_SETTING_SIZE, GOPRO_VIDEO_PROTUNE_SETTING_IDS);
+    SETTING_UTILITY_CALL(r, a, buffer, GOPRO_PHOTO_PROTUNE_SETTING_SIZE, GOPRO_PHOTO_PROTUNE_SETTING_IDS);
 
     return r;
 }
 
-std::vector<std::pair<std::string, std::string>> _setSetting_utility(std::string target, json res, std::vector<int32_t> setting_ids){
+std::vector<std::pair<std::string, std::string>> GoProController::_setSetting_utility(std::string target, json res, std::vector<int32_t> setting_ids){
     std::vector<std::pair<std::string, std::string>> r = std::vector<std::pair<std::string, std::string>>();
     std::string url = "/gopro/camera/setting?option=";
 
@@ -83,7 +91,7 @@ std::vector<std::pair<std::string, std::string>> _setSetting_utility(std::string
         if(!res[std::to_string(id)].is_number()) continue;
 
         int32_t value = res[std::to_string(id)].get<int32_t>();
-        const suburl = url + std::to_string(value);
+        std::string suburl = url + std::to_string(value);
         suburl += "&setting=";
         suburl += std::to_string(id);
         r.push_back(_getSingleResponse(target, suburl));
