@@ -335,7 +335,7 @@ void CameraListWindow::draw_group_state(const std::shared_ptr<CameraInfo>& c){
     
     ImGui::PopID();
     ImGui::Dummy(rect_size);
-    bool is_select = state->current_camera_item == c->ip;
+    bool is_select = state->current_camera_item == c->ip && state->current_camera_server == c->server;
     if(ImGui::IsItemHovered()){
         std::string displayText = "";
         displayText += "name: ";

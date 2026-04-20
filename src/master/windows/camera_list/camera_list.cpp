@@ -142,7 +142,7 @@ void CameraListWindow::render(){
 }
 
 void CameraListWindow::draw_line(const std::shared_ptr<CameraInfo>& c){
-    bool selected = c->ip == state->current_camera_item;
+    bool selected = c->ip == state->current_camera_item && c->server == state->current_camera_server;
     std::string plusStatus = master->getBarInfo(c);
     std::string plusID = plusStatus + "##CameraList_" + c->ip;
     if(ImGui::Selectable(plusID.c_str(), selected)){
@@ -202,8 +202,9 @@ void CameraListWindow::item_event(const std::shared_ptr<CameraInfo>& c){
 void CameraListWindow::onClick(const std::shared_ptr<CameraInfo>& c){
     state->current_setting_items_bind = false;
     state->current_camera_item = c->ip;
+    state->current_camera_server = c->server;
     state->current_camera_name = c->name;
-    std::cout << "Select camera: " << c->ip << std::endl;
+    std::cout << "Select camera: " << c->server << "  " << c->ip << std::endl;
     master->query_only(c->server, "get", c->ip);
     //current_setting_items_bind = master.getSettingsFromCamera(*c, current_setting_items);
 }
