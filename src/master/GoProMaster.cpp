@@ -5,10 +5,10 @@
  * See the LICENSE file in the project root for more information.
 */
 #include "GoProMaster.h"
-#include "imgui.h"
-#include "src/imgui_notify.h"
 #include <iostream>
 #include <filesystem>
+#include "windows/inspector.h"
+#include "src/imgui_notify.h"
 
 namespace fs = std::filesystem;
 
@@ -329,7 +329,7 @@ int32_t GoProMaster::haslocate(const std::string server, const std::string targe
     return -1;
 }
 
-void GoProMaster::apply(const std::string& ip, const int32_t id, const int32_t value){
+void GoProMaster::apply(const std::string& ip, const std::string& target, const int32_t id, const int32_t value){
     std::thread([=](){    
         for (auto& s : servers) {
             if (!s->connected) continue;
@@ -337,7 +337,8 @@ void GoProMaster::apply(const std::string& ip, const int32_t id, const int32_t v
             get_status["key"] = "query";
             get_status["value"] = json::object();
             get_status["value"]["name"] = "set";
-            get_status["value"]["target"] = ip;
+            get_status["value"]["source"] = ip;
+            get_status["value"]["target"] = target;
             get_status["value"]["id"] = id;
             get_status["value"]["value"] =  std::to_string(value);
             s->client.send(get_status.dump());
@@ -352,6 +353,7 @@ void GoProMaster::applyAll(const std::string& ip, const json& res){
             json get_status = json::object();
             get_status["key"] = "query";
             get_status["value"] = json::object();
+            get_status["value"]["source"] = ip;
             get_status["value"]["name"] = "setall";
             get_status["value"]["value"] = res;
             s->client.send(get_status.dump());
@@ -360,7 +362,13 @@ void GoProMaster::applyAll(const std::string& ip, const json& res){
 }
 
 void GoProMaster::quickApplyAll(const std::shared_ptr<CameraInfo>& target){
-
+    int32_t model = InspectorWindow::_get_current_model(target->hw);
+    json _set = json::object();
+    if(getSettingsFromCamera(*target, _set)){
+        // Execute the apply logic here
+        _set["model"] = model; // Added a model field for mark it's supported
+        applyAll(target->ip, _set);
+    }
 }
 
 bool GoProMaster::directoryExists(const std::string& path) {

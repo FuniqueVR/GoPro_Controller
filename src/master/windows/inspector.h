@@ -37,12 +37,12 @@ public:
 
     void reset_setting_order();
     void reset_status_order();
+    static int32_t _get_current_model(json hwinfo);
 protected:
     virtual void _draw_setting(std::vector<int32_t>& ordered);
     virtual void _draw_status(std::vector<int32_t>& ordered);
     static void _global_draw_setting(std::shared_ptr<GlobalState>& state, std::shared_ptr<GoProMaster>& master, const std::shared_ptr<CameraInfo>& c, std::vector<int32_t>& ordered);
     static bool _global_draw_setting_item(int32_t i, std::shared_ptr<GlobalState>& state, std::shared_ptr<GoProMaster>& master, const std::shared_ptr<CameraInfo>& c, std::vector<int32_t>& ordered);
-    static int32_t _get_current_model(json hwinfo);
     static bool conditional_filter(const std::shared_ptr<GlobalState>& state, int32_t mymodel, int32_t setting_id);
     static bool conditional_filter_option(const std::shared_ptr<GlobalState>& state, int32_t mymodel, int32_t setting_id, int32_t value_index);
 

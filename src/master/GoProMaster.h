@@ -92,7 +92,7 @@ public:
     void presetSwitch(const std::string server, const std::string target, int32_t mode);
     void locate(const std::string server, const std::string target);
     int32_t haslocate(const std::string server, const std::string target);
-    void apply(const std::string& ip, const int32_t id, const int32_t value);
+    void apply(const std::string& ip, const std::string& target, const int32_t id, const int32_t value);
     void applyAll(const std::string& ip, const json& res);
     void quickApplyAll(const std::shared_ptr<CameraInfo>& target);
 

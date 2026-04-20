@@ -162,7 +162,7 @@ bool InspectorWindow::_global_draw_setting_item(int32_t i, std::shared_ptr<Globa
             if (ImGui::Selectable(option.c_str(), is_selected))
             {
                 setting[std::to_string(id)] = n; // Change index
-                master->apply(c->ip, id, values_id[n]);
+                master->apply("", c->ip, id, values_id[n]);
             }
             if (is_selected)
                 ImGui::SetItemDefaultFocus();   // You may set the initial focus when opening the combo (scrolling + for keyboard navigation support)
