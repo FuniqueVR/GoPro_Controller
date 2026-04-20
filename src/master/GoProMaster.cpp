@@ -44,6 +44,12 @@ std::string GoProMaster::addServer(const std::string& ip) {
     conn->client.onopen = [conn, this]() {
         std::cout << "Connected to server: " << conn->ip << std::endl;
         conn->connected = true;
+        {
+            ImGuiToast toast(ImGuiToastType_Success, 3000);
+            toast.set_title("Server Connected");
+            toast.set_content("Server ip: %s", conn->ip.c_str());
+            ImGui::InsertNotification(toast);
+        }
     };
     conn->client.onmessage = [conn, this](const std::string& msg) {
         std::thread([=]() {
@@ -59,6 +65,12 @@ std::string GoProMaster::addServer(const std::string& ip) {
             stateQueryFinish.insert_or_assign(conn->ip, false);
             ipQueryFinish.insert_or_assign(conn->ip, false);
             mediaQueryFinish.insert_or_assign(conn->ip, false);
+            {
+                ImGuiToast toast(ImGuiToastType_Warning, 3000);
+                toast.set_title("Server Disconnected");
+                toast.set_content("Server ip: %s", conn->ip.c_str());
+                ImGui::InsertNotification(toast);
+            }
         }
     };
 
@@ -570,6 +582,12 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
                     _cam = *cam;
                     cameras.push_back(cam);
                     std::cout << "Added camera state " << ip_ref << std::endl;
+                    {
+                        ImGuiToast toast(ImGuiToastType_Success, 3000);
+                        toast.set_title("Camera Connected");
+                        toast.set_content("Camera ip: %s", ip_ref.c_str());
+                        ImGui::InsertNotification(toast);
+                    }
                 }else{
                     auto cam = cameras[found];
                     cam->state = ip.value()["status"];
