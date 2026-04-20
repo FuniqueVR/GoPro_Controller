@@ -1,4 +1,5 @@
 #include "../preview_popwin.h"
+#include "src/imgui_notify.h"
 
 void PreviewPopup::render(){
     cv::Mat frame = get_latest_frame();
@@ -109,5 +110,18 @@ void PreviewPopup::render(){
             _draw_bottom_button();
         }
         ImGui::EndPopup();
+
+        if(state->applying_all != applying_all_last){
+            applying_all_last = state->applying_all;
+            if(state->applying_all){
+                ImGuiToast toast(ImGuiToastType_Success, 3000);
+                toast.set_title("Trying to applying...");
+                ImGui::InsertNotification(toast);
+            }else{
+                ImGuiToast toast(ImGuiToastType_Success, 3000);
+                toast.set_title("Applying Finish");
+                ImGui::InsertNotification(toast);
+            }
+        }
     }
 }

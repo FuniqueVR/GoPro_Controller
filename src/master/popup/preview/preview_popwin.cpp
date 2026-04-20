@@ -167,6 +167,7 @@ void PreviewPopup::_draw_setting(){
         if(s != -1){
             const std::shared_ptr<CameraInfo>& c = master->getCameras().at(s);
             if(ImGui::Button("Quick Apply All##Preview_Popwin_Action")){
+                state->applying_all = true;
                 master->quickApplyAll(c);
             }
             if(ImGui::BeginTabBar("TabBar##Preview_Popwin")){
