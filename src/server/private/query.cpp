@@ -119,7 +119,7 @@ std::vector<SingleResponse> GoProController::_setSetting_utility(std::string tar
         suburl += "&setting=";
         suburl += std::to_string(id);
         r.push_back(_getSingleResponse(target, suburl));
-        std::this_thread::sleep_for(std::chrono::milliseconds(350));
+        //std::this_thread::sleep_for(std::chrono::milliseconds(350));
     }
 
     return r;
