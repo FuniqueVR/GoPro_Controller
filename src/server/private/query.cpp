@@ -7,6 +7,8 @@
 #include "../GoProController.h"
 #include <vector>
 #include <string>
+#include <thread>
+#include <chrono>
 #include "../../common/camera_code.h"
 
 #define SETTING_UTILITY_CALL(r,a,buffer,size,field) \
@@ -68,7 +70,7 @@ std::vector<SingleResponse> GoProController::_setSetting(std::string target, jso
     std::vector<SingleResponse> r = std::vector<SingleResponse>();
     std::vector<SingleResponse> a = std::vector<SingleResponse>();
     std::vector<int32_t> buffer = std::vector<int32_t>();
-
+    
     SETTING_UTILITY_CALL(r, a, buffer, GOPRO_VIDEO_SETTING_SIZE, GOPRO_VIDEO_SETTING_IDS);
     SETTING_UTILITY_CALL(r, a, buffer, GOPRO_PHOTO_SETTING_SIZE, GOPRO_PHOTO_SETTING_IDS);
     SETTING_UTILITY_CALL(r, a, buffer, GOPRO_VIDEO_PROTUNE_SETTING_SIZE, GOPRO_VIDEO_PROTUNE_SETTING_IDS);
@@ -105,6 +107,7 @@ std::vector<SingleResponse> GoProController::_setSetting_utility(std::string tar
         suburl += "&setting=";
         suburl += std::to_string(id);
         r.push_back(_getSingleResponse(target, suburl));
+        std::this_thread::sleep_for(std::chrono::milliseconds(350));
     }
 
     return r;
