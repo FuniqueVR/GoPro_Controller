@@ -16,6 +16,7 @@
 #include "windows/wins.h"
 #include "popup/popwins.h"
 #include "imgui_helper.h"
+#include "src/imgui_notify.h"
 
 #define WIN_INIT(a, b, c, d) \
 a = std::make_shared<b>(gui, global_state, master); \
@@ -340,6 +341,15 @@ int main(int, char**)
                 w->render();
             }
         }
+
+        // Render toasts on top of everything, at the end of your code!
+        // You should push style vars here
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 5.f);
+        ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(43.f / 255.f, 43.f / 255.f, 43.f / 255.f, 100.f / 255.f));
+        ImGui::RenderNotifications();
+        ImGui::PopStyleVar(1); // Don't forget to Pop()
+        ImGui::PopStyleColor(1);
+
         // Rendering
         ImGui::Render();
         end_loop(window, io);

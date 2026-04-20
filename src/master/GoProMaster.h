@@ -167,7 +167,6 @@ private:
     camera_hw_feedback _camera_hw_feedback = NULL;
     camera_log_feedback _camera_log_feedback = NULL;
     camera_preset_save _camera_preset_save = NULL;
-    camera_preset_load _camera_preset_load = NULL;
     std::shared_ptr<json> preset_ptr = NULL;
     /**
      * Is app exit or not flag

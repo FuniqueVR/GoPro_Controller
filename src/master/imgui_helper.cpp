@@ -49,6 +49,9 @@
 #include "imgui_impl_opengl3.h"
 #include "windows/base_window.h"
 
+#include "src/imgui_notify.h"
+#include "tahoma.h"
+
 namespace fs = std::filesystem;
 
 /**
@@ -74,6 +77,15 @@ void setup_imgui(){
 
     if(fs::exists("SourceHanSansTC-Medium.otf")) io.Fonts->AddFontFromFileTTF("SourceHanSansTC-Medium.otf", 0.0f, NULL, io.Fonts->GetGlyphRangesDefault());
     else io.Fonts->AddFontFromFileTTF("/usr/share/fonts/truetype/SourceHanSansTC-Medium.otf", 0.0f, NULL, io.Fonts->GetGlyphRangesDefault());
+
+    {
+        ImFontConfig font_cfg;
+        font_cfg.FontDataOwnedByAtlas = false;
+        io.Fonts->AddFontFromMemoryTTF((void*)tahoma, sizeof(tahoma), 17.f, &font_cfg);
+
+        // Initialize notify
+        ImGui::MergeIconsWithLatestFont(16.f, false);
+    }
 #endif
     
     io.FontGlobalScale = 1.0f;

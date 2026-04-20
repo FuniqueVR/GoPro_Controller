@@ -5,6 +5,8 @@
  * See the LICENSE file in the project root for more information.
 */
 #include "GoProMaster.h"
+#include "imgui.h"
+#include "src/imgui_notify.h"
 #include <iostream>
 #include <filesystem>
 
@@ -673,6 +675,13 @@ void GoProMaster::replaceCameraFromServer(const std::string server, const std::v
             new_cam->server = server;
             new_cam->ip = new_ip;
             cameras.push_back(new_cam);
+            {
+                ImGuiToast toast(ImGuiToastType_Success, 3000);
+                toast.set_title("New IP Detected");
+                toast.set_content("Detected ip: %s, from server: %s", new_ip.c_str(), server.c_str());
+                ImGui::InsertNotification(toast);
+                std::cout << "YYYYYYYY" << std::endl;
+            }
         }
     }
 }
