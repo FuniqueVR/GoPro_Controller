@@ -117,9 +117,16 @@ void InspectorWindow::render(){
                 ImGui::EndTabItem();
             }
             if(ImGui::BeginTabItem("Setting##Inspector_Bar_Item")){
-                if(ImGui::Button("Reset Setting Order")){
+                if(ImGui::Button("Reset Setting Order##Inspector_Bar_Item")){
                     reset_setting_order();
                     state->update_server();
+                }
+                if(ImGui::Button("Save Preset##Inspector_Bar_Item")){
+                    
+                }
+                ImGui::SameLine();
+                if(ImGui::Button("Preset Manager##Inspector_Bar_Item")){
+
                 }
                 if(ImGui::BeginTabBar("Inspector_Bar##Second")){
                     if(ImGui::BeginTabItem("System##Inspector_Bar_Item")){
@@ -130,7 +137,7 @@ void InspectorWindow::render(){
                     }
                     if(ImGui::BeginTabItem("Setting##Inspector_Bar_Item")){
                         if(ImGui::Button("Quick Apply All##Inspector_Bar_Item_Apply_All")){
-                            
+
                         }
                         ImGui::BeginDisabled(should_disabled);
                         draw_setting();
