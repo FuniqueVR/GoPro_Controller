@@ -64,6 +64,7 @@ void GoProController::_updateRecord(){
 
 SingleResponse GoProController::_getSingleResponse(std::string target, std::string suffix){
     std::string url = GetRemoteURLByIP(target) + suffix;
+    std::cout << "CURL: " << url << std::endl;
     return SingleResponse(target, exec(url));
 }
 
