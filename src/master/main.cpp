@@ -200,6 +200,7 @@ int main(int, char**)
     preview_popwin->register_setting_drawer(InspectorWindow::global_draw_setting);
     preview_popwin->register_protune_drawer(InspectorWindow::global_draw_protune);
     global_state->update_server = updateServerList;
+    global_state->update_preset = updatePresetList;
     global_state->command_sender = pushCommand;
     std::thread bg_thread(background_worker);
 
@@ -244,6 +245,8 @@ int main(int, char**)
                     master->presetSwitch("", "", 0);
                     printf("Hotkey F5: Video Mode\n");
                 }
+                bool textinput_current = io.WantTextInput;
+
                 if (event.key.key == SDLK_F11) {
                     uint32_t flag = SDL_GetWindowFlags(window);
                     if ((flag & SDL_WINDOW_FULLSCREEN) == SDL_WINDOW_FULLSCREEN) {
@@ -254,36 +257,38 @@ int main(int, char**)
                         printf("Window in windowed mode\n");
                     }
                 }
-                if (event.key.key == SDLK_Q) {
-                    if(event.key.mod & SDL_KMOD_LSHIFT){
-                        focus = 0;
-                    }else{
-                        websocket_win->trigger(!websocket_win->is_enable());
-                        updateGUIList();
+                if(!textinput_current){
+                    if (event.key.key == SDLK_Q) {
+                        if(event.key.mod & SDL_KMOD_LSHIFT){
+                            focus = 0;
+                        }else{
+                            websocket_win->trigger(!websocket_win->is_enable());
+                            updateGUIList();
+                        }
                     }
-                }
-                if (event.key.key == SDLK_W) {
-                    if(event.key.mod & SDL_KMOD_LSHIFT){
-                        focus = 1;
-                    }else{
-                        camera_list_win->trigger(!camera_list_win->is_enable());
-                        updateGUIList();
+                    if (event.key.key == SDLK_W) {
+                        if(event.key.mod & SDL_KMOD_LSHIFT){
+                            focus = 1;
+                        }else{
+                            camera_list_win->trigger(!camera_list_win->is_enable());
+                            updateGUIList();
+                        }
                     }
-                }
-                if (event.key.key == SDLK_E) {
-                    if(event.key.mod & SDL_KMOD_LSHIFT){
-                        focus = 2;
-                    }else{
-                        inspector_win->trigger(!inspector_win->is_enable());
-                        updateGUIList();
+                    if (event.key.key == SDLK_E) {
+                        if(event.key.mod & SDL_KMOD_LSHIFT){
+                            focus = 2;
+                        }else{
+                            inspector_win->trigger(!inspector_win->is_enable());
+                            updateGUIList();
+                        }
                     }
-                }
-                if (event.key.key == SDLK_R) {
-                    if(event.key.mod & SDL_KMOD_LSHIFT){
-                        focus = 3;
-                    }else{
-                        style_setting_win->trigger(!style_setting_win->is_enable());
-                        updateGUIList();
+                    if (event.key.key == SDLK_R) {
+                        if(event.key.mod & SDL_KMOD_LSHIFT){
+                            focus = 3;
+                        }else{
+                            style_setting_win->trigger(!style_setting_win->is_enable());
+                            updateGUIList();
+                        }
                     }
                 }
             }

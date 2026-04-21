@@ -46,6 +46,7 @@ struct GlobalState {
     // Caller
     CommandSenderFunc command_sender = NULL; 
     ActionFunc update_server = NULL;
+    ActionFunc update_preset = NULL;
     // Inspector
     InspectorObjectType iot = InspectorObjectType::Camera;
 

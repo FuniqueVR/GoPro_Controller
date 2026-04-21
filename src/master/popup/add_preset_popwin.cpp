@@ -55,6 +55,8 @@ void AddPresetPopup::save_preset(){
         toast.set_title("Preset Save Success");
         toast.set_content("Preset name: %s", preset_name.c_str());
         ImGui::InsertNotification(toast);
+        state->update_preset();
+        trigger(false);
     }else if(result == 2){
         ImGuiToast toast(ImGuiToastType_Error, 3000);
         toast.set_title("Preset Save Failed");
