@@ -23,6 +23,7 @@ void PresetManagerPopup::trigger(bool value){
 
 void PresetManagerPopup::render(){
     ImGuiIO& io = ImGui::GetIO();
+    ImGuiStyle& style = ImGui::GetStyle();
     ImVec2 display_size = io.DisplaySize;
     ImVec2 unit = ImVec2(display_size.x / 12.0f, display_size.y / 12.0f);
     float unit_width;
@@ -31,32 +32,32 @@ void PresetManagerPopup::render(){
     ImGui::SetNextWindowPos(ImVec2(unit.x * 0.5F, unit.y * 0.5F), wp_cond);
     ImGui::SetNextWindowSize(ImVec2(unit.x * 11.0F, unit.y * 11.0F), wp_cond);
     
-    unit_width = (unit.x * 11.0F) / 4.0F;
+    unit_width = (unit.x * 11.0F) / 4.0F - style.ItemSpacing.x;
     unit_height = unit.y * 9.5F;
 
     if(ImGui::BeginPopupModal(title.c_str(), NULL, wp_flag)){
 
         {
-            ImGui::BeginChild("Camera Keep##Preset_Manager", ImVec2(unit_width, unit_height));
+            ImGui::BeginChild("Camera Keep##Preset_Manager", ImVec2(unit_width - 50.0F, unit_height));
             draw_camera_keep();
             ImGui::EndChild();
         }
         ImGui::SameLine();
         {
 
-            ImGui::BeginChild("Camera Select##Preset_Manager", ImVec2(unit_width, unit_height));
+            ImGui::BeginChild("Camera Select##Preset_Manager", ImVec2(unit_width - 50.0F, unit_height));
             draw_camera_select();
             ImGui::EndChild();
         }
         ImGui::SameLine();
         {
-            ImGui::BeginChild("Preset List##Preset_Manager", ImVec2(unit_width, unit_height));
+            ImGui::BeginChild("Preset List##Preset_Manager", ImVec2(unit_width - 50.0F, unit_height));
             draw_preset_list();
             ImGui::EndChild();
         }
         ImGui::SameLine();
         {
-            ImGui::BeginChild("Preset Detail##Preset_Manager", ImVec2(unit_width, unit_height));
+            ImGui::BeginChild("Preset Detail##Preset_Manager", ImVec2(unit_width + 150.0F, unit_height));
             draw_preset_detail();
             ImGui::EndChild();
         }
@@ -118,6 +119,13 @@ void PresetManagerPopup::draw_camera_select(){
 void PresetManagerPopup::draw_preset_list(){
     ImGui::Text("%s", "Presets: ");
     ImGui::Separator();
+    ImGui::BeginDisabled(preset_select.size() == 0);
+    if(ImGui::Button("Delete##Preset_Manager_Item_Action")){
+        master->remove_preset(preset_select);
+        state->update_preset();
+        preset_select = "";
+    }
+    ImGui::EndDisabled();
     for(std::string& n : master->get_preset_names()){
         if(ImGui::Selectable((n + "##Preset_Manager_Item").c_str(), n == preset_select)){
             if(n == preset_select){
