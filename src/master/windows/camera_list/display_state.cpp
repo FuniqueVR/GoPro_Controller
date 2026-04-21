@@ -157,9 +157,12 @@ void CameraListWindow::draw_group_state(const std::shared_ptr<CameraInfo>& c){
     // Center text
     {
         std::string shutter_speed;
+        std::string ev_setting;
         std::string camera_title = c->name;
         std::string iso_setting;
         std::string white_balance_setting;
+        std::string sharpness_setting;
+        std::string color_setting;
         float spacing = 0.75F;
 
         ImVec2 camera_title_size = ImGui::CalcTextSize(camera_title.c_str());
@@ -184,10 +187,18 @@ void CameraListWindow::draw_group_state(const std::shared_ptr<CameraInfo>& c){
                 ISO_MAX_ID = ISO_MAX_VIDEO_ID;
             }
 
+            if(setting[std::to_string(EXPOSURE_ID)].is_number_integer()){
+                int32_t re = setting[std::to_string(EXPOSURE_ID)].get<int32_t>();
+                ev_setting = EXPOSURE_STRING[re];
+            }
             if(setting[std::to_string(SHUTTER_SPEED_ID)].is_number_integer()){
                 int32_t re = setting[std::to_string(SHUTTER_SPEED_ID)].get<int32_t>();
                 shutter_speed = SHUTTER_SPEED_VIDEO_STRING[re];
-                shutter_speed = "S: " + shutter_speed;
+                if(shutter_speed == "Auto"){
+                    shutter_speed = "S: " + shutter_speed;
+                }else{
+                    shutter_speed = "S: " + shutter_speed + ", " + ev_setting;
+                }
             }
             if(setting[std::to_string(ISO_MIN_ID)].is_number() && setting[std::to_string(ISO_MAX_ID)].is_number()){
                 int32_t iso_min = setting[std::to_string(ISO_MIN_ID)].get<int32_t>();
@@ -203,9 +214,18 @@ void CameraListWindow::draw_group_state(const std::shared_ptr<CameraInfo>& c){
                 }
                 iso_setting = "I: " + iso_min_text + " " + iso_max_text;
             }
+            if(setting[std::to_string(SHARPNESS_ID)].is_number()){
+                int32_t sharpness_bal = setting[std::to_string(SHARPNESS_ID)].get<int32_t>();
+                sharpness_setting = SHARPNESS_STRING[sharpness_bal];
+            }
+            if(setting[std::to_string(COLOR_ID)].is_number()){
+                int32_t color_bal = setting[std::to_string(COLOR_ID)].get<int32_t>();
+                color_setting = COLOR_STRING[color_bal];
+            }
             if(setting[std::to_string(WHITE_BALANCE_ID)].is_number()){
                 int32_t white_bal = setting[std::to_string(WHITE_BALANCE_ID)].get<int32_t>();
                 white_balance_setting = WHITE_BALANCE_STRING[white_bal];
+                white_balance_setting += ", " + sharpness_setting + ", " + color_setting;
             }
 
             ImVec2 shutter_speed_size = ImGui::CalcTextSize(shutter_speed.c_str());
