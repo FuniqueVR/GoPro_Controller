@@ -195,9 +195,9 @@ void CameraListWindow::draw_group_state(const std::shared_ptr<CameraInfo>& c){
                 int32_t re = setting[std::to_string(SHUTTER_SPEED_ID)].get<int32_t>();
                 shutter_speed = SHUTTER_SPEED_VIDEO_STRING[re];
                 if(shutter_speed == "Auto"){
-                    shutter_speed = "S: " + shutter_speed;
-                }else{
                     shutter_speed = "S: " + shutter_speed + ", " + ev_setting;
+                }else{
+                    shutter_speed = "S: " + shutter_speed;
                 }
             }
             if(setting[std::to_string(ISO_MIN_ID)].is_number() && setting[std::to_string(ISO_MAX_ID)].is_number()){

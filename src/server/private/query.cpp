@@ -64,6 +64,7 @@ std::vector<SingleResponse> GoProController::_setAllSetting(std::vector<std::str
             SETTING_UTILITY_CALL(r, a, buffer, GOPRO_PHOTO_SETTING_SIZE, GOPRO_PHOTO_SETTING_IDS);
             SETTING_UTILITY_CALL(r, a, buffer, GOPRO_PHOTO_PROTUNE_SETTING_SIZE, GOPRO_PHOTO_PROTUNE_SETTING_IDS);
         }
+        SETTING_UTILITY_CALL(r, a, buffer, GOPRO_SYSTEM_SETTING_SIZE, GOPRO_SYSTEM_SETTING_IDS);
     }
 
     return r;
@@ -81,6 +82,7 @@ std::vector<SingleResponse> GoProController::_setSetting(std::string target, int
         SETTING_UTILITY_CALL(r, a, buffer, GOPRO_PHOTO_SETTING_SIZE, GOPRO_PHOTO_SETTING_IDS);
         SETTING_UTILITY_CALL(r, a, buffer, GOPRO_PHOTO_PROTUNE_SETTING_SIZE, GOPRO_PHOTO_PROTUNE_SETTING_IDS);
     }
+    SETTING_UTILITY_CALL(r, a, buffer, GOPRO_SYSTEM_SETTING_SIZE, GOPRO_SYSTEM_SETTING_IDS);
 
     return r;
 }
