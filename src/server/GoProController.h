@@ -29,13 +29,30 @@
 using json = nlohmann::json;
 std::string getPacket(std::string key, json data);
 
+typedef std::pair<std::string,std::string> SingleResponse;
+
+/**
+ * The cpp files break into two folder, and base on implementation detail to seperate cpp files
+ * * controller (public methods)
+ * * private (private methods)
+ */
 class GoProController {
 public:
     GoProController();
     ~GoProController();
+    void update();
     // Camera part of calls
+    /**
+     * Using mdns feature to catch all gopro services and store the ip addresses
+     */
     void scanCameras();
+    /**
+     * Clear the array of IP address
+     */
     void cleanCameras();
+    /**
+     * Rename the camera by ip input
+     */
     void renameCameras(std::string ip, std::string name);
     void addCameras(std::string serial);
     void deleteCameras(std::string ip);
@@ -54,7 +71,11 @@ public:
     // Status part of calls
     std::string queryStatus(std::string target);
     std::string setSetting(std::string target, int32_t ID, std::string value);
-    std::string setSettingAll(std::string target, json value);
+    /**
+     * If source is null, it does not matter anyway, it just for ignore apply reason.
+     * If target is null, it will the apply range to all of the clients.
+     */
+    std::string setSettingAll(const std::string source, const std::string target, int32_t preset, json value);
     // Webcam part of calls
     void webcamMode(std::string target);
     void webcamUnMode(std::string target);
@@ -91,12 +112,15 @@ protected:
     void _shutter(std::string target, bool isstart);
     void _locate(std::string target, bool ison);
     // Status part of calls
-    std::vector<std::pair<std::string, std::string>> _queryAllStatus(std::vector<std::string> targets);
-    std::pair<std::string, std::string> _queryStatus(std::string target);
-    std::vector<std::pair<std::string, std::string>> _queryAllHW(std::vector<std::string> targets);
-    std::pair<std::string, std::string> _queryHW(std::string target);
-    std::vector<std::pair<std::string, std::string>> _setAllSetting(std::vector<std::string> targets, int32_t ID, std::string value);
-    std::pair<std::string, std::string> _setSetting(std::string target, int32_t ID, std::string value);
+    std::vector<SingleResponse> _queryAllStatus(std::vector<std::string> targets);
+    SingleResponse _queryStatus(std::string target);
+    std::vector<SingleResponse> _queryAllHW(std::vector<std::string> targets);
+    SingleResponse _queryHW(std::string target);
+    std::vector<SingleResponse> _setAllSetting(std::vector<std::string> targets, int32_t ID, std::string value);
+    SingleResponse _setSetting(std::string target, int32_t ID, std::string value);
+    std::vector<SingleResponse> _setAllSetting(std::vector<std::string> targets, int32_t preset, json res);
+    std::vector<SingleResponse> _setSetting(std::string target, int32_t preset, json res);
+    std::vector<SingleResponse> _setSetting_utility(std::string target, json res, std::vector<int32_t> setting_ids);
     // Webcam part of calls
     void _webcamAllMode(std::vector<std::string> targets);
     void _webcamMode(std::string target);
@@ -106,26 +130,31 @@ protected:
     void _webcamOn(std::string target, int32_t startPort, int32_t res, int32_t fov, bool TS);
     void _webcamAllOff(std::vector<std::string> targets);
     void _webcamOff(std::string target);
-    std::pair<std::string, std::string> _webcamStatus(std::string target);
-    std::pair<std::string, std::string> _webcamVersion(std::string target);
+    SingleResponse _webcamStatus(std::string target);
+    SingleResponse _webcamVersion(std::string target);
     // Preview part of calls
     void _previewAllOn(std::vector<std::string> targets, int32_t port);
     void _previewOn(std::string target, int32_t port);
     void _previewAllOff(std::vector<std::string> targets);
     void _previewOff(std::string target);
     // Media part of calls
-    std::vector<std::pair<std::string, std::string>> _getAllMediaList(std::vector<std::string> targets);
-    std::pair<std::string, std::string> _getMediaList(std::string target);
-    std::vector<std::pair<std::string, std::string>> _getAllLastMedia(std::vector<std::string> targets);
-    std::pair<std::string, std::string> _getLastMedia(std::string target);
+    std::vector<SingleResponse> _getAllMediaList(std::vector<std::string> targets);
+    SingleResponse _getMediaList(std::string target);
+    std::vector<SingleResponse> _getAllLastMedia(std::vector<std::string> targets);
+    SingleResponse _getLastMedia(std::string target);
     // Utility calls
-    std::pair<std::string, std::string> _getSingleResponse(std::string target, std::string suffix);
-    std::vector<std::pair<std::string, std::string>> _getAllResponse(std::vector<std::string> targets, std::string suffix);
+    SingleResponse _getSingleResponse(std::string target, std::string suffix);
+    std::vector<SingleResponse> _getAllResponse(std::vector<std::string> targets, std::string suffix);
+
+    int32_t _get_current_model(json hwinfo);
 private:
     mdns_cpp::mDNS mdns;
     bool mdns_scaned = false;
     std::vector<std::thread> scan_workers;
     std::vector<std::string> camera_ips;
+    std::vector<std::string> camera_alive_ips;
+    std::mutex ips_alive_mutex;
+    std::unordered_map<std::string, json> camera_hw;
     std::unordered_map<std::string, std::string> camera_name;
     std::mutex ips_mutex;
     std::atomic<bool> scanning{false}; // To track scanning state if needed

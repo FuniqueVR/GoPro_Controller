@@ -68,7 +68,7 @@ void InspectorWindow::draw_command_local(){
         
         if(ImGui::Button("Setting Apply All By ID", full_button_size)) {
             int32_t v = state->current_setting_items[std::to_string(state->apply_all_item)].get<int32_t>();
-            master->apply("", state->apply_all_item, GET_SETTING_VALUE_BY_ID(state->apply_all_item)[v]);
+            master->apply(info.ip, "", state->apply_all_item, GET_SETTING_VALUE_BY_ID(state->apply_all_item)[v]);
         }
 
         if(ImGui::BeginCombo("ID", state->apply_all_item_string.c_str())){

@@ -8,18 +8,18 @@
 #include <vector>
 #include <string>
 
-std::vector<std::pair<std::string, std::string>> GoProController::_getAllMediaList(std::vector<std::string> targets){
+std::vector<SingleResponse> GoProController::_getAllMediaList(std::vector<std::string> targets){
     return _getAllResponse(targets, "/gopro/media/list");
 }
 
-std::pair<std::string, std::string> GoProController::_getMediaList(std::string target){
+SingleResponse GoProController::_getMediaList(std::string target){
     return _getSingleResponse(target, "/gopro/media/list");
 }
 
-std::vector<std::pair<std::string, std::string>> GoProController::_getAllLastMedia(std::vector<std::string> targets){
+std::vector<SingleResponse> GoProController::_getAllLastMedia(std::vector<std::string> targets){
     return _getAllResponse(targets, "/gopro/media/last_captured");
 }
 
-std::pair<std::string, std::string> GoProController::_getLastMedia(std::string target){
+SingleResponse GoProController::_getLastMedia(std::string target){
     return _getSingleResponse(target, "/gopro/media/last_captured");
 }

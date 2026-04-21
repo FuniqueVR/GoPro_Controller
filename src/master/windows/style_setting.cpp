@@ -145,11 +145,6 @@ void StyleSetting::set_window_data(json data) {
     ImGuiStyle& style = ImGui::GetStyle();
     ImVec4* colors = style.Colors;
 
-    if(!data["colors"].is_object() || !data["fields"].is_object()){
-        setup_catppuccin_mocha_theme();
-        return;
-    }
-
     SET_DATA_COLOR4(data, colors, ImGuiCol_WindowBg);
     SET_DATA_COLOR4(data, colors, ImGuiCol_ChildBg);
     SET_DATA_COLOR4(data, colors, ImGuiCol_PopupBg);

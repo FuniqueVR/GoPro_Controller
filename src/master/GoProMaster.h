@@ -21,7 +21,8 @@ typedef void (*camera_setting_feedback)(std::string ip, json setting);
 typedef void (*camera_status_feedback)(std::string ip, json status);
 typedef void (*camera_hw_feedback)(std::string ip, json hw);
 typedef void (*camera_log_feedback)(std::string key, std::string value);
-
+typedef void (*camera_preset_save)();
+typedef void (*camera_apply_all_feedback)();
 
 /**
  * GoPro Master Worker
@@ -92,8 +93,9 @@ public:
     void presetSwitch(const std::string server, const std::string target, int32_t mode);
     void locate(const std::string server, const std::string target);
     int32_t haslocate(const std::string server, const std::string target);
-    void apply(const std::string& ip, const int32_t id, const int32_t value);
+    void apply(const std::string& ip, const std::string& target, const int32_t id, const int32_t value);
     void applyAll(const std::string& ip, const json& res);
+    void quickApplyAll(const std::shared_ptr<CameraInfo>& target);
 
     bool directoryExists(const std::string& path);
 
@@ -109,7 +111,14 @@ public:
     void registerCameraStatusFeedback(camera_status_feedback v);
     void registerCameraHWFeedback(camera_hw_feedback v);
     void registerCameraLogFeedback(camera_log_feedback v);
+    void registerApplyAllFeedback(camera_apply_all_feedback v);
+    void registerSavePreset(camera_preset_save v);
+    void set_preset_data(std::shared_ptr<json> _preset);
 
+    int32_t add_preset(const std::string name, json data);
+    bool get_preset(const std::string name, json& data);
+    bool remove_preset(const std::string name);
+    std::vector<std::string> get_preset_names();
     /**
      * Camera list multithread lock guard
      * This will prevent race condition
@@ -163,6 +172,9 @@ private:
     camera_status_feedback _camera_status_feedback = NULL;
     camera_hw_feedback _camera_hw_feedback = NULL;
     camera_log_feedback _camera_log_feedback = NULL;
+    camera_preset_save _camera_preset_save = NULL;
+    camera_apply_all_feedback _camera_apply_all_feedback = NULL;
+    std::shared_ptr<json> preset_ptr = NULL;
     /**
      * Is app exit or not flag
      */

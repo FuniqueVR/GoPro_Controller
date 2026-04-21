@@ -7,6 +7,8 @@
 #include "../GoProController.h"
 #include <vector>
 #include <string>
+#include <algorithm>
+#include <iterator>
 
 std::string GoProController::queryStatus(std::string target){
     json arr = json::array();
@@ -15,14 +17,14 @@ std::string GoProController::queryStatus(std::string target){
     std::string address;
     if(target.size() > 0){
         try{
-            std::pair<std::string, std::string> result = _queryStatus(target);
+            SingleResponse result = _queryStatus(target);
             address = result.first;
             res = json::parse(result.second);
         }catch(const std::exception& ex){
             res = json::object();
         }
         try{
-            std::pair<std::string, std::string> result = _queryHW(target);
+            SingleResponse result = _queryHW(target);
             address = result.first;
             hw = json::parse(result.second);
         }catch(const std::exception& ex){
@@ -32,11 +34,16 @@ std::string GoProController::queryStatus(std::string target){
         i["ip"] = address;
         i["status"] = res;
         i["hw"] = hw;
+        camera_hw[address] = hw;
         arr.push_back(i);
     }else{
-        std::lock_guard<std::mutex> lock(ips_mutex);
-        std::vector<std::pair<std::string, std::string>> results = _queryAllStatus(camera_ips);
-        std::vector<std::pair<std::string, std::string>> hresults = _queryAllHW(camera_ips);
+        std::vector<std::string> buffer = std::vector<std::string>(camera_alive_ips.size());
+        {
+            std::lock_guard<std::mutex> lock(ips_alive_mutex);
+            std::copy(std::begin(camera_alive_ips), std::end(camera_alive_ips), std::begin(buffer));
+        }
+        std::vector<SingleResponse> results = _queryAllStatus(buffer);
+        std::vector<SingleResponse> hresults = _queryAllHW(buffer);
         for(int32_t i = 0; i < results.size(); i++){
             try{
                 address = results[i].first;
@@ -50,6 +57,7 @@ std::string GoProController::queryStatus(std::string target){
             j["ip"] = address;
             j["status"] = res;
             j["hw"] = hw;
+            camera_hw[address] = hw;
             arr.push_back(j);
         }
     }
@@ -62,7 +70,7 @@ std::string GoProController::setSetting(std::string target, int32_t ID, std::str
     std::string address;
     if(target.size() > 0){
         try{
-            std::pair<std::string, std::string> result = _setSetting(target, ID, value);
+            SingleResponse result = _setSetting(target, ID, value);
             address = result.first;
             res = json::parse(result.second);
         }catch(const std::exception& ex){
@@ -75,7 +83,7 @@ std::string GoProController::setSetting(std::string target, int32_t ID, std::str
         arr.push_back(i);
     }else{
         std::lock_guard<std::mutex> lock(ips_mutex);
-        std::vector<std::pair<std::string, std::string>> results = _setAllSetting(camera_ips, ID, value);
+        std::vector<SingleResponse> results = _setAllSetting(camera_ips, ID, value);
         for(int32_t i = 0; i < results.size(); i++){
             try{
                 address = results[i].first;
@@ -92,7 +100,44 @@ std::string GoProController::setSetting(std::string target, int32_t ID, std::str
     return arr.dump();
 }
 
-std::string GoProController::setSettingAll(std::string target, json value){
-    return "{}";
+std::string GoProController::setSettingAll(const std::string source, const std::string target, int32_t preset, json value){
+    json arr = json::array();
+    json res = json::object();
+    std::string address;
+    if(target.size() > 0){ // Apply to single target
+        std::vector<SingleResponse> results = _setSetting(target, preset, value);
+        for(int32_t i = 0; i < results.size(); i++){
+            try{
+                address = results[i].first;
+                res = json::parse(results[i].second);
+            }catch(const std::exception& ex){
+                res = json::object();
+            }
+            json j;
+            j["ip"] = address;
+            j["status"] = res;
+            arr.push_back(j);
+        }
+    }else{ // Apply to all
+        std::lock_guard<std::mutex> lock(ips_mutex);
+        std::vector<std::string> tt = std::vector<std::string>();
+        for(int32_t i = 0; i < camera_ips.size(); i++){
+            if(camera_ips[i] != target) tt.push_back(camera_ips[i]);
+        }
+        std::vector<SingleResponse> results = _setAllSetting(tt, preset, value);
+        for(int32_t i = 0; i < results.size(); i++){
+            try{
+                address = results[i].first;
+                res = json::parse(results[i].second);
+            }catch(const std::exception& ex){
+                res = json::object();
+            }
+            json j;
+            j["ip"] = address;
+            j["status"] = res;
+            arr.push_back(j);
+        }
+    }
+    return arr.dump();
 }
 

@@ -2351,6 +2351,69 @@ const static int32_t ISO_MAX_PHOTO_SUPPORT[] = {
 };
 #pragma endregion
 
+#pragma region ISO Min Brust
+#define ISO_MIN_BURST_ID 76
+#define ISO_MIN_BURST_SIZE 6
+#define ISO_MIN_BURST_NAME "ISO Minimum"
+#define ISO_MIN_BURST_AVA MODEL_MAX2_ALL
+const static char* ISO_MIN_BURST_STRING[] = {
+    "800",
+    "400",
+    "200",
+    "100",
+    "1600",
+    "3200",
+};
+const static int32_t ISO_MIN_BURST_VALUE[] = {
+    0, // 800
+    1, // 400
+    2, // 200
+    3, // 100
+    4, // 1600
+    5, // 3200
+};
+const static int32_t ISO_MIN_BURST_SUPPORT[] = {
+    MODEL_MAX2_ALL, // 800
+    MODEL_MAX2_ALL, // 400
+    MODEL_MAX2_ALL, // 200
+    MODEL_MAX2_ALL, // 100
+    MODEL_MAX2_ALL, // 1600
+    MODEL_MAX2_ALL, // 3200
+};
+#pragma endregion
+
+#pragma region ISO Max Burst
+#define ISO_MAX_BURST_ID 37
+#define ISO_MAX_BURST_SIZE 6
+#define ISO_MAX_BURST_NAME "ISO Maximum"
+#define ISO_MAX_BURST_AVA MODEL_MAX2_ALL
+const static char* ISO_MAX_BURST_STRING[] = {
+    "800",
+    "400",
+    "200",
+    "100",
+    "1600",
+    "3200",
+};
+const static int32_t ISO_MAX_BURST_VALUE[] = {
+    0, // 800
+    1, // 400
+    2, // 200
+    3, // 100
+    4, // 1600
+    5, // 3200
+};
+const static int32_t ISO_MAX_BURST_SUPPORT[] = {
+    MODEL_MAX2_ALL, // 800
+    MODEL_MAX2_ALL, // 400
+    MODEL_MAX2_ALL, // 200
+    MODEL_MAX2_ALL, // 100
+    MODEL_MAX2_ALL, // 1600
+    MODEL_MAX2_ALL, // 3200
+};
+#pragma endregion
+
+
 #pragma region Shutter Speed Video
 #define SHUTTER_SPEED_VIDEO_ID 145
 #define SHUTTER_SPEED_VIDEO_SIZE 62

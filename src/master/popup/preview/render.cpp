@@ -1,4 +1,5 @@
 #include "../preview_popwin.h"
+#include "src/imgui_notify.h"
 
 void PreviewPopup::render(){
     cv::Mat frame = get_latest_frame();
@@ -71,7 +72,7 @@ void PreviewPopup::render(){
             }
             ImGui::SetCursorScreenPos(image_pos);
             // Go Different camera
-            {
+            { // Left side of the panel
                 ImGui::BeginChild("Detail##Preview_Camera_Inspector", ImVec2(left_width, 0));
                 _draw_rotation_button();
                 _draw_camera_selection();
@@ -81,7 +82,7 @@ void PreviewPopup::render(){
             ImGui::SameLine();
             ImGui::Dummy(ImVec2(img_width, 0.0f));
             ImGui::SameLine();
-            {
+            { // Right side of the panel
                 ImGui::BeginChild("Detail##Preview_Camera_Inspector2", ImVec2(left_width, 0));
                 _draw_setting();
                 ImGui::EndChild();
@@ -109,5 +110,18 @@ void PreviewPopup::render(){
             _draw_bottom_button();
         }
         ImGui::EndPopup();
+
+        if(state->applying_all != applying_all_last){
+            applying_all_last = state->applying_all;
+            if(state->applying_all){
+                ImGuiToast toast(ImGuiToastType_Success, 3000);
+                toast.set_title("Trying to applying...");
+                ImGui::InsertNotification(toast);
+            }else{
+                ImGuiToast toast(ImGuiToastType_Success, 3000);
+                toast.set_title("Applying Finish");
+                ImGui::InsertNotification(toast);
+            }
+        }
     }
 }

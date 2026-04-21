@@ -157,9 +157,12 @@ void CameraListWindow::draw_group_state(const std::shared_ptr<CameraInfo>& c){
     // Center text
     {
         std::string shutter_speed;
+        std::string ev_setting;
         std::string camera_title = c->name;
         std::string iso_setting;
         std::string white_balance_setting;
+        std::string sharpness_setting;
+        std::string color_setting;
         float spacing = 0.75F;
 
         ImVec2 camera_title_size = ImGui::CalcTextSize(camera_title.c_str());
@@ -184,10 +187,18 @@ void CameraListWindow::draw_group_state(const std::shared_ptr<CameraInfo>& c){
                 ISO_MAX_ID = ISO_MAX_VIDEO_ID;
             }
 
+            if(setting[std::to_string(EXPOSURE_ID)].is_number_integer()){
+                int32_t re = setting[std::to_string(EXPOSURE_ID)].get<int32_t>();
+                ev_setting = EXPOSURE_STRING[re];
+            }
             if(setting[std::to_string(SHUTTER_SPEED_ID)].is_number_integer()){
                 int32_t re = setting[std::to_string(SHUTTER_SPEED_ID)].get<int32_t>();
                 shutter_speed = SHUTTER_SPEED_VIDEO_STRING[re];
-                shutter_speed = "S: " + shutter_speed;
+                if(shutter_speed == "Auto"){
+                    shutter_speed = "S: " + shutter_speed + ", " + ev_setting;
+                }else{
+                    shutter_speed = "S: " + shutter_speed;
+                }
             }
             if(setting[std::to_string(ISO_MIN_ID)].is_number() && setting[std::to_string(ISO_MAX_ID)].is_number()){
                 int32_t iso_min = setting[std::to_string(ISO_MIN_ID)].get<int32_t>();
@@ -203,9 +214,18 @@ void CameraListWindow::draw_group_state(const std::shared_ptr<CameraInfo>& c){
                 }
                 iso_setting = "I: " + iso_min_text + " " + iso_max_text;
             }
+            if(setting[std::to_string(SHARPNESS_ID)].is_number()){
+                int32_t sharpness_bal = setting[std::to_string(SHARPNESS_ID)].get<int32_t>();
+                sharpness_setting = SHARPNESS_STRING[sharpness_bal];
+            }
+            if(setting[std::to_string(COLOR_ID)].is_number()){
+                int32_t color_bal = setting[std::to_string(COLOR_ID)].get<int32_t>();
+                color_setting = COLOR_STRING[color_bal];
+            }
             if(setting[std::to_string(WHITE_BALANCE_ID)].is_number()){
                 int32_t white_bal = setting[std::to_string(WHITE_BALANCE_ID)].get<int32_t>();
                 white_balance_setting = WHITE_BALANCE_STRING[white_bal];
+                white_balance_setting += ", " + sharpness_setting + ", " + color_setting;
             }
 
             ImVec2 shutter_speed_size = ImGui::CalcTextSize(shutter_speed.c_str());
@@ -285,7 +305,7 @@ void CameraListWindow::draw_group_state(const std::shared_ptr<CameraInfo>& c){
         std::string res;
         std::string fps;
         std::string profile;
-        std::string framing;
+        std::string videolen;
 
         if(setting[std::to_string(VIDEO_RESOLUTION_ID)].is_number_integer()){
             int32_t re = setting[std::to_string(VIDEO_RESOLUTION_ID)].get<int32_t>();
@@ -299,18 +319,28 @@ void CameraListWindow::draw_group_state(const std::shared_ptr<CameraInfo>& c){
             int32_t re = setting[std::to_string(PROFILES_ID)].get<int32_t>();
             profile = PROFILES_STRING[re];
         }
-        if(setting[std::to_string(FRAMING_ID)].is_number_integer()){
-            int32_t re = setting[std::to_string(FRAMING_ID)].get<int32_t>();
-            framing = FRAMING_STRING[re];
-            while(framing.size() > 1){
-                framing.pop_back();
+        if(preset == 0){
+            if(setting[std::to_string(VIDEO_LENS_ID)].is_number_integer()){
+                int32_t re = setting[std::to_string(VIDEO_LENS_ID)].get<int32_t>();
+                videolen = VIDEO_LENS_STRING[re];
+                while(videolen.size() > 1){
+                    videolen.pop_back();
+                }
+            }
+        }else{
+            if(setting[std::to_string(PHOTO_LENS_ID)].is_number_integer()){
+                int32_t re = setting[std::to_string(PHOTO_LENS_ID)].get<int32_t>();
+                videolen = PHOTO_LENS_STRING[re];
+                while(videolen.size() > 1){
+                    videolen.pop_back();
+                }
             }
         }
 
         ImVec2 res_text_size = ImGui::CalcTextSize(res.c_str());
         ImVec2 fps_text_size = ImGui::CalcTextSize(fps.c_str());
         ImVec2 profile_text_size = ImGui::CalcTextSize(profile.c_str());
-        ImVec2 framing_text_size = ImGui::CalcTextSize(framing.c_str());
+        ImVec2 videolen_text_size = ImGui::CalcTextSize(videolen.c_str());
         ImVec2 frame_padding = ImVec2(5, 5);
 
         ImVec2 corner = image_pos + rect_size;
@@ -321,10 +351,10 @@ void CameraListWindow::draw_group_state(const std::shared_ptr<CameraInfo>& c){
         draw_list->AddText(profile_pos, col_white, profile.c_str());
 
         ImVec2 framing_pos = ImVec2(
-            corner.x - (frame_padding.x + framing_text_size.x),
-            corner.y - (frame_padding.y + framing_text_size.y)
+            corner.x - (frame_padding.x + videolen_text_size.x),
+            corner.y - (frame_padding.y + videolen_text_size.y)
         );
-        draw_list->AddText(framing_pos, col_white, framing.c_str());
+        draw_list->AddText(framing_pos, col_white, videolen.c_str());
 
         ImVec2 fps_pos = framing_pos - ImVec2(word_spacing + fps_text_size.x, 0);
         draw_list->AddText(fps_pos, col_white, fps.c_str());
@@ -335,7 +365,7 @@ void CameraListWindow::draw_group_state(const std::shared_ptr<CameraInfo>& c){
     
     ImGui::PopID();
     ImGui::Dummy(rect_size);
-    bool is_select = state->current_camera_item == c->ip;
+    bool is_select = state->current_camera_item == c->ip && state->current_camera_server == c->server;
     if(ImGui::IsItemHovered()){
         std::string displayText = "";
         displayText += "name: ";

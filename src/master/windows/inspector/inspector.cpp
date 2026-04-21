@@ -1,4 +1,5 @@
 #include "../inspector.h"
+#include "src/imgui_notify.h"
 
 std::vector<int32_t> InspectorWindow::system_list_ordered = std::vector<int32_t>(GOPRO_SYSTEM_SETTING_SIZE);
 std::vector<int32_t> InspectorWindow::video_setting_list_ordered = std::vector<int32_t>(GOPRO_VIDEO_SETTING_SIZE);
@@ -92,9 +93,8 @@ void InspectorWindow::render(){
     ImGui::Begin("Inspector", &enable, w_flag);
     {
         std::lock_guard<std::mutex> lock(master->camera_mtx);
-        int32_t camera_ip = master->findCamera(state->current_camera_item);
-        should_disabled = state->current_camera_item.size() < 10 || camera_ip == -1 || !state->current_setting_items_bind;
-
+        int32_t s = master->findCamera(state->current_camera_item);
+        should_disabled = state->current_camera_item.size() < 10 || s == -1 || !state->current_setting_items_bind;
         draw_header();
 
         ImGui::Separator();
@@ -117,10 +117,32 @@ void InspectorWindow::render(){
                 ImGui::EndTabItem();
             }
             if(ImGui::BeginTabItem("Setting##Inspector_Bar_Item")){
-                if(ImGui::Button("Reset Setting Order")){
+                if(ImGui::Button("Reset Setting Order##Inspector_Bar_Item")){
                     reset_setting_order();
                     state->update_server();
                 }
+
+                ImGui::BeginDisabled(should_disabled);
+                if(ImGui::Button("Save Preset##Inspector_Bar_Item")){
+                    state->command_sender("add_preset");
+                }
+                ImGui::EndDisabled();
+
+                ImGui::SameLine();
+                ImGui::BeginDisabled(should_disabled || state->applying_all);
+                if(ImGui::Button("Quick Apply All##Inspector_Bar_Item")){
+                    if(s != -1){
+                        const std::shared_ptr<CameraInfo>& c = master->getCameras().at(s);
+                        master->quickApplyAll(c);
+                        state->applying_all = true;
+                    }
+                }
+                ImGui::EndDisabled();
+                ImGui::SameLine();
+                if(ImGui::Button("Preset Manager##Inspector_Bar_Item")){
+                    state->command_sender("preset_manager");
+                }
+
                 if(ImGui::BeginTabBar("Inspector_Bar##Second")){
                     if(ImGui::BeginTabItem("System##Inspector_Bar_Item")){
                         ImGui::BeginDisabled(should_disabled);
@@ -129,7 +151,7 @@ void InspectorWindow::render(){
                         ImGui::EndTabItem();
                     }
                     if(ImGui::BeginTabItem("Setting##Inspector_Bar_Item")){
-                        ImGui::BeginDisabled(should_disabled);
+                        ImGui::BeginDisabled(should_disabled || state->applying_all);
                         draw_setting();
                         ImGui::EndDisabled();
                         ImGui::EndTabItem();
@@ -204,6 +226,19 @@ void InspectorWindow::render(){
         }
     }
     ImGui::End();
+
+    if(state->applying_all != applying_all_last){
+        applying_all_last = state->applying_all;
+        if(state->applying_all){
+            ImGuiToast toast(ImGuiToastType_Success, 3000);
+            toast.set_title("Trying to applying...");
+            ImGui::InsertNotification(toast);
+        }else{
+            ImGuiToast toast(ImGuiToastType_Success, 3000);
+            toast.set_title("Applying Finish");
+            ImGui::InsertNotification(toast);
+        }
+    }
 }
 
 void InspectorWindow::draw_header(){

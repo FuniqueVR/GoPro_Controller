@@ -19,6 +19,7 @@ enum class InspectorObjectType {
 
 struct GlobalState {
     bool done;
+    bool applying_all;
     // Selection
     std::string websocket_server_selection;
     std::string camera_selection;
@@ -33,11 +34,9 @@ struct GlobalState {
     bool current_status_items_bind = false;
     json current_hw_items;
     bool current_hw_items_bind = false;
-    /**
-     * Current select camera IP address
-     * {server_ip}_{camera_ip}
-     */
     std::string current_camera_item = "";
+    std::string current_camera_server = "";
+
     // Apply state
     std::string apply_all_item_string = "Video Resolution";
     int32_t apply_all_item = 2;
@@ -47,6 +46,7 @@ struct GlobalState {
     // Caller
     CommandSenderFunc command_sender = NULL; 
     ActionFunc update_server = NULL;
+    ActionFunc update_preset = NULL;
     // Inspector
     InspectorObjectType iot = InspectorObjectType::Camera;
 

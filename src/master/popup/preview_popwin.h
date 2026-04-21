@@ -86,6 +86,7 @@ private:
      * Shows the build info in console if it is
      */
     bool first = true;
+    bool applying_all_last;
     /**
      * The state of the decoing thread is trying to get video frame from camera
      * If false, it means failed

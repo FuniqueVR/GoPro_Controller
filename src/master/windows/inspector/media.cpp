@@ -2,6 +2,7 @@
 #include <cstdlib>      // For std::getenv
 #include <filesystem>
 #include <stdexcept>
+#include <SDL3/SDL.h>
 
 namespace fs = std::filesystem;
 
@@ -67,9 +68,7 @@ void InspectorWindow::draw_media_global(){
     if(ImGui::IsItemHovered()) ImGui::SetTooltip("Open file explorer for home directory");
     ImGui::SameLine();
     if(ImGui::Button("Open Select Path", button_size)){
-        if(fs::exists(state->current_download_location)){
-            std::system((std::string("open \"") + state->current_download_location + std::string("\"")).c_str());
-        }
+        open_dialog_for_folder_selection();
     }
 
     if(ImGui::Checkbox("Create Date Folder", &create_date_folder)){
@@ -89,4 +88,25 @@ void InspectorWindow::draw_media_global(){
 
 void InspectorWindow::draw_media_local(){
 
+}
+
+void InspectorWindow::open_dialog_for_folder_selection(){
+    SDL_Window* win = SDL_GL_GetCurrentWindow();
+    SDL_ShowOpenFolderDialog([](void* userdata, const char* const* filelist, int filter){
+        if (!filelist) {
+            SDL_Log("Error opening file dialog: %s", SDL_GetError());
+        } else if (!*filelist) {
+            SDL_Log("User canceled the dialog.");
+        } else {
+            std::string path = "";
+            while (*filelist) {
+                SDL_Log("Selected file: %s", *filelist);
+                path = *filelist;
+                filelist++;
+            }
+            InspectorWindow* self = static_cast<InspectorWindow*>(userdata); 
+            self->state->current_download_location = path;
+            self->state->update_server();
+        }
+    }, this, win, NULL, false);
 }

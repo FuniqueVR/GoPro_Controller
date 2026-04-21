@@ -62,14 +62,15 @@ void GoProController::_updateRecord(){
     outFile.close();
 }
 
-std::pair<std::string, std::string> GoProController::_getSingleResponse(std::string target, std::string suffix){
+SingleResponse GoProController::_getSingleResponse(std::string target, std::string suffix){
     std::string url = GetRemoteURLByIP(target) + suffix;
-    return std::pair<std::string, std::string>(target, exec(url));
+    std::cout << "CURL: " << url << std::endl;
+    return SingleResponse(target, exec(url));
 }
 
-std::vector<std::pair<std::string, std::string>> GoProController::_getAllResponse(std::vector<std::string> targets, std::string suffix){
+std::vector<SingleResponse> GoProController::_getAllResponse(std::vector<std::string> targets, std::string suffix){
     std::vector<std::string> urls = std::vector<std::string>();
-    std::vector<std::pair<std::string, std::string>> result = std::vector<std::pair<std::string, std::string>>();
+    std::vector<SingleResponse> result = std::vector<SingleResponse>();
     for(int32_t i = 0; i < targets.size(); i++){
         urls.push_back(GetRemoteURLByIP(targets[i]) + suffix);
     }
@@ -79,7 +80,7 @@ std::vector<std::pair<std::string, std::string>> GoProController::_getAllRespons
         if(res[i].size() == 0){
             res[i] = "{}";
         }
-        result.push_back(std::pair<std::string, std::string>(
+        result.push_back(SingleResponse(
             targets[i],
             res[i]
         ));
