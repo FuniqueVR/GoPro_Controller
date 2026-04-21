@@ -7,6 +7,8 @@
 #include "../GoProController.h"
 #include <vector>
 #include <string>
+#include <algorithm>
+#include <iterator>
 
 std::string GoProController::queryStatus(std::string target){
     json arr = json::array();
@@ -35,9 +37,13 @@ std::string GoProController::queryStatus(std::string target){
         camera_hw[address] = hw;
         arr.push_back(i);
     }else{
-        std::lock_guard<std::mutex> lock(ips_alive_mutex);
-        std::vector<SingleResponse> results = _queryAllStatus(camera_alive_ips);
-        std::vector<SingleResponse> hresults = _queryAllHW(camera_alive_ips);
+        std::vector<std::string> buffer = std::vector<std::string>(camera_alive_ips.size());
+        {
+            std::lock_guard<std::mutex> lock(ips_alive_mutex);
+            std::copy(std::begin(camera_alive_ips), std::end(camera_alive_ips), std::begin(buffer));
+        }
+        std::vector<SingleResponse> results = _queryAllStatus(buffer);
+        std::vector<SingleResponse> hresults = _queryAllHW(buffer);
         for(int32_t i = 0; i < results.size(); i++){
             try{
                 address = results[i].first;

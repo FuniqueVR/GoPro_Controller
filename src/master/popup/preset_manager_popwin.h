@@ -12,11 +12,9 @@ public:
     virtual void trigger(bool value) override;
     virtual void render() override;
 
-    void draw_camera_keep();
-    void draw_camera_select();
     void draw_preset_list();
     void draw_preset_detail();
 private:
-    std::vector<std::string> camera_selected = std::vector<std::string>();
     std::string preset_select;
+    bool applying = false;
 };

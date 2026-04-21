@@ -1,6 +1,7 @@
 #include "preset_manager_popwin.h"
 #include <cstddef>
 #include "imgui.h"
+#include "src/imgui_notify.h"
 
 PresetManagerPopup::PresetManagerPopup(
     std::shared_ptr<json> _setting, 
@@ -18,7 +19,7 @@ PresetManagerPopup::~PresetManagerPopup(){
 
 void PresetManagerPopup::trigger(bool value){
     BasePopWindow::trigger(value);
-    if(value) camera_selected.clear();
+    if(value) preset_select = "";
 }
 
 void PresetManagerPopup::render(){
@@ -32,23 +33,10 @@ void PresetManagerPopup::render(){
     ImGui::SetNextWindowPos(ImVec2(unit.x * 0.5F, unit.y * 0.5F), wp_cond);
     ImGui::SetNextWindowSize(ImVec2(unit.x * 11.0F, unit.y * 11.0F), wp_cond);
     
-    unit_width = (unit.x * 11.0F) / 4.0F - style.ItemSpacing.x;
+    unit_width = (unit.x * 11.0F) / 2.0F - style.ItemSpacing.x;
     unit_height = unit.y * 9.5F;
 
     if(ImGui::BeginPopupModal(title.c_str(), NULL, wp_flag)){
-
-        {
-            ImGui::BeginChild("Camera Keep##Preset_Manager", ImVec2(unit_width - 50.0F, unit_height));
-            draw_camera_keep();
-            ImGui::EndChild();
-        }
-        ImGui::SameLine();
-        {
-
-            ImGui::BeginChild("Camera Select##Preset_Manager", ImVec2(unit_width - 50.0F, unit_height));
-            draw_camera_select();
-            ImGui::EndChild();
-        }
         ImGui::SameLine();
         {
             ImGui::BeginChild("Preset List##Preset_Manager", ImVec2(unit_width - 50.0F, unit_height));
@@ -57,61 +45,53 @@ void PresetManagerPopup::render(){
         }
         ImGui::SameLine();
         {
-            ImGui::BeginChild("Preset Detail##Preset_Manager", ImVec2(unit_width + 150.0F, unit_height));
+            ImGui::BeginChild("Preset Detail##Preset_Manager", ImVec2(unit_width + 50.0F, unit_height));
             draw_preset_detail();
             ImGui::EndChild();
         }
 
+        bool can_apply = preset_select.size() > 0;
+        ImGui::BeginDisabled(!can_apply || applying);
+        if(ImGui::Button("Apply")){
+            json data = json::object();
+            if(master->get_preset(preset_select, data)){
+                master->applyAll("", data);
+                state->applying_all = true;
+            }
+        }
+        ImGui::EndDisabled();
+
+        ImGui::SameLine();
+
+        ImGui::BeginDisabled(preset_select.size() == 0 || applying);
+        if(ImGui::Button("Delete##Preset_Manager_Item_Action")){
+            master->remove_preset(preset_select);
+            state->update_preset();
+            preset_select = "";
+        }
+        ImGui::EndDisabled();
+
+        ImGui::SameLine();
+
+        ImGui::BeginDisabled(applying);
         if(ImGui::Button("Cancel")){
             ImGui::CloseCurrentPopup();
         }
+        ImGui::EndDisabled();
 
         ImGui::EndPopup();
     }
-}
 
-void PresetManagerPopup::draw_camera_keep(){
-    ImGui::Text("%s", "Cameras: ");
-    ImGui::Separator();
-    std::lock_guard lock(master->camera_mtx);
-    for(auto& cam : master->getCameras()){
-        if(!cam->connected) continue;
-        bool find = false;
-        for(auto& sel : camera_selected){
-            if(cam->ip == sel){
-                find = true;
-                break;
-            }
-        }
-        if(!find){
-            if(ImGui::Selectable((cam->ip + "##Preset_Manager_Keep_Item").c_str())){
-                camera_selected.push_back(cam->ip);
-            }
-        }
-    }
-}
-
-void PresetManagerPopup::draw_camera_select(){
-    ImGui::Text("%s", "Selected: ");
-    ImGui::Separator();
-    for(auto& cam : master->getCameras()){
-        if(!cam->connected) continue;
-        bool find = false;
-        for(auto& sel : camera_selected){
-            if(cam->ip == sel){
-                find = true;
-                break;
-            }
-        }
-        if(find){
-            if(ImGui::Selectable((cam->ip + "##Preset_Manager_Select_Item").c_str())){
-                for(int32_t i = 0; i < camera_selected.size(); i++){
-                    if(camera_selected.at(i) == cam->ip){
-                        camera_selected.erase(camera_selected.begin() + i);
-                        break;
-                    }
-                }
-            }
+    if(state->applying_all != applying){
+        applying = state->applying_all;
+        if(state->applying_all){
+            ImGuiToast toast(ImGuiToastType_Success, 3000);
+            toast.set_title("Trying to applying...");
+            ImGui::InsertNotification(toast);
+        }else{
+            ImGuiToast toast(ImGuiToastType_Success, 3000);
+            toast.set_title("Applying Finish");
+            ImGui::InsertNotification(toast);
         }
     }
 }
@@ -119,13 +99,6 @@ void PresetManagerPopup::draw_camera_select(){
 void PresetManagerPopup::draw_preset_list(){
     ImGui::Text("%s", "Presets: ");
     ImGui::Separator();
-    ImGui::BeginDisabled(preset_select.size() == 0);
-    if(ImGui::Button("Delete##Preset_Manager_Item_Action")){
-        master->remove_preset(preset_select);
-        state->update_preset();
-        preset_select = "";
-    }
-    ImGui::EndDisabled();
     for(std::string& n : master->get_preset_names()){
         if(ImGui::Selectable((n + "##Preset_Manager_Item").c_str(), n == preset_select)){
             if(n == preset_select){
