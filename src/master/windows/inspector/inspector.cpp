@@ -94,7 +94,10 @@ void InspectorWindow::render(){
     {
         std::lock_guard<std::mutex> lock(master->camera_mtx);
         int32_t s = master->findCamera(state->current_camera_item);
-        should_disabled = state->current_camera_item.size() < 10 || s == -1 || !state->current_setting_items_bind;
+        if(s != -1){
+            auto& c = master->getCameras().at(s);
+            should_disabled = !c->connected || state->current_camera_item.size() < 10 || s == -1 || !state->current_setting_items_bind;
+        }
         draw_header();
 
         ImGui::Separator();
