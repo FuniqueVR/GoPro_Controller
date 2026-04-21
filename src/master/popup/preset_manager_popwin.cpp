@@ -1,4 +1,6 @@
 #include "preset_manager_popwin.h"
+#include <cstddef>
+#include "imgui.h"
 
 PresetManagerPopup::PresetManagerPopup(
     std::shared_ptr<json> _setting, 
@@ -16,19 +18,145 @@ PresetManagerPopup::~PresetManagerPopup(){
 
 void PresetManagerPopup::trigger(bool value){
     BasePopWindow::trigger(value);
+    if(value) camera_selected.clear();
 }
 
 void PresetManagerPopup::render(){
+    ImGuiIO& io = ImGui::GetIO();
+    ImVec2 display_size = io.DisplaySize;
+    ImVec2 unit = ImVec2(display_size.x / 12.0f, display_size.y / 12.0f);
+    float unit_width;
+    float unit_height;
+
+    ImGui::SetNextWindowPos(ImVec2(unit.x * 0.5F, unit.y * 0.5F), wp_cond);
+    ImGui::SetNextWindowSize(ImVec2(unit.x * 11.0F, unit.y * 11.0F), wp_cond);
+    
+    unit_width = (unit.x * 11.0F) / 4.0F;
+    unit_height = unit.y * 9.5F;
+
     if(ImGui::BeginPopupModal(title.c_str(), NULL, wp_flag)){
-        
-        if (ImGui::Button("Confirm")) {
-            
+
+        {
+            ImGui::BeginChild("Camera Keep##Preset_Manager", ImVec2(unit_width, unit_height));
+            draw_camera_keep();
+            ImGui::EndChild();
         }
         ImGui::SameLine();
+        {
+
+            ImGui::BeginChild("Camera Select##Preset_Manager", ImVec2(unit_width, unit_height));
+            draw_camera_select();
+            ImGui::EndChild();
+        }
+        ImGui::SameLine();
+        {
+            ImGui::BeginChild("Preset List##Preset_Manager", ImVec2(unit_width, unit_height));
+            draw_preset_list();
+            ImGui::EndChild();
+        }
+        ImGui::SameLine();
+        {
+            ImGui::BeginChild("Preset Detail##Preset_Manager", ImVec2(unit_width, unit_height));
+            draw_preset_detail();
+            ImGui::EndChild();
+        }
+
         if(ImGui::Button("Cancel")){
             ImGui::CloseCurrentPopup();
         }
 
         ImGui::EndPopup();
     }
+}
+
+void PresetManagerPopup::draw_camera_keep(){
+    ImGui::Text("%s", "Cameras: ");
+    ImGui::Separator();
+    std::lock_guard lock(master->camera_mtx);
+    for(auto& cam : master->getCameras()){
+        if(!cam->connected) continue;
+        bool find = false;
+        for(auto& sel : camera_selected){
+            if(cam->ip == sel){
+                find = true;
+                break;
+            }
+        }
+        if(!find){
+            if(ImGui::Selectable((cam->ip + "##Preset_Manager_Keep_Item").c_str())){
+                camera_selected.push_back(cam->ip);
+            }
+        }
+    }
+}
+
+void PresetManagerPopup::draw_camera_select(){
+    ImGui::Text("%s", "Selected: ");
+    ImGui::Separator();
+    for(auto& cam : master->getCameras()){
+        if(!cam->connected) continue;
+        bool find = false;
+        for(auto& sel : camera_selected){
+            if(cam->ip == sel){
+                find = true;
+                break;
+            }
+        }
+        if(find){
+            if(ImGui::Selectable((cam->ip + "##Preset_Manager_Select_Item").c_str())){
+                for(int32_t i = 0; i < camera_selected.size(); i++){
+                    if(camera_selected.at(i) == cam->ip){
+                        camera_selected.erase(camera_selected.begin() + i);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+}
+
+void PresetManagerPopup::draw_preset_list(){
+    ImGui::Text("%s", "Presets: ");
+    ImGui::Separator();
+    for(std::string& n : master->get_preset_names()){
+        if(ImGui::Selectable((n + "##Preset_Manager_Item").c_str(), n == preset_select)){
+            if(n == preset_select){
+                preset_select = "";
+            }else{
+                preset_select = n;
+            }
+        }
+    }
+}
+
+void PresetManagerPopup::draw_preset_detail(){
+    ImGui::Text("%s", "Detail: ");
+    ImGui::Separator();
+    if(preset_select.size() == 0) return;
+    json data;
+    if(!master->get_preset(preset_select, data)) return;
+    if(data["name"].is_string()){
+        ImGui::LabelText("Name", "%s", data["name"].get<std::string>().c_str());
+    }
+    if(data["model"].is_number_integer()){
+        ImGui::LabelText("Model", "%i", data["model"].get<int32_t>());
+    }
+    if(data["preset"].is_number_integer()){
+        ImGui::LabelText("Preset", "%i", data["preset"].get<int32_t>());
+    }
+    ImGui::Separator();
+    ImGui::Indent(5.0F);
+    if(data["setting"].is_object()){
+        for(auto item = data["setting"].begin(); item != data["setting"].end(); item++){
+            int32_t id = std::atoi(item.key().c_str());
+            if(!item->is_number()) continue;
+            int32_t value = item->get<int32_t>();
+            std::string name = GET_SETTING_NAME_BY_ID(id);
+            size_t size = GET_SETTING_SIZE_BY_ID(id);
+            if(value >= size) continue;
+            std::string display = GET_SETTING_STRING_BY_ID(id)[value];
+            ImGui::LabelText(name.c_str(), "%s", display.c_str());
+        }
+    }
+    ImGui::Indent(-5.0F);
 }
