@@ -285,7 +285,7 @@ void CameraListWindow::draw_group_state(const std::shared_ptr<CameraInfo>& c){
         std::string res;
         std::string fps;
         std::string profile;
-        std::string framing;
+        std::string videolen;
 
         if(setting[std::to_string(VIDEO_RESOLUTION_ID)].is_number_integer()){
             int32_t re = setting[std::to_string(VIDEO_RESOLUTION_ID)].get<int32_t>();
@@ -299,18 +299,28 @@ void CameraListWindow::draw_group_state(const std::shared_ptr<CameraInfo>& c){
             int32_t re = setting[std::to_string(PROFILES_ID)].get<int32_t>();
             profile = PROFILES_STRING[re];
         }
-        if(setting[std::to_string(FRAMING_ID)].is_number_integer()){
-            int32_t re = setting[std::to_string(FRAMING_ID)].get<int32_t>();
-            framing = FRAMING_STRING[re];
-            while(framing.size() > 1){
-                framing.pop_back();
+        if(preset == 0){
+            if(setting[std::to_string(VIDEO_LENS_ID)].is_number_integer()){
+                int32_t re = setting[std::to_string(VIDEO_LENS_ID)].get<int32_t>();
+                videolen = VIDEO_LENS_STRING[re];
+                while(videolen.size() > 1){
+                    videolen.pop_back();
+                }
+            }
+        }else{
+            if(setting[std::to_string(PHOTO_LENS_ID)].is_number_integer()){
+                int32_t re = setting[std::to_string(PHOTO_LENS_ID)].get<int32_t>();
+                videolen = PHOTO_LENS_STRING[re];
+                while(videolen.size() > 1){
+                    videolen.pop_back();
+                }
             }
         }
 
         ImVec2 res_text_size = ImGui::CalcTextSize(res.c_str());
         ImVec2 fps_text_size = ImGui::CalcTextSize(fps.c_str());
         ImVec2 profile_text_size = ImGui::CalcTextSize(profile.c_str());
-        ImVec2 framing_text_size = ImGui::CalcTextSize(framing.c_str());
+        ImVec2 videolen_text_size = ImGui::CalcTextSize(videolen.c_str());
         ImVec2 frame_padding = ImVec2(5, 5);
 
         ImVec2 corner = image_pos + rect_size;
@@ -321,10 +331,10 @@ void CameraListWindow::draw_group_state(const std::shared_ptr<CameraInfo>& c){
         draw_list->AddText(profile_pos, col_white, profile.c_str());
 
         ImVec2 framing_pos = ImVec2(
-            corner.x - (frame_padding.x + framing_text_size.x),
-            corner.y - (frame_padding.y + framing_text_size.y)
+            corner.x - (frame_padding.x + videolen_text_size.x),
+            corner.y - (frame_padding.y + videolen_text_size.y)
         );
-        draw_list->AddText(framing_pos, col_white, framing.c_str());
+        draw_list->AddText(framing_pos, col_white, videolen.c_str());
 
         ImVec2 fps_pos = framing_pos - ImVec2(word_spacing + fps_text_size.x, 0);
         draw_list->AddText(fps_pos, col_white, fps.c_str());

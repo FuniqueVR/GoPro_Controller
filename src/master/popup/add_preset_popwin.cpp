@@ -16,6 +16,10 @@ AddPresetPopup::~AddPresetPopup(){
 
 void AddPresetPopup::trigger(bool value){
     BasePopWindow::trigger(value);
+    if(value){
+        preset_name = "";
+        msg = "";
+    }
 }
 
 void AddPresetPopup::render(){
@@ -27,7 +31,7 @@ void AddPresetPopup::render(){
         ImGui::TextColored(ImVec4(1, 0, 0, 1), "%s", msg.c_str());
 
         if (ImGui::Button("Confirm")) {
-            
+            save_preset();
         }
         ImGui::SameLine();
         if(ImGui::Button("Cancel")){
@@ -36,4 +40,9 @@ void AddPresetPopup::render(){
 
         ImGui::EndPopup();
     }
+}
+
+void AddPresetPopup::save_preset(){
+    json data = json::object();
+    master->add_preset(preset_name, data);
 }
