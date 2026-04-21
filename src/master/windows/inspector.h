@@ -46,6 +46,7 @@ protected:
     static bool conditional_filter(const std::shared_ptr<GlobalState>& state, int32_t mymodel, int32_t setting_id);
     static bool conditional_filter_option(const std::shared_ptr<GlobalState>& state, int32_t mymodel, int32_t setting_id, int32_t value_index);
 
+    void open_dialog_for_folder_selection();
 private:
     static std::vector<int32_t> system_list_ordered;
     // Setting

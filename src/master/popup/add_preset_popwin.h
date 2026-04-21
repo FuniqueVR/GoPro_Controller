@@ -14,5 +14,4 @@ public:
     void save_preset();
 private:
     std::string preset_name;
-    std::string msg;
 };

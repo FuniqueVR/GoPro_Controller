@@ -1,4 +1,5 @@
 #include "add_preset_popwin.h"
+#include "src/imgui_notify.h"
 
 AddPresetPopup::AddPresetPopup(
     std::shared_ptr<json> _setting, 
@@ -18,7 +19,6 @@ void AddPresetPopup::trigger(bool value){
     BasePopWindow::trigger(value);
     if(value){
         preset_name = "";
-        msg = "";
     }
 }
 
@@ -28,8 +28,6 @@ void AddPresetPopup::render(){
         if(ImGui::IsItemHovered()){
             ImGui::SetItemTooltip("Enter preset name");
         }
-        ImGui::TextColored(ImVec4(1, 0, 0, 1), "%s", msg.c_str());
-
         if (ImGui::Button("Confirm")) {
             save_preset();
         }
@@ -44,5 +42,23 @@ void AddPresetPopup::render(){
 
 void AddPresetPopup::save_preset(){
     json data = json::object();
-    master->add_preset(preset_name, data);
+    if(preset_name.size() == 0){
+        ImGuiToast toast(ImGuiToastType_Error, 3000);
+        toast.set_title("Preset Save Failed");
+        toast.set_content("You need to enter preset name");
+        ImGui::InsertNotification(toast);
+        return;
+    }
+    int32_t result = master->add_preset(preset_name, data);
+    if(result == 0){
+        ImGuiToast toast(ImGuiToastType_Success, 3000);
+        toast.set_title("Preset Save Success");
+        toast.set_content("Preset name: %s", preset_name.c_str());
+        ImGui::InsertNotification(toast);
+    }else if(result == 2){
+        ImGuiToast toast(ImGuiToastType_Error, 3000);
+        toast.set_title("Preset Save Failed");
+        toast.set_content("Name already used: %s", preset_name.c_str());
+        ImGui::InsertNotification(toast);
+    }
 }

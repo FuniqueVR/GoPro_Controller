@@ -361,10 +361,8 @@ int main(int, char**)
         // Render toasts on top of everything, at the end of your code!
         // You should push style vars here
         ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 5.f);
-        ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(43.f / 255.f, 43.f / 255.f, 43.f / 255.f, 100.f / 255.f));
         ImGui::RenderNotifications();
         ImGui::PopStyleVar(1); // Don't forget to Pop()
-        ImGui::PopStyleColor(1);
 
         // Rendering
         ImGui::Render();

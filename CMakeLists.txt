@@ -94,7 +94,6 @@ if(BUILD_MASTER)
 
     # SDL3
     add_subdirectory(lib/SDL3 EXCLUDE_FROM_ALL)
-    add_subdirectory(lib/NFD)
 
     # ImGui
     set(IMGUI_DIR "lib/imgui")
@@ -110,7 +109,6 @@ if(BUILD_MASTER)
     include_directories(${IMGUI_DIR})
     include_directories(${IMGUI_DIR}/backends)
     include_directories(lib/json/include)
-    include_directories(lib/NFD/src/include)
     include_directories(lib/notify)
 
     # ============================================================
@@ -270,7 +268,6 @@ if(BUILD_MASTER)
         set_property(TARGET master PROPERTY CXX_STANDARD_REQUIRED ON)
         target_link_libraries(master PRIVATE
             ${OpenCV_LIBS}
-            nfd
             opencv_core
             opencv_imgproc
             opencv_imgcodecs
