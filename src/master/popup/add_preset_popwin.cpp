@@ -1,5 +1,6 @@
 #include "add_preset_popwin.h"
 #include "src/imgui_notify.h"
+#include "../windows/inspector.h"
 
 AddPresetPopup::AddPresetPopup(
     std::shared_ptr<json> _setting, 
@@ -41,7 +42,13 @@ void AddPresetPopup::render(){
 }
 
 void AddPresetPopup::save_preset(){
+    json status = json::object();
+    json setting = json::object();
     json data = json::object();
+    int32_t t = master->findCamera(state->current_camera_item);
+    if(t < 0) return;
+    std::lock_guard lock(master->camera_mtx);
+    const std::shared_ptr<CameraInfo>& c = master->getCameras().at(t);
     if(preset_name.size() == 0){
         ImGuiToast toast(ImGuiToastType_Error, 3000);
         toast.set_title("Preset Save Failed");
@@ -49,6 +56,13 @@ void AddPresetPopup::save_preset(){
         ImGui::InsertNotification(toast);
         return;
     }
+    if(!master->getSettingsFromCamera(*c, setting)) return;
+    if(!master->getStatusFromCamera(*c, status)) return;
+    int32_t preset_id = status[std::to_string(PRESET_ID)].get<int32_t>();
+    data["name"] = preset_name;
+    data["model"] = InspectorWindow::_get_current_model(c->hw);
+    data["preset"] = preset_id;
+    data["setting"] = setting;
     int32_t result = master->add_preset(preset_name, data);
     if(result == 0){
         ImGuiToast toast(ImGuiToastType_Success, 3000);
