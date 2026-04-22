@@ -286,12 +286,20 @@ void GoProMaster::download_last_media(const std::string dir, bool put_finish){
         for(auto& s : cameras){
             std::string filename = s->name + fs::path(s->last_media).extension().string();
             if(filename.size() == 0) continue;
-            std::string _url = "http://" + s->server + ":8080/last_media?ip=" + s->ip;
-            std::string _name = dir + "/" + filename;
-            urls.push_back(_url);
-            names.push_back(_name);
-            std::cout << "media download: " << _url.c_str() << "  " << _name.c_str() << std::endl;
-            if(urls.size() >= 4){
+            std::string fetch_url = "http://" + s->server + ":8080/last_media?ip=" + s->ip + "&local=";
+            if(s->server == "127.0.0.1") fetch_url += "1";
+            else fetch_url += "0";
+
+            std::string result = exec(fetch_url);
+            json media_url = json::parse(result);
+            if(!media_url["path"].is_string()) continue;
+
+            std::string path_target = dir + "/" + filename;
+            urls.push_back(media_url["path"].get<std::string>());
+            names.push_back(path_target);
+            
+            std::cout << "media download: " << fetch_url.c_str() << "  " << path_target.c_str() << std::endl;
+            if(urls.size() >= 3){
                 execs_download(urls, names);
                 urls.clear();
                 names.clear();
