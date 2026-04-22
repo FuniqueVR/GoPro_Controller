@@ -415,9 +415,15 @@ void WebsocketServer(){
 
 void HttpServer(){
     hv::HttpService router;
-
+    if(fs::exists("res")){
+        fs::remove_all("res");
+    }
+    fs::create_directory("res");
+    router.Static("/res", "./res");
     router.GET("/last_media", [](HttpRequest* req, HttpResponse* resp) {
         std::string target_ip = req->GetParam("ip");
+        std::string is_local_str = req->GetParam("local");
+        bool is_local = is_local_str == "1";
 
         std::cout << "Http GET /last_media " << target_ip << std::endl;
 
@@ -441,21 +447,20 @@ void HttpServer(){
 
             std::string gopro_url = "http://" + target_ip + ":8080/videos/DCIM/" + folder + "/" + file + "?download=true";
 
-            std::cout << "Trying to proxy to file getter: " << gopro_url << std::endl;
-
-            auto gopro_resp = requests::get(gopro_url.c_str());
-
-            if (gopro_resp == NULL) {
-                resp->status_code = http_status::HTTP_STATUS_BAD_GATEWAY;
-                return resp->String("{\"error\": \"Failed to reach GoPro\"}");
+            if(is_local){
+                return resp->String("{\"path\": \"" + gopro_url + "\"}");
+            }else{
+                int32_t t = 0;
+                std::string download_path = "temp.download";
+                while(fs::exists("res/" + download_path)){
+                    download_path = "temp.download" + std::to_string(t);
+                    t++;
+                }
+                size_t size = requests::downloadFile(gopro_url.c_str(), ("res/" + download_path).c_str(), [&target_ip](size_t received_bytes, size_t total_bytes){
+                    std::cout << "[last_media] download " << target_ip << " " << received_bytes << " / " << total_bytes << std::endl;
+                });
+                return resp->String("{\"path\": \"" + download_path + "\"}");
             }
-
-            // 4. Send the GoPro's response back to the client
-            resp->status_code = gopro_resp->status_code;
-            resp->content_type = gopro_resp->content_type;
-            resp->body = gopro_resp->body;
-            resp->headers["Content-Disposition"] = "attachment; filename=" + folder + "/" + file;
-            return 200; // Handled
         }
         catch(const std::exception& ex){
             std::cerr << ex.what() << std::endl;
