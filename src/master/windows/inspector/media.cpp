@@ -68,6 +68,10 @@ void InspectorWindow::draw_media_global(){
     if(ImGui::IsItemHovered()) ImGui::SetTooltip("Open file explorer for home directory");
     ImGui::SameLine();
     if(ImGui::Button("Open Select Path", button_size)){
+        std::system((std::string("open \"") + state->current_download_location + std::string("\"")).c_str());
+    }
+    ImGui::SameLine();
+    if(ImGui::Button("Pick Path", button_size)){
         open_dialog_for_folder_selection();
     }
 
