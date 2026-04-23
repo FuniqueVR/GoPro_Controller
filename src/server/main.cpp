@@ -13,6 +13,7 @@
 #endif
 #include <iostream>
 #include <vector>
+#include "crashlogs.h"
 #include "../common/config.h"
 #include "hv/WebSocketServer.h"
 #include "hv/EventLoop.h"
@@ -508,6 +509,12 @@ void UDPProxyServer(){
 }
 
 int main() {
+    glaiel::crashlogs::set_crashlog_folder(".");
+    glaiel::crashlogs::set_crashlog_filename("crashlog.txt");
+    glaiel::crashlogs::set_on_write_crashlog_callback([](std::string msg){
+        std::cerr << "Crash: " << msg.c_str() << std::endl;
+    });
+    glaiel::crashlogs::begin_monitoring();
     setvbuf(stdout, NULL, _IONBF, 0);
     setvbuf(stderr, NULL, _IONBF, 0);
 

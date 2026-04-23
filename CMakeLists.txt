@@ -48,6 +48,7 @@ if(BUILD_SERVER OR BUILD_MASTER)
     )
     FetchContent_MakeAvailable(libhv)
     include_directories(lib/mdns/include)
+    include_directories(lib/crashlog)
     set(MDNS_DIR "lib/mdns")
     file(GLOB MDNS_SOURCES
         "${MDNS_DIR}/src/logger.cpp"
