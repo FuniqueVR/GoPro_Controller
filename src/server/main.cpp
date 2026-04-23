@@ -510,6 +510,7 @@ void UDPProxyServer(){
 
 int main() {
 #ifdef _WIN32
+    std::cout << "Register crashlog object" << std::endl;
     glaiel::crashlogs::set_crashlog_folder(".");
     glaiel::crashlogs::set_crashlog_filename("crashlog.txt");
     glaiel::crashlogs::set_on_write_crashlog_callback([](std::string msg){
@@ -521,14 +522,17 @@ int main() {
     setvbuf(stderr, NULL, _IONBF, 0);
 
     std::thread t1 = std::thread([=]() {
+        std::cout << "Create websocket server" << std::endl;
         WebsocketServer();
     });
 
     std::thread t2 = std::thread([=]() {
+        std::cout << "Create http server" << std::endl;
         HttpServer();
     });
 
     std::thread t3 = std::thread([=]() {
+        std::cout << "Create udp server" << std::endl;
         UDPProxyServer();
     });
 

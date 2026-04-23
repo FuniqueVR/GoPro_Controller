@@ -151,11 +151,29 @@ private:
     mdns_cpp::mDNS mdns;
     bool mdns_scaned = false;
     std::vector<std::thread> scan_workers;
+    /**
+     * @brief IP address record
+     */
     std::vector<std::string> camera_ips;
+    /**
+     * @brief IP address record (Alive)
+     */
     std::vector<std::string> camera_alive_ips;
-    std::mutex ips_alive_mutex;
-    std::unordered_map<std::string, json> camera_hw;
-    std::unordered_map<std::string, std::string> camera_name;
+    /**
+     * @brief IP address record (Thread Guard)
+     */
     std::mutex ips_mutex;
+    /**
+     * @brief IP address record (Alive) (Thread Guard)
+     */
+    std::mutex ips_alive_mutex;
+    /**
+     * @brief IP : Hardware info json data
+     */
+    std::unordered_map<std::string, json> camera_hw;
+    /**
+     * @brief IP : Name
+     */
+    std::unordered_map<std::string, std::string> camera_name;
     std::atomic<bool> scanning{false}; // To track scanning state if needed
 };
