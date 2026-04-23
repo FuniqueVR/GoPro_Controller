@@ -407,8 +407,29 @@ const static int32_t GPS_SUPPORT[] = {
 };
 #pragma endregion
 
+#pragma region Shot Countdown
+#define SHOT_COUNTDOWN_ID 105
+#define SHOT_COUNTDOWN_SIZE 3
+#define SHOT_COUNTDOWN_NAME "Shut Countdown"
+#define SHOT_COUNTDOWN_AVA MODEL_13_ALL
+const static char* SHOT_COUNTDOWN_STRING[] = {
+    "Off",
+    "3 Seconds",
+    "10 Seconds",
+};
+const static int32_t SHOT_COUNTDOWN_VALUE[] = {
+    0, // Off
+    1, // 3 Seconds
+    2, // 10 Second
+};
+const static int32_t SHOT_COUNTDOWN_SUPPORT[] = {
+    MODEL_13_ALL, // Off
+    MODEL_13_ALL, // 3 Seconds
+    MODEL_13_ALL, // 10 Second
+};
+#pragma endregion
 
-#pragma region GPS
+#pragma region HLS
 #define HLG_ID 199
 #define HLG_SIZE 2
 #define HLG_NAME "HLG"

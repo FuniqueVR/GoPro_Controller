@@ -82,6 +82,7 @@ const static int32_t GOPRO_SETTING_IDS[] = {
     ISO_MAX_PHOTO_ID,
     SHUTTER_SPEED_VIDEO_ID,
     SHUTTER_SPEED_PHOTO_ID,
+    SHOT_COUNTDOWN_ID,
 };
 #define GOPRO_SETTING_SIZE sizeof(GOPRO_SETTING_IDS)/sizeof(int32_t)
 
@@ -138,6 +139,7 @@ const static int32_t GOPRO_PHOTO_SETTING_IDS[] = {
     PHOTO_LENS_ID,
     ENABLE_NIGHT_PHOTO_ID,
     // Detail
+    SHOT_COUNTDOWN_ID,
     // FRAMING_ID
     PHOTO_HORIZON_LEVELING_ID,
     PHOTO_SINGLE_INTERVAL_ID,
@@ -286,6 +288,7 @@ const static int32_t GOPRO_MEDIA_STATUS_IDS[] = {
 // Lookup functions
 inline const int32_t GET_SETTING_SIZE_BY_ID(int32_t x) {
     switch(x) {
+        case SHOT_COUNTDOWN_ID              : return SHOT_COUNTDOWN_SIZE;
         case VIDEO_RESOLUTION_ID            : return VIDEO_RESOLUTION_SIZE;
         case FRAMES_PER_SECOND_ID           : return FRAMES_PER_SECOND_SIZE;
         case VIDEO_LENS_ID                  : return VIDEO_LENS_SIZE;
@@ -352,6 +355,7 @@ inline const int32_t GET_SETTING_SIZE_BY_ID(int32_t x) {
 
 inline const int32_t GET_SETTING_AVA_BY_ID(int32_t x) {
     switch(x) {
+        case SHOT_COUNTDOWN_ID              : return SHOT_COUNTDOWN_AVA;
         case VIDEO_RESOLUTION_ID            : return VIDEO_RESOLUTION_AVA;
         case FRAMES_PER_SECOND_ID           : return FRAMES_PER_SECOND_AVA;
         case VIDEO_LENS_ID                  : return VIDEO_LENS_AVA;
@@ -418,6 +422,7 @@ inline const int32_t GET_SETTING_AVA_BY_ID(int32_t x) {
 
 inline const char* GET_SETTING_NAME_BY_ID(int32_t x) {
     switch(x) {
+        case SHOT_COUNTDOWN_ID              : return SHOT_COUNTDOWN_NAME;
         case VIDEO_RESOLUTION_ID            : return VIDEO_RESOLUTION_NAME;
         case FRAMES_PER_SECOND_ID           : return FRAMES_PER_SECOND_NAME;
         case VIDEO_LENS_ID                  : return VIDEO_LENS_NAME;
@@ -484,6 +489,7 @@ inline const char* GET_SETTING_NAME_BY_ID(int32_t x) {
 
 inline const char** GET_SETTING_STRING_BY_ID(int32_t x) {
     switch(x) {
+        case SHOT_COUNTDOWN_ID              : return SHOT_COUNTDOWN_STRING;
         case VIDEO_RESOLUTION_ID            : return VIDEO_RESOLUTION_STRING;
         case FRAMES_PER_SECOND_ID           : return FRAMES_PER_SECOND_STRING;
         case VIDEO_LENS_ID                  : return VIDEO_LENS_STRING;
@@ -550,6 +556,7 @@ inline const char** GET_SETTING_STRING_BY_ID(int32_t x) {
 
 inline const int32_t* GET_SETTING_VALUE_BY_ID(int32_t x) {
     switch(x) {
+        case SHOT_COUNTDOWN_ID              : return SHOT_COUNTDOWN_VALUE;
         case VIDEO_RESOLUTION_ID            : return VIDEO_RESOLUTION_VALUE;
         case FRAMES_PER_SECOND_ID           : return FRAMES_PER_SECOND_VALUE;
         case VIDEO_LENS_ID                  : return VIDEO_LENS_VALUE;
@@ -616,6 +623,7 @@ inline const int32_t* GET_SETTING_VALUE_BY_ID(int32_t x) {
 
 inline const int32_t* GET_SETTING_SUPPORT_BY_ID(int32_t x) {
     switch(x) {
+        case SHOT_COUNTDOWN_ID              : return SHOT_COUNTDOWN_SUPPORT;
         case VIDEO_RESOLUTION_ID            : return VIDEO_RESOLUTION_SUPPORT;
         case FRAMES_PER_SECOND_ID           : return FRAMES_PER_SECOND_SUPPORT;
         case VIDEO_LENS_ID                  : return VIDEO_LENS_SUPPORT;
