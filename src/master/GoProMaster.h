@@ -136,6 +136,10 @@ public:
      */
     const std::vector<std::shared_ptr<CameraInfo>>& getCameras() const;
     /**
+     * Get current camera record (Clone, For thread optimization)
+     */
+    const std::vector<CameraInfo> getCameras_Clone() const;
+    /**
      * Get current websocket server record
      */
     const std::vector<std::shared_ptr<ServerConnection>>& getServers() const;

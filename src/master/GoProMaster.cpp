@@ -501,6 +501,17 @@ const std::vector<std::shared_ptr<CameraInfo>>& GoProMaster::getCameras() const 
     return cameras;
 }
 
+const std::vector<CameraInfo> GoProMaster::getCameras_Clone() const {
+    std::vector<CameraInfo> buffer = std::vector<CameraInfo>();
+    {
+        std::lock_guard<std::mutex> lock(camera_mtx);
+        for(auto& i : getCameras()){
+            buffer.push_back(*i.get());
+        }
+    }
+    return buffer;
+}
+
 const std::vector<std::shared_ptr<ServerConnection>>& GoProMaster::getServers() const {
     return servers;
 }
