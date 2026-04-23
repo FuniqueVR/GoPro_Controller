@@ -237,7 +237,11 @@ int main(int, char**)
                     master->command_only("shutter_off");
                     printf("Hotkey F3: Stop Recording\n");
                 }
-                if (event.key.key == SDLK_F4) {
+                if (event.key.key == SDLK_F4 && (event.key.mod & SDL_KMOD_LSHIFT)) {
+                    master->presetSwitch("", "", 65538);
+                    printf("Hotkey F4 + Shift: Photo Burst Mode\n");
+                }
+                if (event.key.key == SDLK_F4 && !(event.key.mod & SDL_KMOD_LSHIFT)) {
                     master->presetSwitch("", "", 65536);
                     printf("Hotkey F4: Photo Mode\n");
                 }
