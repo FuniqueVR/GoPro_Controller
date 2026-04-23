@@ -4,13 +4,15 @@
  * This software is licensed under the [MIT License].
  * See the LICENSE file in the project root for more information.
 */
+#ifdef _WIN32
+#include "crashlogs.h"
+#endif
 #include <iostream>
 #include <fstream>
 #include <chrono>
 #include <vector>
 #include <thread>
 #include "GoProMaster.h"
-#include "crashlogs.h"
 #include "io.h"
 #include "data/state_action.h"
 #include "../common/camera_code.h"
@@ -158,12 +160,14 @@ void pushCommand(const char* cmd){
 
 int main(int, char**)
 {
+#ifdef _WIN32
     glaiel::crashlogs::set_crashlog_folder(".");
     glaiel::crashlogs::set_crashlog_filename("crashlog.txt");
     glaiel::crashlogs::set_on_write_crashlog_callback([](std::string msg){
         std::cerr << "Crash: " << msg.c_str() << std::endl;
     });
     glaiel::crashlogs::begin_monitoring();
+#endif
     setvbuf(stdout, NULL, _IONBF, 0);
     setvbuf(stderr, NULL, _IONBF, 0);
     
