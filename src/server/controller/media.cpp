@@ -74,7 +74,11 @@ std::string GoProController::getLastMedia(std::string target){
         std::vector<SingleResponse> results = _getAllLastMedia(camera_ips);
         for(int32_t i = 0; i < results.size(); i++){
             address = results[i].first;
-            res = json::parse(results[i].second);
+            try{
+                res = json::parse(results[i].second);
+            }catch(const std::exception& ex){
+                res = json::object();
+            }
             json b;
             b["ip"] = address;
             b["filename"] = res;
