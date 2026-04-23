@@ -2453,7 +2453,6 @@ const static int32_t ISO_MAX_BURST_SUPPORT[] = {
 };
 #pragma endregion
 
-
 #pragma region Shutter Speed Video
 #define SHUTTER_SPEED_VIDEO_ID 145
 #define SHUTTER_SPEED_VIDEO_SIZE 62
