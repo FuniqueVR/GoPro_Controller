@@ -10,10 +10,10 @@
 
 void GoProController::previewOn(std::string target, int32_t port){
     if(target.size() > 0) _previewOn(target, port); 
-    else _previewAllOn(camera_ips, port);
+    else _previewAllOn(camera_alive_ips, port);
 }
 
 void GoProController::previewOff(std::string target){
     if(target.size() > 0) _previewOff(target); 
-    else _previewAllOff(camera_ips);
+    else _previewAllOff(camera_alive_ips);
 }

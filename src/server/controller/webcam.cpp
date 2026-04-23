@@ -62,7 +62,7 @@ std::string GoProController::webcamStatus(std::string target){
     }else{
         std::vector<std::future<SingleResponse>> calls = 
             std::vector<std::future<SingleResponse>>();
-        for(std::string ip : camera_ips){
+        for(std::string ip : camera_alive_ips){
             calls.push_back(std::async(std::launch::async, [this, ip]() {
                 return _webcamStatus(ip);
             }));
