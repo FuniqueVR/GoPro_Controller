@@ -207,7 +207,11 @@ void CameraListWindow::draw_group_state(const std::shared_ptr<CameraInfo>& c){
             }
             if(setting[std::to_string(SHUTTER_SPEED_ID)].is_number_integer()){
                 int32_t re = setting[std::to_string(SHUTTER_SPEED_ID)].get<int32_t>();
-                shutter_speed = SHUTTER_SPEED_VIDEO_STRING[re];
+                if(preset == 0){ // Video
+                    shutter_speed = SHUTTER_SPEED_VIDEO_STRING[re];
+                }else {
+                    shutter_speed = SHUTTER_SPEED_PHOTO_STRING[re];
+                }
                 if(shutter_speed == "Auto"){
                     shutter_speed = "S: " + shutter_speed + ", " + ev_setting;
                 }else{

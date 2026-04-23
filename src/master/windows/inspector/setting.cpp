@@ -8,10 +8,14 @@ void InspectorWindow::draw_system(){
 void InspectorWindow::draw_setting(){
     if (state->current_status_items[std::to_string(PRESET_ID)].is_number()) {
         int32_t preset = state->current_status_items[std::to_string(PRESET_ID)].get<int32_t>();
-        if(preset == 0){
-            _draw_setting(video_setting_list_ordered);
-        }else{
+        if(preset == 65536){
             _draw_setting(photo_setting_list_ordered);
+        }
+        else if (preset == 65538){
+            _draw_setting(burst_setting_list_ordered);
+        }
+        else {
+            _draw_setting(video_setting_list_ordered);
         }
     }
 }
@@ -19,10 +23,14 @@ void InspectorWindow::draw_setting(){
 void InspectorWindow::draw_protune(){
     if (state->current_status_items[std::to_string(PRESET_ID)].is_number()) {
         int32_t preset = state->current_status_items[std::to_string(PRESET_ID)].get<int32_t>();
-        if(preset == 0){
+        if(preset == 65536){
+            _draw_setting(photo_protune_list_ordered);
+        }
+        else if (preset == 65538){
+            _draw_setting(burst_protune_list_ordered);
+        }
+        else {
             _draw_setting(video_protune_list_ordered);
-        }else{
-            _draw_setting(photo_protune_list_ordered);       
         }
     }
 }

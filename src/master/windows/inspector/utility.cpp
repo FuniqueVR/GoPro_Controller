@@ -61,14 +61,20 @@ void InspectorWindow::reset_setting_order(){
     for(int32_t i = 0; i < video_setting_list_ordered.size(); i++){
         video_setting_list_ordered[i] = GOPRO_VIDEO_SETTING_IDS[i];
     }
-    for(int32_t i = 0; i < photo_setting_list_ordered.size(); i++){
-        photo_setting_list_ordered[i] = GOPRO_PHOTO_SETTING_IDS[i];
-    }
     for(int32_t i = 0; i < video_protune_list_ordered.size(); i++){
         video_protune_list_ordered[i] = GOPRO_VIDEO_PROTUNE_SETTING_IDS[i];
     }
+    for(int32_t i = 0; i < photo_setting_list_ordered.size(); i++){
+        photo_setting_list_ordered[i] = GOPRO_PHOTO_SETTING_IDS[i];
+    }
     for(int32_t i = 0; i < photo_protune_list_ordered.size(); i++){
         photo_protune_list_ordered[i] = GOPRO_PHOTO_PROTUNE_SETTING_IDS[i];
+    }
+    for(int32_t i = 0; i < burst_setting_list_ordered.size(); i++){
+        burst_setting_list_ordered[i] = GOPRO_BURST_SETTING_IDS[i];
+    }
+    for(int32_t i = 0; i < burst_protune_list_ordered.size(); i++){
+        burst_protune_list_ordered[i] = GOPRO_BURST_PROTUNE_SETTING_IDS[i];
     }
 }
 

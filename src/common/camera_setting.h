@@ -2641,6 +2641,7 @@ const static int32_t SHUTTER_SPEED_VIDEO_SUPPORT[] = {
 #define SHUTTER_SPEED_PHOTO_AVA MODEL_MAX2_ALL
 const static char* SHUTTER_SPEED_PHOTO_STRING[] = {
     "Auto",
+    "Auto Cinematic",
     "1/125",
     "1/250",
     "1/500",
@@ -2649,6 +2650,7 @@ const static char* SHUTTER_SPEED_PHOTO_STRING[] = {
 };
 const static int32_t SHUTTER_SPEED_PHOTO_VALUE[] = {
     0, // Auto
+    6, // Auto Cinematic
     1, // 1/125
     2, // 1/250
     3, // 1/500
@@ -2657,6 +2659,7 @@ const static int32_t SHUTTER_SPEED_PHOTO_VALUE[] = {
 };
 const static int32_t SHUTTER_SPEED_PHOTO_SUPPORT[] = {
     MODEL_MAX2_ALL, // Auto
+    MODEL_MAX2_ALL, // Auto Cinematic
     MODEL_MAX2_ALL, // 1/125
     MODEL_MAX2_ALL, // 1/250
     MODEL_MAX2_ALL, // 1/500

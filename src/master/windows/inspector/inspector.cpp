@@ -3,9 +3,11 @@
 
 std::vector<int32_t> InspectorWindow::system_list_ordered = std::vector<int32_t>(GOPRO_SYSTEM_SETTING_SIZE);
 std::vector<int32_t> InspectorWindow::video_setting_list_ordered = std::vector<int32_t>(GOPRO_VIDEO_SETTING_SIZE);
-std::vector<int32_t> InspectorWindow::photo_setting_list_ordered = std::vector<int32_t>(GOPRO_PHOTO_SETTING_SIZE);
 std::vector<int32_t> InspectorWindow::video_protune_list_ordered = std::vector<int32_t>(GOPRO_VIDEO_PROTUNE_SETTING_SIZE);
+std::vector<int32_t> InspectorWindow::photo_setting_list_ordered = std::vector<int32_t>(GOPRO_PHOTO_SETTING_SIZE);
 std::vector<int32_t> InspectorWindow::photo_protune_list_ordered = std::vector<int32_t>(GOPRO_PHOTO_PROTUNE_SETTING_SIZE);
+std::vector<int32_t> InspectorWindow::burst_setting_list_ordered = std::vector<int32_t>(GOPRO_BURST_SETTING_SIZE);
+std::vector<int32_t> InspectorWindow::burst_protune_list_ordered = std::vector<int32_t>(GOPRO_BURST_PROTUNE_SETTING_SIZE);
 
 std::vector<int32_t> InspectorWindow::status_software_list_ordered = std::vector<int32_t>(GOPRO_SOFTWARE_STATUS_SIZE);
 std::vector<int32_t> InspectorWindow::status_hardware_list_ordered = std::vector<int32_t>(GOPRO_HARDWARE_STATUS_SIZE);
@@ -52,9 +54,11 @@ json InspectorWindow::get_window_data() {
     data["status_order"] = json::object();
     IO_DATA_GET(setting_order, system_list_ordered);
     IO_DATA_GET(setting_order, video_setting_list_ordered);
-    IO_DATA_GET(setting_order, photo_setting_list_ordered);
     IO_DATA_GET(setting_order, video_protune_list_ordered);
+    IO_DATA_GET(setting_order, photo_setting_list_ordered);
     IO_DATA_GET(setting_order, photo_protune_list_ordered);
+    IO_DATA_GET(setting_order, burst_setting_list_ordered);
+    IO_DATA_GET(setting_order, burst_protune_list_ordered);
     IO_DATA_GET(status_order, status_software_list_ordered);
     IO_DATA_GET(status_order, status_hardware_list_ordered);
     IO_DATA_GET(status_order, status_encode_list_ordered);
@@ -76,9 +80,11 @@ void InspectorWindow::set_window_data(json data) {
     if(data["setting_order"].is_object()){
         IO_DATA_SET(setting_order, system_list_ordered);
         IO_DATA_SET(setting_order, video_setting_list_ordered);
-        IO_DATA_SET(setting_order, photo_setting_list_ordered);
         IO_DATA_SET(setting_order, video_protune_list_ordered);
+        IO_DATA_SET(setting_order, photo_setting_list_ordered);
         IO_DATA_SET(setting_order, photo_protune_list_ordered);
+        IO_DATA_SET(setting_order, burst_setting_list_ordered);
+        IO_DATA_SET(setting_order, burst_protune_list_ordered);
     }
     if(data["status_order"].is_array() && data["status_order"].size() == GOPRO_STATUS_SIZE){
         IO_DATA_SET(status_order, status_software_list_ordered);
