@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.14)
 project(GoPro_Controller LANGUAGES CXX)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_C_STANDARD 17)
+set(CMAKE_C_STANDARD 23)
 
 # --- NUCLEAR STATIC OVERRIDES (MUST BE AT THE TOP) ---
 # These must run before ANY include(FetchContent)
@@ -237,7 +237,7 @@ if(BUILD_SERVER)
         ${MDNS_SOURCES}
     )
     if(WIN32)
-        target_compile_options(server PRIVATE "/std:c++17")
+        target_compile_options(server PRIVATE "/std:c++23")
         target_link_options(server PRIVATE "-static-libgcc" "-static-libstdc++" "-static")
     endif()
     target_link_libraries(server hv_static libcurl)
@@ -264,10 +264,10 @@ if(BUILD_MASTER)
         message(STATUS "Default WIN32 Build Master")
 
         set(OPENCV_DIR "${CMAKE_SOURCE_DIR}/lib/opencv")
-        target_compile_options(master PRIVATE "/std:c++17")
+        target_compile_options(master PRIVATE "/std:c++23")
 
-        set_property(TARGET master PROPERTY C_STANDARD 17)
-        set_property(TARGET master PROPERTY CXX_STANDARD 17)
+        set_property(TARGET master PROPERTY C_STANDARD 23)
+        set_property(TARGET master PROPERTY CXX_STANDARD 23)
         set_property(TARGET master PROPERTY CXX_STANDARD_REQUIRED ON)
         target_link_libraries(master PRIVATE
             ${OpenCV_LIBS}
@@ -311,7 +311,7 @@ if(BUILD_MASTER)
         )
         target_link_options(master PRIVATE "-static-libgcc" "-static-libstdc++" "-static")
     else()
-        target_compile_features(master PRIVATE cxx_std_17)
+        target_compile_features(master PRIVATE cxx_std_23)
         target_link_libraries(master PRIVATE
             ${OpenCV_LIBS}
             OpenGL::GL
