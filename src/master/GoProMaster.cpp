@@ -542,7 +542,15 @@ void GoProMaster::update(){
 
         std::lock_guard<std::mutex> lock(locate_mtx);
         for (auto& s : locates) {
-            presetSwitch(s.first, s.second, 0);
+            int32_t index = findCamera(s.first, s.second);
+            if(index == -1) continue;
+            auto& c = getCameras().at(index);
+            json status;
+            if(getStatusFromCamera(*c, status)){
+                if(status[std::to_string(PRESET_ID)].is_number()){
+                    presetSwitch(s.first, s.second, status[std::to_string(PRESET_ID)].get<int32_t>());
+                }
+            }
         }
         
         std::this_thread::sleep_for(std::chrono::seconds(1));

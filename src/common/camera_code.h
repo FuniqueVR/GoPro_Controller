@@ -20,6 +20,7 @@
  * Things must be register here, to the converter works
  */
 const static int32_t GOPRO_SETTING_IDS[] = {
+    PHOTO_BURST_RATE_ID,
     VIDEO_RESOLUTION_ID,
     FRAMES_PER_SECOND_ID,
     VIDEO_LENS_ID,
@@ -95,7 +96,6 @@ const static int32_t GOPRO_SYSTEM_SETTING_IDS[] = {
     LCD_BRIGHTNESS_ID,
     LED_ID,
     WIRELESS_BAND_ID,
-    PHOTO_OUTPUT_ID,
     BEEP_VOLUME_ID,
     ANTI_FLICKER_ID,
     ANTI_FLICKER_V2_ID,
@@ -141,6 +141,7 @@ const static int32_t GOPRO_PHOTO_SETTING_IDS[] = {
     PHOTO_LENS_ID,
     ENABLE_NIGHT_PHOTO_ID,
     // Detail
+    PHOTO_OUTPUT_ID,
     SHOT_COUNTDOWN_ID,
     // FRAMING_ID
     PHOTO_HORIZON_LEVELING_ID,
@@ -166,6 +167,8 @@ const static int32_t GOPRO_BURST_SETTING_IDS[] = {
     PHOTO_LENS_ID,
     ENABLE_NIGHT_PHOTO_ID,
     // Detail
+    BURST_OUTPUT_ID,
+    PHOTO_BURST_RATE_ID,
     SHOT_COUNTDOWN_ID,
     // FRAMING_ID
     PHOTO_HORIZON_LEVELING_ID,
@@ -316,6 +319,8 @@ const static int32_t GOPRO_MEDIA_STATUS_IDS[] = {
 // Lookup functions
 inline const int32_t GET_SETTING_SIZE_BY_ID(int32_t x) {
     switch(x) {
+        case BURST_OUTPUT_ID                : return BURST_OUTPUT_SIZE;
+        case PHOTO_BURST_RATE_ID            : return PHOTO_BURST_RATE_SIZE;
         case ISO_MIN_BURST_ID               : return ISO_MIN_BURST_SIZE;
         case ISO_MAX_BURST_ID               : return ISO_MAX_BURST_SIZE;
         case SHOT_COUNTDOWN_ID              : return SHOT_COUNTDOWN_SIZE;
@@ -385,6 +390,8 @@ inline const int32_t GET_SETTING_SIZE_BY_ID(int32_t x) {
 
 inline const int32_t GET_SETTING_AVA_BY_ID(int32_t x) {
     switch(x) {
+        case BURST_OUTPUT_ID                : return BURST_OUTPUT_AVA;
+        case PHOTO_BURST_RATE_ID            : return PHOTO_BURST_RATE_AVA;
         case ISO_MIN_BURST_ID               : return ISO_MIN_BURST_AVA;
         case ISO_MAX_BURST_ID               : return ISO_MAX_BURST_AVA;
         case SHOT_COUNTDOWN_ID              : return SHOT_COUNTDOWN_AVA;
@@ -454,6 +461,8 @@ inline const int32_t GET_SETTING_AVA_BY_ID(int32_t x) {
 
 inline const char* GET_SETTING_NAME_BY_ID(int32_t x) {
     switch(x) {
+        case BURST_OUTPUT_ID                : return BURST_OUTPUT_NAME;
+        case PHOTO_BURST_RATE_ID            : return PHOTO_BURST_RATE_NAME;
         case ISO_MIN_BURST_ID               : return ISO_MIN_BURST_NAME;
         case ISO_MAX_BURST_ID               : return ISO_MAX_BURST_NAME;
         case SHOT_COUNTDOWN_ID              : return SHOT_COUNTDOWN_NAME;
@@ -523,6 +532,8 @@ inline const char* GET_SETTING_NAME_BY_ID(int32_t x) {
 
 inline const char** GET_SETTING_STRING_BY_ID(int32_t x) {
     switch(x) {
+        case BURST_OUTPUT_ID                : return BURST_OUTPUT_STRING;
+        case PHOTO_BURST_RATE_ID            : return PHOTO_BURST_RATE_STRING;
         case ISO_MIN_BURST_ID               : return ISO_MIN_BURST_STRING;
         case ISO_MAX_BURST_ID               : return ISO_MAX_BURST_STRING;
         case SHOT_COUNTDOWN_ID              : return SHOT_COUNTDOWN_STRING;
@@ -592,6 +603,8 @@ inline const char** GET_SETTING_STRING_BY_ID(int32_t x) {
 
 inline const int32_t* GET_SETTING_VALUE_BY_ID(int32_t x) {
     switch(x) {
+        case BURST_OUTPUT_ID                : return BURST_OUTPUT_VALUE;
+        case PHOTO_BURST_RATE_ID            : return PHOTO_BURST_RATE_VALUE;
         case ISO_MIN_BURST_ID               : return ISO_MIN_BURST_VALUE;
         case ISO_MAX_BURST_ID               : return ISO_MAX_BURST_VALUE;
         case SHOT_COUNTDOWN_ID              : return SHOT_COUNTDOWN_VALUE;
@@ -661,6 +674,8 @@ inline const int32_t* GET_SETTING_VALUE_BY_ID(int32_t x) {
 
 inline const int32_t* GET_SETTING_SUPPORT_BY_ID(int32_t x) {
     switch(x) {
+        case BURST_OUTPUT_ID                : return BURST_OUTPUT_SUPPORT;
+        case PHOTO_BURST_RATE_ID            : return PHOTO_BURST_RATE_SUPPORT;
         case ISO_MIN_BURST_ID               : return ISO_MIN_BURST_SUPPORT;
         case ISO_MAX_BURST_ID               : return ISO_MAX_BURST_SUPPORT;
         case SHOT_COUNTDOWN_ID              : return SHOT_COUNTDOWN_SUPPORT;

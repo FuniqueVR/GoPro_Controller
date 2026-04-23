@@ -57,12 +57,15 @@ std::vector<SingleResponse> GoProController::_setAllSetting(std::vector<std::str
     std::vector<int32_t> buffer = std::vector<int32_t>();
 
     for(auto& target : targets){
-        if(preset == 0){
-            SETTING_UTILITY_CALL(r, a, buffer, GOPRO_VIDEO_SETTING_SIZE, GOPRO_VIDEO_SETTING_IDS);
-            SETTING_UTILITY_CALL(r, a, buffer, GOPRO_VIDEO_PROTUNE_SETTING_SIZE, GOPRO_VIDEO_PROTUNE_SETTING_IDS);
-        }else{
+        if(preset == 65538){ // Burst
+            SETTING_UTILITY_CALL(r, a, buffer, GOPRO_BURST_SETTING_SIZE, GOPRO_BURST_SETTING_IDS);
+            SETTING_UTILITY_CALL(r, a, buffer, GOPRO_BURST_PROTUNE_SETTING_SIZE, GOPRO_BURST_PROTUNE_SETTING_IDS);
+        }else if(preset == 65536){ // Photo
             SETTING_UTILITY_CALL(r, a, buffer, GOPRO_PHOTO_SETTING_SIZE, GOPRO_PHOTO_SETTING_IDS);
             SETTING_UTILITY_CALL(r, a, buffer, GOPRO_PHOTO_PROTUNE_SETTING_SIZE, GOPRO_PHOTO_PROTUNE_SETTING_IDS);
+        }else{
+            SETTING_UTILITY_CALL(r, a, buffer, GOPRO_VIDEO_SETTING_SIZE, GOPRO_VIDEO_SETTING_IDS);
+            SETTING_UTILITY_CALL(r, a, buffer, GOPRO_VIDEO_PROTUNE_SETTING_SIZE, GOPRO_VIDEO_PROTUNE_SETTING_IDS);
         }
         SETTING_UTILITY_CALL(r, a, buffer, GOPRO_SYSTEM_SETTING_SIZE, GOPRO_SYSTEM_SETTING_IDS);
     }
@@ -75,12 +78,15 @@ std::vector<SingleResponse> GoProController::_setSetting(std::string target, int
     std::vector<SingleResponse> a = std::vector<SingleResponse>();
     std::vector<int32_t> buffer = std::vector<int32_t>();
     
-    if(preset == 0){
-        SETTING_UTILITY_CALL(r, a, buffer, GOPRO_VIDEO_SETTING_SIZE, GOPRO_VIDEO_SETTING_IDS);
-        SETTING_UTILITY_CALL(r, a, buffer, GOPRO_VIDEO_PROTUNE_SETTING_SIZE, GOPRO_VIDEO_PROTUNE_SETTING_IDS);
-    }else{
+    if(preset == 65538){ // Burst
+        SETTING_UTILITY_CALL(r, a, buffer, GOPRO_BURST_SETTING_SIZE, GOPRO_BURST_SETTING_IDS);
+        SETTING_UTILITY_CALL(r, a, buffer, GOPRO_BURST_PROTUNE_SETTING_SIZE, GOPRO_BURST_PROTUNE_SETTING_IDS);
+    }else if(preset == 65536){ // Photo
         SETTING_UTILITY_CALL(r, a, buffer, GOPRO_PHOTO_SETTING_SIZE, GOPRO_PHOTO_SETTING_IDS);
         SETTING_UTILITY_CALL(r, a, buffer, GOPRO_PHOTO_PROTUNE_SETTING_SIZE, GOPRO_PHOTO_PROTUNE_SETTING_IDS);
+    }else{
+        SETTING_UTILITY_CALL(r, a, buffer, GOPRO_VIDEO_SETTING_SIZE, GOPRO_VIDEO_SETTING_IDS);
+        SETTING_UTILITY_CALL(r, a, buffer, GOPRO_VIDEO_PROTUNE_SETTING_SIZE, GOPRO_VIDEO_PROTUNE_SETTING_IDS);
     }
     SETTING_UTILITY_CALL(r, a, buffer, GOPRO_SYSTEM_SETTING_SIZE, GOPRO_SYSTEM_SETTING_IDS);
 

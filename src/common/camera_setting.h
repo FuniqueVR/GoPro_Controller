@@ -726,6 +726,25 @@ const static int32_t PHOTO_OUTPUT_SUPPORT[] = {
 };
 #pragma endregion
 
+#pragma region Burst Output
+#define BURST_OUTPUT_ID 126
+#define BURST_OUTPUT_SIZE 2
+#define BURST_OUTPUT_NAME "Burst Output"
+#define BURST_OUTPUT_AVA MODEL_MAX2_ALL&(~MODEL_11)
+const static char* BURST_OUTPUT_STRING[] = {
+    "Standard",
+    "RAW",
+};
+const static int32_t BURST_OUTPUT_VALUE[] = {
+    0, // Standard 
+    1, // RAW 
+};
+const static int32_t BURST_OUTPUT_SUPPORT[] = {
+    MODEL_MAX2_ALL&(~MODEL_11), // Standard 
+    MODEL_MAX2_ALL&(~MODEL_11), // RAW 
+};
+#pragma endregion
+
 #pragma region Media Format
 #define MEDIA_FORMAT_ID 128
 #define MEDIA_FORMAT_SIZE 4
@@ -2636,7 +2655,7 @@ const static int32_t SHUTTER_SPEED_VIDEO_SUPPORT[] = {
 
 #pragma region Shutter Speed Photo
 #define SHUTTER_SPEED_PHOTO_ID 146
-#define SHUTTER_SPEED_PHOTO_SIZE 6
+#define SHUTTER_SPEED_PHOTO_SIZE 7
 #define SHUTTER_SPEED_PHOTO_NAME "Shutter Speed"
 #define SHUTTER_SPEED_PHOTO_AVA MODEL_MAX2_ALL
 const static char* SHUTTER_SPEED_PHOTO_STRING[] = {
@@ -2665,6 +2684,49 @@ const static int32_t SHUTTER_SPEED_PHOTO_SUPPORT[] = {
     MODEL_MAX2_ALL, // 1/500
     MODEL_MAX2_ALL, // 1/1000
     MODEL_MAX2_ALL, // 1/2000
+};
+#pragma endregion
+
+#pragma region Photo Burst Rate
+#define PHOTO_BURST_RATE_ID 147
+#define PHOTO_BURST_RATE_SIZE 10
+#define PHOTO_BURST_RATE_NAME "Photo Burst Rate"
+#define PHOTO_BURST_RATE_AVA MODEL_MAX2_ALL
+const static char* PHOTO_BURST_RATE_STRING[] = {
+    "60 Photos / 10 Seconds",
+    "60 Photos / 6 Seconds",
+    "30 Photos / 6 Seconds",
+    "30 Photos / 3 Seconds",
+    "30 Photos / 1 Second",
+    "10 Photos / 3 Seconds",
+    "10 Photos / 1 Second",
+    "5 Photos / 1 Second",
+    "3 Photos / 1 Second",
+    "Auto",
+};
+const static int32_t PHOTO_BURST_RATE_VALUE[] = {
+    13, // 60 Photos / 10 Seconds
+    12, // 60 Photos / 6 Seconds
+    8, // 30 Photos / 6 Seconds
+    7, // 30 Photos / 3 Seconds
+    5, // 30 Photos / 1 Second
+    4, // 10 Photos / 3 Seconds
+    2, // 10 Photos / 1 Second
+    1, // 5 Photos / 1 Second
+    0, // 3 Photos / 1 Second
+    9, // Auto
+};
+const static int32_t PHOTO_BURST_RATE_SUPPORT[] = {
+    MODEL_MAX2_ALL, // 60 Photos / 10 Seconds
+    MODEL_MAX2_ALL, // 60 Photos / 6 Seconds
+    MODEL_MAX2_ALL, // 30 Photos / 6 Seconds
+    MODEL_MAX2_ALL, // 30 Photos / 3 Seconds
+    MODEL_MAX2_ALL, // 30 Photos / 1 Second
+    MODEL_MAX2_ALL, // 10 Photos / 3 Seconds
+    MODEL_MAX2_ALL, // 10 Photos / 1 Second
+    MODEL_MAX2_ALL, // 5 Photos / 1 Second
+    MODEL_MAX2_ALL, // 3 Photos / 1 Second
+    MODEL_MAX2_ALL, // Auto
 };
 #pragma endregion
 
