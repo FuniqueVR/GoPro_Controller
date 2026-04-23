@@ -35,22 +35,6 @@ SingleResponse GoProController::_queryHW(std::string target){
     return _getSingleResponse(target, "/gopro/camera/info");
 }
 
-std::vector<SingleResponse> GoProController::_setAllSetting(std::vector<std::string> targets, int32_t ID, std::string value){
-    std::string url = "/gopro/camera/setting?option=";
-    url += value;
-    url += "&setting=";
-    url += std::to_string(ID);
-    return _getAllResponse(targets, url);
-}
-
-SingleResponse GoProController::_setSetting(std::string target, int32_t ID, std::string value){
-    std::string url = "/gopro/camera/setting?option=";
-    url += value;
-    url += "&setting=";
-    url += std::to_string(ID);
-    return _getSingleResponse(target, url);
-}
-
 std::vector<SingleResponse> GoProController::_setAllSetting(std::vector<std::string> targets, int32_t preset, json res){
     std::vector<SingleResponse> r = std::vector<SingleResponse>();
     std::vector<SingleResponse> a = std::vector<SingleResponse>();
@@ -91,6 +75,22 @@ std::vector<SingleResponse> GoProController::_setSetting(std::string target, int
     SETTING_UTILITY_CALL(r, a, buffer, GOPRO_SYSTEM_SETTING_SIZE, GOPRO_SYSTEM_SETTING_IDS);
 
     return r;
+}
+
+std::vector<SingleResponse> GoProController::_setAllSetting(std::vector<std::string> targets, int32_t ID, std::string value){
+    std::string url = "/gopro/camera/setting?option=";
+    url += value;
+    url += "&setting=";
+    url += std::to_string(ID);
+    return _getAllResponse(targets, url);
+}
+
+SingleResponse GoProController::_setSetting(std::string target, int32_t ID, std::string value){
+    std::string url = "/gopro/camera/setting?option=";
+    url += value;
+    url += "&setting=";
+    url += std::to_string(ID);
+    return _getSingleResponse(target, url);
 }
 
 std::vector<SingleResponse> GoProController::_setSetting_utility(std::string target, json res, std::vector<int32_t> setting_ids){

@@ -2168,7 +2168,7 @@ const static int32_t SHARPNESS_SUPPORT[] = {
 };
 #pragma endregion
 
-#pragma region Sharpness
+#pragma region Denoise
 #define DENOISE_ID 198
 #define DENOISE_SIZE 3
 #define DENOISE_NAME "Denoise"
@@ -2789,6 +2789,37 @@ const static int32_t ISO_BOTH_PHOTO_VALUE[] = {
     5, // 3200
 };
 const static int32_t ISO_BOTH_PHOTO_SUPPORT[] = {
+    MODEL_MAX2_ALL, // 800
+    MODEL_MAX2_ALL, // 400
+    MODEL_MAX2_ALL, // 200
+    MODEL_MAX2_ALL, // 100
+    MODEL_MAX2_ALL, // 1600
+    MODEL_MAX2_ALL, // 3200
+};
+#pragma endregion
+
+#pragma region ISO Both Burst (Virtual)
+#define ISO_BOTH_BURST_ID 10002
+#define ISO_BOTH_BURST_SIZE 6
+#define ISO_BOTH_BURST_NAME "ISO BOTH"
+#define ISO_BOTH_BURST_AVA MODEL_MAX2_ALL
+const static char* ISO_BOTH_BURST_STRING[] = {
+    "800",
+    "400",
+    "200",
+    "100",
+    "1600",
+    "3200",
+};
+const static int32_t ISO_BOTH_BURST_VALUE[] = {
+    0, // 800
+    1, // 400
+    2, // 200
+    3, // 100
+    4, // 1600
+    5, // 3200
+};
+const static int32_t ISO_BOTH_BURST_SUPPORT[] = {
     MODEL_MAX2_ALL, // 800
     MODEL_MAX2_ALL, // 400
     MODEL_MAX2_ALL, // 200
