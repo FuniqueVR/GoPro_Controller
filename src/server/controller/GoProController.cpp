@@ -56,9 +56,10 @@ void GoProController::update(){
     std::thread([&]() {
         while(true){
             if(download_queue.size() != 0){
-                std::string target_ip = download_queue.begin()->first.first;
-                bool is_local = download_queue.begin()->first.second;
-                feedback ff = download_queue.begin()->second;
+                std::string target_ip = download_queue.begin()->ip;
+                bool is_local = download_queue.begin()->islocal;
+                feedback ff = download_queue.begin()->_f;
+                json data = download_queue.begin()->data;
 
                 {
                     std::lock_guard<std::mutex> lock(download_queue_mutex);
@@ -69,22 +70,22 @@ void GoProController::update(){
 
                 if (target_ip.empty()) {
                     std::cerr << "[last_media] " << target_ip << " Missing ip parameter" << std::endl;
-                    ff("");
-                    return;
+                    ff(data);
+                    continue;
                 }
 
                 try{
                     std::string res = exec("http://" + target_ip + ":8080/gopro/media/last_captured");
                     if(res.size() == 0) {
                         std::cerr << "[last_media] " << target_ip << " IP fetch failed" << std::endl;
-                        ff("");
-                        return;
+                        ff(data);
+                        continue;
                     }
                     json last_data = json::parse(res);
                     if(!last_data["file"].is_string() || !last_data["folder"].is_string()){
                         std::cerr << "[last_media] " << target_ip << " no last media file" << std::endl;
-                        ff("");
-                        return;
+                        ff(data);
+                        continue;
                     }
                     std::string folder = last_data["folder"].get<std::string>();
                     std::string file = last_data["file"].get<std::string>();
@@ -94,8 +95,9 @@ void GoProController::update(){
 
                     if(is_local){
                         std::cout << "[last_media] return value: " << target_ip << " => " << gopro_url << std::endl;
-                        ff(gopro_url);
-                        return;
+                        data["path"] = gopro_url;
+                        ff(data);
+                        continue;
                     }else{
                         int32_t t = 0;
                         std::string download_path = "temp.download";
@@ -108,8 +110,9 @@ void GoProController::update(){
                             std::cout << "[last_media] download " << target_ip << " " << received_bytes << " / " << total_bytes << std::endl;
                         });
                         std::cout << "[last_media] return value: " << target_ip << " => " << download_path << std::endl;
-                        ff(download_path);
-                        return;
+                        data["path"] = download_path;
+                        ff(data);
+                        continue;
                     }
                 }
                 catch(const std::exception& ex){

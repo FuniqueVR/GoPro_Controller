@@ -307,14 +307,14 @@ void MediaAction(const WebSocketChannelPtr& channel, json j){
         channel->send(getPacket("media:lastmedia", r));
     }
     else if(name == "url"){
-        controller.getFetchURL(ip, local, [&](std::string path){
-            r["path"] = path;
-            r["local"] = local;
-            r["item"] = item;
-            r["dir"] = dir;
-            r["filename"] = filename;
-            channel->send(getPacket("media:url", r));
-        });
+        r["local"] = local;
+        r["item"] = item;
+        r["dir"] = dir;
+        r["filename"] = filename;
+        feedback ff = [&channel](json r2){
+            channel->send(getPacket("media:url", r2));
+        };
+        controller.getFetchURL(ip, local, r, ff);
     }else{
         channel->send(getPacket("media:unknown", r));
     }

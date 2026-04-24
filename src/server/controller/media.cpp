@@ -97,8 +97,12 @@ std::string GoProController::getLastMedia(std::string target){
     return arr.dump();
 }
 
-void GoProController::getFetchURL(std::string ip, bool islocal, feedback _f){
+void GoProController::getFetchURL(std::string ip, bool islocal, json data, feedback _f){
     std::lock_guard<std::mutex> lock(download_queue_mutex);
-    std::pair<std::string, bool> inner = std::pair<std::string, bool>(ip, islocal);
-    download_queue.push_back(std::pair<std::pair<std::string, bool>, feedback>(inner, _f));
+    DownloadInfo d = DownloadInfo();
+    d.ip = ip;
+    d.islocal = islocal;
+    d.data = data;
+    d._f = _f;
+    download_queue.push_back(d);
 }
