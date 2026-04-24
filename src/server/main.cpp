@@ -456,6 +456,7 @@ void HttpServer(){
                     download_path = "temp.download" + std::to_string(t);
                     t++;
                 }
+                std::cout << "[last_media] try download " << gopro_url.c_str() << std::endl;
                 size_t size = requests::downloadFile(gopro_url.c_str(), ("res/" + download_path).c_str(), [&target_ip](size_t received_bytes, size_t total_bytes){
                     std::cout << "[last_media] download " << target_ip << " " << received_bytes << " / " << total_bytes << std::endl;
                 });
