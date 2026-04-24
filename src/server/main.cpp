@@ -429,25 +429,30 @@ void HttpServer(){
 
         if (target_ip.empty()) {
             resp->status_code = http_status::HTTP_STATUS_BAD_REQUEST;
+            std::cerr << "[last_media] " << target_ip << " Missing ip parameter" << std::endl;
             return resp->String("{\"error\": \"Missing ip parameter\"}");
         }
 
         try{
             std::string res = exec("http://" + target_ip + ":8080/gopro/media/last_captured");
             if(res.size() == 0) {
+                std::cerr << "[last_media] " << target_ip << " IP fetch failed" << std::endl;
                 return resp->String("{\"error\": \"IP fetch failed\"}");
             }
             json last_data = json::parse(res);
             if(!last_data["file"].is_string() || !last_data["folder"].is_string()){
                 resp->status_code = http_status::HTTP_STATUS_BAD_REQUEST;
+                std::cerr << "[last_media] " << target_ip << " no last media file" << std::endl;
                 return resp->String("{\"error\": \"no last media file\"}");
             }
             std::string folder = last_data["folder"].get<std::string>();
             std::string file = last_data["file"].get<std::string>();
+            std::cout << "[last_media] get last_media " << target_ip << "/" << folder << "/" << file << std::endl;
 
             std::string gopro_url = "http://" + target_ip + ":8080/videos/DCIM/" + folder + "/" + file + "?download=true";
 
             if(is_local){
+                std::cout << "[last_media] return value: " << target_ip << " => " << gopro_url << std::endl;
                 return resp->String("{\"path\": \"" + gopro_url + "\"}");
             }else{
                 int32_t t = 0;
@@ -460,6 +465,7 @@ void HttpServer(){
                 size_t size = requests::downloadFile(gopro_url.c_str(), ("res/" + download_path).c_str(), [&target_ip](size_t received_bytes, size_t total_bytes){
                     std::cout << "[last_media] download " << target_ip << " " << received_bytes << " / " << total_bytes << std::endl;
                 });
+                std::cout << "[last_media] return value: " << target_ip << " => " << download_path << std::endl;
                 return resp->String("{\"path\": \"" + download_path + "\"}");
             }
         }
