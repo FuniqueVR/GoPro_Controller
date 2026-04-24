@@ -138,7 +138,7 @@ public:
     /**
      * Get current camera record (Clone, For thread optimization)
      */
-    const std::vector<CameraInfo> getCameras_Clone() const;
+    const std::vector<CameraInfo> getCameras_Clone();
     /**
      * Get current websocket server record
      */
