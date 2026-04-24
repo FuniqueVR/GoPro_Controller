@@ -269,6 +269,11 @@ void ModeAction(const WebSocketChannelPtr& channel, json j){
 void MediaAction(const WebSocketChannelPtr& channel, json j){
     std::string target = "";
     std::string name = "";
+    std::string item = "";
+    std::string ip = "";
+    std::string dir = "";
+    std::string filename = "";
+    bool local = true;
     json r = json::object();
     
     if(j["target"].is_string()){
@@ -277,10 +282,37 @@ void MediaAction(const WebSocketChannelPtr& channel, json j){
     if(j["name"].is_string()){
         name = j["name"].get<std::string>();
     }
+    if(j["item"].is_string()){
+        item = j["item"].get<std::string>();
+    }
+    if(j["ip"].is_string()){
+        ip = j["ip"].get<std::string>();
+    }
+    if(j["dir"].is_string()){
+        dir = j["dir"].get<std::string>();
+    }
+    if(j["filename"].is_string()){
+        filename = j["filename"].get<std::string>();
+    }
+    if(j["local"].is_boolean()){
+        local = j["local"].get<bool>();
+    }
 
     if(name == "lastmedia"){
-        controller.getMediaList(target);
+        try{
+            r["data"] = json::parse(controller.getMediaList(target));
+        }catch(const std::exception& ex){
+            r["data"] = json::array();
+        }
         channel->send(getPacket("media:lastmedia", r));
+    }
+    else if(name == "url"){
+        r["path"] = controller.getFetchURL(ip, local);
+        r["local"] = local;
+        r["item"] = item;
+        r["dir"] = dir;
+        r["filename"] = filename;
+        channel->send(getPacket("media:url", r));
     }else{
         channel->send(getPacket("media:unknown", r));
     }
@@ -420,59 +452,6 @@ void HttpServer(){
     }
     fs::create_directory("res");
     router.Static("/res", "./res");
-    router.GET("/last_media", [](HttpRequest* req, HttpResponse* resp) {
-        std::string target_ip = req->GetParam("ip");
-        std::string is_local_str = req->GetParam("local");
-        bool is_local = is_local_str == "1";
-
-        std::cout << "Http GET /last_media " << target_ip << ", " << is_local_str << std::endl;
-
-        if (target_ip.empty()) {
-            resp->status_code = http_status::HTTP_STATUS_BAD_REQUEST;
-            std::cerr << "[last_media] " << target_ip << " Missing ip parameter" << std::endl;
-            return resp->String("{\"error\": \"Missing ip parameter\"}");
-        }
-
-        try{
-            std::string res = exec("http://" + target_ip + ":8080/gopro/media/last_captured");
-            if(res.size() == 0) {
-                std::cerr << "[last_media] " << target_ip << " IP fetch failed" << std::endl;
-                return resp->String("{\"error\": \"IP fetch failed\"}");
-            }
-            json last_data = json::parse(res);
-            if(!last_data["file"].is_string() || !last_data["folder"].is_string()){
-                resp->status_code = http_status::HTTP_STATUS_BAD_REQUEST;
-                std::cerr << "[last_media] " << target_ip << " no last media file" << std::endl;
-                return resp->String("{\"error\": \"no last media file\"}");
-            }
-            std::string folder = last_data["folder"].get<std::string>();
-            std::string file = last_data["file"].get<std::string>();
-            std::cout << "[last_media] get last_media " << target_ip << "/" << folder << "/" << file << std::endl;
-
-            std::string gopro_url = "http://" + target_ip + ":8080/videos/DCIM/" + folder + "/" + file + "?download=true";
-
-            if(is_local){
-                std::cout << "[last_media] return value: " << target_ip << " => " << gopro_url << std::endl;
-                return resp->String("{\"path\": \"" + gopro_url + "\"}");
-            }else{
-                int32_t t = 0;
-                std::string download_path = "temp.download";
-                while(fs::exists("res/" + download_path)){
-                    download_path = "temp.download" + std::to_string(t);
-                    t++;
-                }
-                std::cout << "[last_media] try download " << gopro_url.c_str() << std::endl;
-                size_t size = requests::downloadFile(gopro_url.c_str(), ("res/" + download_path).c_str(), [&target_ip](size_t received_bytes, size_t total_bytes){
-                    std::cout << "[last_media] download " << target_ip << " " << received_bytes << " / " << total_bytes << std::endl;
-                });
-                std::cout << "[last_media] return value: " << target_ip << " => " << download_path << std::endl;
-                return resp->String("{\"path\": \"" + download_path + "\"}");
-            }
-        }
-        catch(const std::exception& ex){
-            std::cerr << ex.what() << std::endl;
-        }
-    });
 
     hv::HttpServer http_server;
     http_server.registerHttpService(&router);

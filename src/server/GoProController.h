@@ -89,6 +89,7 @@ public:
     // Media part of calls
     std::string getMediaList(std::string target);
     std::string getLastMedia(std::string target);
+    std::string getFetchURL(std::string ip, bool islocal);
 protected:
     // Config
     void _loadRecord();

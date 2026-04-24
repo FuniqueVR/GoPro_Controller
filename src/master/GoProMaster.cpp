@@ -7,6 +7,7 @@
 #include "GoProMaster.h"
 #include <iostream>
 #include <filesystem>
+#include "hv/requests.h"
 #include "windows/inspector.h"
 #include "src/imgui_notify.h"
 
@@ -281,102 +282,89 @@ void GoProMaster::media_only(const std::string command, std::string target){
 
 void GoProMaster::download_last_media(const std::string dir, bool put_finish){
     std::thread([=](){
-        std::vector<std::string> urls = std::vector<std::string>();
-        std::vector<std::string> names = std::vector<std::string>();
+        if(put_finish){
+            downloading_last_media_flag = 2;
+        }else{
+            downloading_last_media_flag = 1;
+        }
+        downloading_last_media_total = 0;
+        downloading_last_media_done = 0;
+
         for(auto& s : cameras){
+            if(!s->connected) continue;
+            
             std::string filename = s->name + fs::path(s->last_media).extension().string();
-            if(filename.size() == 0) {
+            if(filename.size() == 0 || s->name.size() == 0) {
                 std::cerr << "[download_last_media] filename size is 0, we just skip..." << std::endl;
                 continue;
             }
-            std::string fetch_url = "http://" + s->server + ":8080/last_media?ip=" + s->ip + "&local=";
             bool islocal = s->server == "127.0.0.1";
-            if(islocal) fetch_url += "1";
-            else fetch_url += "0";
 
-            std::string result = exec(fetch_url);
-            json media_url;
-            try{
-                media_url = json::parse(result);
-            }catch(const std::exception& ex){
-                media_url = json::object();
-            }
-            if(!media_url["path"].is_string()) continue;
+            json data = json::object();
+            data["key"] = "media";
+            data["value"] = json::object();
+            data["value"]["name"] = "url";
+            data["value"]["item"] = s->name;
+            data["value"]["ip"] = s->ip;
+            data["value"]["local"] = islocal;
+            data["value"]["dir"] = dir;
+            data["value"]["filename"] = filename;
 
-            std::string path_target = dir + "/" + filename;
-            if(islocal){
-                urls.push_back(media_url["path"].get<std::string>());
-            }else{
-                urls.push_back("http://" + s->server + ":8080/res/" + media_url["path"].get<std::string>());
-            }
-            names.push_back(path_target);
-            
-            std::cout << "media download: " << fetch_url.c_str() << "  " << path_target.c_str() << std::endl;
-            if(urls.size() >= 1){
-                execs_download(urls, names);
-                urls.clear();
-                names.clear();
+            for(auto ss : servers){
+                if(s->server == ss->ip && ss->connected){
+                    ss->client.send(data.dump());
+                    downloading_last_media_total++;
+                    break;
+                }
             }
         }
-        if(urls.size() > 0){
-            execs_download(urls, names);
-            urls.clear();
-            names.clear();
+        if(downloading_last_media_total == 0){
+            downloading_last_media_flag = 0;
         }
-        std::string finish_file = dir + "/" + "finish.txt";
-        FILE* f = fopen(finish_file.c_str(), "wb");
-        fclose(f);
     }).detach();
 }
 
 void GoProMaster::download_last_media(const std::string ip, const std::string dir, bool put_finish){
     std::thread([=](){
-        std::vector<std::string> urls = std::vector<std::string>();
-        std::vector<std::string> names = std::vector<std::string>();
+        if(put_finish){
+            downloading_last_media_flag = 2;
+        }else{
+            downloading_last_media_flag = 1;
+        }
+        downloading_last_media_total = 0;
+        downloading_last_media_done = 0;
+
         for(auto& s : cameras){
+            if(!s->connected) continue;
             if(s->ip != ip) continue;
             std::string filename = s->name + fs::path(s->last_media).extension().string();
-            if(filename.size() == 0) {
+            if(filename.size() == 0 || s->name.size() == 0) {
                 std::cerr << "[download_last_media] filename size is 0, we just skip..." << std::endl;
                 continue;
             }
-            std::string fetch_url = "http://" + s->server + ":8080/last_media?ip=" + s->ip + "&local=";
             bool islocal = s->server == "127.0.0.1";
-            if(islocal) fetch_url += "1";
-            else fetch_url += "0";
 
-            std::string result = exec(fetch_url);
-            json media_url;
-            try{
-                media_url = json::parse(result);
-            }catch(const std::exception& ex){
-                media_url = json::object();
-            }
-            if(!media_url["path"].is_string()) continue;
+            json data = json::object();
+            data["key"] = "media";
+            data["value"] = json::object();
+            data["value"]["name"] = "url";
+            data["value"]["item"] = s->name;
+            data["value"]["ip"] = s->ip;
+            data["value"]["local"] = islocal;
+            data["value"]["dir"] = dir;
+            data["value"]["filename"] = filename;
 
-            std::string path_target = dir + "/" + filename;
-            if(islocal){
-                urls.push_back(media_url["path"].get<std::string>());
-            }else{
-                urls.push_back("http://" + s->server + ":8080/res/" + media_url["path"].get<std::string>());
-            }
-            names.push_back(path_target);
-            
-            std::cout << "media download: " << fetch_url.c_str() << "  " << path_target.c_str() << std::endl;
-            if(urls.size() >= 1){
-                execs_download(urls, names);
-                urls.clear();
-                names.clear();
+            for(auto ss : servers){
+                if(s->server == ss->ip && ss->connected){
+                    ss->client.send(data.dump());
+                    downloading_last_media_total++;
+                    break;
+                }
             }
         }
-        if(urls.size() > 0){
-            execs_download(urls, names);
-            urls.clear();
-            names.clear();
+        if(downloading_last_media_total == 0){
+            downloading_last_media_flag = 0;
         }
-        std::string finish_file = dir + "/" + "finish.txt";
-        FILE* f = fopen(finish_file.c_str(), "wb");
-        fclose(f);
     }).detach();
 }
 
@@ -788,30 +776,89 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
             if(!data["value"]["data"].is_array()){
                 std::cerr << "Invalid message from " << server << ": " << msg << std::endl;
                 std::cerr << "media:lastmedia, return value should be array" << std::endl;
+                mediaQueryFinish.insert_or_assign(server, false);
                 return;
             }
 
-            std::lock_guard<std::mutex> lock(camera_mtx);
             for(auto ip = data["value"]["data"].begin(); ip != data["value"]["data"].end(); ++ip){
-                if(!ip.value()["ip"].is_string() || !ip.value()["filename"].is_object()){
+                if(!ip.value()["ip"].is_string() || !ip.value()["status"].is_object()){
                     std::cerr << "media:lastmedia error: Require ip and filename in value.data" << std::endl;
+                    std::cerr << data.dump() << std::endl;
                     continue;
                 }
                 std::string folder = "";
                 std::string file = "";
-                if(ip.value()["filename"]["folder"].is_string()){
-                    folder = ip.value()["filename"]["folder"].get<std::string>();
-                }
-                if(ip.value()["filename"]["file"].is_string()){
-                    file = ip.value()["filename"]["folfileder"].get<std::string>();
+                if(ip.value()["status"]["media"].is_array() && ip.value()["status"]["media"].size() > 0){
+                    json m = ip.value()["status"]["media"].at(0);
+                    if(m["d"].is_string()){
+                        folder = m["d"].get<std::string>();
+                    }
+                    if(m["fs"].is_array() && m["fs"].size() > 0){
+                        json m2 = m["fs"].at(0);
+                        if(m2["n"].is_string()){
+                            file = m2["n"].get<std::string>();
+                        }
+                    }
                 }
                 std::string ip_ref = ip.value()["ip"].get<std::string>();
-                int32_t found = findCamera(ip_ref);
-                if(found == -1){
+                std::lock_guard<std::mutex> lock(camera_mtx);
+                int32_t found = findCamera(server, ip_ref);
+                if(found != -1){
                     cameras[found]->last_media = folder + "/" + file;
+                }else{
+                    std::cerr << "Could find ip from server client list: " << ip_ref.c_str() << std::endl;
                 }
             }
             mediaQueryFinish.insert_or_assign(server, false);
+        }
+        else if(key == "media:url"){
+            std::string urls;
+
+            std::string path = "";
+            std::string dir = "";
+            std::string item = "";
+            std::string filename = "";
+            bool islocal = false;
+            if(data["value"]["path"].is_string()){
+                path = data["value"]["path"].get<std::string>();
+            }
+            if(data["value"]["item"].is_string()){
+                item = data["value"]["item"].get<std::string>();
+            }
+            if(data["value"]["dir"].is_string()){
+                dir = data["value"]["dir"].get<std::string>();
+            }
+            if(data["value"]["filename"].is_string()){
+                filename = data["value"]["filename"].get<std::string>();
+            }
+            if(data["value"]["local"].is_boolean()){
+                islocal = data["value"]["local"].get<bool>();
+            }
+
+            std::string path_target = dir + "/" + filename;
+            if(islocal){
+                urls = path;
+            }else{
+                urls = "http://" + server + ":8080/res/" + path;
+            }
+
+            std::cout << "media download: " << urls.c_str() << "  " << path_target.c_str() << std::endl;
+            if(urls.size() >= 1){
+                size_t size = requests::downloadFile(urls.c_str(), path_target.c_str(), [&urls, &path_target](size_t received_bytes, size_t total_bytes){
+                    std::cout << "[last_media] download " << urls << " => " << path_target << " " << received_bytes << " / " << total_bytes << std::endl;
+                });
+                downloading_last_media_done++;
+                if(downloading_last_media_done == downloading_last_media_total){
+                    if(downloading_last_media_flag == 2){
+                        std::string finish_file = dir + "/" + "finish.txt";
+                        FILE* f = fopen(finish_file.c_str(), "wb");
+                        fclose(f);
+                    }
+                    downloading_last_media_total = 0;
+                    downloading_last_media_done = 0;
+                    downloading_last_media_flag = 0;
+                }
+            }
         }
         else{
             std::cerr << "Invalid message from " << server << ": " << msg << std::endl;

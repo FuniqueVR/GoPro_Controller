@@ -184,6 +184,14 @@ private:
      * Is app exit or not flag
      */
     bool done = false;
+    /**
+     * 0: Off
+     * 1: On (no finish txt)
+     * 2: On (with finish txt)
+     */
+    std::atomic_char32_t downloading_last_media_flag = 0;
+    std::atomic_char32_t downloading_last_media_total;
+    std::atomic_char32_t downloading_last_media_done;
 
     /**
      * The background thread for fetch update from all websocket server and update etc...
