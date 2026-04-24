@@ -291,7 +291,12 @@ void GoProMaster::download_last_media(const std::string dir, bool put_finish){
             else fetch_url += "0";
 
             std::string result = exec(fetch_url);
-            json media_url = json::parse(result);
+            json media_url;
+            try{
+                media_url = json::parse(result);
+            }catch(const std::exception& ex){
+                media_url = json::object();
+            }
             if(!media_url["path"].is_string()) continue;
 
             std::string path_target = dir + "/" + filename;
