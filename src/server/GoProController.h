@@ -8,6 +8,7 @@
 
 #include <utility>
 #include <vector>
+#include <list>
 #include <string>
 #include <iostream>
 #include <thread>
@@ -30,6 +31,7 @@ using json = nlohmann::json;
 std::string getPacket(std::string key, json data);
 
 typedef std::pair<std::string,std::string> SingleResponse;
+typedef std::function<void(std::string)> feedback;
 
 /**
  * The cpp files break into two folder, and base on implementation detail to seperate cpp files
@@ -89,7 +91,7 @@ public:
     // Media part of calls
     std::string getMediaList(std::string target);
     std::string getLastMedia(std::string target);
-    std::string getFetchURL(std::string ip, bool islocal);
+    void getFetchURL(std::string ip, bool islocal, feedback _f);
 protected:
     // Config
     void _loadRecord();
@@ -177,4 +179,7 @@ private:
      */
     std::unordered_map<std::string, std::string> camera_name;
     std::atomic<bool> scanning{false}; // To track scanning state if needed
+
+    std::list<std::pair<std::pair<std::string, bool>, feedback>> download_queue;
+    std::mutex download_queue_mutex;
 };
