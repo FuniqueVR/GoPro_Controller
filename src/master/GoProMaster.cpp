@@ -285,7 +285,10 @@ void GoProMaster::download_last_media(const std::string dir, bool put_finish){
         std::vector<std::string> names = std::vector<std::string>();
         for(auto& s : cameras){
             std::string filename = s->name + fs::path(s->last_media).extension().string();
-            if(filename.size() == 0) continue;
+            if(filename.size() == 0) {
+                std::cerr << "[download_last_media] filename size is 0, we just skip..." << std::endl;
+                continue;
+            }
             std::string fetch_url = "http://" + s->server + ":8080/last_media?ip=" + s->ip + "&local=";
             bool islocal = s->server == "127.0.0.1";
             if(islocal) fetch_url += "1";
@@ -309,7 +312,7 @@ void GoProMaster::download_last_media(const std::string dir, bool put_finish){
             names.push_back(path_target);
             
             std::cout << "media download: " << fetch_url.c_str() << "  " << path_target.c_str() << std::endl;
-            if(urls.size() >= 3){
+            if(urls.size() >= 1){
                 execs_download(urls, names);
                 urls.clear();
                 names.clear();
