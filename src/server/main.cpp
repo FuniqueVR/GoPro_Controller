@@ -425,7 +425,7 @@ void HttpServer(){
         std::string is_local_str = req->GetParam("local");
         bool is_local = is_local_str == "1";
 
-        std::cout << "Http GET /last_media " << target_ip << std::endl;
+        std::cout << "Http GET /last_media " << target_ip << ", " << is_local_str << std::endl;
 
         if (target_ip.empty()) {
             resp->status_code = http_status::HTTP_STATUS_BAD_REQUEST;
