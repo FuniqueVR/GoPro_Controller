@@ -59,7 +59,18 @@ void InspectorWindow::draw_media_global(){
     if(ImGui::IsItemHovered()) ImGui::SetTooltip("Download all exist camera instances");
     ImGui::SameLine();
     if(ImGui::Button("Single Download", button_size)){
-        
+        std::string buffer = state->current_download_location;
+        while(buffer.size() > 0 && buffer.at(buffer.size() - 1) == '/'){
+            buffer.pop_back();
+        }
+        if(master->directoryExists(buffer)){
+            if(create_date_folder){
+                std::string date = getCurrentDateTimeString();
+                buffer.append("/" + date);
+            }
+            fs::create_directories(buffer);
+            master->download_last_media(state->current_camera_item, buffer, put_finish);
+        }
     }
     if(ImGui::IsItemHovered()) ImGui::SetTooltip("Download current select camera instance");
 

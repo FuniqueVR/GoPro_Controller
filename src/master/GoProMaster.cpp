@@ -329,6 +329,57 @@ void GoProMaster::download_last_media(const std::string dir, bool put_finish){
     }).detach();
 }
 
+void GoProMaster::download_last_media(const std::string ip, const std::string dir, bool put_finish){
+    std::thread([=](){
+        std::vector<std::string> urls = std::vector<std::string>();
+        std::vector<std::string> names = std::vector<std::string>();
+        for(auto& s : cameras){
+            if(s->ip != ip) continue;
+            std::string filename = s->name + fs::path(s->last_media).extension().string();
+            if(filename.size() == 0) {
+                std::cerr << "[download_last_media] filename size is 0, we just skip..." << std::endl;
+                continue;
+            }
+            std::string fetch_url = "http://" + s->server + ":8080/last_media?ip=" + s->ip + "&local=";
+            bool islocal = s->server == "127.0.0.1";
+            if(islocal) fetch_url += "1";
+            else fetch_url += "0";
+
+            std::string result = exec(fetch_url);
+            json media_url;
+            try{
+                media_url = json::parse(result);
+            }catch(const std::exception& ex){
+                media_url = json::object();
+            }
+            if(!media_url["path"].is_string()) continue;
+
+            std::string path_target = dir + "/" + filename;
+            if(islocal){
+                urls.push_back(media_url["path"].get<std::string>());
+            }else{
+                urls.push_back("http://" + s->server + ":8080/res/" + media_url["path"].get<std::string>());
+            }
+            names.push_back(path_target);
+            
+            std::cout << "media download: " << fetch_url.c_str() << "  " << path_target.c_str() << std::endl;
+            if(urls.size() >= 1){
+                execs_download(urls, names);
+                urls.clear();
+                names.clear();
+            }
+        }
+        if(urls.size() > 0){
+            execs_download(urls, names);
+            urls.clear();
+            names.clear();
+        }
+        std::string finish_file = dir + "/" + "finish.txt";
+        FILE* f = fopen(finish_file.c_str(), "wb");
+        fclose(f);
+    }).detach();
+}
+
 void GoProMaster::presetSwitch(const std::string server, const std::string target, int32_t mode) {
     std::thread([=](){
         for (auto& s : servers) {

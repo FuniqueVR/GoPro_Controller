@@ -89,6 +89,7 @@ public:
     void preview_end(std::string server, std::string target);
     void media_only(const std::string command, std::string target = "");
     void download_last_media(const std::string dir, bool put_finish);
+    void download_last_media(const std::string ip, const std::string dir, bool put_finish);
 
     void presetSwitch(const std::string server, const std::string target, int32_t mode);
     void locate(const std::string server, const std::string target);
