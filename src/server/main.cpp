@@ -5,7 +5,6 @@
  * See the LICENSE file in the project root for more information.
 */
 #ifdef _WIN32
-#include "crashlogs.h"
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #pragma comment(lib, "Crypt32.lib")
@@ -509,15 +508,6 @@ void UDPProxyServer(){
 }
 
 int main() {
-#ifdef _WIN32
-    std::cout << "Register crashlog object" << std::endl;
-    glaiel::crashlogs::set_crashlog_folder(".");
-    glaiel::crashlogs::set_crashlog_filename("crashlog.txt");
-    glaiel::crashlogs::set_on_write_crashlog_callback([](std::string msg){
-        std::cerr << "Crash: " << msg.c_str() << std::endl;
-    });
-    glaiel::crashlogs::begin_monitoring();
-#endif
     setvbuf(stdout, NULL, _IONBF, 0);
     setvbuf(stderr, NULL, _IONBF, 0);
 
