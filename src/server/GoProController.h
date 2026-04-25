@@ -137,28 +137,77 @@ public:
     std::string getAllIP();
 #pragma endregion
 
-    // Status part of calls
+#pragma region Status part of calls
     std::string queryStatus(std::string target);
     std::string setSetting(std::string target, int32_t ID, std::string value);
-    /**
-     * If source is null, it does not matter anyway, it just for ignore apply reason.
-     * If target is null, it will the apply range to all of the clients.
-     */
+    ///
+    /// If source is null, it does not matter anyway, it just for ignore apply reason.
+    /// If target is null, it will the apply range to all of the clients.
+    ///
     std::string setSettingAll(const std::string source, const std::string target, int32_t preset, json value);
-    // Webcam part of calls
+#pragma endregion
+
+#pragma region Webcam part of calls
     void webcamMode(std::string target);
     void webcamUnMode(std::string target);
     void webcamOn(std::string target, int32_t startPort, int32_t res, int32_t fov, bool TS);
     void webcamOff(std::string target);
     std::string webcamStatus(std::string target);
     std::string webcamVersion(std::string target);
-    // Preview part of calls
+#pragma endregion
+
+#pragma region Preview part of calls
+    ///
+    /// Open preview on the camera
+    ///
+    /// Args:
+    /// - target: The Camera IP
+    /// - port: The open port
+    ///
     void previewOn(std::string target, int32_t port);
+    ///
+    /// Close preview on the camera
+    ///
+    /// Args:
+    /// - target: The Camera IP
+    ///
     void previewOff(std::string target);
-    // Media part of calls
+#pragma endregion
+
+#pragma region Media part of calls
+    ///
+    /// Received target camera media list, basically the whole list
+    ///
+    /// Args:
+    /// - target: Camera ip
+    ///
     std::string getMediaList(std::string target);
+    ///
+    /// Received target camera last store media
+    ///
+    /// Args:
+    /// - target: Camera ip
+    ///
     std::string getLastMedia(std::string target);
+    ///
+    /// Get the download link for the last media resource
+    ///
+    /// Notice:
+    /// ! If master is not at the same machine as where this server hosting,
+    /// ! It will trying to download to the /res folder as temp, and using HTTP static router as a download link
+    /// ! This might be slower than you think, since you have to wait it to finish
+    /// ? But if they are the same machine, the download link will go straight to the GoPro camera provide http URL
+    /// ? Which means no buffer waiting time.
+    ///
+    /// TODO: 
+    /// - Make pipe download possible. Reduce time to download the media
+    /// 
+    /// Args:
+    /// - target
+    ///
     std::string getFetchURL(std::string target_ip, bool is_local);
+#pragma endregion
+
 protected:
     // Config
     void _loadRecord();
