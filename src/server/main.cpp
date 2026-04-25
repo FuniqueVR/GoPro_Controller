@@ -34,6 +34,7 @@ struct SenderStruct {
     int32_t sock_fd;
 };
 
+std::mutex download_mtx;
 std::mutex broadcast_mtx;
 std::vector<SenderStruct> broadcast_addrs = std::vector<SenderStruct>();
 
@@ -307,14 +308,14 @@ void MediaAction(const WebSocketChannelPtr& channel, json j){
         channel->send(getPacket("media:lastmedia", r));
     }
     else if(name == "url"){
+        // Download the media one at the time... thanks
+        std::lock_guard<std::mutex> lock(download_mtx);
         r["local"] = local;
         r["item"] = item;
         r["dir"] = dir;
         r["filename"] = filename;
-        feedback ff = [&channel](json r2){
-            channel->send(getPacket("media:url", r2));
-        };
-        controller.getFetchURL(ip, local, r, ff);
+        r["path"] = controller.getFetchURL(ip, local);
+        channel->send(getPacket("media:url", r));
     }else{
         channel->send(getPacket("media:unknown", r));
     }
