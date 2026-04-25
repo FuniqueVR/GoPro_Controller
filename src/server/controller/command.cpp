@@ -205,7 +205,3 @@ std::string GoProController::getAllIP(){
     }
     return result.dump();
 }
-
-std::string GoProController::getAllModel(){
-    return "";
-}

@@ -32,43 +32,111 @@ std::string getPacket(std::string key, json data);
 
 typedef std::pair<std::string,std::string> SingleResponse;
 
-/**
- * The cpp files break into two folder, and base on implementation detail to seperate cpp files
- * * controller (public methods)
- * * private (private methods)
- */
+///
+/// The middleware server worker
+/// The cpp files break into two folder, and base on implementation detail to seperate cpp files
+/// - controller (public methods)
+/// - private (private methods)
+///
 class GoProController {
 public:
     GoProController();
-    ~GoProController();
+    GoProController(const GoProController&) = delete;
+    GoProController& operator=(const GoProController&) = delete;
+    virtual ~GoProController();
+    ///
+    /// Spawn a background worker for
+    /// - Check camera alive or not
+    ///   - Base on the state, put it in the "camera_alive_ips" variable
+    ///
     void update();
-    // Camera part of calls
-    /**
-     * Using mdns feature to catch all gopro services and store the ip addresses
-     */
+
+#pragma region Camera part of calls
+    ///
+    /// Using mdns feature to catch all gopro services and store the ip addresses
+    ///
     void scanCameras();
-    /**
-     * Clear the array of IP address
-     */
+    ///
+    /// Clear the array of IP address
+    ///
     void cleanCameras();
-    /**
-     * Rename the camera by ip input
-     */
+    ///
+    /// Rename the camera by ip input
+    /// It will change the variable "camera_name", and store to the record and keep it in the disk
+    ///
     void renameCameras(std::string ip, std::string name);
+    ///
+    /// Adding camera base on serial number
+    /// The serial string must satisfied rules below
+    /// - Must be number charachers
+    /// - Must at least 3 length long (This will took last 3 charachers anyway)
+    ///
     void addCameras(std::string serial);
+    ///
+    /// Delete camera by IP address
+    ///
     void deleteCameras(std::string ip);
-    // Control part of calls
+#pragma endregion
+
+#pragma region Control part of calls
     void setPreset(std::string target, int32_t mode);
     void reboot(std::string target);
     void shutdown(std::string target);
     void keep_alive(std::string target);
+    ///
+    /// Send the usb control command to the camera
+    /// The most obvious command when send off
+    /// If ison is off the camera will go to black screen
+    /// If ison is on the camera will go to normal camera control screen
+    ///
+    /// Args:
+    /// - target: Camera IP address
+    /// - ison: usb control turn on or off
+    ///
     void usb(std::string target, bool ison);
+    ///
+    /// Send the datetime command to the camera
+    /// The datetime value will base on the machine where it run
+    /// Better sync it with network before doing yeah ?
+    ///
+    /// Args:
+    /// - target: Camera IP address
+    ///
     void datetime(std::string target);
+    ///
+    /// Send the zoom command to the camera
+    ///
+    /// Args:
+    /// - target: Camera IP address
+    /// - value: The zoom value, should be in the range [0...100]
+    ///
     void zoom(std::string target, int32_t value);
+    ///
+    /// Send the shutter command to the camera
+    ///
+    /// Args:
+    /// - target: Camera IP address
+    /// - isstart: shutter turn on or off
+    ///
     void shutter(std::string target, bool isstart);
+    ///
+    /// Send the locate function to the camera
+    ///
+    /// Args:
+    /// - target: Camera IP address
+    /// - ison: locate turn on or off
+    ///
     void locate(std::string target, bool ison);
+    ///
+    /// Get the current ip list record, It looks up variable "camera_ips"
+    ///
+    /// Return: 
+    /// serialized json
+    /// ["IP1", "IP2", "IP3"]
+    ///
     std::string getAllIP();
-    std::string getAllModel();
+#pragma endregion
+
     // Status part of calls
     std::string queryStatus(std::string target);
     std::string setSetting(std::string target, int32_t ID, std::string value);

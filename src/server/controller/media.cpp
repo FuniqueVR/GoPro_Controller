@@ -9,6 +9,7 @@
 #include <string>
 #include <thread>
 #include <future>
+#include "../../common/config.h"
 
 std::string GoProController::getMediaList(std::string target){
     json res;
@@ -133,14 +134,18 @@ std::string GoProController::getFetchURL(std::string target_ip, bool is_local){
                 t++;
             }
             std::cout << "[last_media] try download " << gopro_url.c_str() << std::endl;
+#ifdef SERVER_MEDIA_DOWNLOAD_LOG
             auto start = std::chrono::high_resolution_clock::now();
+#endif
             size_t size = requests::downloadFile(gopro_url.c_str(), ("res/" + download_path).c_str(), [&target_ip, &start](size_t received_bytes, size_t total_bytes){
+#ifdef SERVER_MEDIA_DOWNLOAD_LOG
                 auto end = std::chrono::high_resolution_clock::now();
                 std::chrono::duration<double> elapsed = end - start;
-                if(elapsed.count() >= 1.0){
+                if(elapsed.count() >= SERVER_MEDIA_DOWNLOAD_PERIOD){
                     start = end;
                     std::cout << "[last_media] download " << target_ip << " " << received_bytes << " / " << total_bytes << std::endl;
                 }
+#endif
             });
             std::cout << "[last_media] return value: " << target_ip << " => " << download_path << std::endl;
             return download_path;

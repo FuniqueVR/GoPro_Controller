@@ -387,7 +387,9 @@ void WebsocketServer(){
     };
     ws.onmessage = [&](const WebSocketChannelPtr& channel, const std::string& msg) {
         std::thread([=]() {
-            if(SERVER_QUERY_LOG) printf("Received: %s\n", msg.c_str());
+#ifdef SERVER_QUERY_LOG
+            printf("Received: %s\n", msg.c_str());
+#endif
             try{
                 json j = json::parse(msg.c_str());
                 // Simple command parsing
