@@ -133,8 +133,14 @@ std::string GoProController::getFetchURL(std::string target_ip, bool is_local){
                 t++;
             }
             std::cout << "[last_media] try download " << gopro_url.c_str() << std::endl;
-            size_t size = requests::downloadFile(gopro_url.c_str(), ("res/" + download_path).c_str(), [&target_ip](size_t received_bytes, size_t total_bytes){
-                std::cout << "[last_media] download " << target_ip << " " << received_bytes << " / " << total_bytes << std::endl;
+            auto start = std::chrono::high_resolution_clock::now();
+            size_t size = requests::downloadFile(gopro_url.c_str(), ("res/" + download_path).c_str(), [&target_ip, &start](size_t received_bytes, size_t total_bytes){
+                auto end = std::chrono::high_resolution_clock::now();
+                std::chrono::duration<double> elapsed = end - start;
+                if(elapsed.count() >= 1.0){
+                    start = end;
+                    std::cout << "[last_media] download " << target_ip << " " << received_bytes << " / " << total_bytes << std::endl;
+                }
             });
             std::cout << "[last_media] return value: " << target_ip << " => " << download_path << std::endl;
             return download_path;
@@ -142,5 +148,6 @@ std::string GoProController::getFetchURL(std::string target_ip, bool is_local){
     }
     catch(const std::exception& ex){
         std::cerr << ex.what() << std::endl;
+        return "";
     }
 }
