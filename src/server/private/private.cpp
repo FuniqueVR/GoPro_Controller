@@ -9,7 +9,6 @@
 #include <vector>
 #include <string>
 
-
 void GoProController::_loadRecord(){
     std::string homedir = get_env_var("WS_ROOT");
     if(homedir.size() > 0) homedir += "/";

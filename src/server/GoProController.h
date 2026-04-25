@@ -21,19 +21,13 @@
 #include "../common/iphelper.h"
 #include "../common/camera_code.h"
 
-/**
- * Most of the function will have first string target as parameter.
- * User can leave this field with empty string to repersent the broadcasting type,
- * This mean this type of action will send to all the connected clients.
-*/
-
 using json = nlohmann::json;
 std::string getPacket(std::string key, json data);
 
 typedef std::pair<std::string,std::string> SingleResponse;
 
 ///
-/// The middleware server worker
+/// The middleware server worker, the hero
 /// The cpp files break into two folder, and base on implementation detail to seperate cpp files
 /// - controller (public methods)
 /// - private (private methods)
@@ -47,7 +41,7 @@ public:
     ///
     /// Spawn a background worker for
     /// - Check camera alive or not
-    ///   - Base on the state, put it in the "camera_alive_ips" variable
+    /// - - Base on the state, put it in the "camera_alive_ips" variable
     ///
     void update();
 
@@ -209,9 +203,16 @@ public:
 #pragma endregion
 
 protected:
-    // Config
+#pragma region IO
+    ///
+    /// Loading record from disk
+    ///
     void _loadRecord();
+    ///
+    /// Store record to disk
+    ///
     void _updateRecord();
+#pragma endregion
     // Control part of calls
     void _setAllPreset(std::vector<std::string> targets, int32_t mode);
     void _setPreset(std::string target, int32_t mode);

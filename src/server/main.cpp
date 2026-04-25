@@ -4,6 +4,9 @@
  * This software is licensed under the [MIT License].
  * See the LICENSE file in the project root for more information.
 */
+/**
+ * I know this is not the greatest main file in the world, consider how messy it looks
+ */
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -21,12 +24,27 @@
 #include "hv/hsocket.h"
 #include "GoProController.h"
 
+///
+/// All the master websocket instances
+///
 std::vector<const WebSocketChannelPtr*> hosts = std::vector<const WebSocketChannelPtr*>();
+///
+/// Main worker, HERO is here
+///
 GoProController controller;
 
+///
+/// For preview feature, listening port
+///
 const int32_t listen_port = 8556;
+///
+/// For preview feature, broadcasting port
+///
 const int32_t broadcast_port = 8554;
 
+///
+/// UDP packet header
+///
 struct SenderStruct {
     std::string host_ip;
     std::string websocket_ip;
@@ -34,10 +52,24 @@ struct SenderStruct {
     int32_t sock_fd;
 };
 
+///
+/// This will prevent server download multiple media at the same time
+/// Imagine if there are 30+ cameras connected, that will be insane and crash easily.
+///
 std::mutex download_mtx;
+///
+/// UDP broadcasting thread blocker
+///
 std::mutex broadcast_mtx;
 std::vector<SenderStruct> broadcast_addrs = std::vector<SenderStruct>();
 
+///
+/// Packing the data into a string, to send back to master
+///
+/// Args:
+/// - key: Header key, for first order filtering
+/// - data: The actually json data
+///
 std::string getPacket(std::string key, json data){
     json response = json::object();
     response["key"] = key;
@@ -499,19 +531,24 @@ void UDPProxyServer(){
 }
 
 int main() {
+    // I forgot why this is here, probably console printf related stuff...
+    // Just don't touch it
     setvbuf(stdout, NULL, _IONBF, 0);
     setvbuf(stderr, NULL, _IONBF, 0);
 
+    // For communication, so master can know shit
     std::thread t1 = std::thread([=]() {
         std::cout << "Create websocket server" << std::endl;
         WebsocketServer();
     });
 
+    // For static file service, so master can download shit
     std::thread t2 = std::thread([=]() {
         std::cout << "Create http server" << std::endl;
         HttpServer();
     });
 
+    // For preview feature, so master can see shit
     std::thread t3 = std::thread([=]() {
         std::cout << "Create udp server" << std::endl;
         UDPProxyServer();
