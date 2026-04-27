@@ -34,6 +34,7 @@ typedef std::pair<std::string,std::string> SingleResponse;
 ///
 class GoProController {
 public:
+#pragma region public methods
     GoProController();
     GoProController(const GoProController&) = delete;
     GoProController& operator=(const GoProController&) = delete;
@@ -224,9 +225,41 @@ public:
 #pragma endregion
 
 #pragma region Webcam part of calls
+    ///
+    /// Open webcam mode
+    ///
+    /// Args:
+    /// - target: Camera IP address
+    /// - - if this is empty, This mean it will send to all camera
+    ///
     void webcamMode(std::string target);
+    ///
+    /// Close webcam mode
+    ///
+    /// Args:
+    /// - target: Camera IP address
+    /// - - if this is empty, This mean it will send to all camera
+    ///
     void webcamUnMode(std::string target);
+    ///
+    /// Start webcam
+    ///
+    /// Args:
+    /// - target: Camera IP address
+    /// - - if this is empty, This mean it will send to all camera
+    /// - startPort: using port
+    /// - res: resolution
+    /// - fov: field of view
+    /// - TS: using ts or rtmp
+    ///
     void webcamOn(std::string target, int32_t startPort, int32_t res, int32_t fov, bool TS);
+    ///
+    /// Stop webcam
+    ///
+    /// Args:
+    /// - target: Camera IP address
+    /// - - if this is empty, This mean it will send to all camera
+    ///
     void webcamOff(std::string target);
     std::string webcamStatus(std::string target);
     std::string webcamVersion(std::string target);
@@ -283,8 +316,10 @@ public:
     ///
     std::string getFetchURL(std::string target_ip, bool is_local);
 #pragma endregion
+#pragma endregion
 
 protected:
+#pragma region protected
 #pragma region IO
     ///
     /// Loading record from disk
@@ -295,7 +330,8 @@ protected:
     ///
     void _updateRecord();
 #pragma endregion
-    // Control part of calls
+
+#pragma region Control part of calls
     void _setAllPreset(std::vector<std::string> targets, int32_t mode);
     void _setPreset(std::string target, int32_t mode);
     void _rebootAll(std::vector<std::string> targets);
@@ -313,7 +349,9 @@ protected:
     void _shutterAll(std::vector<std::string> targets, bool isstart);
     void _shutter(std::string target, bool isstart);
     void _locate(std::string target, bool ison);
-    // Status part of calls
+#pragma endregion
+
+#pragma region Status part of calls
     std::vector<SingleResponse> _queryAllStatus(std::vector<std::string> targets);
     SingleResponse _queryStatus(std::string target);
     std::vector<SingleResponse> _queryAllHW(std::vector<std::string> targets);
@@ -323,7 +361,9 @@ protected:
     std::vector<SingleResponse> _setAllSetting(std::vector<std::string> targets, int32_t preset, json res);
     std::vector<SingleResponse> _setSetting(std::string target, int32_t preset, json res);
     std::vector<SingleResponse> _setSetting_utility(std::string target, json res, std::vector<int32_t> setting_ids);
-    // Webcam part of calls
+#pragma endregion
+
+#pragma region Webcam part of calls
     void _webcamAllMode(std::vector<std::string> targets);
     void _webcamMode(std::string target);
     void _webcamAllUnMode(std::vector<std::string> targets);
@@ -334,11 +374,14 @@ protected:
     void _webcamOff(std::string target);
     SingleResponse _webcamStatus(std::string target);
     SingleResponse _webcamVersion(std::string target);
-    // Preview part of calls
+#pragma endregion 
+
+#pragma region Preview part of calls
     void _previewAllOn(std::vector<std::string> targets, int32_t port);
     void _previewOn(std::string target, int32_t port);
     void _previewAllOff(std::vector<std::string> targets);
     void _previewOff(std::string target);
+#pragma endregion
     // Media part of calls
     std::vector<SingleResponse> _getAllMediaList(std::vector<std::string> targets);
     SingleResponse _getMediaList(std::string target);
@@ -349,33 +392,49 @@ protected:
     std::vector<SingleResponse> _getAllResponse(std::vector<std::string> targets, std::string suffix);
 
     int32_t _get_current_model(json hwinfo);
+#pragma endregion
+
 private:
+#pragma region private variable
+    ///
+    /// The handle for mdns service manager
+    ///
     mdns_cpp::mDNS mdns;
+    ///
+    /// Is it scanning right now or not
+    ///
     bool mdns_scaned = false;
+    ///
+    /// mDNS scanning worker
+    ///
     std::vector<std::thread> scan_workers;
-    /**
-     * @brief IP address record
-     */
+    ///
+    /// IP address record
+    ///
     std::vector<std::string> camera_ips;
-    /**
-     * @brief IP address record (Alive)
-     */
+    ///
+    /// IP address record (Alive)
+    ///
     std::vector<std::string> camera_alive_ips;
-    /**
-     * @brief IP address record (Thread Guard)
-     */
+    ///
+    /// IP address record (Thread Guard)
+    ///
     std::mutex ips_mutex;
-    /**
-     * @brief IP address record (Alive) (Thread Guard)
-     */
+    ///
+    /// IP address record (Alive) (Thread Guard)
+    ///
     std::mutex ips_alive_mutex;
-    /**
-     * @brief IP : Hardware info json data
-     */
+    ///
+    /// IP : Hardware info json data
+    ///
     std::unordered_map<std::string, json> camera_hw;
-    /**
-     * @brief IP : Name
-     */
+    ///
+    /// IP : Name
+    ///
     std::unordered_map<std::string, std::string> camera_name;
-    std::atomic<bool> scanning{false}; // To track scanning state if needed
+    /// 
+    /// To track scanning state if needed
+    /// 
+    std::atomic<bool> scanning{false};
+#pragma endregion
 };
