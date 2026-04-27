@@ -73,9 +73,38 @@ public:
 #pragma endregion
 
 #pragma region Control part of calls
+    ///
+    /// Set the camera preset (example: 0:video, 65536:photo_single)
+    ///
+    /// Args:
+    /// - target: Camera IP address
+    /// - - if this is empty, This mean it will send to all camera
+    /// - mode: Mode ID (check src/common/camera_other.h for more details)
+    ///
     void setPreset(std::string target, int32_t mode);
+    ///
+    /// Send reboot command for target camera
+    ///
+    /// Args:
+    /// - target: Camera IP address
+    /// - - if this is empty, This mean it will send to all camera
+    ///
     void reboot(std::string target);
+    ///
+    /// Send shutdown command for target camera
+    ///
+    /// Args:
+    /// - target: Camera IP address
+    /// - - if this is empty, This mean it will send to all camera
+    ///
     void shutdown(std::string target);
+    ///
+    /// Send keep alive command for target camera
+    ///
+    /// Args:
+    /// - target: Camera IP address
+    /// - - if this is empty, This mean it will send to all camera
+    ///
     void keep_alive(std::string target);
     ///
     /// Send the usb control command to the camera
@@ -85,6 +114,7 @@ public:
     ///
     /// Args:
     /// - target: Camera IP address
+    /// - - if this is empty, This mean it will send to all camera
     /// - ison: usb control turn on or off
     ///
     void usb(std::string target, bool ison);
@@ -95,6 +125,7 @@ public:
     ///
     /// Args:
     /// - target: Camera IP address
+    /// - - if this is empty, This mean it will send to all camera
     ///
     void datetime(std::string target);
     ///
@@ -102,6 +133,7 @@ public:
     ///
     /// Args:
     /// - target: Camera IP address
+    /// - - if this is empty, This mean it will send to all camera
     /// - value: The zoom value, should be in the range [0...100]
     ///
     void zoom(std::string target, int32_t value);
@@ -110,6 +142,7 @@ public:
     ///
     /// Args:
     /// - target: Camera IP address
+    /// - - if this is empty, This mean it will send to all camera
     /// - isstart: shutter turn on or off
     ///
     void shutter(std::string target, bool isstart);
@@ -118,6 +151,7 @@ public:
     ///
     /// Args:
     /// - target: Camera IP address
+    /// - - if this is empty, This mean it will send to all camera
     /// - ison: locate turn on or off
     ///
     void locate(std::string target, bool ison);
@@ -132,11 +166,59 @@ public:
 #pragma endregion
 
 #pragma region Status part of calls
+    ///
+    /// Get the status from the target camera
+    ///
+    /// Args:
+    /// - target: Camera IP address
+    /// - - if this is empty, This mean it will send to all camera
+    ///
+    /// Return: 
+    /// serialized json
+    /// [{ 
+    ///    ip: "IP string", 
+    ///    status: { /** settings and status */ },
+    ///    hw: { /** Hardware info */ }
+    /// }]
+    ///
     std::string queryStatus(std::string target);
+    ///
+    /// Change setting to a camera
+    ///
+    /// Args:
+    /// - target: Camera IP address
+    /// - - if this is empty, This mean it will send to all camera
+    /// - ID: the setting id
+    /// - value: the setting option id
+    ///
+    /// Return: 
+    /// serialized json
+    /// [{ 
+    ///    ip: "IP string", 
+    ///    status: { /** settings and status */ }
+    /// }]
+    ///
     std::string setSetting(std::string target, int32_t ID, std::string value);
     ///
-    /// If source is null, it does not matter anyway, it just for ignore apply reason.
-    /// If target is null, it will the apply range to all of the clients.
+    /// Trying to apply a json object of setting value map to a camera
+    ///
+    /// Args:
+    /// - source: The source of the json value (Camera ip, can be empty)
+    /// - target: Camera IP address
+    /// - - if this is empty, This mean it will send to all camera
+    /// - preset: The preset registered
+    /// - - This means camera mode (0 or 65536 or etc... check src/common/camera_other.h)
+    /// - - Affect the filter which only apply base on this setting
+    /// - - For example if preset=0 (video), then it will apply video setting, but photo setting will not apply here
+    /// - value: the setting json object
+    /// - - Should be a json with 3 keys (model (int32_t), preset (int32_t), setting (json))
+    ///
+    /// Return: 
+    /// serialized json
+    /// [{ 
+    ///    ip: "IP string", 
+    ///    status: { /** settings and status */ }
+    /// }]
     ///
     std::string setSettingAll(const std::string source, const std::string target, int32_t preset, json value);
 #pragma endregion
