@@ -252,7 +252,7 @@ inline std::string exec(std::string cmd) {
         
         curl_easy_cleanup(curl);
     }else{
-        std::cerr << "Curl init failed" << std::endl;
+        std::cerr << "[Error] iphelper.h, Curl init failed" << std::endl;
     }
 
     return result;
