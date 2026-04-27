@@ -74,9 +74,9 @@ std::string GoProController::setSetting(std::string target, int32_t ID, std::str
             address = result.first;
             res = json::parse(result.second);
         }catch(const std::exception& ex){
-            std::cerr << "setSetting failed: "  << ex.what() << std::endl;
             address = "";
             res = json::object();
+            std::cerr << "[ERROR] setSetting: " << ex.what() << std::endl;
         }
         json i;
         i["ip"] = target;
@@ -96,6 +96,7 @@ std::string GoProController::setSetting(std::string target, int32_t ID, std::str
             }catch(const std::exception& ex){
                 address = results[i].first;
                 res = json::object();
+                std::cerr << "[ERROR] setSetting: " << ex.what() << std::endl;
             }
             json j;
             j["ip"] = address;
@@ -119,6 +120,7 @@ std::string GoProController::setSettingAll(const std::string source, const std::
             }catch(const std::exception& ex){
                 address = "";
                 res = json::object();
+                std::cerr << "[ERROR] setSettingAll: " << ex.what() << std::endl;
             }
             json j = json::object();
             j["ip"] = address;
@@ -141,6 +143,7 @@ std::string GoProController::setSettingAll(const std::string source, const std::
             }catch(const std::exception& ex){
                 address = results[i].first;
                 res = json::object();
+                std::cerr << "[ERROR] setSettingAll: " << ex.what() << std::endl;
             }
             json j = json::object();
             j["ip"] = address;
