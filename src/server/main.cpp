@@ -78,6 +78,7 @@ std::string getPacket(std::string key, json data){
 }
 
 void ExecuteCommand(const WebSocketChannelPtr& channel, json j){
+    std::string resultText = "";
     std::string name = "";
     std::string target = "";
     std::string value = "";
@@ -125,7 +126,14 @@ void ExecuteCommand(const WebSocketChannelPtr& channel, json j){
         controller.shutter(target, false);
         channel->send(getPacket("command:shutter_off", r));
     }else if(name == "ip"){
-        r["data"] = json::parse(controller.getAllIP());
+        resultText = controller.getAllIP();
+        try{
+            r["data"] = json::parse(resultText);
+        }catch(const std::exception& ex){
+            std::cerr << "[ERROR] ExecuteCommand ip before response: " << resultText << std::endl;
+            std::cerr << ex.what() << std::endl;
+            r["data"] = json::array();
+        }
         channel->send(getPacket("command:ip", r));
     }else if(name == "locate_on"){
         controller.locate(target, true);
@@ -205,6 +213,7 @@ void QueryAction(const WebSocketChannelPtr& channel, json j){
             r["data"] = json::parse(resultText);
         }catch(const std::exception& ex){
             std::cerr << "[ERROR] QueryAction get before response: " << resultText << std::endl;
+            std::cerr << ex.what() << std::endl;
             r["data"] = json::array();
         }
         channel->send(getPacket("query:get", r));
@@ -215,6 +224,7 @@ void QueryAction(const WebSocketChannelPtr& channel, json j){
             r["data"] = json::parse(resultText);
         }catch(const std::exception& ex){
             std::cerr << "[ERROR] QueryAction getall before response: " << resultText << std::endl;
+            std::cerr << ex.what() << std::endl;
             r["data"] = json::array();
         }
         channel->send(getPacket("query:getall", r));
@@ -225,6 +235,7 @@ void QueryAction(const WebSocketChannelPtr& channel, json j){
             r["data"] = json::parse(resultText);
         }catch(const std::exception& ex){
             std::cerr << "[ERROR] QueryAction set before response: " << resultText << std::endl;
+            std::cerr << ex.what() << std::endl;
             r["data"] = json::array();
         }
         channel->send(getPacket("query:set", r));
@@ -235,6 +246,7 @@ void QueryAction(const WebSocketChannelPtr& channel, json j){
             r["data"] = json::parse(resultText);
         }catch(const std::exception& ex){
             std::cerr << "[ERROR] QueryAction setall before response: " << resultText << std::endl;
+            std::cerr << ex.what() << std::endl;
             r["data"] = json::array();
         }
         channel->send(getPacket("query:setall", r));
