@@ -261,7 +261,21 @@ public:
     /// - - if this is empty, This mean it will send to all camera
     ///
     void webcamOff(std::string target);
+    ///
+    /// Get current webcam status
+    ///
+    /// Args:
+    /// - target: Camera IP address
+    /// - - if this is empty, This mean it will send to all camera
+    ///
     std::string webcamStatus(std::string target);
+    ///
+    /// Get current webcam version
+    ///
+    /// Args:
+    /// - target: Camera IP address
+    /// - - if this is empty, This mean it will send to all camera
+    ///
     std::string webcamVersion(std::string target);
 #pragma endregion
 
