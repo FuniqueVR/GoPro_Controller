@@ -112,7 +112,11 @@ std::string GoProController::getFetchURL(std::string target_ip, bool is_local){
             std::cerr << "[last_media] " << target_ip << " IP fetch failed" << std::endl;
             return "";
         }
-        json last_data = json::parse(res);
+        json last_data = json::object();
+        if(json::accept(res)){
+            last_data = json::parse(res);
+        }
+        
         if(!last_data["file"].is_string() || !last_data["folder"].is_string()){
             std::cerr << "[last_media] " << target_ip << " no last media file" << std::endl;
             return "";

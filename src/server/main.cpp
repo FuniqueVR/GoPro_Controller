@@ -127,11 +127,10 @@ void ExecuteCommand(const WebSocketChannelPtr& channel, json j){
         channel->send(getPacket("command:shutter_off", r));
     }else if(name == "ip"){
         resultText = controller.getAllIP();
-        try{
+        if(json::accept(resultText)){
             r["data"] = json::parse(resultText);
-        }catch(const std::exception& ex){
+        }else{
             std::cerr << "[ERROR] ExecuteCommand ip before response: " << resultText << std::endl;
-            std::cerr << ex.what() << std::endl;
             r["data"] = json::array();
         }
         channel->send(getPacket("command:ip", r));
@@ -209,60 +208,40 @@ void QueryAction(const WebSocketChannelPtr& channel, json j){
     // We don't want to flip the update flag when it's actually the UI event...
     if(name == "get"){
         resultText = controller.queryStatus(target);
-        try{
+        if(json::accept(resultText)){
             r["data"] = json::parse(resultText);
-        }catch(const json::exception& ex){
+        }else{
             std::cerr << "[ERROR] QueryAction get before response: " << resultText << std::endl;
-            std::cerr << ex.what() << std::endl;
-            r["data"] = json::array();
-        }catch(const std::exception& ex){
-            std::cerr << "[ERROR] QueryAction get before response: " << resultText << std::endl;
-            std::cerr << ex.what() << std::endl;
             r["data"] = json::array();
         }
         channel->send(getPacket("query:get", r));
     }
     else if(name == "getall"){
         resultText = controller.queryStatus("");
-        try{
+        if(json::accept(resultText)){
             r["data"] = json::parse(resultText);
-        }catch(const json::exception& ex){
+        }else{
             std::cerr << "[ERROR] QueryAction getall before response: " << resultText << std::endl;
-            std::cerr << ex.what() << std::endl;
-            r["data"] = json::array();
-        }catch(const std::exception& ex){
-            std::cerr << "[ERROR] QueryAction getall before response: " << resultText << std::endl;
-            std::cerr << ex.what() << std::endl;
             r["data"] = json::array();
         }
         channel->send(getPacket("query:getall", r));
     }
     else if(name == "set"){
         resultText = controller.setSetting(target, id, value);
-        try{
+        if(json::accept(resultText)){
             r["data"] = json::parse(resultText);
-        }catch(const json::exception& ex){
+        }else{
             std::cerr << "[ERROR] QueryAction set before response: " << resultText << std::endl;
-            std::cerr << ex.what() << std::endl;
-            r["data"] = json::array();
-        }catch(const std::exception& ex){
-            std::cerr << "[ERROR] QueryAction set before response: " << resultText << std::endl;
-            std::cerr << ex.what() << std::endl;
             r["data"] = json::array();
         }
         channel->send(getPacket("query:set", r));
     }
     else if(name == "setall"){
         resultText = controller.setSettingAll(source, target, preset, jvalue);
-        try{
+        if(json::accept(resultText)){
             r["data"] = json::parse(resultText);
-        }catch(const json::exception& ex){
+        }else{
             std::cerr << "[ERROR] QueryAction setall before response: " << resultText << std::endl;
-            std::cerr << ex.what() << std::endl;
-            r["data"] = json::array();
-        }catch(const std::exception& ex){
-            std::cerr << "[ERROR] QueryAction setall before response: " << resultText << std::endl;
-            std::cerr << ex.what() << std::endl;
             r["data"] = json::array();
         }
         channel->send(getPacket("query:setall", r));
@@ -353,6 +332,7 @@ void ModeAction(const WebSocketChannelPtr& channel, json j){
 }
 
 void MediaAction(const WebSocketChannelPtr& channel, json j){
+    std::string resultText = "";
     std::string target = "";
     std::string name = "";
     std::string item = "";
@@ -385,9 +365,10 @@ void MediaAction(const WebSocketChannelPtr& channel, json j){
     }
 
     if(name == "lastmedia"){
-        try{
-            r["data"] = json::parse(controller.getLastMedia(target));
-        }catch(const std::exception& ex){
+        resultText = controller.getLastMedia(target);
+        if(json::accept(resultText))
+            r["data"] = json::parse();
+        }else{
             r["data"] = json::array();
         }
         channel->send(getPacket("media:lastmedia", r));
@@ -471,6 +452,7 @@ void WebsocketServer(){
         }
     };
     ws.onmessage = [&](const WebSocketChannelPtr& channel, const std::string& msg) {
+        if(!json::accept()msg.c_str()) return;
         std::thread([=]() {
 #ifdef SERVER_QUERY_LOG
             printf("Received: %s\n", msg.c_str());
