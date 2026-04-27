@@ -22,7 +22,7 @@ std::string GoProController::queryStatus(std::string target){
             res = json::parse(result.second);
         }catch(const json::exception& ex){
             res = json::object();
-            std::cerr << "[ERROR] setSetting: " << ex.what() << std::endl;
+            std::cerr << "[ERROR] queryStatus: " << ex.what() << std::endl;
         }catch(const std::exception& ex){
             res = json::object();
         }
@@ -31,8 +31,8 @@ std::string GoProController::queryStatus(std::string target){
             address = result.first;
             hw = json::parse(result.second);
         }catch(const json::exception& ex){
-            res = json::object();
-            std::cerr << "[ERROR] setSetting: " << ex.what() << std::endl;
+            hw = json::object();
+            std::cerr << "[ERROR] queryStatus: " << ex.what() << std::endl;
         }catch(const std::exception& ex){
             hw = json::object();
         }
@@ -57,7 +57,8 @@ std::string GoProController::queryStatus(std::string target){
                 hw = json::parse(hresults[i].second);
             }catch(const json::exception& ex){
                 res = json::object();
-                std::cerr << "[ERROR] setSetting: " << ex.what() << std::endl;
+                hw = json::object();
+                std::cerr << "[ERROR] queryStatus: " << ex.what() << std::endl;
             }catch(const std::exception& ex){
                 res = json::object();
                 hw = json::object();
@@ -82,6 +83,9 @@ std::string GoProController::setSetting(std::string target, int32_t ID, std::str
         address = result.first;
         try{
             res = json::parse(result.second);
+        }catch(const json::exception& ex){
+            res = json::object();
+            std::cerr << "[ERROR] setSetting: " << ex.what() << std::endl;
         }catch(const std::exception& ex){
             res = json::object();
             std::cerr << "[ERROR] setSetting: " << ex.what() << std::endl;

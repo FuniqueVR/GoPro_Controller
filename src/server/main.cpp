@@ -211,6 +211,10 @@ void QueryAction(const WebSocketChannelPtr& channel, json j){
         resultText = controller.queryStatus(target);
         try{
             r["data"] = json::parse(resultText);
+        }catch(const json::exception& ex){
+            std::cerr << "[ERROR] QueryAction get before response: " << resultText << std::endl;
+            std::cerr << ex.what() << std::endl;
+            r["data"] = json::array();
         }catch(const std::exception& ex){
             std::cerr << "[ERROR] QueryAction get before response: " << resultText << std::endl;
             std::cerr << ex.what() << std::endl;
@@ -222,6 +226,10 @@ void QueryAction(const WebSocketChannelPtr& channel, json j){
         resultText = controller.queryStatus("");
         try{
             r["data"] = json::parse(resultText);
+        }catch(const json::exception& ex){
+            std::cerr << "[ERROR] QueryAction getall before response: " << resultText << std::endl;
+            std::cerr << ex.what() << std::endl;
+            r["data"] = json::array();
         }catch(const std::exception& ex){
             std::cerr << "[ERROR] QueryAction getall before response: " << resultText << std::endl;
             std::cerr << ex.what() << std::endl;
@@ -233,6 +241,10 @@ void QueryAction(const WebSocketChannelPtr& channel, json j){
         resultText = controller.setSetting(target, id, value);
         try{
             r["data"] = json::parse(resultText);
+        }catch(const json::exception& ex){
+            std::cerr << "[ERROR] QueryAction set before response: " << resultText << std::endl;
+            std::cerr << ex.what() << std::endl;
+            r["data"] = json::array();
         }catch(const std::exception& ex){
             std::cerr << "[ERROR] QueryAction set before response: " << resultText << std::endl;
             std::cerr << ex.what() << std::endl;
@@ -244,6 +256,10 @@ void QueryAction(const WebSocketChannelPtr& channel, json j){
         resultText = controller.setSettingAll(source, target, preset, jvalue);
         try{
             r["data"] = json::parse(resultText);
+        }catch(const json::exception& ex){
+            std::cerr << "[ERROR] QueryAction setall before response: " << resultText << std::endl;
+            std::cerr << ex.what() << std::endl;
+            r["data"] = json::array();
         }catch(const std::exception& ex){
             std::cerr << "[ERROR] QueryAction setall before response: " << resultText << std::endl;
             std::cerr << ex.what() << std::endl;
