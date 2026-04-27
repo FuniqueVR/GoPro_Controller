@@ -240,7 +240,7 @@ inline std::string GetRemoteURLByIP(std::string IP){
 inline std::string exec(std::string cmd) {
     CURL* curl = curl_easy_init();
     CURLcode res;
-    std::string result;
+    std::string result = "";
 
     if(curl) {
         curl_easy_setopt(curl, CURLOPT_URL, cmd.c_str());
