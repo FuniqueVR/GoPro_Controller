@@ -154,7 +154,7 @@ void InspectorWindow::render(){
 
                 if(ImGui::BeginTabBar("Inspector_Bar##Second")){
                     if(ImGui::BeginTabItem("System##Inspector_Bar_Item")){
-                        ImGui::BeginDisabled(should_disabled);
+                        ImGui::BeginDisabled(should_disabled || state->applying_all);
                         draw_system();
                         ImGui::EndDisabled();
                         ImGui::EndTabItem();
@@ -166,7 +166,7 @@ void InspectorWindow::render(){
                         ImGui::EndTabItem();
                     }
                     if(ImGui::BeginTabItem("Protune##Inspector_Bar_Item")){
-                        ImGui::BeginDisabled(should_disabled);
+                        ImGui::BeginDisabled(should_disabled || state->applying_all);
                         draw_protune();
                         ImGui::EndDisabled();
                         ImGui::EndTabItem();
