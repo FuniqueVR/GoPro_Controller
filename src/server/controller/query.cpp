@@ -16,26 +16,24 @@ std::string GoProController::queryStatus(std::string target){
     json hw = json::object();
     std::string address;
     if(target.size() > 0){
-        try{
-            SingleResponse result = _queryStatus(target);
+        SingleResponse result = _queryStatus(target);
+        SingleResponse result2 = _queryHW(target);
+        if(json::accept(result.second)){
             address = result.first;
             res = json::parse(result.second);
-        }catch(const json::exception& ex){
+        }else{
             res = json::object();
-            std::cerr << "[ERROR] queryStatus: " << ex.what() << std::endl;
-        }catch(const std::exception& ex){
-            res = json::object();
+            std::cerr << "[ERROR] queryStatus: status parse error" << std::endl;
         }
-        try{
-            SingleResponse result = _queryHW(target);
-            address = result.first;
-            hw = json::parse(result.second);
-        }catch(const json::exception& ex){
+
+        if(json::accept(result2.second)){
+            address = result2.first;
+            hw = json::parse(result2.second);
+        }else{
             hw = json::object();
-            std::cerr << "[ERROR] queryStatus: " << ex.what() << std::endl;
-        }catch(const std::exception& ex){
-            hw = json::object();
+            std::cerr << "[ERROR] queryStatus: hw parse error" << std::endl;
         }
+
         json i = json::object();
         i["ip"] = address;
         i["status"] = res;
@@ -51,16 +49,17 @@ std::string GoProController::queryStatus(std::string target){
         std::vector<SingleResponse> results = _queryAllStatus(buffer);
         std::vector<SingleResponse> hresults = _queryAllHW(buffer);
         for(int32_t i = 0; i < results.size(); i++){
-            try{
-                address = results[i].first;
+            address = results[i].first;
+            if(json::accept(results[i].second)){
                 res = json::parse(results[i].second);
+            }else{
+                std::cerr << "[ERROR] queryStatus: res parser error" << std::endl;
+                res = json::object();
+            }
+            if(json::accept(hresults[i].second)){
                 hw = json::parse(hresults[i].second);
-            }catch(const json::exception& ex){
-                res = json::object();
-                hw = json::object();
-                std::cerr << "[ERROR] queryStatus: " << ex.what() << std::endl;
-            }catch(const std::exception& ex){
-                res = json::object();
+            }else{
+                std::cerr << "[ERROR] queryStatus: hw parser error" << std::endl;
                 hw = json::object();
             }
             json j = json::object();
@@ -81,14 +80,12 @@ std::string GoProController::setSetting(std::string target, int32_t ID, std::str
     if(target.size() > 0){
         SingleResponse result = _setSetting(target, ID, value);
         address = result.first;
-        try{
+        bool vaild = json::accept(result.second);
+        if(vaild){
             res = json::parse(result.second);
-        }catch(const json::exception& ex){
+        }else{
             res = json::object();
-            std::cerr << "[ERROR] setSetting: " << ex.what() << std::endl;
-        }catch(const std::exception& ex){
-            res = json::object();
-            std::cerr << "[ERROR] setSetting: " << ex.what() << std::endl;
+            std::cerr << "[ERROR] setSetting: res parser error" << std::endl;
         }
         json i = json::object();
         i["ip"] = target;
@@ -103,14 +100,12 @@ std::string GoProController::setSetting(std::string target, int32_t ID, std::str
         std::vector<SingleResponse> results = _setAllSetting(buffer, ID, value);
         for(int32_t i = 0; i < results.size(); i++){
             address = results[i].first;
-            try{
+            bool vaild = json::accept(results[i].second);
+            if(vaild){
                 res = json::parse(results[i].second);
-            }catch(const json::exception& ex){
+            }else{
                 res = json::object();
-                std::cerr << "[ERROR] setSetting: " << ex.what() << std::endl;
-            }catch(const std::exception& ex){
-                res = json::object();
-                std::cerr << "[ERROR] setSetting: " << ex.what() << std::endl;
+                std::cerr << "[ERROR] setSetting: res parser error" << std::endl;
             }
             json j = json::object();
             j["ip"] = address;
@@ -129,14 +124,12 @@ std::string GoProController::setSettingAll(const std::string source, const std::
         std::vector<SingleResponse> results = _setSetting(target, preset, value);
         for(int32_t i = 0; i < results.size(); i++){
             address = results[i].first;
-            try{
+            bool vaild = json::accept(results[i].second);
+            if(vaild){
                 res = json::parse(results[i].second);
-            }catch(const json::exception& ex){
+            }else{
                 res = json::object();
-                std::cerr << "[ERROR] setSetting: " << ex.what() << std::endl;
-            }catch(const std::exception& ex){
-                res = json::object();
-                std::cerr << "[ERROR] setSettingAll: " << ex.what() << std::endl;
+                std::cerr << "[ERROR] setSettingAll: res parser error" << std::endl;
             }
             json j = json::object();
             j["ip"] = address;
@@ -155,14 +148,12 @@ std::string GoProController::setSettingAll(const std::string source, const std::
         std::cout << "[LOG] next step of setSettingAll" << std::endl;
         for(int32_t i = 0; i < results.size(); i++){
             address = results[i].first;
-            try{
+            bool vaild = json::accept(results[i].second);
+            if(vaild){
                 res = json::parse(results[i].second);
-            }catch(const json::exception& ex){
+            }else{
                 res = json::object();
-                std::cerr << "[ERROR] setSetting: " << ex.what() << std::endl;
-            }catch(const std::exception& ex){
-                res = json::object();
-                std::cerr << "[ERROR] setSettingAll: " << ex.what() << std::endl;
+                std::cerr << "[ERROR] setSettingAll: res parser error" << std::endl;
             }
             json j = json::object();
             j["ip"] = address;
