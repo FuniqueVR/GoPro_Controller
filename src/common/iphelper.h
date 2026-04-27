@@ -233,6 +233,10 @@ inline std::string GetRemoteURLByIP(std::string IP){
     return std::string("http://") + IP + std::string(":8080");
 }
 
+///
+/// Execute a single command and get its value
+/// If timeout, it will return empty string
+///
 inline std::string exec(std::string cmd) {
     CURL* curl = curl_easy_init();
     CURLcode res;
@@ -404,6 +408,9 @@ inline void execs_download(std::vector<std::string> cmds, std::vector<std::strin
     }
 }
 
+///
+/// Get the environment variable by key
+///
 inline std::string get_env_var( std::string const & key ) {
     char * val;
     val = getenv( key.c_str() );
@@ -414,6 +421,10 @@ inline std::string get_env_var( std::string const & key ) {
     return retval;
 }
 
+///
+/// You will get a string with format of
+/// '%Y-%m-%d %H:%M:%S'
+///
 inline std::string getCurrentDateTimeString() {
     // Get the current time point
     auto now = std::chrono::system_clock::now();
