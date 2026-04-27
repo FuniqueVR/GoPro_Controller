@@ -72,7 +72,7 @@ std::vector<SingleResponse> GoProController::_getAllResponse(std::vector<std::st
         urls.push_back(GetRemoteURLByIP(targets[i]) + suffix);
     }
     std::vector<std::string> res = execs(urls);
-    std::cout << "query all: " << res.size() << "/" << targets.size() << std::endl;;
+    std::cout << "query all: " << res.size() << "/" << targets.size() << " " << suffix.c_str() << std::endl;;
     for(int32_t i = 0; i < targets.size(); i++){
         if(res[i].size() == 0){
             res[i] = "{}";
