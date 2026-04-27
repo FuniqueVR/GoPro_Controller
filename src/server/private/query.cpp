@@ -41,6 +41,7 @@ std::vector<SingleResponse> GoProController::_setAllSetting(std::vector<std::str
     std::vector<int32_t> buffer = std::vector<int32_t>();
 
     for(auto& target : targets){
+        std::cout << "Set setting json: " << target << ", " << preset << std::endl;
         if(preset == 65538){ // Burst
             SETTING_UTILITY_CALL(r, a, buffer, GOPRO_BURST_SETTING_SIZE, GOPRO_BURST_SETTING_IDS);
             SETTING_UTILITY_CALL(r, a, buffer, GOPRO_BURST_PROTUNE_SETTING_SIZE, GOPRO_BURST_PROTUNE_SETTING_IDS);
@@ -58,6 +59,7 @@ std::vector<SingleResponse> GoProController::_setAllSetting(std::vector<std::str
 }
 
 std::vector<SingleResponse> GoProController::_setSetting(std::string target, int32_t preset, json res){
+    std::cout << "Set setting json: " << target << ", " << preset << std::endl;
     std::vector<SingleResponse> r = std::vector<SingleResponse>();
     std::vector<SingleResponse> a = std::vector<SingleResponse>();
     std::vector<int32_t> buffer = std::vector<int32_t>();
