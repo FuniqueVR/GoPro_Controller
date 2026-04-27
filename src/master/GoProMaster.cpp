@@ -440,9 +440,11 @@ void GoProMaster::quickApplyAll(const std::shared_ptr<CameraInfo>& target){
     json _status = json::object();
     if(getSettingsFromCamera(*target, _set) && getStatusFromCamera(*target, _status)){
         // Execute the apply logic here
+        int32_t p = _status[std::to_string(PRESET_ID)].get<int32_t>();
         root["model"] = model; // Added a model field for mark it's supported
-        root["preset"] = _status[std::to_string(PRESET_ID)].get<int32_t>();
+        root["preset"] = p;
         root["setting"] = _set;
+        std::cout << "trying apply all, preset: " << p << std::endl;
         applyAll(target->ip, root);
     }
 }

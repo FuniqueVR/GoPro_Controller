@@ -183,7 +183,7 @@ void QueryAction(const WebSocketChannelPtr& channel, json j){
     if(j["id"].is_number()){
         id = j["id"].get<int32_t>();
     }
-    if(j["preset"].is_number()){
+    if(j["value"]["preset"].is_number()){
         preset = j["value"]["preset"].get<int32_t>();
     }
     if(j["value"].is_string()){
