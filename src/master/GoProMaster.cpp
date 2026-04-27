@@ -782,7 +782,7 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
 
             for(auto ip = data["value"]["data"].begin(); ip != data["value"]["data"].end(); ++ip){
                 if(!ip.value()["ip"].is_string() || !ip.value()["status"].is_object()){
-                    std::cerr << "media:lastmedia error: Require ip and filename in value.data" << std::endl;
+                    std::cerr << "media:lastmedia error: Require ip and status in value.data" << std::endl;
                     std::cerr << data.dump() << std::endl;
                     continue;
                 }
