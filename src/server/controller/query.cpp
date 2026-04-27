@@ -136,7 +136,7 @@ std::string GoProController::setSettingAll(const std::string source, const std::
             }
         }
         std::vector<SingleResponse> results = _setAllSetting(buffer, preset, value);
-        std::cout << "[LOG] end of _setAllSetting" << std::endl;
+        std::cout << "[LOG] next step of setSettingAll" << std::endl;
         for(int32_t i = 0; i < results.size(); i++){
             try{
                 address = results[i].first;
@@ -152,6 +152,7 @@ std::string GoProController::setSettingAll(const std::string source, const std::
             arr.push_back(j);
         }
     }
+    std::cout << "[LOG] before response with arr.dump()" << std::endl;
     return arr.dump();
 }
 

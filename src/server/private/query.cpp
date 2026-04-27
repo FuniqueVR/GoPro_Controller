@@ -54,6 +54,7 @@ std::vector<SingleResponse> GoProController::_setAllSetting(std::vector<std::str
         }
         SETTING_UTILITY_CALL(r, a, buffer, GOPRO_SYSTEM_SETTING_SIZE, GOPRO_SYSTEM_SETTING_IDS);
     }
+    std::cout << "[LOG] end of _setAllSetting" << std::endl;
 
     return r;
 }
