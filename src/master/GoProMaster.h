@@ -100,15 +100,15 @@ public:
 
     bool directoryExists(const std::string& path);
 
-    /**
-     * Register the feedback event
-     * Called when fetch inspector setting data
-     */
+    ///
+    /// Register the feedback event
+    /// Called when fetch inspector setting data
+    ///
     void registerCameraSettingFeedback(camera_setting_feedback v);
-    /**
-     * Register the feedback event
-     * Called when fetch Monitor data
-     */
+    ///
+    /// Register the feedback event
+    /// Called when fetch Monitor data
+    ///
     void registerCameraStatusFeedback(camera_status_feedback v);
     void registerCameraHWFeedback(camera_hw_feedback v);
     void registerCameraLogFeedback(camera_log_feedback v);
