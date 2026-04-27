@@ -162,6 +162,7 @@ void ExecuteCommand(const WebSocketChannelPtr& channel, json j){
 }
 
 void QueryAction(const WebSocketChannelPtr& channel, json j){
+    std::string resultText = "";
     std::string name = "";
     std::string source = "";
     std::string target = "";
@@ -199,19 +200,43 @@ void QueryAction(const WebSocketChannelPtr& channel, json j){
     //
     // We don't want to flip the update flag when it's actually the UI event...
     if(name == "get"){
-        r["data"] = json::parse(controller.queryStatus(target));
+        resultText = controller.queryStatus(target);
+        try{
+            r["data"] = json::parse(resultText);
+        }catch(const std::exception& ex){
+            std::cerr << "[ERROR] QueryAction get before response: " << resultText << std::endl;
+            r["data"] = json::array();
+        }
         channel->send(getPacket("query:get", r));
     }
     else if(name == "getall"){
-        r["data"] = json::parse(controller.queryStatus(""));
+        resultText = controller.queryStatus("");
+        try{
+            r["data"] = json::parse(resultText);
+        }catch(const std::exception& ex){
+            std::cerr << "[ERROR] QueryAction getall before response: " << resultText << std::endl;
+            r["data"] = json::array();
+        }
         channel->send(getPacket("query:getall", r));
     }
     else if(name == "set"){
-        r["data"] = json::parse(controller.setSetting(target, id, value));
+        resultText = controller.setSetting(target, id, value);
+        try{
+            r["data"] = json::parse(resultText);
+        }catch(const std::exception& ex){
+            std::cerr << "[ERROR] QueryAction set before response: " << resultText << std::endl;
+            r["data"] = json::array();
+        }
         channel->send(getPacket("query:set", r));
     }
     else if(name == "setall"){
-        r["data"] = json::parse(controller.setSettingAll(source, target, preset, jvalue));
+        resultText = controller.setSettingAll(source, target, preset, jvalue);
+        try{
+            r["data"] = json::parse(resultText);
+        }catch(const std::exception& ex){
+            std::cerr << "[ERROR] QueryAction setall before response: " << resultText << std::endl;
+            r["data"] = json::array();
+        }
         channel->send(getPacket("query:setall", r));
     }
     else{
