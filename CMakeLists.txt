@@ -238,7 +238,9 @@ if(BUILD_SERVER)
     )
     if(WIN32)
         target_compile_options(server PRIVATE "/std:c++17")
-        target_link_options(server PRIVATE "-static-libgcc" "-static-libstdc++" "-static" "/DEBUG" "/Zl")
+        target_link_options(server PRIVATE "-static-libgcc" "-static-libstdc++" "-static" "/DEBUG")
+        set_property(TARGET foo PROPERTY
+            MSVC_DEBUG_INFORMATION_FORMAT "$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>")
     endif()
     target_link_libraries(server hv_static libcurl)
     # Ensure json include is available for server too if it uses nlohmann/json
