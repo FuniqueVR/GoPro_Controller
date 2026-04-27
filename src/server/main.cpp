@@ -180,11 +180,11 @@ void QueryAction(const WebSocketChannelPtr& channel, json j){
     if(j["target"].is_string()){
         target = j["target"].get<std::string>();
     }
-    if(j["id"].is_number_integer()){
-        id = j["id"].get<int>();
+    if(j["id"].is_number()){
+        id = j["id"].get<int32_t>();
     }
-    if(j["preset"].is_number_integer()){
-        preset = j["preset"].get<int>();
+    if(j["preset"].is_number()){
+        preset = j["preset"].get<int32_t>();
     }
     if(j["value"].is_string()){
         value = j["value"].get<std::string>();
