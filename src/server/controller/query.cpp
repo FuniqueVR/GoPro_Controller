@@ -75,7 +75,7 @@ std::string GoProController::setSetting(std::string target, int32_t ID, std::str
             res = json::parse(result.second);
         }catch(const std::exception& ex){
             std::cerr << "setSetting failed: "  << ex.what() << std::endl;
-            address = result.first;
+            address = "";
             res = json::object();
         }
         json i;
