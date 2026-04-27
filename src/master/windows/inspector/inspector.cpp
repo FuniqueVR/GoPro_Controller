@@ -147,10 +147,14 @@ void InspectorWindow::render(){
                     }
                 }
                 ImGui::EndDisabled();
+
                 ImGui::SameLine();
+
+                ImGui::BeginDisabled(state->applying_all);
                 if(ImGui::Button("Preset Manager##Inspector_Bar_Item")){
                     state->command_sender("preset_manager");
                 }
+                ImGui::EndDisabled();
 
                 if(ImGui::BeginTabBar("Inspector_Bar##Second")){
                     if(ImGui::BeginTabItem("System##Inspector_Bar_Item")){
