@@ -119,12 +119,14 @@ std::string GoProController::setSettingAll(const std::string source, const std::
             arr.push_back(j);
         }
     }else{ // Apply to all
-        std::lock_guard<std::mutex> lock(ips_alive_mutex);
-        std::vector<std::string> tt = std::vector<std::string>();
-        for(int32_t i = 0; i < camera_alive_ips.size(); i++){
-            if(camera_alive_ips[i] != source) tt.push_back(camera_alive_ips[i]);
+        std::vector<std::string> buffer = std::vector<std::string>();
+        {
+            std::lock_guard<std::mutex> lock(ips_alive_mutex);
+            for(int32_t i = 0; i < camera_alive_ips.size(); i++){
+                if(camera_alive_ips[i] != source) buffer.push_back(camera_alive_ips[i]);
+            }
         }
-        std::vector<SingleResponse> results = _setAllSetting(tt, preset, value);
+        std::vector<SingleResponse> results = _setAllSetting(buffer, preset, value);
         for(int32_t i = 0; i < results.size(); i++){
             try{
                 address = results[i].first;
