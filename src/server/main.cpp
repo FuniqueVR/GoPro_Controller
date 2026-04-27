@@ -192,14 +192,14 @@ void QueryAction(const WebSocketChannelPtr& channel, json j){
     if(j["id"].is_number()){
         id = j["id"].get<int32_t>();
     }
-    if(j["value"]["preset"].is_number()){
-        preset = j["value"]["preset"].get<int32_t>();
-    }
     if(j["value"].is_string()){
         value = j["value"].get<std::string>();
     }
     else if(j["value"].is_object()){
         jvalue = j["value"];
+        if(j["value"]["preset"].is_number()){
+            preset = j["value"]["preset"].get<int32_t>();
+        }
     }
 
     // The reason we need to seperate the set and setall
