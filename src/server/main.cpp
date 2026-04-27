@@ -330,7 +330,7 @@ void MediaAction(const WebSocketChannelPtr& channel, json j){
 
     if(name == "lastmedia"){
         try{
-            r["data"] = json::parse(controller.getMediaList(target));
+            r["data"] = json::parse(controller.getLastMedia(target));
         }catch(const std::exception& ex){
             r["data"] = json::array();
         }

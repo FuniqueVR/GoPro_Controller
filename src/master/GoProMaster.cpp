@@ -781,25 +781,20 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
             }
 
             for(auto ip = data["value"]["data"].begin(); ip != data["value"]["data"].end(); ++ip){
-                if(!ip.value()["ip"].is_string() || !ip.value()["status"].is_object()){
-                    std::cerr << "media:lastmedia error: Require ip and status in value.data" << std::endl;
+                if(!ip.value()["ip"].is_string() || !ip.value()["filename"].is_object()){
+                    std::cerr << "media:lastmedia error: Require ip and filename in value.data" << std::endl;
                     std::cerr << data.dump() << std::endl;
                     continue;
                 }
                 std::string folder = "";
                 std::string file = "";
-                if(ip.value()["status"]["media"].is_array() && ip.value()["status"]["media"].size() > 0){
-                    json m = ip.value()["status"]["media"].at(0);
-                    if(m["d"].is_string()){
-                        folder = m["d"].get<std::string>();
-                    }
-                    if(m["fs"].is_array() && m["fs"].size() > 0){
-                        json m2 = m["fs"].at(0);
-                        if(m2["n"].is_string()){
-                            file = m2["n"].get<std::string>();
-                        }
-                    }
+                if(ip.value()["filename"]["folder"].is_string()){
+                    folder = ip.value()["filename"]["folder"].get<std::string>();
                 }
+                if(ip.value()["filename"]["file"].is_string()){
+                    file = ip.value()["filename"]["file"].get<std::string>();
+                }
+                
                 std::string ip_ref = ip.value()["ip"].get<std::string>();
                 std::lock_guard<std::mutex> lock(camera_mtx);
                 int32_t found = findCamera(server, ip_ref);
