@@ -135,9 +135,6 @@ void ExecuteCommand(const WebSocketChannelPtr& channel, json j){
         controller.locate(target, false);
         r["data"] = json::object();
         channel->send(getPacket("command:locate_off", r));
-    }else if(name == "model"){
-        r["data"] = json::parse(controller.getAllModel());
-        channel->send(getPacket("command:model", r));
     }else if(name == "scan"){
         controller.scanCameras();
         channel->send(getPacket("command:scan", r));
