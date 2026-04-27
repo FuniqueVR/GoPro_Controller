@@ -184,7 +184,7 @@ void QueryAction(const WebSocketChannelPtr& channel, json j){
         id = j["id"].get<int32_t>();
     }
     if(j["preset"].is_number()){
-        preset = j["preset"].get<int32_t>();
+        preset = j["value"]["preset"].get<int32_t>();
     }
     if(j["value"].is_string()){
         value = j["value"].get<std::string>();
