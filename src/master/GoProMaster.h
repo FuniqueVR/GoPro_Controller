@@ -24,18 +24,18 @@ typedef void (*camera_log_feedback)(std::string key, std::string value);
 typedef void (*camera_preset_save)();
 typedef void (*camera_apply_all_feedback)();
 
-/**
- * GoPro Master Worker
- * Use this hub stuff to control multiple websocket server or camera
- * And handles the message sender and process
- * It also use multithread to decode the message from the websocket instancess
- */
+///
+/// GoPro Master Worker
+/// Use this hub stuff to control multiple websocket server or camera
+/// And handles the message sender and process
+/// It also use multithread to decode the message from the websocket instancess
+///
 class GoProMaster {
 public:
     GoProMaster();
-    /**
-     * Destroy the threadings and release the resource under.
-     */
+    /// 
+    /// Destroy the threadings and release the resource under.
+    /// 
     ~GoProMaster();
 
     // ----------------------------------------------------------
