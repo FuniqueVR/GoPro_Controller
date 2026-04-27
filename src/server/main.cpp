@@ -135,6 +135,12 @@ void ExecuteCommand(const WebSocketChannelPtr& channel, json j){
         controller.locate(target, false);
         r["data"] = json::object();
         channel->send(getPacket("command:locate_off", r));
+    }else if(name == "res_clean"){
+        if(fs::exists("res")){
+            fs::remove_all("res");
+        }
+        fs::create_directory("res");
+        channel->send(getPacket("command:res_clean", r));
     }else if(name == "scan"){
         controller.scanCameras();
         channel->send(getPacket("command:scan", r));
@@ -144,16 +150,13 @@ void ExecuteCommand(const WebSocketChannelPtr& channel, json j){
     }else if(name == "add" && target.size() >= 3){
         controller.addCameras(target);
         channel->send(getPacket("command:add", r));
-    }
-    else if(name == "delete" && target.size() >= 3){
+    }else if(name == "delete" && target.size() >= 3){
         controller.deleteCameras(target);
         channel->send(getPacket("command:delete", r));
-    }
-    else if(name == "rename" && target.size() >= 3){
+    }else if(name == "rename" && target.size() >= 3){
         controller.renameCameras(target, value);
         channel->send(getPacket("command:rename", r));
-    }
-    else{
+    }else{
         channel->send(getPacket("command:unknown", r));
     }
 }
@@ -481,6 +484,9 @@ void WebsocketServer(){
 
 void HttpServer(){
     hv::HttpService router;
+    ///
+    /// Clean the res temp folder
+    ///
     if(fs::exists("res")){
         fs::remove_all("res");
     }
