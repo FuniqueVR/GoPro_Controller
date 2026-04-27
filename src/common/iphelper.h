@@ -237,7 +237,7 @@ inline std::string GetRemoteURLByIP(std::string IP){
 /// Execute a single command and get its value
 /// If timeout, it will return empty string
 ///
-inline std::string exec(std::string cmd) {
+inline std::string exec(std::string cmd, int64_t timeout = 1500L, int64_t connection_timeout = 1000L) {
     CURL* curl = curl_easy_init();
     CURLcode res;
     std::string result = "";
@@ -246,8 +246,8 @@ inline std::string exec(std::string cmd) {
         curl_easy_setopt(curl, CURLOPT_URL, cmd.c_str());
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback_pure);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &result);
-        curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, 1500L);
-        curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT_MS, 1000L);
+        curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, timeout);
+        curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT_MS, connection_timeout);
         res = curl_easy_perform(curl);
         
         curl_easy_cleanup(curl);
