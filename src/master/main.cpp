@@ -102,18 +102,21 @@ void settingGetterFeedback(std::string ip, json setting){
         global_state->current_setting_items_bind = true;
     }
 }
+
 void statusGetterFeedback(std::string ip, json status){
     if(global_state->current_camera_item == ip){
         global_state->current_status_items = status;
         global_state->current_status_items_bind = true;
     }
 }
+
 void hwGetterFeedback(std::string ip, json hw){
     if(global_state->current_camera_item == ip){
         global_state->current_hw_items = hw;
         global_state->current_hw_items_bind = true;
     }
 }
+
 void applyAllFeedback(){
     global_state->applying_all = false;
 }
