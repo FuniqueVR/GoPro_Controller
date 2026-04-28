@@ -1,271 +1,45 @@
 # GoPro Controller
 
-這是一個透過 GUI 控制 GoPro 的專案
+Tool for control multiple GoPro Cameras, The design is for above 100 cameras connection.
+
+[Documentation](https://github.com/Elly2018/GoPro_Controller/wiki)
+
+## Application Requirement
+
+* Operating System: Debine / Windows
+
+## Features
+
+* Structure
+  - [x] Master-Server Structure for disturbuting USB buffer, in order to handle 60+ Cameras at once
+* Application
+  - [x] Master setting files auto-save
+  - [x] Server setting files auto-save
+  - [x] Server remeber clients info
+* Manipulation
+  - [x] Mode changer
+  - [x] Preset changer
+  - [x] Monitor cameras information
+  - [x] Modify GoPro Camera Setting
+  - [ ] Custom preset apply pipeline
+  - [ ] Sync custom preset setting to all
+* WebCam
+  - [x] Change to WebCam Mode
+* Preview
+  - [x] Display selected GoPro camera
+  - [x] Change setting while in preview Popup window
+* Media
+  - [ ] One click pull latest media file
+  - [ ] Media Browser for download and modify and delete etc...
+
+## Screenshot
+
+![Setting](./docs/gopro_setting.png)
+![Preview](./docs/gopro_preview.png)
+![Theme](./docs/mocha_theme.png)
+
+## Protocol
+
+* [Open GoPro Docs](https://gopro.github.io/OpenGoPro/http#tag/Webcam/operation/GPCAMERA_WEBCAM_START_OGP)
+* [gpControl Hack](https://github.com/KonradIT/goprowifihack/blob/master/HERO11/HERO11-Commands.md)
 
-## 開發需求
-
-* Debine OS / Windows OS
-* CMake
-```bash
-sudo apt update
-sudo apt install cmake
-```
-* ARM64 C++編譯器
-可以透過以下指令下載
-```bash
-sudo apt update
-sudo apt install g++-aarch64-linux-gnu
-```
-
-總共有兩個輸出的應用程式
-* Master
-    * AMD64 (WIN/LINUX)
-* Server
-    * ARM64 (LINUX)
-
-#### Master
-
-附有 UI 介面的控制器, 可以透過這個介面跟其他 Websocket 或是 Go-Pro 直接連結.
-
-#### Server
-
-Websocket, Go-Pro 的中繼站, 會把訊息轉發到 Master.
-
-## 架構圖
-
-```mermaid
----
-title: 結構
----
-graph LR
-    subgraph 攝影機群A
-        CAMA1[Go Pro 攝影機];
-        CAMA2[Go Pro 攝影機];
-        CAMA3[Go Pro 攝影機];
-        CAMAH[USB HUB];
-        CAMAR[樹莓派];
-
-        CAMAH-->CAMA1;
-        CAMAH-->CAMA2;
-        CAMAH-->CAMA3;
-        CAMAR-->CAMAH;
-    end
-    subgraph 攝影機群B
-        CAMB1[Go Pro 攝影機];
-        CAMB2[Go Pro 攝影機];
-        CAMB3[Go Pro 攝影機];
-        CAMBH[USB HUB];
-        CAMBR[樹莓派];
-
-        CAMBH-->CAMB1;
-        CAMBH-->CAMB2;
-        CAMBH-->CAMB3;
-        CAMBR-->CAMBH;
-    end
-    subgraph 攝影機群C
-        CAMC1[Go Pro 攝影機];
-        CAMC2[Go Pro 攝影機];
-        CAMC3[Go Pro 攝影機];
-        CAMCH[USB HUB];
-
-        CAMCH-->CAMC1;
-        CAMCH-->CAMC2;
-        CAMCH-->CAMC3;
-    end
-    L[筆電控制];
-    L-->|Websocket|CAMAR;
-    L-->|Websocket|CAMBR;
-    L-->|USB|CAMCH;
-```
-
-## Raspberry 建構
-
-#### IP Setup
-
-通常希望開發的機器使用 192.168.10.10, gw 192.168.10.1, netmask 255.255.255.0\
-PI 則是 192.168.10.(2-9), gw 192.168.10.1, netmask 255.255.255.0
-
-```bash
-SSH 進去你的 PI
-# 介面化 PI 網路管理
-sudo nmtui
-```
-
-#### 安裝程式
-
-需要在 Repo Root 開啟 http-server 建議工具: [http-server](https://www.npmjs.com/package/http-server)
-
-```bash
-# 在 Repo 本地開啟
-http-server -p 8080
-```
-
-接著開啟另一個 Terminal
-
-```bash
-# SSH 到你的 PI
-sudo curl http://192.168.10.10:8080/build_server/server -o .usr/local/bin/server
-```
-
-用 ldd 查看依賴性
-
-```bash
-ldd server
-# Output:
-#   linux-vdso.so.1 (0x0000007fb8ded000)
-#   libhv.so => /lib/libhv.so (0x0000007fb8a50000)
-#   libstdc++.so.6 => /lib/aarch64-linux-gnu/libstdc++.so.6 (0x0000007fb87e0000)
-#   libgcc_s.so.1 => /lib/aarch64-linux-gnu/libgcc_s.so.1 (0x0000007fb87a0000)
-#   libc.so.6 => /lib/aarch64-linux-gnu/libc.so.6 (0x0000007fb85e0000)
-#   /lib/ld-linux-aarch64.so.1 (0x0000007fb8da0000)
-#   libm.so.6 => /lib/aarch64-linux-gnu/libm.so.6 (0x0000007fb8530000)
-```
-
-你會看到 libhv.so 依賴於 /lib 資料夾, 如果還沒有安裝依賴庫
-
-```bash
-# 快速解決依賴問題
-sudo curl http://192.168.10.10:8080/build_server/lib/libhv.so -o /lib/libhv.so
-```
-
-#### 開機自動執行
-
-弄一個 Bash script
-```bash
-sudo nano /usr/local/bin/startup.sh
-```
-
-弄一個 打上啟動程式的腳本
-```bash
-#!/bin/bash
-cd /home/ellly
-/usr/local/bin/server
-```
-
-重製 systemd
-```bash
-sudo chmod +x /usr/local/bin/startup.sh
-sudo systemctl daemon-reload
-sudo systemctl enable startup.service
-sudo systemctl start startup.service
-
-# 用這一行看執行 log
-sudo systemctl status startup.service
-
-# 用這一行重啟動
-sudo systemctl restart startup.service
-```
-
-## 協定
-
-可以參考 GoPro Http API 協定的 [Docs](https://gopro.github.io/OpenGoPro/http#tag/Webcam/operation/GPCAMERA_WEBCAM_START_OGP)
-
-透過 {IP}:9090/ 進入 websocket server
-
-接著透過這個方式傳輸訊息, websocket server 會有 analysis header 的 key, 把訊息丟到對的 processer.
-```json
-{
-    "key": "string",
-    "value": "object"
-}
-```
-
-#### KEY: command
-
-抓到所有狀態
-
-需求物件結構
-```json
-{
-    "name": "label",
-    "target": "IP target"
-}
-```
-
-回傳物件結構
-```json
-{
-    "name": "coming label",
-    "message": "message"
-}
-```
-
-##### name: reboot
-
-對象 GoPro 重開機
-
-##### name: shutdown
-
-對象 GoPro 關機
-
-##### name: keep_alive
-
-重新啟動對象 GoPro USB 睡眠倒數
-
-##### name: usb_on
-
-開啟對象 GoPro USB 控制模式
-
-##### name: usb_off
-
-關閉對象 GoPro USB 控制模式
-
-##### name: datetime
-
-改變日期時間
-
-##### name: zoom
-
-##### name: shutter
-
-##### name: ip
-
-這項指令會回傳 ip
-
-```json
-{
-    "data": [
-        "IP.A", "IP.B"
-    ]
-}
-```
-
-#### KEY: query
-
-抓到所有狀態
-
-需求物件結構
-```json
-{
-    "name": "label",
-    "mode": "all | single",
-    "target": "IP target",
-}
-```
-
-回傳物件結構
-```json
-{
-
-}
-```
-
-#### KEY: webcam
-
-網路攝影機方面的動作
-
-需求物件結構
-```json
-{
-    "name": "label",
-    "mode": "all | single",
-    "target": "IP target"
-}
-```
-
-回傳物件結構
-```json
-{
-
-}
-```
