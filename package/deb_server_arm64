@@ -1,0 +1,7 @@
+Package: go-pro-control-server
+Version: 0.1.3
+Section: shells
+Priority: optional
+Architecture: arm64
+Maintainer: chu.elly@hotmail.com.tw
+Description: GoPro cameras middleware server

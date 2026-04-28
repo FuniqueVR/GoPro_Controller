@@ -7,6 +7,7 @@
 #include "state_action.h"
 #include "../windows/base_window.h"
 #include "../popup/base_pop_window.h"
+#include "../imgui_helper.h"
 
 void init_state_setup(
     std::shared_ptr<json> servers,
@@ -33,22 +34,25 @@ void init_state_setup(
         if(websocket_win_json.is_object()){
             windows[0]->set_window_data(websocket_win_json);
         }
-        json commands_win_json = (*servers)["window"]["commands_win"];
-        if(commands_win_json.is_object()){
-            windows[1]->set_window_data(commands_win_json);
-        }
         json camera_list_win_json = (*servers)["window"]["camera_list_win"];
         if(camera_list_win_json.is_object()){
-            windows[2]->set_window_data(camera_list_win_json);
+            windows[1]->set_window_data(camera_list_win_json);
         }
         json inspector_win_json = (*servers)["window"]["inspector_win"];
         if(inspector_win_json.is_object()){
-            windows[3]->set_window_data(inspector_win_json);
+            windows[2]->set_window_data(inspector_win_json);
         }
         json style_setting_win_win_json = (*servers)["window"]["style_setting_win"];
-        if(style_setting_win_win_json.is_object()){
-            windows[4]->set_window_data(style_setting_win_win_json);
+        if(style_setting_win_win_json["colors"].is_null() || style_setting_win_win_json["fields"].is_null()){
+            std::cout << "Apply default theme" << std::endl;
+            setup_catppuccin_mocha_theme();
+        }else{
+            std::cout << "Apply loaded theme" << std::endl;
+            windows[3]->set_window_data(style_setting_win_win_json);
         }
+    }else{
+        std::cout << "Apply default theme" << std::endl;
+        setup_catppuccin_mocha_theme();
     }
     if((*servers)["popwin"].is_object()){
         json preview_popwin_json = (*servers)["popwin"]["preview_popwin"];
@@ -61,17 +65,14 @@ void init_state_setup(
         windows[0]->trigger(true);
         std::cout << "Detect websocket_server_window gui is on" << std::endl;
     }
-    if((*gui)["commands_win"].is_boolean() && (*gui)["commands_win"].get<bool>()){
+    if((*gui)["camera_list_win"].is_boolean() && (*gui)["camera_list_win"].get<bool>()){
         windows[1]->trigger(true);
     }
-    if((*gui)["camera_list_win"].is_boolean() && (*gui)["camera_list_win"].get<bool>()){
+    if((*gui)["inspector_win"].is_boolean() && (*gui)["inspector_win"].get<bool>()){
         windows[2]->trigger(true);
     }
-    if((*gui)["inspector_win"].is_boolean() && (*gui)["inspector_win"].get<bool>()){
-        windows[3]->trigger(true);
-    }
     if((*gui)["style_setting_win"].is_boolean() && (*gui)["style_setting_win"].get<bool>()){
-        windows[4]->trigger(true);
+        windows[3]->trigger(true);
     }
 }
 

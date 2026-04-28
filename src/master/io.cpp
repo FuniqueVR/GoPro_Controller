@@ -12,6 +12,7 @@
 
 const char* SERVER_LIST_PATH = "servers.json";
 const char* GUI_PATH = "gui.json";
+const char* PRESETS_PATH = "presets.json";
 
 void saveServerList(json data){
     std::ofstream file(SERVER_LIST_PATH);
@@ -23,6 +24,14 @@ void saveServerList(json data){
 
 void saveGUI(json data){
     std::ofstream file(GUI_PATH);
+    if(file.is_open()){
+        file << data.dump();
+        file.close();
+    }
+}
+
+void savePresetList(json data){
+    std::ofstream file(PRESETS_PATH);
     if(file.is_open()){
         file << data.dump();
         file.close();
@@ -51,6 +60,24 @@ json loadGUI() {
     std::ifstream file(GUI_PATH);
     if(!file.is_open()){
         std::cerr << "No gui config found" << std::endl;
+        return json::object();
+    }
+
+    std::stringstream buffer;
+    std::string fileContents;
+
+    buffer << file.rdbuf();
+    fileContents = buffer.str();
+
+    file.close();
+
+    return json::parse(fileContents);
+}
+
+json loadPresetList(){
+    std::ifstream file(PRESETS_PATH);
+    if(!file.is_open()){
+        std::cerr << "No presets config found" << std::endl;
         return json::object();
     }
 

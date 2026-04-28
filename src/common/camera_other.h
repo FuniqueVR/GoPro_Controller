@@ -19,7 +19,15 @@ const static char* GOPRO_MODE_STRING[] = {
 };
 
 const static int32_t GOPRO_MODE_VALUE[] = {
-    0, 65538, 65536, 131072, 131075, 131076, 131077, 131073, 131074
+    0, // Video
+    65538, // Photo Burst
+    65536, // Photo Single
+    131072, // Timelapse
+    131075, // Timelapse Trail
+    131076, // Timelapse Light Painting
+    131077, // Timelapse Light Trail
+    131073, // Timelapse Video
+    131074, // Timelapse Night Video
 };
 
 #define WEBCAM_START_RES_SIZE 3

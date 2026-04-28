@@ -19,21 +19,23 @@
 
 typedef void (*camera_setting_feedback)(std::string ip, json setting);
 typedef void (*camera_status_feedback)(std::string ip, json status);
+typedef void (*camera_hw_feedback)(std::string ip, json hw);
 typedef void (*camera_log_feedback)(std::string key, std::string value);
+typedef void (*camera_preset_save)();
+typedef void (*camera_apply_all_feedback)();
 
-
-/**
- * GoPro Master Worker
- * Use this hub stuff to control multiple websocket server or camera
- * And handles the message sender and process
- * It also use multithread to decode the message from the websocket instancess
- */
+///
+/// GoPro Master Worker
+/// Use this hub stuff to control multiple websocket server or camera
+/// And handles the message sender and process
+/// It also use multithread to decode the message from the websocket instancess
+///
 class GoProMaster {
 public:
     GoProMaster();
-    /**
-     * Destroy the threadings and release the resource under.
-     */
+    /// 
+    /// Destroy the threadings and release the resource under.
+    /// 
     ~GoProMaster();
 
     // ----------------------------------------------------------
@@ -87,27 +89,37 @@ public:
     void preview_end(std::string server, std::string target);
     void media_only(const std::string command, std::string target = "");
     void download_last_media(const std::string dir, bool put_finish);
+    void download_last_media(const std::string ip, const std::string dir, bool put_finish);
 
     void presetSwitch(const std::string server, const std::string target, int32_t mode);
     void locate(const std::string server, const std::string target);
     int32_t haslocate(const std::string server, const std::string target);
-    void apply(const std::string& ip, const int32_t id, const int32_t value);
+    void apply(const std::string& ip, const std::string& target, const int32_t id, const int32_t value);
     void applyAll(const std::string& ip, const json& res);
+    void quickApplyAll(const std::shared_ptr<CameraInfo>& target);
 
     bool directoryExists(const std::string& path);
 
-    /**
-     * Register the feedback event
-     * Called when fetch inspector setting data
-     */
+    ///
+    /// Register the feedback event
+    /// Called when fetch inspector setting data
+    ///
     void registerCameraSettingFeedback(camera_setting_feedback v);
-    /**
-     * Register the feedback event
-     * Called when fetch Monitor data
-     */
+    ///
+    /// Register the feedback event
+    /// Called when fetch Monitor data
+    ///
     void registerCameraStatusFeedback(camera_status_feedback v);
+    void registerCameraHWFeedback(camera_hw_feedback v);
     void registerCameraLogFeedback(camera_log_feedback v);
+    void registerApplyAllFeedback(camera_apply_all_feedback v);
+    void registerSavePreset(camera_preset_save v);
+    void set_preset_data(std::shared_ptr<json> _preset);
 
+    int32_t add_preset(const std::string name, json data);
+    bool get_preset(const std::string name, json& data);
+    bool remove_preset(const std::string name);
+    std::vector<std::string> get_preset_names();
     /**
      * Camera list multithread lock guard
      * This will prevent race condition
@@ -124,6 +136,10 @@ public:
      * Get current camera record
      */
     const std::vector<std::shared_ptr<CameraInfo>>& getCameras() const;
+    /**
+     * Get current camera record (Clone, For thread optimization)
+     */
+    const std::vector<CameraInfo> getCameras_Clone();
     /**
      * Get current websocket server record
      */
@@ -159,11 +175,23 @@ private:
     std::unordered_map<std::string, bool> mediaQueryFinish = std::unordered_map<std::string, bool>();
     camera_setting_feedback _camera_setting_feedback = NULL;
     camera_status_feedback _camera_status_feedback = NULL;
+    camera_hw_feedback _camera_hw_feedback = NULL;
     camera_log_feedback _camera_log_feedback = NULL;
+    camera_preset_save _camera_preset_save = NULL;
+    camera_apply_all_feedback _camera_apply_all_feedback = NULL;
+    std::shared_ptr<json> preset_ptr = NULL;
     /**
      * Is app exit or not flag
      */
     bool done = false;
+    /**
+     * 0: Off
+     * 1: On (no finish txt)
+     * 2: On (with finish txt)
+     */
+    std::atomic_char32_t downloading_last_media_flag = 0;
+    std::atomic_char32_t downloading_last_media_total;
+    std::atomic_char32_t downloading_last_media_done;
 
     /**
      * The background thread for fetch update from all websocket server and update etc...

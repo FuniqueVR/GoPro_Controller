@@ -2,6 +2,7 @@
 #include <queue>
 #include <mutex>
 #include <thread>
+#include <functional>
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -37,6 +38,9 @@
 #include <opencv2/opencv.hpp>
 #include "base_pop_window.h"
 
+/**
+ * Display camera feed from select camera
+ */
 class PreviewPopup : public BasePopWindow {
 public:
     PreviewPopup(
@@ -49,18 +53,53 @@ public:
     json get_window_data() override;
     void set_window_data(json data) override;
 
+    void register_setting_drawer(std::function<void(std::shared_ptr<GlobalState>& state, std::shared_ptr<GoProMaster>& master, const std::shared_ptr<CameraInfo>& c)> caller);
+    void register_protune_drawer(std::function<void(std::shared_ptr<GlobalState>& state, std::shared_ptr<GoProMaster>& master, const std::shared_ptr<CameraInfo>& c)> caller);
+
     virtual void trigger(bool value) override;
     virtual void update_decoder();
     virtual void update() override;
     virtual void render() override;
+
+protected:
+    int32_t _get_current_model(json target);
+    void _stop_thread();
+    void _draw_rotation_button();
+    void _draw_camera_selection();
+    void _draw_bottom_button();
+    void _draw_setting();
+
 private:
+    std::function<void(std::shared_ptr<GlobalState>& state, std::shared_ptr<GoProMaster>& master, const std::shared_ptr<CameraInfo>& c)> setting_drawer;
+    std::function<void(std::shared_ptr<GlobalState>& state, std::shared_ptr<GoProMaster>& master, const std::shared_ptr<CameraInfo>& c)> protune_drawer;
     cv::VideoCapture cap;
     std::string pipeline;
     std::queue<cv::Mat> frame_queue;
     std::mutex queue_mutex;
     std::thread reader;
     const size_t MAX_QUEUE_SIZE = 10;
+    const size_t MAX_REDECODE = 2;
+    const size_t MAX_ATTEMPT = 300;
 
+    /**
+     * Is this the first time this window appear
+     * Shows the build info in console if it is
+     */
+    bool first = true;
+    bool applying_all_last;
+    /**
+     * The state of the decoing thread is trying to get video frame from camera
+     * If false, it means failed
+     */
+    bool trying = false;
+    /**
+     * Check if the rotating button is press
+     * The purpose of this is to print info in the next frame
+     */
+    bool remap = false;
+    /**
+     * Rotating flag
+     */
     int32_t dir = 0;
     bool stream_open = false;
     GLuint gl_texture = 0;

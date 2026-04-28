@@ -49,7 +49,10 @@ if(BUILD_SERVER OR BUILD_MASTER)
     FetchContent_MakeAvailable(libhv)
     include_directories(lib/mdns/include)
     set(MDNS_DIR "lib/mdns")
+    include_directories(lib/crashlog)
+    set(CRASH_DIR "lib/crashlog")
     file(GLOB MDNS_SOURCES
+        "${CRASH_DIR}/crashlogs.cpp"
         "${MDNS_DIR}/src/logger.cpp"
         "${MDNS_DIR}/src/mdns.cpp"
         "${MDNS_DIR}/src/mdns.h"
@@ -109,6 +112,7 @@ if(BUILD_MASTER)
     include_directories(${IMGUI_DIR})
     include_directories(${IMGUI_DIR}/backends)
     include_directories(lib/json/include)
+    include_directories(lib/notify)
 
     # ============================================================
     # OpenCV - Try system first, fallback to FetchContent
@@ -227,13 +231,16 @@ if(BUILD_SERVER)
         "${CMAKE_SOURCE_DIR}/src/server/*.cpp"
     )
     link_directories(/usr/lib/aarch64-linux-gnu)
+    include_directories(lib/icmplib)
     add_executable(server
         ${SERVER_SOURCE}
         ${MDNS_SOURCES}
     )
     if(WIN32)
         target_compile_options(server PRIVATE "/std:c++17")
-        target_link_options(server PRIVATE "-static-libgcc" "-static-libstdc++" "-static")
+        target_link_options(server PRIVATE "-static-libgcc" "-static-libstdc++" "-static" "/DEBUG")
+        set_property(TARGET server PROPERTY
+            MSVC_DEBUG_INFORMATION_FORMAT "$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>")
     endif()
     target_link_libraries(server hv_static libcurl)
     # Ensure json include is available for server too if it uses nlohmann/json

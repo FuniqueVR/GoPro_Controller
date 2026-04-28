@@ -30,4 +30,5 @@ struct CameraInfo {
      * The json states
      */
     json state;
+    json hw;
 };

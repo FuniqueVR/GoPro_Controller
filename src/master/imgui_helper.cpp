@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <string>
 #include <tuple>
+#include <filesystem>
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -48,6 +49,11 @@
 #include "imgui_impl_opengl3.h"
 #include "windows/base_window.h"
 
+#include "src/imgui_notify.h"
+#include "tahoma.h"
+
+namespace fs = std::filesystem;
+
 /**
  * Helping setup the imgui context
  * Such as style or theme stuff
@@ -58,9 +64,30 @@ void setup_imgui(){
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
+#ifdef _WIN32
     io.Fonts->AddFontFromFileTTF("SourceHanSans-Medium.otf", 0.0f, NULL, io.Fonts->GetGlyphRangesDefault());
     io.Fonts->AddFontFromFileTTF("SourceHanSansK-Medium.otf", 0.0f, NULL, io.Fonts->GetGlyphRangesKorean());
     io.Fonts->AddFontFromFileTTF("SourceHanSansTC-Medium.otf", 0.0f, NULL, io.Fonts->GetGlyphRangesChineseFull());
+#else
+    if(fs::exists("SourceHanSans-Medium.otf")) io.Fonts->AddFontFromFileTTF("SourceHanSans-Medium.otf", 0.0f, NULL, io.Fonts->GetGlyphRangesDefault());
+    else io.Fonts->AddFontFromFileTTF("/usr/share/fonts/truetype/SourceHanSans-Medium.otf", 0.0f, NULL, io.Fonts->GetGlyphRangesDefault());
+    
+    if(fs::exists("SourceHanSansK-Medium.otf")) io.Fonts->AddFontFromFileTTF("SourceHanSansK-Medium.otf", 0.0f, NULL, io.Fonts->GetGlyphRangesDefault());
+    else io.Fonts->AddFontFromFileTTF("/usr/share/fonts/truetype/SourceHanSansK-Medium.otf", 0.0f, NULL, io.Fonts->GetGlyphRangesDefault());
+
+    if(fs::exists("SourceHanSansTC-Medium.otf")) io.Fonts->AddFontFromFileTTF("SourceHanSansTC-Medium.otf", 0.0f, NULL, io.Fonts->GetGlyphRangesDefault());
+    else io.Fonts->AddFontFromFileTTF("/usr/share/fonts/truetype/SourceHanSansTC-Medium.otf", 0.0f, NULL, io.Fonts->GetGlyphRangesDefault());
+
+    {
+        ImFontConfig font_cfg;
+        font_cfg.FontDataOwnedByAtlas = false;
+        io.Fonts->AddFontFromMemoryTTF((void*)tahoma, sizeof(tahoma), 17.f, &font_cfg);
+
+        // Initialize notify
+        ImGui::MergeIconsWithLatestFont(16.f, false);
+    }
+#endif
+    
     io.FontGlobalScale = 1.0f;
     io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
     io.ConfigErrorRecovery = true;
