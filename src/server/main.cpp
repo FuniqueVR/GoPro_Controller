@@ -366,8 +366,8 @@ void MediaAction(const WebSocketChannelPtr& channel, json j){
 
     if(name == "lastmedia"){
         resultText = controller.getLastMedia(target);
-        if(json::accept(resultText))
-            r["data"] = json::parse();
+        if(json::accept(resultText)){
+            r["data"] = json::parse(resultText);
         }else{
             r["data"] = json::array();
         }
@@ -386,6 +386,7 @@ void MediaAction(const WebSocketChannelPtr& channel, json j){
         channel->send(getPacket("media:unknown", r));
     }
 }
+
 
 void PreviewAction(const WebSocketChannelPtr& channel, json j){
     std::string target = "";
@@ -452,7 +453,7 @@ void WebsocketServer(){
         }
     };
     ws.onmessage = [&](const WebSocketChannelPtr& channel, const std::string& msg) {
-        if(!json::accept()msg.c_str()) return;
+        if(!json::accept(msg.c_str())) return;
         std::thread([=]() {
 #ifdef SERVER_QUERY_LOG
             printf("Received: %s\n", msg.c_str());
