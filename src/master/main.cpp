@@ -102,18 +102,21 @@ void settingGetterFeedback(std::string ip, json setting){
         global_state->current_setting_items_bind = true;
     }
 }
+
 void statusGetterFeedback(std::string ip, json status){
     if(global_state->current_camera_item == ip){
         global_state->current_status_items = status;
         global_state->current_status_items_bind = true;
     }
 }
+
 void hwGetterFeedback(std::string ip, json hw){
     if(global_state->current_camera_item == ip){
         global_state->current_hw_items = hw;
         global_state->current_hw_items_bind = true;
     }
 }
+
 void applyAllFeedback(){
     global_state->applying_all = false;
 }
@@ -237,7 +240,11 @@ int main(int, char**)
                     master->command_only("shutter_off");
                     printf("Hotkey F3: Stop Recording\n");
                 }
-                if (event.key.key == SDLK_F4) {
+                if (event.key.key == SDLK_F4 && (event.key.mod & SDL_KMOD_LSHIFT)) {
+                    master->presetSwitch("", "", 65538);
+                    printf("Hotkey F4 + Shift: Photo Burst Mode\n");
+                }
+                if (event.key.key == SDLK_F4 && !(event.key.mod & SDL_KMOD_LSHIFT)) {
                     master->presetSwitch("", "", 65536);
                     printf("Hotkey F4: Photo Mode\n");
                 }
@@ -386,3 +393,4 @@ int main(int, char**)
 
     return 0;
 }
+

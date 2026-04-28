@@ -42,7 +42,6 @@ void GoProController::update(){
                 if(connected){
                     fine.push_back(buffer.at(i));
                 }
-                std::cout << buffer.at(i) << " " << ping.delay << " " << (int32_t)(icmplib::PingResponseType)ping.response << std::endl;
             }
 
             {

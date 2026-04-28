@@ -60,9 +60,13 @@ std::string GoProController::webcamStatus(std::string target){
         i["status"] = res;
         arr.push_back(i);
     }else{
-        std::vector<std::future<SingleResponse>> calls = 
-            std::vector<std::future<SingleResponse>>();
-        for(std::string ip : camera_ips){
+        std::vector<std::future<SingleResponse>> calls = std::vector<std::future<SingleResponse>>();
+        std::vector<std::string> buffer = std::vector<std::string>(camera_alive_ips.size());
+        {
+            std::lock_guard<std::mutex> lock(ips_alive_mutex);
+            std::copy(std::begin(camera_alive_ips), std::end(camera_alive_ips), std::begin(buffer));
+        }
+        for(std::string ip : buffer){
             calls.push_back(std::async(std::launch::async, [this, ip]() {
                 return _webcamStatus(ip);
             }));
@@ -103,9 +107,13 @@ std::string GoProController::webcamVersion(std::string target){
         i["status"] = res;
         arr.push_back(i);
     }else{
-        std::vector<std::future<SingleResponse>> calls = 
-            std::vector<std::future<SingleResponse>>();
-        for(std::string ip : camera_ips){
+        std::vector<std::future<SingleResponse>> calls = std::vector<std::future<SingleResponse>>();
+        std::vector<std::string> buffer = std::vector<std::string>(camera_alive_ips.size());
+        {
+            std::lock_guard<std::mutex> lock(ips_alive_mutex);
+            std::copy(std::begin(camera_alive_ips), std::end(camera_alive_ips), std::begin(buffer));
+        }
+        for(std::string ip : buffer){
             calls.push_back(std::async(std::launch::async, [this, ip]() {
                 return _webcamVersion(ip);
             }));

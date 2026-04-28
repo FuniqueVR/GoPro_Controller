@@ -407,8 +407,29 @@ const static int32_t GPS_SUPPORT[] = {
 };
 #pragma endregion
 
+#pragma region Shot Countdown
+#define SHOT_COUNTDOWN_ID 105
+#define SHOT_COUNTDOWN_SIZE 3
+#define SHOT_COUNTDOWN_NAME "Shut Countdown"
+#define SHOT_COUNTDOWN_AVA MODEL_13_ALL
+const static char* SHOT_COUNTDOWN_STRING[] = {
+    "Off",
+    "3 Seconds",
+    "10 Seconds",
+};
+const static int32_t SHOT_COUNTDOWN_VALUE[] = {
+    0, // Off
+    1, // 3 Seconds
+    2, // 10 Second
+};
+const static int32_t SHOT_COUNTDOWN_SUPPORT[] = {
+    MODEL_13_ALL, // Off
+    MODEL_13_ALL, // 3 Seconds
+    MODEL_13_ALL, // 10 Second
+};
+#pragma endregion
 
-#pragma region GPS
+#pragma region HLS
 #define HLG_ID 199
 #define HLG_SIZE 2
 #define HLG_NAME "HLG"
@@ -702,6 +723,25 @@ const static int32_t PHOTO_OUTPUT_SUPPORT[] = {
     MODEL_MAX2_ALL&(~MODEL_11), // RAW 
     MODEL_13_ALL&(~MODEL_11), // HDR 
     MODEL_13_ALL&(~MODEL_11), // SuperPhoto
+};
+#pragma endregion
+
+#pragma region Burst Output
+#define BURST_OUTPUT_ID 126
+#define BURST_OUTPUT_SIZE 2
+#define BURST_OUTPUT_NAME "Burst Output"
+#define BURST_OUTPUT_AVA MODEL_MAX2_ALL&(~MODEL_11)
+const static char* BURST_OUTPUT_STRING[] = {
+    "Standard",
+    "RAW",
+};
+const static int32_t BURST_OUTPUT_VALUE[] = {
+    0, // Standard 
+    1, // RAW 
+};
+const static int32_t BURST_OUTPUT_SUPPORT[] = {
+    MODEL_MAX2_ALL&(~MODEL_11), // Standard 
+    MODEL_MAX2_ALL&(~MODEL_11), // RAW 
 };
 #pragma endregion
 
@@ -2128,7 +2168,7 @@ const static int32_t SHARPNESS_SUPPORT[] = {
 };
 #pragma endregion
 
-#pragma region Sharpness
+#pragma region Denoise
 #define DENOISE_ID 198
 #define DENOISE_SIZE 3
 #define DENOISE_NAME "Denoise"
@@ -2413,7 +2453,6 @@ const static int32_t ISO_MAX_BURST_SUPPORT[] = {
 };
 #pragma endregion
 
-
 #pragma region Shutter Speed Video
 #define SHUTTER_SPEED_VIDEO_ID 145
 #define SHUTTER_SPEED_VIDEO_SIZE 62
@@ -2615,11 +2654,12 @@ const static int32_t SHUTTER_SPEED_VIDEO_SUPPORT[] = {
 
 #pragma region Shutter Speed Photo
 #define SHUTTER_SPEED_PHOTO_ID 146
-#define SHUTTER_SPEED_PHOTO_SIZE 6
+#define SHUTTER_SPEED_PHOTO_SIZE 7
 #define SHUTTER_SPEED_PHOTO_NAME "Shutter Speed"
 #define SHUTTER_SPEED_PHOTO_AVA MODEL_MAX2_ALL
 const static char* SHUTTER_SPEED_PHOTO_STRING[] = {
     "Auto",
+    "Auto Cinematic",
     "1/125",
     "1/250",
     "1/500",
@@ -2628,6 +2668,7 @@ const static char* SHUTTER_SPEED_PHOTO_STRING[] = {
 };
 const static int32_t SHUTTER_SPEED_PHOTO_VALUE[] = {
     0, // Auto
+    6, // Auto Cinematic
     1, // 1/125
     2, // 1/250
     3, // 1/500
@@ -2636,11 +2677,55 @@ const static int32_t SHUTTER_SPEED_PHOTO_VALUE[] = {
 };
 const static int32_t SHUTTER_SPEED_PHOTO_SUPPORT[] = {
     MODEL_MAX2_ALL, // Auto
+    MODEL_MAX2_ALL, // Auto Cinematic
     MODEL_MAX2_ALL, // 1/125
     MODEL_MAX2_ALL, // 1/250
     MODEL_MAX2_ALL, // 1/500
     MODEL_MAX2_ALL, // 1/1000
     MODEL_MAX2_ALL, // 1/2000
+};
+#pragma endregion
+
+#pragma region Photo Burst Rate
+#define PHOTO_BURST_RATE_ID 147
+#define PHOTO_BURST_RATE_SIZE 10
+#define PHOTO_BURST_RATE_NAME "Photo Burst Rate"
+#define PHOTO_BURST_RATE_AVA MODEL_MAX2_ALL
+const static char* PHOTO_BURST_RATE_STRING[] = {
+    "60 Photos / 10 Seconds",
+    "60 Photos / 6 Seconds",
+    "30 Photos / 6 Seconds",
+    "30 Photos / 3 Seconds",
+    "30 Photos / 1 Second",
+    "10 Photos / 3 Seconds",
+    "10 Photos / 1 Second",
+    "5 Photos / 1 Second",
+    "3 Photos / 1 Second",
+    "Auto",
+};
+const static int32_t PHOTO_BURST_RATE_VALUE[] = {
+    13, // 60 Photos / 10 Seconds
+    12, // 60 Photos / 6 Seconds
+    8, // 30 Photos / 6 Seconds
+    7, // 30 Photos / 3 Seconds
+    5, // 30 Photos / 1 Second
+    4, // 10 Photos / 3 Seconds
+    2, // 10 Photos / 1 Second
+    1, // 5 Photos / 1 Second
+    0, // 3 Photos / 1 Second
+    9, // Auto
+};
+const static int32_t PHOTO_BURST_RATE_SUPPORT[] = {
+    MODEL_MAX2_ALL, // 60 Photos / 10 Seconds
+    MODEL_MAX2_ALL, // 60 Photos / 6 Seconds
+    MODEL_MAX2_ALL, // 30 Photos / 6 Seconds
+    MODEL_MAX2_ALL, // 30 Photos / 3 Seconds
+    MODEL_MAX2_ALL, // 30 Photos / 1 Second
+    MODEL_MAX2_ALL, // 10 Photos / 3 Seconds
+    MODEL_MAX2_ALL, // 10 Photos / 1 Second
+    MODEL_MAX2_ALL, // 5 Photos / 1 Second
+    MODEL_MAX2_ALL, // 3 Photos / 1 Second
+    MODEL_MAX2_ALL, // Auto
 };
 #pragma endregion
 
@@ -2703,6 +2788,37 @@ const static int32_t ISO_BOTH_PHOTO_VALUE[] = {
     5, // 3200
 };
 const static int32_t ISO_BOTH_PHOTO_SUPPORT[] = {
+    MODEL_MAX2_ALL, // 800
+    MODEL_MAX2_ALL, // 400
+    MODEL_MAX2_ALL, // 200
+    MODEL_MAX2_ALL, // 100
+    MODEL_MAX2_ALL, // 1600
+    MODEL_MAX2_ALL, // 3200
+};
+#pragma endregion
+
+#pragma region ISO Both Burst (Virtual)
+#define ISO_BOTH_BURST_ID 10002
+#define ISO_BOTH_BURST_SIZE 6
+#define ISO_BOTH_BURST_NAME "ISO BOTH"
+#define ISO_BOTH_BURST_AVA MODEL_MAX2_ALL
+const static char* ISO_BOTH_BURST_STRING[] = {
+    "800",
+    "400",
+    "200",
+    "100",
+    "1600",
+    "3200",
+};
+const static int32_t ISO_BOTH_BURST_VALUE[] = {
+    0, // 800
+    1, // 400
+    2, // 200
+    3, // 100
+    4, // 1600
+    5, // 3200
+};
+const static int32_t ISO_BOTH_BURST_SUPPORT[] = {
     MODEL_MAX2_ALL, // 800
     MODEL_MAX2_ALL, // 400
     MODEL_MAX2_ALL, // 200

@@ -233,22 +233,25 @@ inline std::string GetRemoteURLByIP(std::string IP){
     return std::string("http://") + IP + std::string(":8080");
 }
 
-inline std::string exec(std::string cmd) {
+///
+/// Execute a single command and get its value
+/// If timeout, it will return empty string
+///
+inline std::string exec(std::string cmd, int64_t timeout = 1500L, int64_t connection_timeout = 1000L) {
     CURL* curl = curl_easy_init();
-    CURLcode res;
-    std::string result;
+    std::string result = "";
 
     if(curl) {
         curl_easy_setopt(curl, CURLOPT_URL, cmd.c_str());
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback_pure);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &result);
-        curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, 1500L);
-        curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT_MS, 1000L);
-        res = curl_easy_perform(curl);
+        curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, timeout);
+        curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT_MS, connection_timeout);
+        CURLcode res = curl_easy_perform(curl);
         
         curl_easy_cleanup(curl);
     }else{
-        std::cerr << "Curl init failed" << std::endl;
+        std::cerr << "[Error] iphelper.h, Curl init failed" << std::endl;
     }
 
     return result;
@@ -404,6 +407,9 @@ inline void execs_download(std::vector<std::string> cmds, std::vector<std::strin
     }
 }
 
+///
+/// Get the environment variable by key
+///
 inline std::string get_env_var( std::string const & key ) {
     char * val;
     val = getenv( key.c_str() );
@@ -414,6 +420,10 @@ inline std::string get_env_var( std::string const & key ) {
     return retval;
 }
 
+///
+/// You will get a string with format of
+/// '%Y-%m-%d %H:%M:%S'
+///
 inline std::string getCurrentDateTimeString() {
     // Get the current time point
     auto now = std::chrono::system_clock::now();

@@ -51,7 +51,7 @@ void PresetManagerPopup::render(){
         }
 
         bool can_apply = preset_select.size() > 0;
-        ImGui::BeginDisabled(!can_apply || applying);
+        ImGui::BeginDisabled(!can_apply || state->applying_all);
         if(ImGui::Button("Apply")){
             json data = json::object();
             if(master->get_preset(preset_select, data)){
@@ -63,7 +63,7 @@ void PresetManagerPopup::render(){
 
         ImGui::SameLine();
 
-        ImGui::BeginDisabled(preset_select.size() == 0 || applying);
+        ImGui::BeginDisabled(preset_select.size() == 0 || state->applying_all);
         if(ImGui::Button("Delete##Preset_Manager_Item_Action")){
             master->remove_preset(preset_select);
             state->update_preset();
@@ -73,26 +73,13 @@ void PresetManagerPopup::render(){
 
         ImGui::SameLine();
 
-        ImGui::BeginDisabled(applying);
+        ImGui::BeginDisabled(state->applying_all);
         if(ImGui::Button("Cancel")){
             ImGui::CloseCurrentPopup();
         }
         ImGui::EndDisabled();
 
         ImGui::EndPopup();
-    }
-
-    if(state->applying_all != applying){
-        applying = state->applying_all;
-        if(state->applying_all){
-            ImGuiToast toast(ImGuiToastType_Success, 3000);
-            toast.set_title("Trying to applying...");
-            ImGui::InsertNotification(toast);
-        }else{
-            ImGuiToast toast(ImGuiToastType_Success, 3000);
-            toast.set_title("Applying Finish");
-            ImGui::InsertNotification(toast);
-        }
     }
 }
 

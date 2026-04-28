@@ -3,7 +3,7 @@
 void CameraListWindow::draw_group_state(const std::shared_ptr<CameraInfo>& c){
     json status = json::object();
     json setting = json::object();
-    int preset = 0;
+    int32_t preset = 0;
     master->getStatusFromCamera(*c, status);
     master->getSettingsFromCamera(*c, setting);
 
@@ -28,6 +28,7 @@ void CameraListWindow::draw_group_state(const std::shared_ptr<CameraInfo>& c){
     uint32_t col_orange_dark = IM_COL32(80, 80, 10, 255);
     uint32_t col_greed = IM_COL32(10, 230, 10, 255);
 
+    // Get preset
     {
         if(status[std::to_string(PRESET_ID)].is_number_integer()){
             preset = status[std::to_string(PRESET_ID)].get<int32_t>();
@@ -178,13 +179,26 @@ void CameraListWindow::draw_group_state(const std::shared_ptr<CameraInfo>& c){
         );
         draw_list->AddText(camera_title_min, col_white, camera_title.c_str());
         if(c->connected) {
-            int32_t SHUTTER_SPEED_ID = SHUTTER_SPEED_PHOTO_ID;
-            int32_t ISO_MIN_ID = ISO_MIN_PHOTO_ID;
-            int32_t ISO_MAX_ID = ISO_MAX_PHOTO_ID;
-            if(preset == 0){
+            int32_t SHUTTER_SPEED_ID = 0;
+            int32_t ISO_MIN_ID = 0;
+            int32_t ISO_MAX_ID = 0;
+            if(preset == 65538){ // Burst
+                SHUTTER_SPEED_ID = SHUTTER_SPEED_PHOTO_ID;
+                ISO_MIN_ID = ISO_MIN_BURST_ID;
+                ISO_MAX_ID = ISO_MAX_BURST_ID;
+            }
+            else if(preset == 65536){ // photo
+                SHUTTER_SPEED_ID = SHUTTER_SPEED_PHOTO_ID;
+                ISO_MIN_ID = ISO_MIN_PHOTO_ID;
+                ISO_MAX_ID = ISO_MAX_PHOTO_ID;
+            }
+            else if(preset == 0){ // video
                 SHUTTER_SPEED_ID = SHUTTER_SPEED_VIDEO_ID;
                 ISO_MIN_ID = ISO_MIN_VIDEO_ID;
                 ISO_MAX_ID = ISO_MAX_VIDEO_ID;
+            }
+            else{ // Timelapse
+                
             }
 
             if(setting[std::to_string(EXPOSURE_ID)].is_number_integer()){
@@ -193,7 +207,11 @@ void CameraListWindow::draw_group_state(const std::shared_ptr<CameraInfo>& c){
             }
             if(setting[std::to_string(SHUTTER_SPEED_ID)].is_number_integer()){
                 int32_t re = setting[std::to_string(SHUTTER_SPEED_ID)].get<int32_t>();
-                shutter_speed = SHUTTER_SPEED_VIDEO_STRING[re];
+                if(preset == 0){ // Video
+                    shutter_speed = SHUTTER_SPEED_VIDEO_STRING[re];
+                }else {
+                    shutter_speed = SHUTTER_SPEED_PHOTO_STRING[re];
+                }
                 if(shutter_speed == "Auto"){
                     shutter_speed = "S: " + shutter_speed + ", " + ev_setting;
                 }else{

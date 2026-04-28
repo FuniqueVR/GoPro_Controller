@@ -9,10 +9,8 @@
 #include <vector>
 #include <string>
 
-
 void GoProController::_loadRecord(){
-    std::string homedir = get_env_var("WS_ROOT");
-    if(homedir.size() > 0) homedir += "/";
+    std::string homedir = "";
     homedir += "record.txt";
     std::cout << "Trying load data from: " << homedir << std::endl;
     std::ifstream inFile(homedir.c_str());
@@ -39,8 +37,7 @@ void GoProController::_loadRecord(){
 }
 
 void GoProController::_updateRecord(){
-    std::string homedir = get_env_var("WS_ROOT");
-    if(homedir.size() > 0) homedir += "/";
+    std::string homedir = "";
     homedir += "record.txt";
     std::cout << "Trying export data to: " << homedir << std::endl;
     std::ofstream outFile( homedir.c_str() );
@@ -75,7 +72,7 @@ std::vector<SingleResponse> GoProController::_getAllResponse(std::vector<std::st
         urls.push_back(GetRemoteURLByIP(targets[i]) + suffix);
     }
     std::vector<std::string> res = execs(urls);
-    std::cout << "query all: " << res.size() << "/" << targets.size() << std::endl;;
+    std::cout << "query all: " << res.size() << "/" << targets.size() << " " << suffix.c_str() << std::endl;;
     for(int32_t i = 0; i < targets.size(); i++){
         if(res[i].size() == 0){
             res[i] = "{}";

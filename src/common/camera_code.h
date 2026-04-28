@@ -20,6 +20,7 @@
  * Things must be register here, to the converter works
  */
 const static int32_t GOPRO_SETTING_IDS[] = {
+    PHOTO_BURST_RATE_ID,
     VIDEO_RESOLUTION_ID,
     FRAMES_PER_SECOND_ID,
     VIDEO_LENS_ID,
@@ -80,8 +81,14 @@ const static int32_t GOPRO_SETTING_IDS[] = {
     ISO_MAX_VIDEO_ID,
     ISO_MIN_PHOTO_ID,
     ISO_MAX_PHOTO_ID,
+    ISO_MIN_BURST_ID,
+    ISO_MAX_BURST_ID,
     SHUTTER_SPEED_VIDEO_ID,
     SHUTTER_SPEED_PHOTO_ID,
+    SHOT_COUNTDOWN_ID,
+    ISO_BOTH_VIDEO_ID,
+    ISO_BOTH_PHOTO_ID,
+    ISO_BOTH_BURST_ID,
 };
 #define GOPRO_SETTING_SIZE sizeof(GOPRO_SETTING_IDS)/sizeof(int32_t)
 
@@ -92,7 +99,6 @@ const static int32_t GOPRO_SYSTEM_SETTING_IDS[] = {
     LCD_BRIGHTNESS_ID,
     LED_ID,
     WIRELESS_BAND_ID,
-    PHOTO_OUTPUT_ID,
     BEEP_VOLUME_ID,
     ANTI_FLICKER_ID,
     ANTI_FLICKER_V2_ID,
@@ -138,6 +144,8 @@ const static int32_t GOPRO_PHOTO_SETTING_IDS[] = {
     PHOTO_LENS_ID,
     ENABLE_NIGHT_PHOTO_ID,
     // Detail
+    PHOTO_OUTPUT_ID,
+    SHOT_COUNTDOWN_ID,
     // FRAMING_ID
     PHOTO_HORIZON_LEVELING_ID,
     PHOTO_SINGLE_INTERVAL_ID,
@@ -156,6 +164,33 @@ const static int32_t GOPRO_PHOTO_PROTUNE_SETTING_IDS[] = {
     COLOR_ID,
 };
 #define GOPRO_PHOTO_PROTUNE_SETTING_SIZE sizeof(GOPRO_PHOTO_PROTUNE_SETTING_IDS)/sizeof(int32_t)
+
+const static int32_t GOPRO_BURST_SETTING_IDS[] = {
+    // Header
+    PHOTO_LENS_ID,
+    ENABLE_NIGHT_PHOTO_ID,
+    // Detail
+    BURST_OUTPUT_ID,
+    PHOTO_BURST_RATE_ID,
+    SHOT_COUNTDOWN_ID,
+    // FRAMING_ID
+    PHOTO_HORIZON_LEVELING_ID,
+    PHOTO_SINGLE_INTERVAL_ID,
+    ENABLE_NIGHT_PHOTO_ID,
+};
+#define GOPRO_BURST_SETTING_SIZE sizeof(GOPRO_BURST_SETTING_IDS)/sizeof(int32_t)
+
+const static int32_t GOPRO_BURST_PROTUNE_SETTING_IDS[] = {
+    SHUTTER_SPEED_PHOTO_ID,
+    EXPOSURE_ID,
+    WHITE_BALANCE_ID,
+    ISO_MIN_BURST_ID,
+    ISO_MAX_BURST_ID,
+    SHARPNESS_ID,
+    DENOISE_ID,
+    COLOR_ID,
+};
+#define GOPRO_BURST_PROTUNE_SETTING_SIZE sizeof(GOPRO_BURST_PROTUNE_SETTING_IDS)/sizeof(int32_t)
 
 const static int32_t GOPRO_STATUS_IDS[] = {
     BATTERY_PRESENT_ID,
@@ -240,6 +275,7 @@ const static int32_t GOPRO_STATUS_IDS[] = {
 #define GOPRO_STATUS_SIZE sizeof(GOPRO_STATUS_IDS)/sizeof(int32_t)
 
 const static int32_t GOPRO_SOFTWARE_STATUS_IDS[] = {
+    PRESET_ID,
     LINUX_CORE_ID,
     LIVE_BURSTS_ID,
     VIDEO_PRESET_ID,
@@ -286,6 +322,11 @@ const static int32_t GOPRO_MEDIA_STATUS_IDS[] = {
 // Lookup functions
 inline const int32_t GET_SETTING_SIZE_BY_ID(int32_t x) {
     switch(x) {
+        case BURST_OUTPUT_ID                : return BURST_OUTPUT_SIZE;
+        case PHOTO_BURST_RATE_ID            : return PHOTO_BURST_RATE_SIZE;
+        case ISO_MIN_BURST_ID               : return ISO_MIN_BURST_SIZE;
+        case ISO_MAX_BURST_ID               : return ISO_MAX_BURST_SIZE;
+        case SHOT_COUNTDOWN_ID              : return SHOT_COUNTDOWN_SIZE;
         case VIDEO_RESOLUTION_ID            : return VIDEO_RESOLUTION_SIZE;
         case FRAMES_PER_SECOND_ID           : return FRAMES_PER_SECOND_SIZE;
         case VIDEO_LENS_ID                  : return VIDEO_LENS_SIZE;
@@ -352,6 +393,11 @@ inline const int32_t GET_SETTING_SIZE_BY_ID(int32_t x) {
 
 inline const int32_t GET_SETTING_AVA_BY_ID(int32_t x) {
     switch(x) {
+        case BURST_OUTPUT_ID                : return BURST_OUTPUT_AVA;
+        case PHOTO_BURST_RATE_ID            : return PHOTO_BURST_RATE_AVA;
+        case ISO_MIN_BURST_ID               : return ISO_MIN_BURST_AVA;
+        case ISO_MAX_BURST_ID               : return ISO_MAX_BURST_AVA;
+        case SHOT_COUNTDOWN_ID              : return SHOT_COUNTDOWN_AVA;
         case VIDEO_RESOLUTION_ID            : return VIDEO_RESOLUTION_AVA;
         case FRAMES_PER_SECOND_ID           : return FRAMES_PER_SECOND_AVA;
         case VIDEO_LENS_ID                  : return VIDEO_LENS_AVA;
@@ -418,6 +464,11 @@ inline const int32_t GET_SETTING_AVA_BY_ID(int32_t x) {
 
 inline const char* GET_SETTING_NAME_BY_ID(int32_t x) {
     switch(x) {
+        case BURST_OUTPUT_ID                : return BURST_OUTPUT_NAME;
+        case PHOTO_BURST_RATE_ID            : return PHOTO_BURST_RATE_NAME;
+        case ISO_MIN_BURST_ID               : return ISO_MIN_BURST_NAME;
+        case ISO_MAX_BURST_ID               : return ISO_MAX_BURST_NAME;
+        case SHOT_COUNTDOWN_ID              : return SHOT_COUNTDOWN_NAME;
         case VIDEO_RESOLUTION_ID            : return VIDEO_RESOLUTION_NAME;
         case FRAMES_PER_SECOND_ID           : return FRAMES_PER_SECOND_NAME;
         case VIDEO_LENS_ID                  : return VIDEO_LENS_NAME;
@@ -484,6 +535,11 @@ inline const char* GET_SETTING_NAME_BY_ID(int32_t x) {
 
 inline const char** GET_SETTING_STRING_BY_ID(int32_t x) {
     switch(x) {
+        case BURST_OUTPUT_ID                : return BURST_OUTPUT_STRING;
+        case PHOTO_BURST_RATE_ID            : return PHOTO_BURST_RATE_STRING;
+        case ISO_MIN_BURST_ID               : return ISO_MIN_BURST_STRING;
+        case ISO_MAX_BURST_ID               : return ISO_MAX_BURST_STRING;
+        case SHOT_COUNTDOWN_ID              : return SHOT_COUNTDOWN_STRING;
         case VIDEO_RESOLUTION_ID            : return VIDEO_RESOLUTION_STRING;
         case FRAMES_PER_SECOND_ID           : return FRAMES_PER_SECOND_STRING;
         case VIDEO_LENS_ID                  : return VIDEO_LENS_STRING;
@@ -550,6 +606,11 @@ inline const char** GET_SETTING_STRING_BY_ID(int32_t x) {
 
 inline const int32_t* GET_SETTING_VALUE_BY_ID(int32_t x) {
     switch(x) {
+        case BURST_OUTPUT_ID                : return BURST_OUTPUT_VALUE;
+        case PHOTO_BURST_RATE_ID            : return PHOTO_BURST_RATE_VALUE;
+        case ISO_MIN_BURST_ID               : return ISO_MIN_BURST_VALUE;
+        case ISO_MAX_BURST_ID               : return ISO_MAX_BURST_VALUE;
+        case SHOT_COUNTDOWN_ID              : return SHOT_COUNTDOWN_VALUE;
         case VIDEO_RESOLUTION_ID            : return VIDEO_RESOLUTION_VALUE;
         case FRAMES_PER_SECOND_ID           : return FRAMES_PER_SECOND_VALUE;
         case VIDEO_LENS_ID                  : return VIDEO_LENS_VALUE;
@@ -616,6 +677,11 @@ inline const int32_t* GET_SETTING_VALUE_BY_ID(int32_t x) {
 
 inline const int32_t* GET_SETTING_SUPPORT_BY_ID(int32_t x) {
     switch(x) {
+        case BURST_OUTPUT_ID                : return BURST_OUTPUT_SUPPORT;
+        case PHOTO_BURST_RATE_ID            : return PHOTO_BURST_RATE_SUPPORT;
+        case ISO_MIN_BURST_ID               : return ISO_MIN_BURST_SUPPORT;
+        case ISO_MAX_BURST_ID               : return ISO_MAX_BURST_SUPPORT;
+        case SHOT_COUNTDOWN_ID              : return SHOT_COUNTDOWN_SUPPORT;
         case VIDEO_RESOLUTION_ID            : return VIDEO_RESOLUTION_SUPPORT;
         case FRAMES_PER_SECOND_ID           : return FRAMES_PER_SECOND_SUPPORT;
         case VIDEO_LENS_ID                  : return VIDEO_LENS_SUPPORT;

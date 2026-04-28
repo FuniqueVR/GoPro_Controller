@@ -10,10 +10,24 @@
 
 void GoProController::previewOn(std::string target, int32_t port){
     if(target.size() > 0) _previewOn(target, port); 
-    else _previewAllOn(camera_ips, port);
+    else {
+        std::vector<std::string> buffer = std::vector<std::string>(camera_alive_ips.size());
+        {
+            std::lock_guard<std::mutex> lock(ips_alive_mutex);
+            std::copy(std::begin(camera_alive_ips), std::end(camera_alive_ips), std::begin(buffer));
+        }
+        _previewAllOn(buffer, port);
+    }
 }
 
 void GoProController::previewOff(std::string target){
     if(target.size() > 0) _previewOff(target); 
-    else _previewAllOff(camera_ips);
+    else {
+        std::vector<std::string> buffer = std::vector<std::string>(camera_alive_ips.size());
+        {
+            std::lock_guard<std::mutex> lock(ips_alive_mutex);
+            std::copy(std::begin(camera_alive_ips), std::end(camera_alive_ips), std::begin(buffer));
+        }
+        _previewAllOff(buffer);
+    }
 }

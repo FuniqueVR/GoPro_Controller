@@ -24,18 +24,18 @@ typedef void (*camera_log_feedback)(std::string key, std::string value);
 typedef void (*camera_preset_save)();
 typedef void (*camera_apply_all_feedback)();
 
-/**
- * GoPro Master Worker
- * Use this hub stuff to control multiple websocket server or camera
- * And handles the message sender and process
- * It also use multithread to decode the message from the websocket instancess
- */
+///
+/// GoPro Master Worker
+/// Use this hub stuff to control multiple websocket server or camera
+/// And handles the message sender and process
+/// It also use multithread to decode the message from the websocket instancess
+///
 class GoProMaster {
 public:
     GoProMaster();
-    /**
-     * Destroy the threadings and release the resource under.
-     */
+    /// 
+    /// Destroy the threadings and release the resource under.
+    /// 
     ~GoProMaster();
 
     // ----------------------------------------------------------
@@ -89,6 +89,7 @@ public:
     void preview_end(std::string server, std::string target);
     void media_only(const std::string command, std::string target = "");
     void download_last_media(const std::string dir, bool put_finish);
+    void download_last_media(const std::string ip, const std::string dir, bool put_finish);
 
     void presetSwitch(const std::string server, const std::string target, int32_t mode);
     void locate(const std::string server, const std::string target);
@@ -99,15 +100,15 @@ public:
 
     bool directoryExists(const std::string& path);
 
-    /**
-     * Register the feedback event
-     * Called when fetch inspector setting data
-     */
+    ///
+    /// Register the feedback event
+    /// Called when fetch inspector setting data
+    ///
     void registerCameraSettingFeedback(camera_setting_feedback v);
-    /**
-     * Register the feedback event
-     * Called when fetch Monitor data
-     */
+    ///
+    /// Register the feedback event
+    /// Called when fetch Monitor data
+    ///
     void registerCameraStatusFeedback(camera_status_feedback v);
     void registerCameraHWFeedback(camera_hw_feedback v);
     void registerCameraLogFeedback(camera_log_feedback v);
@@ -135,6 +136,10 @@ public:
      * Get current camera record
      */
     const std::vector<std::shared_ptr<CameraInfo>>& getCameras() const;
+    /**
+     * Get current camera record (Clone, For thread optimization)
+     */
+    const std::vector<CameraInfo> getCameras_Clone();
     /**
      * Get current websocket server record
      */
@@ -179,6 +184,14 @@ private:
      * Is app exit or not flag
      */
     bool done = false;
+    /**
+     * 0: Off
+     * 1: On (no finish txt)
+     * 2: On (with finish txt)
+     */
+    std::atomic_char32_t downloading_last_media_flag = 0;
+    std::atomic_char32_t downloading_last_media_total;
+    std::atomic_char32_t downloading_last_media_done;
 
     /**
      * The background thread for fetch update from all websocket server and update etc...

@@ -3,9 +3,11 @@
 
 std::vector<int32_t> InspectorWindow::system_list_ordered = std::vector<int32_t>(GOPRO_SYSTEM_SETTING_SIZE);
 std::vector<int32_t> InspectorWindow::video_setting_list_ordered = std::vector<int32_t>(GOPRO_VIDEO_SETTING_SIZE);
-std::vector<int32_t> InspectorWindow::photo_setting_list_ordered = std::vector<int32_t>(GOPRO_PHOTO_SETTING_SIZE);
 std::vector<int32_t> InspectorWindow::video_protune_list_ordered = std::vector<int32_t>(GOPRO_VIDEO_PROTUNE_SETTING_SIZE);
+std::vector<int32_t> InspectorWindow::photo_setting_list_ordered = std::vector<int32_t>(GOPRO_PHOTO_SETTING_SIZE);
 std::vector<int32_t> InspectorWindow::photo_protune_list_ordered = std::vector<int32_t>(GOPRO_PHOTO_PROTUNE_SETTING_SIZE);
+std::vector<int32_t> InspectorWindow::burst_setting_list_ordered = std::vector<int32_t>(GOPRO_BURST_SETTING_SIZE);
+std::vector<int32_t> InspectorWindow::burst_protune_list_ordered = std::vector<int32_t>(GOPRO_BURST_PROTUNE_SETTING_SIZE);
 
 std::vector<int32_t> InspectorWindow::status_software_list_ordered = std::vector<int32_t>(GOPRO_SOFTWARE_STATUS_SIZE);
 std::vector<int32_t> InspectorWindow::status_hardware_list_ordered = std::vector<int32_t>(GOPRO_HARDWARE_STATUS_SIZE);
@@ -52,9 +54,11 @@ json InspectorWindow::get_window_data() {
     data["status_order"] = json::object();
     IO_DATA_GET(setting_order, system_list_ordered);
     IO_DATA_GET(setting_order, video_setting_list_ordered);
-    IO_DATA_GET(setting_order, photo_setting_list_ordered);
     IO_DATA_GET(setting_order, video_protune_list_ordered);
+    IO_DATA_GET(setting_order, photo_setting_list_ordered);
     IO_DATA_GET(setting_order, photo_protune_list_ordered);
+    IO_DATA_GET(setting_order, burst_setting_list_ordered);
+    IO_DATA_GET(setting_order, burst_protune_list_ordered);
     IO_DATA_GET(status_order, status_software_list_ordered);
     IO_DATA_GET(status_order, status_hardware_list_ordered);
     IO_DATA_GET(status_order, status_encode_list_ordered);
@@ -76,9 +80,11 @@ void InspectorWindow::set_window_data(json data) {
     if(data["setting_order"].is_object()){
         IO_DATA_SET(setting_order, system_list_ordered);
         IO_DATA_SET(setting_order, video_setting_list_ordered);
-        IO_DATA_SET(setting_order, photo_setting_list_ordered);
         IO_DATA_SET(setting_order, video_protune_list_ordered);
+        IO_DATA_SET(setting_order, photo_setting_list_ordered);
         IO_DATA_SET(setting_order, photo_protune_list_ordered);
+        IO_DATA_SET(setting_order, burst_setting_list_ordered);
+        IO_DATA_SET(setting_order, burst_protune_list_ordered);
     }
     if(data["status_order"].is_array() && data["status_order"].size() == GOPRO_STATUS_SIZE){
         IO_DATA_SET(status_order, status_software_list_ordered);
@@ -94,7 +100,10 @@ void InspectorWindow::render(){
     {
         std::lock_guard<std::mutex> lock(master->camera_mtx);
         int32_t s = master->findCamera(state->current_camera_item);
-        should_disabled = state->current_camera_item.size() < 10 || s == -1 || !state->current_setting_items_bind;
+        if(s != -1){
+            auto& c = master->getCameras().at(s);
+            should_disabled = !c->connected || state->current_camera_item.size() < 10 || s == -1 || !state->current_setting_items_bind;
+        }
         draw_header();
 
         ImGui::Separator();
@@ -138,14 +147,18 @@ void InspectorWindow::render(){
                     }
                 }
                 ImGui::EndDisabled();
+
                 ImGui::SameLine();
+
+                ImGui::BeginDisabled(state->applying_all);
                 if(ImGui::Button("Preset Manager##Inspector_Bar_Item")){
                     state->command_sender("preset_manager");
                 }
+                ImGui::EndDisabled();
 
                 if(ImGui::BeginTabBar("Inspector_Bar##Second")){
                     if(ImGui::BeginTabItem("System##Inspector_Bar_Item")){
-                        ImGui::BeginDisabled(should_disabled);
+                        ImGui::BeginDisabled(should_disabled || state->applying_all);
                         draw_system();
                         ImGui::EndDisabled();
                         ImGui::EndTabItem();
@@ -157,7 +170,7 @@ void InspectorWindow::render(){
                         ImGui::EndTabItem();
                     }
                     if(ImGui::BeginTabItem("Protune##Inspector_Bar_Item")){
-                        ImGui::BeginDisabled(should_disabled);
+                        ImGui::BeginDisabled(should_disabled || state->applying_all);
                         draw_protune();
                         ImGui::EndDisabled();
                         ImGui::EndTabItem();
