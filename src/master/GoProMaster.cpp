@@ -675,9 +675,11 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
 
             for(int32_t i = 0; i < ips.size(); i++){
                 int32_t index = findCamera(server, ips[i]);
-                cameras[index]->serial = serial[i];
-                if(names.count(ips[i])){
-                    cameras[index]->name = names.at(ips[i]);
+                if(index != -1){
+                    cameras[index]->serial = serial[i];
+                    if(names.count(ips[i])){
+                        cameras[index]->name = names.at(ips[i]);
+                    }
                 }
             }
 
