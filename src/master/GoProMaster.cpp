@@ -899,6 +899,7 @@ void GoProMaster::replaceCameraFromServer(const std::string server, const std::v
         }
         return false;
     });
+    
     cameras.erase(it, cameras.end());
 
     // Append part
