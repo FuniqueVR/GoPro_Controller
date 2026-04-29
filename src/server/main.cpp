@@ -595,6 +595,7 @@ int main() {
 
     controller.update();
 
+    
     t3.join();
     t2.join();
     t1.join();
