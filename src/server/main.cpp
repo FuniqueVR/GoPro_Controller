@@ -488,8 +488,9 @@ void WebsocketServer(){
         std::lock_guard<std::mutex> lock(broadcast_mtx);
         printf("Client disconnected: %s\n", channel->peeraddr().c_str());
         for(int32_t i = 0; i < hosts.size(); i++){
-            bool find = std::strcmp(hosts[i]->get()->peeraddr().c_str(),
-            channel->peeraddr().c_str());
+            const char* host_peeraddr = hosts[i]->get()->peeraddr().c_str();
+            const char* channel_peeraddr = channel->peeraddr().c_str();
+            bool find = std::strcmp(host_peeraddr, channel_peeraddr);
             if(find){
                 hosts.erase(hosts.begin() + i);
                 break;
