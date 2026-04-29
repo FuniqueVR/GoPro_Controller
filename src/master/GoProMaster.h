@@ -220,7 +220,6 @@ public:
     bool getStatusFromCamera(CameraInfo target, json& res);
     std::string getBarInfo(const std::shared_ptr<CameraInfo> &c);
 
-    int32_t findCamera(const std::string ip);
     int32_t findServer(const std::string ip);
     int32_t findCamera(const std::string server, const std::string ip);
 };

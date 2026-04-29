@@ -5,7 +5,7 @@
 void InspectorWindow::draw_command_local(){
     ImGui::Text("Single Camera Control");
 
-    int32_t current_camera = master->findCamera(state->current_camera_item);
+    int32_t current_camera = master->findCamera(state->current_camera_server, state->current_camera_item);
     bool should_disabled = state->current_camera_item.size() < 10 || current_camera == -1;
     ImGui::BeginDisabled(should_disabled);
 

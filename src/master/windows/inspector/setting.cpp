@@ -62,7 +62,7 @@ void InspectorWindow::global_draw_protune(std::shared_ptr<GlobalState>& state, s
 }
 
 void InspectorWindow::_draw_setting(std::vector<int32_t>& ordered){
-    int32_t current = master->findCamera(state->current_camera_item);
+    int32_t current = master->findCamera(state->current_camera_server, state->current_camera_item);
     if(current < 0) return;
     auto& c = master->getCameras().at(current);
     int32_t move_from = -1, move_to = -1;
