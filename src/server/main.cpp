@@ -25,10 +25,6 @@
 #include "GoProController.h"
 
 ///
-/// All the master websocket instances
-///
-std::vector<const WebSocketChannelPtr*> hosts = std::vector<const WebSocketChannelPtr*>();
-///
 /// Main worker, HERO is here
 ///
 GoProController controller;
@@ -422,7 +418,6 @@ void WebsocketServer(){
     ws.onopen = [&](const WebSocketChannelPtr& channel, const HttpRequestPtr& req) {
         std::lock_guard<std::mutex> lock(broadcast_mtx);
         printf("Client connected: %s\n", channel->peeraddr().c_str());
-        hosts.push_back(&channel);
 
         int32_t f = -1;
         for(int32_t i = 0; i < broadcast_addrs.size(); i++){
@@ -487,14 +482,6 @@ void WebsocketServer(){
     ws.onclose = [&](const WebSocketChannelPtr& channel) {
         std::lock_guard<std::mutex> lock(broadcast_mtx);
         printf("Client disconnected: %s\n", channel->peeraddr().c_str());
-        for(int32_t i = 0; i < hosts.size(); i++){
-            bool find = std::strcmp(hosts[i]->get()->peeraddr().c_str(),
-            channel->peeraddr().c_str());
-            if(find){
-                hosts.erase(hosts.begin() + i);
-                break;
-            }
-        }
         
         int32_t f = -1;
         for(int32_t i = 0; i < broadcast_addrs.size(); i++){
@@ -595,6 +582,7 @@ int main() {
 
     controller.update();
 
+    
     t3.join();
     t2.join();
     t1.join();

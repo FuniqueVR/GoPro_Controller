@@ -38,7 +38,7 @@ void InspectorWindow::draw_media_global(){
     ImVec2 button_size = ImVec2(size.x / 2.0F - style.ItemSpacing.x, 0);
     ImVec2 button3_size = ImVec2(size.x / 3.0F - style.ItemSpacing.x, 0);
 
-    int32_t camera_ip = master->findCamera(state->current_camera_item);
+    int32_t camera_ip = master->findCamera(state->current_camera_server, state->current_camera_item);
     if(ImGui::InputText("Media Download", &state->current_download_location)){
         state->update_server();
     }

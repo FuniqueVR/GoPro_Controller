@@ -17,7 +17,7 @@ void PreviewPopup::update_decoder(){
 
     {
         std::lock_guard<std::mutex> lock(master->camera_mtx);
-        s = master->findCamera(state->preview_ip);
+        s = master->findCamera(state->preview_server, state->preview_ip);
 
         if(s == -1){
             std::cout << "[Preview Decoder] Cannot find camera: " << state->preview_ip << std::endl;

@@ -99,7 +99,7 @@ void InspectorWindow::render(){
     ImGui::Begin("Inspector", &enable, w_flag);
     {
         std::lock_guard<std::mutex> lock(master->camera_mtx);
-        int32_t s = master->findCamera(state->current_camera_item);
+        int32_t s = master->findCamera(state->current_camera_server, state->current_camera_item);
         if(s != -1){
             auto& c = master->getCameras().at(s);
             should_disabled = !c->connected || state->current_camera_item.size() < 10 || s == -1 || !state->current_setting_items_bind;

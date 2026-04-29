@@ -674,10 +674,12 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
             replaceCameraFromServer(server, ips);
 
             for(int32_t i = 0; i < ips.size(); i++){
-                int32_t index = findCamera(ips[i]);
-                cameras[index]->serial = serial[i];
-                if(names.count(ips[i])){
-                    cameras[index]->name = names.at(ips[i]);
+                int32_t index = findCamera(server, ips[i]);
+                if(index != -1){
+                    cameras[index]->serial = serial[i];
+                    if(names.count(ips[i])){
+                        cameras[index]->name = names.at(ips[i]);
+                    }
                 }
             }
 
@@ -720,7 +722,7 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
                     continue;
                 }
                 std::string ip_ref = ip.value()["ip"].get<std::string>();
-                int32_t found = findCamera(ip_ref);
+                int32_t found = findCamera(server, ip_ref);
                 CameraInfo _cam;
                 if(found == -1){
                     auto cam = std::make_shared<CameraInfo>();
@@ -903,7 +905,7 @@ void GoProMaster::replaceCameraFromServer(const std::string server, const std::v
     for (const auto& new_ip : ips) {
         bool exists = false;
         for (const auto& existing_cam : cameras) {
-            if (existing_cam && existing_cam->ip == new_ip) {
+            if (existing_cam && existing_cam->ip == new_ip && existing_cam->server == server) {
                 exists = true;
                 break;
             }
@@ -1010,19 +1012,6 @@ std::string GoProMaster::getBarInfo(const std::shared_ptr<CameraInfo> &c){
     }
     if(!find) return c->ip + "  ...";
     return result;
-}
-
-int32_t GoProMaster::findCamera(const std::string ip){
-    int32_t index = 0;    
-    for(const auto& c : cameras){
-        if(c){
-            if(c->ip == ip){
-                return index;
-            }
-        }
-        ++index;
-    }
-    return -1;
 }
 
 int32_t GoProMaster::findServer(const std::string ip){

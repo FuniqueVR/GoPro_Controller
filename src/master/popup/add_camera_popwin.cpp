@@ -67,7 +67,7 @@ void AddCameraPopup::render(){
                 error = "Server is disconnected.";
                 pass = false;
             }
-            if(master->findCamera(GetRemoteIPBySerial(camera_serial_buf)) != -1){
+            if(master->findCamera(server_ip_buf, GetRemoteIPBySerial(camera_serial_buf)) != -1){
                 error = "Camera already added.";
                 pass = false;
             }
