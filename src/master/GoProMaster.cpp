@@ -905,7 +905,7 @@ void GoProMaster::replaceCameraFromServer(const std::string server, const std::v
     for (const auto& new_ip : ips) {
         bool exists = false;
         for (const auto& existing_cam : cameras) {
-            if (existing_cam && existing_cam->ip == new_ip) {
+            if (existing_cam && existing_cam->ip == new_ip && existing_cam->server == server) {
                 exists = true;
                 break;
             }
