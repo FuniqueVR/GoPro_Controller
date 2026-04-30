@@ -233,6 +233,9 @@ void QueryAction(const WebSocketChannelPtr& channel, json j){
         }
         channel->send(getPacket("query:set", r));
     }
+    else if(name == "setall_cancel"){
+        
+    }
     else if(name == "setall"){
         resultText = controller.setSettingAll(source, target, preset, jvalue);
         if(json::accept(resultText)){

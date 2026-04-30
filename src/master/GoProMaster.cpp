@@ -1022,6 +1022,10 @@ std::string GoProMaster::getBarInfo(const std::shared_ptr<CameraInfo> &c){
     return result;
 }
 
+size_t GoProMaster::getServerCount(){
+    return servers.size();
+}
+
 int32_t GoProMaster::findServer(const std::string ip){
     int32_t index = 0;
     for(const auto& c : servers){

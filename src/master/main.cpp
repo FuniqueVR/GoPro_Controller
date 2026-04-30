@@ -118,7 +118,10 @@ void hwGetterFeedback(std::string ip, json hw){
 }
 
 void applyAllFeedback(){
-    global_state->applying_all = false;
+    global_state->applying_all_count++;
+    if(global_state->applying_all_count >= master->getServerCount()){
+        global_state->applying_all = false;
+    }
 }
 
 void updateServerList(){

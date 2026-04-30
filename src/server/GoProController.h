@@ -222,6 +222,7 @@ public:
     /// }]
     ///
     std::string setSettingAll(const std::string source, const std::string target, int32_t preset, json value);
+    void setSettingCancelAll();
 #pragma endregion
 
 #pragma region Webcam part of calls
@@ -410,6 +411,11 @@ protected:
 
 private:
 #pragma region private variable
+    ///
+    /// State of current server
+    /// Is applying something
+    ///
+    bool applying_cancel  = false;
     ///
     /// The handle for mdns service manager
     ///
