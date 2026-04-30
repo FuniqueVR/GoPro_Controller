@@ -24,6 +24,7 @@
 #include "hv/hsocket.h"
 #include "GoProController.h"
 
+
 ///
 /// Main worker, HERO is here
 ///
