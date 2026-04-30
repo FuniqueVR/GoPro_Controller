@@ -1,5 +1,5 @@
 Package: go-pro-control-server
-Version: 0.1.3
+Version: 1.0.1
 Section: shells
 Priority: optional
 Architecture: arm64

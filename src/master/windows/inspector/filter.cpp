@@ -264,8 +264,8 @@ bool InspectorWindow::conditional_filter_option(const std::shared_ptr<GlobalStat
                     }
                 }
                 else if(aspect_id == 3){ // 8:7
-                    // 30, 60, 24
-                    if(value_id != 8 && value_id != 5 && value_id != 10) return false;                    
+                    // 30, 24
+                    if(value_id != 8 && value_id != 10) return false;                    
                 }
             }
         }
