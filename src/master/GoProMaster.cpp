@@ -694,6 +694,10 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
                 std::cerr << "query:get, return value should be array" << std::endl;
                 return;
             }
+            if(key == "query:get" && data["value"]["data"].size() == 0){
+                std::cout << "Camera response null state from server: " << server << std::endl;
+                return;
+            }
             /**
              * In case you're confuse here...
              * The data is like this
@@ -722,6 +726,9 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
                     continue;
                 }
                 std::string ip_ref = ip.value()["ip"].get<std::string>();
+                if(ip_ref.size() == 0){
+                    continue;
+                }
                 int32_t found = findCamera(server, ip_ref);
                 CameraInfo _cam;
                 if(found == -1){
@@ -899,6 +906,7 @@ void GoProMaster::replaceCameraFromServer(const std::string server, const std::v
         }
         return false;
     });
+    
     cameras.erase(it, cameras.end());
 
     // Append part
