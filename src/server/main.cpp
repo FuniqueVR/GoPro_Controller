@@ -362,6 +362,7 @@ void MediaAction(const WebSocketChannelPtr& channel, json j){
     }
 
     if(name == "lastmedia"){
+        controller.keep_alive("");
         resultText = controller.getLastMedia(target);
         if(json::accept(resultText)){
             r["data"] = json::parse(resultText);
