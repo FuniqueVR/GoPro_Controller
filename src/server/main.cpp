@@ -24,6 +24,7 @@
 #include "hv/hsocket.h"
 #include "GoProController.h"
 
+
 ///
 /// Main worker, HERO is here
 ///
@@ -232,6 +233,9 @@ void QueryAction(const WebSocketChannelPtr& channel, json j){
         }
         channel->send(getPacket("query:set", r));
     }
+    else if(name == "setall_cancel"){
+        
+    }
     else if(name == "setall"){
         resultText = controller.setSettingAll(source, target, preset, jvalue);
         if(json::accept(resultText)){
@@ -361,6 +365,7 @@ void MediaAction(const WebSocketChannelPtr& channel, json j){
     }
 
     if(name == "lastmedia"){
+        controller.keep_alive("");
         resultText = controller.getLastMedia(target);
         if(json::accept(resultText)){
             r["data"] = json::parse(resultText);
