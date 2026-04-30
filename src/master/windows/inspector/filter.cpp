@@ -216,7 +216,7 @@ bool InspectorWindow::conditional_filter_option(const std::shared_ptr<GlobalStat
                     }
                 }
                 else if(aspect_id == 3){ // "8:7"
-                    if(res_id == 107){ // 5.3K 8:3
+                    if(res_id == 107){ // 5.3K 8:7
                         // 24, 30
                         if(value_id != 10 && value_id != 8) return false;
                     }else{ // 4K 8:7
@@ -264,8 +264,13 @@ bool InspectorWindow::conditional_filter_option(const std::shared_ptr<GlobalStat
                     }
                 }
                 else if(aspect_id == 3){ // 8:7
-                    // 30, 24
-                    if(value_id != 8 && value_id != 10) return false;                    
+                    if(res_id == 107){ // 5.3K 8:7
+                        // 24, 30
+                        if(value_id != 10 && value_id != 8) return false;
+                    }else{ // 4K 8:7
+                        // 24, 30, 60
+                        if(value_id != 10 && value_id != 8 && value_id != 5) return false;
+                    }                   
                 }
             }
         }
