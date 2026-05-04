@@ -24,6 +24,13 @@ typedef void (*camera_log_feedback)(std::string key, std::string value);
 typedef void (*camera_preset_save)();
 typedef void (*camera_apply_all_feedback)();
 
+struct DownloadMediaParameters {
+    std::string dir;
+    bool put_finish;
+    int32_t type;
+    int32_t c_count;
+};
+
 ///
 /// GoPro Master Worker
 /// Use this hub stuff to control multiple websocket server or camera
@@ -88,8 +95,8 @@ public:
     void preview_start(std::string server, std::string target);
     void preview_end(std::string server, std::string target);
     void media_only(const std::string command, std::string target = "");
-    void download_last_media(const std::string dir, bool put_finish);
-    void download_last_media(const std::string ip, const std::string dir, bool put_finish);
+    void download_last_media(const DownloadMediaParameters params);
+    void download_last_media(const std::string ip, const DownloadMediaParameters params);
 
     void presetSwitch(const std::string server, const std::string target, int32_t mode);
     void locate(const std::string server, const std::string target);

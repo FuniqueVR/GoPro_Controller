@@ -280,9 +280,9 @@ void GoProMaster::media_only(const std::string command, std::string target){
 
 }
 
-void GoProMaster::download_last_media(const std::string dir, bool put_finish){
+void GoProMaster::download_last_media(const DownloadMediaParameters params){
     std::thread([=](){
-        if(put_finish){
+        if(params.put_finish){
             downloading_last_media_flag = 2;
         }else{
             downloading_last_media_flag = 1;
@@ -307,7 +307,7 @@ void GoProMaster::download_last_media(const std::string dir, bool put_finish){
             data["value"]["item"] = s->name;
             data["value"]["ip"] = s->ip;
             data["value"]["local"] = islocal;
-            data["value"]["dir"] = dir;
+            data["value"]["dir"] = params.dir;
             data["value"]["filename"] = filename;
 
             for(auto ss : servers){
@@ -324,9 +324,9 @@ void GoProMaster::download_last_media(const std::string dir, bool put_finish){
     }).detach();
 }
 
-void GoProMaster::download_last_media(const std::string ip, const std::string dir, bool put_finish){
+void GoProMaster::download_last_media(const std::string ip, const DownloadMediaParameters params){
     std::thread([=](){
-        if(put_finish){
+        if(params.put_finish){
             downloading_last_media_flag = 2;
         }else{
             downloading_last_media_flag = 1;
@@ -351,7 +351,7 @@ void GoProMaster::download_last_media(const std::string ip, const std::string di
             data["value"]["item"] = s->name;
             data["value"]["ip"] = s->ip;
             data["value"]["local"] = islocal;
-            data["value"]["dir"] = dir;
+            data["value"]["dir"] = params.dir;
             data["value"]["filename"] = filename;
 
             for(auto ss : servers){
