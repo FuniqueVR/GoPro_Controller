@@ -2172,7 +2172,7 @@ const static int32_t SHARPNESS_SUPPORT[] = {
 #define DENOISE_ID 198
 #define DENOISE_SIZE 3
 #define DENOISE_NAME "Denoise"
-#define DENOISE_AVA MODEL_MAX2_ALL
+#define DENOISE_AVA MODEL_MAX2&MODEL_13
 const static char* DENOISE_STRING[] = {
     "High",
     "Midium",
@@ -2181,12 +2181,12 @@ const static char* DENOISE_STRING[] = {
 const static int32_t DENOISE_VALUE[] = {
     2, // High
     1, // Midium
-    1, // Low
+    0, // Low
 };
 const static int32_t DENOISE_SUPPORT[] = {
-    MODEL_MAX2_ALL, // High
-    MODEL_MAX2_ALL, // Midium
-    MODEL_MAX2_ALL, // Low
+    MODEL_MAX2&MODEL_13, // High
+    MODEL_MAX2&MODEL_13, // Midium
+    MODEL_MAX2&MODEL_13, // Low
 };
 #pragma endregio
 
