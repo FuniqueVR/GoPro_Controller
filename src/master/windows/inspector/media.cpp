@@ -94,6 +94,28 @@ void InspectorWindow::draw_media_global(){
         state->update_server();
     }
 
+    const char* selection = MEDIA_DOWNLOAD_TYPE_STRING[media_name_rule_type];
+    if(ImGui::BeginCombo("Media Name Rule", selection)){
+        for(int32_t i = 0; i < MEDIA_DOWNLOAD_TYPE_SIZE; i++){
+            bool selected = (media_name_rule_type == i);
+            if(ImGui::Selectable(MEDIA_DOWNLOAD_TYPE_STRING[i], selected)){
+                media_name_rule_type = i;
+                state->update_server();
+            }
+            if(selected){
+                ImGui::SetItemDefaultFocus();
+            }
+        }
+        ImGui::EndCombo();
+    }
+
+    if(media_name_rule_type > 0){
+        if(ImGui::InputInt("Character Count", &media_name_character_count, 1, 5)){
+            if(media_name_character_count < 1) media_name_character_count = 1;
+            state->update_server();
+        }
+    }
+
     if(ImGui::IsItemHovered()) ImGui::SetTooltip("Open file explorer for path select directory");
     if(camera_ip >= 0){
         std::shared_ptr<CameraInfo> t = master->getCameras()[camera_ip];

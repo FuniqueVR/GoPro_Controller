@@ -49,6 +49,8 @@ json InspectorWindow::get_window_data() {
     json data = json::object();
     data["put_finish"] = put_finish;
     data["create_date_folder"] = create_date_folder;
+    data["media_name_rule_type"] = media_name_rule_type;
+    data["media_name_character_count"] = media_name_character_count;
     data["current_download_location"] = state->current_download_location;
     data["setting_order"] = json::object();
     data["status_order"] = json::object();
@@ -73,6 +75,15 @@ void InspectorWindow::set_window_data(json data) {
     }
     if(data["create_date_folder"].is_boolean()){
         create_date_folder = data["create_date_folder"].get<bool>();
+    }
+    if(data["media_name_rule_type"].is_number()){
+        media_name_rule_type = data["media_name_rule_type"].get<int32_t>();
+    }
+    if(data["media_name_character_count"].is_number()){
+        media_name_character_count = data["media_name_character_count"].get<int32_t>();
+    }
+    if(data["put_finish"].is_number()){
+        put_finish = data["put_finish"].get<int32_t>();
     }
     if(data["current_download_location"].is_string()){
         state->current_download_location = data["current_download_location"].get<std::string>();

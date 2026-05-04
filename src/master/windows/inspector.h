@@ -66,4 +66,11 @@ private:
     bool put_finish;
     bool should_disabled;
     bool applying_all_last;
+    ///
+    /// 0: None
+    /// 1: Front Characters
+    /// 2: Back Characters
+    ///
+    int32_t media_name_rule_type;
+    int32_t media_name_character_count;
 };
