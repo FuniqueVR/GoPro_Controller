@@ -95,7 +95,6 @@ public:
     void preview_start(std::string server, std::string target);
     void preview_end(std::string server, std::string target);
     void media_only(const std::string command, std::string target = "");
-    void download_last_media(const DownloadMediaParameters params);
     void download_last_media(const std::string ip, const DownloadMediaParameters params);
 
     void presetSwitch(const std::string server, const std::string target, int32_t mode);

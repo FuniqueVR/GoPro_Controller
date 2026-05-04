@@ -60,7 +60,7 @@ void InspectorWindow::draw_media_global(){
             }
             fs::create_directories(buffer);
             params.dir = buffer;
-            master->download_last_media(params);
+            master->download_last_media("", params);
         }
     }
     if(ImGui::IsItemHovered()) ImGui::SetTooltip("Download all exist camera instances");
