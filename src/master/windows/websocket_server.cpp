@@ -15,6 +15,7 @@ WebsocketWindow::WebsocketWindow(
     title = "Websocket Dashboard";
 }
 
+
 WebsocketWindow::~WebsocketWindow(){
     
 }
