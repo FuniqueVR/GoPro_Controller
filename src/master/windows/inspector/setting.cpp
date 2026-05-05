@@ -35,9 +35,9 @@ void InspectorWindow::draw_protune(){
     }
 }
 
-void InspectorWindow::global_draw_setting(std::shared_ptr<GlobalState>& state, std::shared_ptr<GoProMaster>& master, const std::shared_ptr<CameraInfo>& c){
+void InspectorWindow::global_draw_setting(std::shared_ptr<GlobalState>& state, std::shared_ptr<GoProMaster>& master, const CameraInfo& c){
     json status = json::object();
-    master->getStatusFromCamera(*c, status);
+    master->getStatusFromCamera(c, status);
     if (status[std::to_string(PRESET_ID)].is_number()) {
         int32_t preset = status[std::to_string(PRESET_ID)].get<int32_t>();
         if(preset == 0){
@@ -48,9 +48,9 @@ void InspectorWindow::global_draw_setting(std::shared_ptr<GlobalState>& state, s
     }
 }
 
-void InspectorWindow::global_draw_protune(std::shared_ptr<GlobalState>& state, std::shared_ptr<GoProMaster>& master, const std::shared_ptr<CameraInfo>& c){
+void InspectorWindow::global_draw_protune(std::shared_ptr<GlobalState>& state, std::shared_ptr<GoProMaster>& master, const CameraInfo& c){
     json status = json::object();
-    master->getStatusFromCamera(*c, status);
+    master->getStatusFromCamera(c, status);
     if (status[std::to_string(PRESET_ID)].is_number()) {
         int32_t preset = status[std::to_string(PRESET_ID)].get<int32_t>();
         if(preset == 0){
@@ -64,7 +64,7 @@ void InspectorWindow::global_draw_protune(std::shared_ptr<GlobalState>& state, s
 void InspectorWindow::_draw_setting(std::vector<int32_t>& ordered){
     int32_t current = master->findCamera(state->current_camera_server, state->current_camera_item);
     if(current < 0) return;
-    auto& c = master->getCameras().at(current);
+    const CameraInfo c = master->getCamera_Clone(current);
     int32_t move_from = -1, move_to = -1;
     for(int32_t i = 0; i < ordered.size(); i++){
         int32_t id = ordered[i];
@@ -105,23 +105,23 @@ void InspectorWindow::_draw_setting(std::vector<int32_t>& ordered){
     }
 }
 
-void InspectorWindow::_global_draw_setting(std::shared_ptr<GlobalState>& state, std::shared_ptr<GoProMaster>& master, const std::shared_ptr<CameraInfo>& c, std::vector<int32_t>& ordered){
+void InspectorWindow::_global_draw_setting(std::shared_ptr<GlobalState>& state, std::shared_ptr<GoProMaster>& master, const CameraInfo& c, std::vector<int32_t>& ordered){
     for(int32_t i = 0; i < ordered.size(); i++){
         _global_draw_setting_item(i, state, master, c, ordered);
     }
 }
 
-bool InspectorWindow::_global_draw_setting_item(int32_t i, std::shared_ptr<GlobalState>& state, std::shared_ptr<GoProMaster>& master, const std::shared_ptr<CameraInfo>& c, std::vector<int32_t>& ordered){
+bool InspectorWindow::_global_draw_setting_item(int32_t i, std::shared_ptr<GlobalState>& state, std::shared_ptr<GoProMaster>& master, const CameraInfo& c, std::vector<int32_t>& ordered){
     int32_t id = ordered[i];
     std::string name = GET_SETTING_NAME_BY_ID(id);
     size_t size = GET_SETTING_SIZE_BY_ID(id);
     int32_t ava = GET_SETTING_AVA_BY_ID(id);
-    int32_t model_enum = _get_current_model(c->hw);
+    int32_t model_enum = _get_current_model(c.hw);
 
     json setting = json::object();
     json status = json::object();
-    master->getSettingsFromCamera(*c, setting);
-    master->getStatusFromCamera(*c, status);
+    master->getSettingsFromCamera(c, setting);
+    master->getStatusFromCamera(c, status);
 
     if((model_enum&ava) == 0){
         return false;
@@ -170,7 +170,7 @@ bool InspectorWindow::_global_draw_setting_item(int32_t i, std::shared_ptr<Globa
             if (ImGui::Selectable(option.c_str(), is_selected))
             {
                 setting[std::to_string(id)] = n; // Change index
-                master->apply("", c->ip, id, values_id[n]);
+                master->apply("", c.ip, id, values_id[n]);
             }
             if (is_selected)
                 ImGui::SetItemDefaultFocus();   // You may set the initial focus when opening the combo (scrolling + for keyboard navigation support)

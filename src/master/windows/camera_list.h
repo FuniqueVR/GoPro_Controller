@@ -45,15 +45,15 @@ public:
     void set_window_data(json data) override;
     virtual void render() override;
 
-    virtual void draw_line(const std::shared_ptr<CameraInfo>& c);
-    virtual void draw_group_state(const std::shared_ptr<CameraInfo>& c);
-    virtual void draw_group_header(const std::shared_ptr<CameraInfo>& c);
-    virtual void item_event(const std::shared_ptr<CameraInfo>& c);
-    void onClick(const std::shared_ptr<CameraInfo>& c);
+    virtual void draw_line(const CameraInfo& c);
+    virtual void draw_group_state(const CameraInfo& c);
+    virtual void draw_group_header(const CameraInfo& c);
+    virtual void item_event(const CameraInfo& c);
+    void onClick(const CameraInfo& c);
 
 private:
     ImVec2 get_rect_size();
-    std::vector<std::shared_ptr<CameraInfo>> get_filtering_result();
+    std::vector<CameraInfo> get_filtering_result();
     std::string get_filter_string(FilterType type);
     std::string get_sort_string(SortType type);
     std::string toTimeCode(int32_t timer);

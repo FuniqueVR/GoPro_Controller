@@ -16,7 +16,6 @@ void PreviewPopup::update_decoder(){
     }
 
     {
-        std::lock_guard<std::mutex> lock(master->camera_mtx);
         s = master->findCamera(state->preview_server, state->preview_ip);
 
         if(s == -1){
@@ -24,10 +23,10 @@ void PreviewPopup::update_decoder(){
             trying = false;
             return;
         }
-        const std::shared_ptr<CameraInfo>& c = master->getCameras().at(s);
-        model = _get_current_model(c->hw);
+        const CameraInfo c = master->getCamera_Clone(s);
+        model = _get_current_model(c.hw);
         json buffer_setting = json::object();
-        master->getSettingsFromCamera(*c, buffer_setting);
+        master->getSettingsFromCamera(c, buffer_setting);
     }
 
     if(gl_texture != 0){

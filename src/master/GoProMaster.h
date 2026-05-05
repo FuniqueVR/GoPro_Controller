@@ -102,7 +102,7 @@ public:
     int32_t haslocate(const std::string server, const std::string target);
     void apply(const std::string& ip, const std::string& target, const int32_t id, const int32_t value);
     void applyAll(const std::string& ip, const json& res);
-    void quickApplyAll(const std::shared_ptr<CameraInfo>& target);
+    void quickApplyAll(const CameraInfo& target);
 
     bool directoryExists(const std::string& path);
 
@@ -132,6 +132,7 @@ public:
      */
     std::mutex camera_mtx;
     std::mutex locate_mtx;
+    std::mutex server_mtx;
 
     // ----------------------------------------------------------
     //
@@ -146,10 +147,13 @@ public:
      * Get current camera record (Clone, For thread optimization)
      */
     const std::vector<CameraInfo> getCameras_Clone();
+    const CameraInfo getCamera_Clone(int32_t index);
     /**
      * Get current websocket server record
      */
     const std::vector<std::shared_ptr<ServerConnection>>& getServers() const;
+    const std::vector<ServerConnection> getServers_Clone();
+    const ServerConnection getServer_Clone(int32_t index);
 private:
     /** 
      * All cameras record for master
@@ -225,6 +229,7 @@ public:
     bool getSettingsFromCamera(CameraInfo target, json& res);
     bool getStatusFromCamera(CameraInfo target, json& res);
     std::string getBarInfo(const std::shared_ptr<CameraInfo> &c);
+    std::string getBarInfo(const CameraInfo &c);
 
     size_t getServerCount();
     int32_t findServer(const std::string ip);

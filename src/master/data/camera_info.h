@@ -29,6 +29,6 @@ struct CameraInfo {
     /**
      * The json states
      */
-    json state;
-    json hw;
+    json state = json::object();
+    json hw = json::object();
 };

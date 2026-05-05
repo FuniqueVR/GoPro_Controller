@@ -60,7 +60,6 @@ void CameraListWindow::render(){
     ImGui::Begin(title.c_str(), &enable, w_flag);
     {
         ImVec2 window_size = ImGui::GetWindowSize();
-        std::lock_guard<std::mutex> lock(master->camera_mtx);
 
         changed = ImGui::SliderInt("Item Size##Camera_List_Size", &size, 0, 15);
         changed = changed || ImGui::InputText("Search", &search);
@@ -110,10 +109,10 @@ void CameraListWindow::render(){
         float width = ImGui::GetWindowSize().x; // Total space size
         int32_t limit = static_cast<int32_t>((width / rect_size.x) - 0.5f);
         int32_t counter = 0;
-        std::vector<std::shared_ptr<CameraInfo>> ciss = get_filtering_result();
+        std::vector<CameraInfo> ciss = get_filtering_result();
         ImGui::Text("Cal: %f/%f, Total: %d, Line: %d", width, rect_size.x, size, limit);
         for(const auto& c : ciss){
-            if(c){
+            if(c.ip.size() > 0){
                 try{
                     if(size == 0) draw_line(c);
                     else {
@@ -141,10 +140,10 @@ void CameraListWindow::render(){
     }
 }
 
-void CameraListWindow::draw_line(const std::shared_ptr<CameraInfo>& c){
-    bool selected = c->ip == state->current_camera_item && c->server == state->current_camera_server;
+void CameraListWindow::draw_line(const CameraInfo& c){
+    bool selected = c.ip == state->current_camera_item && c.server == state->current_camera_server;
     std::string plusStatus = master->getBarInfo(c);
-    std::string plusID = plusStatus + "##CameraList_" + c->ip;
+    std::string plusID = plusStatus + "##CameraList_" + c.ip;
     if(ImGui::Selectable(plusID.c_str(), selected)){
         // User select interaction
         onClick(c);
@@ -152,60 +151,60 @@ void CameraListWindow::draw_line(const std::shared_ptr<CameraInfo>& c){
     item_event(c);
 }
 
-void CameraListWindow::item_event(const std::shared_ptr<CameraInfo>& c){
+void CameraListWindow::item_event(const CameraInfo& c){
     if(ImGui::IsItemClicked(ImGuiMouseButton_Left) && ImGui::IsItemHovered()){
         onClick(c);
     }
     if(ImGui::IsItemClicked(ImGuiMouseButton_Right) && ImGui::IsItemHovered()){
         ImGui::OpenPopupOnItemClick();
     }
-    if(ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left) && ImGui::IsItemHovered() && c->connected){
-        master->preview_start(c->server, c->ip);
-        state->preview_ip = c->ip;
-        state->preview_server = c->server;
+    if(ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left) && ImGui::IsItemHovered() && c.connected){
+        master->preview_start(c.server, c.ip);
+        state->preview_ip = c.ip;
+        state->preview_server = c.server;
         state->command_sender("preview_start");
     }
 
-    if(ImGui::BeginPopupContextItem((title + "##Popup_Menu" + c->ip).c_str())){
-        ImGui::BeginDisabled(!c->connected);
+    if(ImGui::BeginPopupContextItem((title + "##Popup_Menu" + c.ip).c_str())){
+        ImGui::BeginDisabled(!c.connected);
         if (ImGui::Selectable("Connect")){
-            master->command_only(c->server, "usb_on", c->ip);
+            master->command_only(c.server, "usb_on", c.ip);
         }
         if (ImGui::Selectable("Disconnect")){
-            master->command_only(c->server, "usb_off", c->ip);
+            master->command_only(c.server, "usb_off", c.ip);
         }
         ImGui::Separator();
         if (ImGui::Selectable("Reboot"))
         {
-            master->command_only(c->server, "reboot", c->ip);
+            master->command_only(c.server, "reboot", c.ip);
         }
         if (ImGui::Selectable("Shutdown"))
         {
-            master->command_only(c->server, "shutdown", c->ip);
+            master->command_only(c.server, "shutdown", c.ip);
         }
         if (ImGui::Selectable("Preview"))
         {
-            master->preview_start(c->server, c->ip);
-            state->preview_ip = c->ip;
-            state->preview_server = c->server;
+            master->preview_start(c.server, c.ip);
+            state->preview_ip = c.ip;
+            state->preview_server = c.server;
             state->command_sender("preview_start");
         }
         ImGui::EndDisabled();
         if (ImGui::Selectable("Delete"))
         {
-            master->command_only(c->server, "delete", c->ip);
+            master->command_only(c.server, "delete", c.ip);
         }
         ImGui::EndPopup();
     }
 }
 
-void CameraListWindow::onClick(const std::shared_ptr<CameraInfo>& c){
+void CameraListWindow::onClick(const CameraInfo& c){
     state->current_setting_items_bind = false;
-    state->current_camera_item = c->ip;
-    state->current_camera_server = c->server;
-    state->current_camera_name = c->name;
-    std::cout << "Select camera: " << c->server << "  " << c->ip << std::endl;
-    master->query_only(c->server, "get", c->ip);
+    state->current_camera_item = c.ip;
+    state->current_camera_server = c.server;
+    state->current_camera_name = c.name;
+    std::cout << "Select camera: " << c.server << "  " << c.ip << std::endl;
+    master->query_only(c.server, "get", c.ip);
     //current_setting_items_bind = master.getSettingsFromCamera(*c, current_setting_items);
 }
 
@@ -213,24 +212,24 @@ ImVec2 CameraListWindow::get_rect_size(){
     return ImVec2(10 * (size + 10) + 20, 10 * (size + 10) + 20);
 }
 
-std::vector<std::shared_ptr<CameraInfo>> CameraListWindow::get_filtering_result(){
-    auto buffer = master->getCameras();
-    auto filtered = std::vector<std::shared_ptr<CameraInfo>>();
+std::vector<CameraInfo> CameraListWindow::get_filtering_result(){
+    auto buffer = master->getCameras_Clone();
+    auto filtered = std::vector<CameraInfo>();
 
     for(auto& c : buffer){
         if(search.size() > 0){
-            bool ip_contain = c->ip.find(search) != std::string::npos;
-            bool name_contain = c->name.find(search) != std::string::npos;
-            bool serial_contain = c->serial.find(search) != std::string::npos;
+            bool ip_contain = c.ip.find(search) != std::string::npos;
+            bool name_contain = c.name.find(search) != std::string::npos;
+            bool serial_contain = c.serial.find(search) != std::string::npos;
             if(!ip_contain && !name_contain && !serial_contain) continue;
         }
 
         if(filter == FilterType::Connect){
-            if(c->connected == filter_connect){
+            if(c.connected == filter_connect){
                 filtered.push_back(c);
             }
         }else if(filter == FilterType::Server){
-            if(c->server == filter_ip){
+            if(c.server == filter_ip){
                 filtered.push_back(c);
             }
         }else {
@@ -239,12 +238,12 @@ std::vector<std::shared_ptr<CameraInfo>> CameraListWindow::get_filtering_result(
     }
 
     if (sort == SortType::Name){
-        std::sort(filtered.begin(), filtered.end(), [](const std::shared_ptr<CameraInfo>& a, const std::shared_ptr<CameraInfo>& b){
-            return a->name < b->name;
+        std::sort(filtered.begin(), filtered.end(), [](const CameraInfo& a, const CameraInfo& b){
+            return a.name < b.name;
         });
     }else if (sort == SortType::IP){
-        std::sort(filtered.begin(), filtered.end(), [](const std::shared_ptr<CameraInfo>& a, const std::shared_ptr<CameraInfo>& b){
-            return a->ip < b->ip;
+        std::sort(filtered.begin(), filtered.end(), [](const CameraInfo& a, const CameraInfo& b){
+            return a.ip < b.ip;
         });
     }
     

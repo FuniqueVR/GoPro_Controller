@@ -23,8 +23,8 @@ public:
     virtual void draw_system();
     virtual void draw_setting();
     virtual void draw_protune();
-    static void global_draw_setting(std::shared_ptr<GlobalState>& state, std::shared_ptr<GoProMaster>& master, const std::shared_ptr<CameraInfo>& c);
-    static void global_draw_protune(std::shared_ptr<GlobalState>& state, std::shared_ptr<GoProMaster>& master, const std::shared_ptr<CameraInfo>& c);
+    static void global_draw_setting(std::shared_ptr<GlobalState>& state, std::shared_ptr<GoProMaster>& master, const CameraInfo& c);
+    static void global_draw_protune(std::shared_ptr<GlobalState>& state, std::shared_ptr<GoProMaster>& master, const CameraInfo& c);
     virtual void draw_status();
     virtual void draw_hardware();
     virtual void draw_network();
@@ -41,8 +41,8 @@ public:
 protected:
     virtual void _draw_setting(std::vector<int32_t>& ordered);
     virtual void _draw_status(std::vector<int32_t>& ordered);
-    static void _global_draw_setting(std::shared_ptr<GlobalState>& state, std::shared_ptr<GoProMaster>& master, const std::shared_ptr<CameraInfo>& c, std::vector<int32_t>& ordered);
-    static bool _global_draw_setting_item(int32_t i, std::shared_ptr<GlobalState>& state, std::shared_ptr<GoProMaster>& master, const std::shared_ptr<CameraInfo>& c, std::vector<int32_t>& ordered);
+    static void _global_draw_setting(std::shared_ptr<GlobalState>& state, std::shared_ptr<GoProMaster>& master, const CameraInfo& c, std::vector<int32_t>& ordered);
+    static bool _global_draw_setting_item(int32_t i, std::shared_ptr<GlobalState>& state, std::shared_ptr<GoProMaster>& master, const CameraInfo& c, std::vector<int32_t>& ordered);
     static bool conditional_filter(const std::shared_ptr<GlobalState>& state, int32_t mymodel, int32_t setting_id);
     static bool conditional_filter_option(const std::shared_ptr<GlobalState>& state, int32_t mymodel, int32_t setting_id, int32_t value_index);
 

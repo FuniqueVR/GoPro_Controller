@@ -1,17 +1,17 @@
 #include "../camera_list.h"
 
-void CameraListWindow::draw_group_header(const std::shared_ptr<CameraInfo>& c){
+void CameraListWindow::draw_group_header(const CameraInfo& c){
     json status = json::object();
     json setting = json::object();
     int preset = 0;
-    master->getStatusFromCamera(*c, status);
-    master->getSettingsFromCamera(*c, setting);
+    master->getStatusFromCamera(c, status);
+    master->getSettingsFromCamera(c, setting);
 
     ImGui::BeginGroup();
     ImGuiStyle& style = ImGui::GetStyle();
     float fontsize = ImGui::GetFontSize();
-    std::string id = c->ip + "##Grid_Item_ID";
-    std::string pid = c->ip + "##Grid_Popup_Item_ID";
+    std::string id = c.ip + "##Grid_Item_ID";
+    std::string pid = c.ip + "##Grid_Popup_Item_ID";
     ImGui::PushID(id.c_str());
 
     ImDrawList* draw_list = ImGui::GetWindowDrawList();
@@ -37,11 +37,11 @@ void CameraListWindow::draw_group_header(const std::shared_ptr<CameraInfo>& c){
     // Drawing outline
     {
         uint32_t col = col_red;
-        if(c->connected) col = col_greed;
+        if(c.connected) col = col_greed;
         draw_list->AddRect(image_pos + ImVec2(5, 5), image_pos_max - ImVec2(5, 5), col, 2.0F, 0, 2.0F);
     }
     // Drawing Battery
-    if(c->connected){
+    if(c.connected){
         bool batteryHave = false;
         bool batteryCharging = false;
         int precentage = 0;
@@ -108,7 +108,7 @@ void CameraListWindow::draw_group_header(const std::shared_ptr<CameraInfo>& c){
         }
     }
     // Drawing SD card
-    if(c->connected){
+    if(c.connected){
         bool sdHave = false;
         int64_t remaining = 0;
         uint32_t col_inner_color;
@@ -157,7 +157,7 @@ void CameraListWindow::draw_group_header(const std::shared_ptr<CameraInfo>& c){
     // Center text
     {
         std::string shutter_speed;
-        std::string camera_title = c->name;
+        std::string camera_title = c.name;
         std::string iso_setting;
         std::string white_balance_setting;
         float spacing = 0.75F;
@@ -174,7 +174,7 @@ void CameraListWindow::draw_group_header(const std::shared_ptr<CameraInfo>& c){
             center.y + ( camera_title_size.y / -2.0F ) + (rect_size_unit.y * (spacing * -3.0F))
         );
         draw_list->AddText(camera_title_min, col_white, camera_title.c_str());
-        if(c->connected) {
+        if(c.connected) {
             int32_t SHUTTER_SPEED_ID = SHUTTER_SPEED_PHOTO_ID;
             int32_t ISO_MIN_ID = ISO_MIN_PHOTO_ID;
             int32_t ISO_MAX_ID = ISO_MAX_PHOTO_ID;
@@ -231,7 +231,7 @@ void CameraListWindow::draw_group_header(const std::shared_ptr<CameraInfo>& c){
         }
     }
     // Record Time
-    if(c->connected){
+    if(c.connected){
         ImVec2 frame_padding = ImVec2(10, 10);
         ImVec2 center = ImVec2(
             image_pos.x + (rect_size.x / 2.0F),
@@ -253,7 +253,7 @@ void CameraListWindow::draw_group_header(const std::shared_ptr<CameraInfo>& c){
         draw_list->AddText(record_time_min, col_white, record_time.c_str());
     }
     // Preset mode
-    if(c->connected){
+    if(c.connected){
         int32_t preset;
         std::string preset_text;
         if(status[std::to_string(PRESET_ID)].is_number_integer()){
@@ -279,7 +279,7 @@ void CameraListWindow::draw_group_header(const std::shared_ptr<CameraInfo>& c){
         ), col_white, preset_text.c_str());
     }
     // Setting
-    if(c->connected){
+    if(c.connected){
         float spacing = 0.75F;
         float word_spacing = 10;
         std::string res;
@@ -335,7 +335,7 @@ void CameraListWindow::draw_group_header(const std::shared_ptr<CameraInfo>& c){
     
     ImGui::PopID();
     ImGui::Dummy(rect_size);
-    bool is_select = state->current_camera_item == c->ip && state->current_camera_server == c->server;
+    bool is_select = state->current_camera_item == c.ip && state->current_camera_server == c.server;
     if(ImGui::IsItemHovered()){
         std::string displayText = "";
         displayText += "name: ";
@@ -343,28 +343,28 @@ void CameraListWindow::draw_group_header(const std::shared_ptr<CameraInfo>& c){
         displayText += "\n";
 
         displayText += "server: ";
-        displayText += c->server;
+        displayText += c.server;
         displayText += "\n";
 
         displayText += "ip: ";
-        displayText += c->ip;
+        displayText += c.ip;
         displayText += "\n";
 
         displayText += "serial: ";
-        if(c->hw["serial_number"].is_string()){
-            displayText += c->hw["serial_number"].get<std::string>();
+        if(c.hw.is_object() && c.hw["serial_number"].is_string()){
+            displayText += c.hw["serial_number"].get<std::string>();
         }
         displayText += "\n";
 
         displayText += "model: ";
-        if(c->hw["model_name"].is_string()){
-            displayText += c->hw["model_name"].get<std::string>();
+        if(c.hw.is_object() && c.hw["model_name"].is_string()){
+            displayText += c.hw["model_name"].get<std::string>();
         }
         displayText += "\n";
 
         displayText += "firmware: ";
-        if(c->hw["firmware_version"].is_string()){
-            displayText += c->hw["firmware_version"].get<std::string>();
+        if(c.hw.is_object() && c.hw["firmware_version"].is_string()){
+            displayText += c.hw["firmware_version"].get<std::string>();
         }
         displayText += "\n";
         ImGui::SetItemTooltip("%s", displayText.c_str());
