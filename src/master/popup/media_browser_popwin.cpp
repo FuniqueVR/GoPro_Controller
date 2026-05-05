@@ -27,21 +27,21 @@ void MediaBrowserPopup::render(){
     ImGui::SetNextWindowSize(ImVec2(unit.x * 10.0F, unit.y * 10.0F), wp_cond);
     
     unit_width = (unit.x * 10.0F) / 2.0F - style.ItemSpacing.x;
-    unit_height = unit.y * 8.5F;
+    unit_height = unit.y * 9.0F;
 
     if(ImGui::BeginPopupModal(title.c_str(), NULL, wp_flag)){
         {
             int32_t s = master->findCamera(state->current_camera_server, state->current_camera_item);
             if(s >= 0) {
                 const CameraInfo ci = master->getCamera_Clone(s);
-                ImGui::BeginChild("Header##Media_Browser_ChildWin_Header", ImVec2(unit.x * 10.0F, unit.y * 1.5F));
-                {
-                    draw_header(ci);
-                }
-                ImGui::EndChild();
-                ImGui::BeginChild("Body##Media_Browser_ChildWin_Body", ImVec2(unit.x * 10.0F, unit.y * 7.0F));
+                ImGui::BeginChild("Body##Media_Browser_ChildWin_Body", ImVec2(unit.x * 10.0F - style.ItemSpacing.x, unit.y * 7.5F));
                 {
                     draw_body(ci);
+                }
+                ImGui::EndChild();
+                ImGui::BeginChild("Header##Media_Browser_ChildWin_Header", ImVec2(unit.x * 10.0F - style.ItemSpacing.x, unit.y * 1.6F));
+                {
+                    draw_header(ci);
                 }
                 ImGui::EndChild();
             }

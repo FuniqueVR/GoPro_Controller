@@ -83,6 +83,10 @@ void background_worker(){
                 preset_manager_popwin->trigger(true);
                 std::cout << "Detect preset_manager popup" << std::endl;
             }
+            else if(cmd == "media_browser"){
+                media_browser_popwin->trigger(true);
+                std::cout << "Detect media_browser popup" << std::endl;
+            }
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
