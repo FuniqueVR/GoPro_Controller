@@ -386,6 +386,15 @@ void MediaAction(const WebSocketChannelPtr& channel, json j){
         r["filename"] = filename;
         r["path"] = controller.getFetchURL(ip, local);
         channel->send(getPacket("media:url", r));
+    }else if(name == "list"){
+        resultText = controller.getMediaList(target);
+        if(json::accept(resultText)){
+            r["data"] = json::parse(resultText);
+        }else{
+            r["data"] = json::array();
+        }
+        channel->send(getPacket("media:list", r));
+
     }else if(name == "thumbnail"){
         r["local"] = local;
         r["data"] = controller.getThumbnailData(ip, path, local);

@@ -234,4 +234,5 @@ public:
     size_t getServerCount();
     int32_t findServer(const std::string ip);
     int32_t findCamera(const std::string server, const std::string ip);
+    std::vector<u_char> decodeBase64(const std::string& input);
 };

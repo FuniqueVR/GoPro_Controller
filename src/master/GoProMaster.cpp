@@ -1083,3 +1083,26 @@ int32_t GoProMaster::findCamera(const std::string server, const std::string ip){
     }
     return -1;
 }
+
+std::vector<u_char> GoProMaster::decodeBase64(const std::string& input) {
+    static const std::string base64_chars = 
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        "abcdefghijklmnopqrstuvwxyz"
+        "0123456789+/";
+
+    std::vector<int32_t> T(256, -1);
+    for (int32_t i = 0; i < 64; i++) T[base64_chars[i]] = i;
+
+    std::vector<u_char> out;
+    int32_t val = 0, valb = -8;
+    for (u_char c : input) {
+        if (T[c] == -1) continue; // Skip non-base64 characters
+        val = (val << 6) + T[c];
+        valb += 6;
+        if (valb >= 0) {
+            out.push_back(static_cast<u_char>((val >> valb) & 0xFF));
+            valb -= 8;
+        }
+    }
+    return out;
+}
