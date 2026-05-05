@@ -1,5 +1,5 @@
 Package: go-pro-control-master
-Version: 1.0.1
+Version: 1.0.5
 Section: shells
 Priority: optional
 Architecture: amd64
