@@ -132,6 +132,7 @@ public:
      */
     std::mutex camera_mtx;
     std::mutex locate_mtx;
+    std::mutex server_mtx;
 
     // ----------------------------------------------------------
     //
@@ -146,10 +147,13 @@ public:
      * Get current camera record (Clone, For thread optimization)
      */
     const std::vector<CameraInfo> getCameras_Clone();
+    const CameraInfo getCamera_Clone(int32_t index);
     /**
      * Get current websocket server record
      */
     const std::vector<std::shared_ptr<ServerConnection>>& getServers() const;
+    const std::vector<ServerConnection> getServers_Clone();
+    const ServerConnection getServer_Clone(int32_t index);
 private:
     /** 
      * All cameras record for master

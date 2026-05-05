@@ -25,7 +25,7 @@ GoProMaster::~GoProMaster() {
         t1.join();
     }
     for (auto& s : servers) {
-        s->client.close();
+        s->client->close();
         std::lock_guard<std::mutex> lock(camera_mtx);
         cleanCameraFromServer(s->ip);
     }
@@ -40,9 +40,10 @@ std::string GoProMaster::addServer(const std::string& ip) {
     }
 
     auto conn = std::make_shared<ServerConnection>();
+    conn->client = std::make_shared<hv::WebSocketClient>();
     conn->ip = ip;
     
-    conn->client.onopen = [conn, this]() {
+    conn->client->onopen = [conn, this]() {
         std::cout << "Connected to server: " << conn->ip << std::endl;
         conn->connected = true;
         {
@@ -52,12 +53,12 @@ std::string GoProMaster::addServer(const std::string& ip) {
             ImGui::InsertNotification(toast);
         }
     };
-    conn->client.onmessage = [conn, this](const std::string& msg) {
+    conn->client->onmessage = [conn, this](const std::string& msg) {
         std::thread([=]() {
             processMessage(conn->ip, msg);
         }).detach();
     };
-    conn->client.onclose = [conn, this]() {
+    conn->client->onclose = [conn, this]() {
         if(conn->connected){
             std::cout << "Disconnected from server: " << conn->ip << std::endl;
             conn->connected = false;
@@ -85,7 +86,7 @@ void GoProMaster::reconnectAll() {
             std::cout << "Connecting to " << s->ip << "..." << std::endl;
             // Assuming ws://ip:9090 based on server implementation
             std::string url = "ws://" + s->ip + ":9090";
-            s->client.open(url.c_str());
+            s->client->open(url.c_str());
         }
     }
 }
@@ -94,7 +95,7 @@ void GoProMaster::disconnectAll(){
     for (auto& s : servers) {
         if (s->connected) {
             std::cout << "Disconnect to " << s->ip << "..." << std::endl;
-            s->client.close();
+            s->client->close();
         }
     }
 }
@@ -114,7 +115,7 @@ void GoProMaster::reconnect(const std::string& ip){
         if(s->ip == ip && !s->connected){
             std::cout << "Connecting to " << s->ip << "..." << std::endl;
             std::string url = "ws://" + s->ip + ":9090";
-            s->client.open(url.c_str());
+            s->client->open(url.c_str());
             break;
         }
     }
@@ -124,7 +125,7 @@ void GoProMaster::disconnect(const std::string& ip){
     for(auto& s : servers){
         if(s->ip == ip && s->connected){
             std::cout << "Disconnecting to " << s->ip << "..." << std::endl;
-            s->client.close();
+            s->client->close();
             break;
         }
     }
@@ -149,7 +150,7 @@ void GoProMaster::command_only(const std::string command, std::string target){
 
     for(auto s : servers){
         if(s->connected){
-            s->client.send(data.dump());
+            s->client->send(data.dump());
         }
     }
 }
@@ -163,7 +164,7 @@ void GoProMaster::command_only(const std::string server, const std::string comma
 
     for(auto s : servers){
         if(s->ip == server && s->connected){
-            s->client.send(data.dump());
+            s->client->send(data.dump());
             break;
         }
     }
@@ -179,7 +180,7 @@ void GoProMaster::command_with_value(const std::string command, std::string targ
 
     for(auto s : servers){
         if(s->connected){
-            s->client.send(data.dump());
+            s->client->send(data.dump());
         }
     }
 }
@@ -193,7 +194,7 @@ void GoProMaster::query_only(const std::string command, std::string target){
 
     for(auto s : servers){
         if(s->connected){
-            s->client.send(data.dump());
+            s->client->send(data.dump());
         }
     }
 }
@@ -207,7 +208,7 @@ void GoProMaster::query_only(const std::string server, const std::string command
 
     for(auto s : servers){
         if(s->ip == server && s->connected){
-            s->client.send(data.dump());
+            s->client->send(data.dump());
             break;
         }
     }
@@ -222,7 +223,7 @@ void GoProMaster::webcam_only(const std::string command, std::string target){
 
     for(auto s : servers){
         if(s->connected){
-            s->client.send(data.dump());
+            s->client->send(data.dump());
         }
     }
 }
@@ -236,7 +237,7 @@ void GoProMaster::webcam_only(const std::string server, const std::string comman
 
     for(auto s : servers){
         if(s->ip == server && s->connected){
-            s->client.send(data.dump());
+            s->client->send(data.dump());
             break;
         }
     }
@@ -255,7 +256,7 @@ void GoProMaster::preview_start(std::string server, std::string target){
 
     for(auto s : servers){
         if(s->ip == server && s->connected){
-            s->client.send(data.dump());
+            s->client->send(data.dump());
             break;
         }
     }
@@ -270,7 +271,7 @@ void GoProMaster::preview_end(std::string server, std::string target){
 
     for(auto s : servers){
         if((s->ip == server || server.size() == 0) && s->connected){
-            s->client.send(data.dump());
+            s->client->send(data.dump());
             break;
         }
     }
@@ -327,7 +328,7 @@ void GoProMaster::download_last_media(const std::string ip, const DownloadMediaP
 
             for(auto ss : servers){
                 if(s->server == ss->ip && ss->connected){
-                    ss->client.send(data.dump());
+                    ss->client->send(data.dump());
                     downloading_last_media_total++;
                     break;
                 }
@@ -350,7 +351,7 @@ void GoProMaster::presetSwitch(const std::string server, const std::string targe
             get_status["value"]["name"] = "load";
             get_status["value"]["mode"] = mode;
             get_status["value"]["target"] = target;
-            s->client.send(get_status.dump());
+            s->client->send(get_status.dump());
         }
     }).detach();
 }
@@ -384,7 +385,7 @@ void GoProMaster::apply(const std::string& ip, const std::string& target, const 
             get_status["value"]["target"] = target;
             get_status["value"]["id"] = id;
             get_status["value"]["value"] =  std::to_string(value);
-            s->client.send(get_status.dump());
+            s->client->send(get_status.dump());
         }
     }).detach();
 }
@@ -399,7 +400,7 @@ void GoProMaster::applyAll(const std::string& ip, const json& res){
             get_status["value"]["source"] = ip;
             get_status["value"]["name"] = "setall";
             get_status["value"]["value"] = res;
-            s->client.send(get_status.dump());
+            s->client->send(get_status.dump());
         }
     }).detach();
 }
@@ -507,6 +508,7 @@ bool GoProMaster::remove_preset(const std::string name){
     }
     return false;
 }
+
 std::vector<std::string> GoProMaster::get_preset_names(){
     if(!(*preset_ptr)["data"].is_array()) {
         (*preset_ptr)["data"] = json::array();
@@ -531,14 +533,65 @@ const std::vector<CameraInfo> GoProMaster::getCameras_Clone() {
     {
         std::lock_guard<std::mutex> lock(camera_mtx);
         for(auto& i : getCameras()){
-            buffer.push_back(*i.get());
+            CameraInfo sc = CameraInfo();
+            sc.hw = i->hw;
+            sc.ip = i->ip;
+            sc.last_media = i->last_media;
+            sc.name = i->name;
+            sc.serial = i->serial;
+            sc.connected = i->connected;
+            sc.state = i->state;
+            sc.server = i->server;
+            buffer.push_back(sc);
         }
     }
     return buffer;
 }
 
+const CameraInfo GoProMaster::getCamera_Clone(int32_t index) {
+    if(index < 0 || index >= cameras.size()) return CameraInfo();
+    CameraInfo sc = CameraInfo();
+    auto i = getCameras().at(index).get();
+    sc.hw = i->hw;
+    sc.ip = i->ip;
+    sc.last_media = i->last_media;
+    sc.name = i->name;
+    sc.serial = i->serial;
+    sc.connected = i->connected;
+    sc.state = i->state;
+    sc.server = i->server;
+    return sc;
+}
+
 const std::vector<std::shared_ptr<ServerConnection>>& GoProMaster::getServers() const {
     return servers;
+}
+
+const std::vector<ServerConnection> GoProMaster::getServers_Clone() {
+    std::vector<ServerConnection> buffer = std::vector<ServerConnection>();
+    {
+        std::lock_guard<std::mutex> lock(server_mtx);
+        for(auto& i : getServers()){
+            ServerConnection sc = ServerConnection();
+            sc.ip = i->ip;
+            sc.connected = i->connected;
+            sc.last_message = i->last_message;
+            sc.client = i->client;
+            buffer.push_back(sc);
+        }
+    }
+    return buffer;
+}
+
+const ServerConnection GoProMaster::getServer_Clone(int32_t index) {
+    if(index < 0 || index >= servers.size()) return ServerConnection();
+    ServerConnection sc = ServerConnection();
+    auto i = getServers().at(index).get();
+    sc.ip = i->ip;
+    sc.connected = i->connected;
+    sc.last_message = i->last_message;
+    sc.client = i->client;
+    return sc;
 }
 
 void GoProMaster::update(){
@@ -551,7 +604,7 @@ void GoProMaster::update(){
             get_status["value"] = json::object();
             get_status["value"]["name"] = "ip";
             ipQueryFinish.insert_or_assign(s->ip, true);
-            s->client.send(get_status.dump());
+            s->client->send(get_status.dump());
         }
 
         for (auto& s : servers) {
@@ -562,7 +615,7 @@ void GoProMaster::update(){
             get_status["value"] = json::object();
             get_status["value"]["name"] = "getall";
             stateQueryFinish.insert_or_assign(s->ip, true);
-            s->client.send(get_status.dump());
+            s->client->send(get_status.dump());
         }
 
         for (auto& s : servers) {
@@ -573,7 +626,7 @@ void GoProMaster::update(){
             get_status["value"] = json::object();
             get_status["value"]["name"] = "lastmedia";
             mediaQueryFinish.insert_or_assign(s->ip, true);
-            s->client.send(get_status.dump());
+            s->client->send(get_status.dump());
         }
 
         std::lock_guard<std::mutex> lock(locate_mtx);
@@ -849,7 +902,7 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
 void GoProMaster::sendToAll(const std::string& msg) {
     for (auto& s : servers) {
         if (s->connected) {
-            s->client.send(msg);
+            s->client->send(msg);
         }
     }
 }

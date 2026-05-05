@@ -86,17 +86,17 @@ void WebsocketWindow::render(){
             ImGui::TableSetupColumn("Last Message");
             ImGui::TableHeadersRow();
 
-            for (const auto& s : master->getServers()) {
+            for (const auto& s : master->getServers_Clone()) {
                 ImGui::TableNextRow();
                 ImGui::TableSetColumnIndex(0);
-                ImGui::Text("%s", s->ip.c_str());
+                ImGui::Text("%s", s.ip.c_str());
                 ImGui::TableSetColumnIndex(1);
-                if (s->connected) 
+                if (s.connected) 
                     ImGui::TextColored(ImVec4(0,1,0,1), "Connected");
                 else 
                     ImGui::TextColored(ImVec4(1,0,0,1), "Disconnected");
                 ImGui::TableSetColumnIndex(2);
-                ImGui::Text("%s", s->last_message.c_str());
+                ImGui::Text("%s", s.last_message.c_str());
             }
             ImGui::EndTable();
         }

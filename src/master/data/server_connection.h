@@ -19,7 +19,7 @@ struct ServerConnection {
     /**
      * The libhv websocket client
      */
-    hv::WebSocketClient client;
+    std::shared_ptr<hv::WebSocketClient> client;
     /**
      * Current connection state
      */
