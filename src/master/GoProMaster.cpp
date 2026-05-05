@@ -294,26 +294,33 @@ void GoProMaster::download_last_media(const std::string ip, const DownloadMediaP
         for(auto& s : cameras){
             if(!s->connected) continue;
             if(ip.size() > 0 && s->ip != ip) continue;
-            std::string filename = s->name + fs::path(s->last_media).extension().string();
+            std::string ext = fs::path(s->last_media).extension().string();
+            std::string filename = s->name;
             if(filename.size() == 0 || s->name.size() == 0) {
                 std::cerr << "[download_last_media] filename size is 0, we just skip..." << std::endl;
                 continue;
             }
             size_t filename_size = filename.size();
+            std::cout << "[download_last_media] \ttype: " << params.type << std::endl;
+            std::cout << "[download_last_media] \tfilename: " << filename.c_str() << std::endl;
             if(params.c_count > 0){
                 std::string ccc = "";
-                if(params.type == 1){
-                    filename.reserve();
-                }
                 for(int32_t i = 0; i < params.c_count && i < filename_size; i++){
-                    ccc += filename.at(filename.size() - 1);
-                    filename.pop_back();
+                    if(params.type == 1){
+                        ccc += filename.at(0);
+                        filename.erase(filename.begin());
+                    }
+                    if(params.type == 2){
+                        ccc += filename.at(filename.size() - 1);
+                        filename.erase(filename.begin() + filename.size() - 1);
+                    }
                 }
                 if(params.type == 2){
                     ccc.reserve();
                 }
                 filename = ccc;
             }
+            filename += ext;
             bool islocal = s->server == "127.0.0.1";
 
             json data = json::object();
@@ -405,19 +412,19 @@ void GoProMaster::applyAll(const std::string& ip, const json& res){
     }).detach();
 }
 
-void GoProMaster::quickApplyAll(const std::shared_ptr<CameraInfo>& target){
-    int32_t model = InspectorWindow::_get_current_model(target->hw);
+void GoProMaster::quickApplyAll(const CameraInfo& target){
+    int32_t model = InspectorWindow::_get_current_model(target.hw);
     json root = json::object();
     json _set = json::object();
     json _status = json::object();
-    if(getSettingsFromCamera(*target, _set) && getStatusFromCamera(*target, _status)){
+    if(getSettingsFromCamera(target, _set) && getStatusFromCamera(target, _status)){
         // Execute the apply logic here
         int32_t p = _status[std::to_string(PRESET_ID)].get<int32_t>();
         root["model"] = model; // Added a model field for mark it's supported
         root["preset"] = p;
         root["setting"] = _set;
         std::cout << "trying apply all, preset: " << p << std::endl;
-        applyAll(target->ip, root);
+        applyAll(target.ip, root);
     }
 }
 
@@ -1067,6 +1074,7 @@ int32_t GoProMaster::findServer(const std::string ip){
 
 int32_t GoProMaster::findCamera(const std::string server, const std::string ip){
     int32_t index = 0;
+    //std::lock_guard<std::mutex> lock(camera_mtx);
     for(const auto& c : cameras){
         if(c->server == server && c->ip == ip){
             return index;

@@ -102,7 +102,7 @@ public:
     int32_t haslocate(const std::string server, const std::string target);
     void apply(const std::string& ip, const std::string& target, const int32_t id, const int32_t value);
     void applyAll(const std::string& ip, const json& res);
-    void quickApplyAll(const std::shared_ptr<CameraInfo>& target);
+    void quickApplyAll(const CameraInfo& target);
 
     bool directoryExists(const std::string& path);
 
