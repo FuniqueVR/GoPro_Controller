@@ -11,3 +11,4 @@
 #include "start_webcam_popwin.h"
 #include "add_preset_popwin.h"
 #include "preset_manager_popwin.h"
+#include "media_browser_popwin.h"

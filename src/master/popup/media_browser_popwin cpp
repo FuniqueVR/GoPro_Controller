@@ -1,0 +1,15 @@
+#include "media_browser_popwin.h"
+
+MediaBrowserPopup::MediaBrowserPopup(
+    std::shared_ptr<json> _setting, 
+    std::shared_ptr<GlobalState> _state, 
+    std::shared_ptr<GoProMaster> _master
+) 
+    : BasePopWindow(_setting, _state, _master) {
+    title = "Media Browser##Popup";
+}
+
+
+MediaBrowserPopup::~MediaBrowserPopup(){
+    
+}
