@@ -330,7 +330,7 @@ public:
     /// - target
     ///
     std::string getFetchURL(std::string target_ip, bool is_local);
-    std::string getThumbnailData(std::string target_ip, std::string path);
+    std::string getThumbnailData(std::string target_ip, std::string path, bool is_local);
 #pragma endregion
 #pragma endregion
 
@@ -406,7 +406,8 @@ protected:
     // Utility calls
     SingleResponse _getSingleResponse(std::string target, std::string suffix);
     std::vector<SingleResponse> _getAllResponse(std::vector<std::string> targets, std::string suffix);
-
+    std::string base64_encode(const std::vector<u_char>& data);
+    
     int32_t _get_current_model(json hwinfo);
 #pragma endregion
 

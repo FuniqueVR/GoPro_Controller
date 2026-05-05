@@ -161,6 +161,21 @@ std::string GoProController::getFetchURL(std::string target_ip, bool is_local){
     }
 }
 
-std::string GoProController::getThumbnailData(std::string target_ip, std::string path){
-    
+std::string GoProController::getThumbnailData(std::string target_ip, std::string path, bool is_local){
+    std::cout << "Http GET /last_media " << target_ip << ", " << is_local << std::endl;
+
+    if (target_ip.empty()) {
+        std::cerr << "[last_media] " << target_ip << " Missing ip parameter" << std::endl;
+        return "";
+    }
+
+    try{
+        const std::vector<uint8_t> res = exec_byte("http://" + target_ip + ":8080/gopro/media/screennail?path=" + path);
+        std::string result = base64_encode(res);
+        return result;
+    }
+    catch(const std::exception& ex){
+        std::cerr << ex.what() << std::endl;
+        return "";
+    }
 }

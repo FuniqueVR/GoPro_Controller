@@ -387,7 +387,8 @@ void MediaAction(const WebSocketChannelPtr& channel, json j){
         r["path"] = controller.getFetchURL(ip, local);
         channel->send(getPacket("media:url", r));
     }else if(name == "thumbnail"){
-        r["data"] = controller.getThumbnailData(ip, path);
+        r["local"] = local;
+        r["data"] = controller.getThumbnailData(ip, path, local);
         channel->send(getPacket("media:thumbnail", r));
     }
     else{
