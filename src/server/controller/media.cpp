@@ -160,3 +160,7 @@ std::string GoProController::getFetchURL(std::string target_ip, bool is_local){
         return "";
     }
 }
+
+std::string GoProController::getThumbnailData(std::string target_ip, std::string path){
+    
+}

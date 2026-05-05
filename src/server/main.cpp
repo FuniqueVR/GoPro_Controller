@@ -336,6 +336,7 @@ void MediaAction(const WebSocketChannelPtr& channel, json j){
     std::string target = "";
     std::string name = "";
     std::string item = "";
+    std::string path = "";
     std::string ip = "";
     std::string dir = "";
     std::string filename = "";
@@ -350,6 +351,9 @@ void MediaAction(const WebSocketChannelPtr& channel, json j){
     }
     if(j["item"].is_string()){
         item = j["item"].get<std::string>();
+    }
+    if(j["path"].is_string()){
+        path = j["path"].get<std::string>();
     }
     if(j["ip"].is_string()){
         ip = j["ip"].get<std::string>();
@@ -373,8 +377,7 @@ void MediaAction(const WebSocketChannelPtr& channel, json j){
             r["data"] = json::array();
         }
         channel->send(getPacket("media:lastmedia", r));
-    }
-    else if(name == "url"){
+    }else if(name == "url"){
         // Download the media one at the time... thanks
         std::lock_guard<std::mutex> lock(download_mtx);
         r["local"] = local;
@@ -383,7 +386,11 @@ void MediaAction(const WebSocketChannelPtr& channel, json j){
         r["filename"] = filename;
         r["path"] = controller.getFetchURL(ip, local);
         channel->send(getPacket("media:url", r));
-    }else{
+    }else if(name == "thumbnail"){
+        r["data"] = controller.getThumbnailData(ip, path);
+        channel->send(getPacket("media:thumbnail", r));
+    }
+    else{
         channel->send(getPacket("media:unknown", r));
     }
 }
