@@ -11,6 +11,7 @@ public:
 
     //virtual void trigger(bool value) override;
     virtual void render() override;
-private:
-
+protected:
+    virtual void draw_header(const CameraInfo& c);
+    virtual void draw_body(const CameraInfo& c);
 };

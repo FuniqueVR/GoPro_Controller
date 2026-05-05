@@ -32,9 +32,9 @@ void AddCameraPopup::render(){
             for (int n = 0; n < all_servers.size(); n++)
             {
                 std::string option = all_servers.at(n).ip;
-                bool is_selected = all_servers[n]->ip == server_ip_buf;
+                bool is_selected = all_servers.at(n).ip == server_ip_buf;
                 option += "##PopupServerOption"; 
-                ImGui::BeginDisabled(!all_servers[n].ip);
+                ImGui::BeginDisabled(!all_servers.at(n).connected);
                 if (ImGui::Selectable(option.c_str(), is_selected))
                 {
                     server_ip_buf = all_servers.at(n).ip;
