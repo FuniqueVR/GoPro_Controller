@@ -10,7 +10,7 @@ public:
     ~MediaBrowserPopup();
 
     //virtual void trigger(bool value) override;
-    //virtual void render() override;
+    virtual void render() override;
 private:
 
 };
