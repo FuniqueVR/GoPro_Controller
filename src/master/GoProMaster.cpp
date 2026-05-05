@@ -534,13 +534,13 @@ const std::vector<CameraInfo> GoProMaster::getCameras_Clone() {
         std::lock_guard<std::mutex> lock(camera_mtx);
         for(auto& i : getCameras()){
             CameraInfo sc = CameraInfo();
-            sc.hw = i->hw;
+            sc.hw = json::parse(i->hw.dump());
+            sc.state = json::parse(i->state.dump());
             sc.ip = i->ip;
             sc.last_media = i->last_media;
             sc.name = i->name;
             sc.serial = i->serial;
             sc.connected = i->connected;
-            sc.state = i->state;
             sc.server = i->server;
             buffer.push_back(sc);
         }
@@ -1015,9 +1015,13 @@ bool GoProMaster::getStatusFromCamera(CameraInfo target, json& res){
 }
 
 std::string GoProMaster::getBarInfo(const std::shared_ptr<CameraInfo> &c){
-    json obj = c->state;
+    return getBarInfo(*c);
+}
+
+std::string GoProMaster::getBarInfo(const CameraInfo &c){
+    json obj = c.state;
     bool find = false;
-    std::string result = c->name + "  " + c->serial + "  " + c->ip + "  ";
+    std::string result = c.name + "  " + c.serial + "  " + c.ip + "  ";
     if(obj["settings"].is_object()){
         if(obj["settings"]["2"].is_number()){
             int32_t vr = obj["settings"]["2"].get<int32_t>();
@@ -1042,7 +1046,7 @@ std::string GoProMaster::getBarInfo(const std::shared_ptr<CameraInfo> &c){
             find = true;
         }
     }
-    if(!find) return c->ip + "  ...";
+    if(!find) return c.ip + "  ...";
     return result;
 }
 
