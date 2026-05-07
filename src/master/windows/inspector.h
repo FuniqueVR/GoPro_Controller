@@ -71,6 +71,6 @@ private:
     /// 1: Front Characters
     /// 2: Back Characters
     ///
-    int32_t media_name_rule_type;
-    int32_t media_name_character_count;
+    int32_t media_name_rule_type = 0;
+    int32_t media_name_character_count = 0;
 };

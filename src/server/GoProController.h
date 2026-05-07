@@ -331,6 +331,7 @@ public:
     ///
     std::string getFetchURL(std::string target_ip, bool is_local);
     std::string getThumbnailData(std::string target_ip, std::string path, bool is_local);
+    std::string getMediaInfoData(std::string target_ip, std::string path, bool is_local);
 #pragma endregion
 #pragma endregion
 

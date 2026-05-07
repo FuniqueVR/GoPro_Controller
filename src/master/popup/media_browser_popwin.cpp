@@ -34,12 +34,12 @@ void MediaBrowserPopup::render(){
             int32_t s = master->findCamera(state->current_camera_server, state->current_camera_item);
             if(s >= 0) {
                 const CameraInfo ci = master->getCamera_Clone(s);
-                ImGui::BeginChild("Body##Media_Browser_ChildWin_Body", ImVec2(unit.x * 10.0F - style.ItemSpacing.x, unit.y * 7.5F));
+                ImGui::BeginChild("Body##Media_Browser_ChildWin_Body", ImVec2(unit.x * 10.0F - (style.ItemSpacing.x * 2), unit.y * 7.5F));
                 {
                     draw_body(ci);
                 }
                 ImGui::EndChild();
-                ImGui::BeginChild("Header##Media_Browser_ChildWin_Header", ImVec2(unit.x * 10.0F - style.ItemSpacing.x, unit.y * 1.6F));
+                ImGui::BeginChild("Header##Media_Browser_ChildWin_Header", ImVec2(unit.x * 10.0F - (style.ItemSpacing.x * 2), unit.y * 1.6F));
                 {
                     draw_header(ci);
                 }
@@ -52,6 +52,27 @@ void MediaBrowserPopup::render(){
 
 void MediaBrowserPopup::draw_header(const CameraInfo& c){
     bool is_enable = c.ip.size() > 0;
+    if(ImGui::Button("Cancel")){
+
+    }
+    ImGui::BeginDisabled(!is_enable);
+    ImGui::SameLine();
+    if(ImGui::Button("Download")){
+        
+    }
+    ImGui::SameLine();
+    if(ImGui::Button("Download To")){
+        
+    }
+    ImGui::SameLine();
+    if(ImGui::Button("Delete")){
+        
+    }
+    ImGui::SameLine();
+    if(ImGui::Button("Delete All")){
+        
+    }
+    ImGui::EndDisabled();
 }
 
 void MediaBrowserPopup::draw_body(const CameraInfo& c){
