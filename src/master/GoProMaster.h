@@ -98,6 +98,8 @@ public:
     void preview_end(std::string server, std::string target);
     void media_only(const std::string command, std::string target = "");
     void download_last_media(const std::string ip, const DownloadMediaParameters params);
+    void download_all_media(const std::string server, const std::string ip, const std::string folder, std::vector<MediaInfo> media_list);
+    void download_single_media(const std::string server, const std::string ip, const std::string folder, MediaInfo media);
     void get_media_info(const std::string server, const std::string ip, const std::string path);
     void get_media_list(const std::string server, const std::string ip);
 

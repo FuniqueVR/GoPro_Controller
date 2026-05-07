@@ -16,6 +16,10 @@ protected:
     virtual void draw_body(const CameraInfo& c);
 
     virtual bool draw_item(const MediaInfo& mi);
+    virtual void open_dialog_for_download_all_folder_selection();
+    virtual void open_dialog_for_download_file_selection();
+    virtual void download_all_folder_callback(const std::string folder);
+    virtual void download_file_callback(const std::string fullpath);
 private:
     std::string selected = "";
 };

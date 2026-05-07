@@ -1,4 +1,5 @@
 #include "media_browser_popwin.h"
+#include <SDL3/SDL.h>
 
 MediaBrowserPopup::MediaBrowserPopup(
     std::shared_ptr<json> _setting, 
@@ -17,6 +18,7 @@ MediaBrowserPopup::~MediaBrowserPopup(){
 void MediaBrowserPopup::trigger(bool value){
     BasePopWindow::trigger(value);
     if(value){
+        selected = "";
         master->get_media_list(state->current_camera_server, state->current_camera_item);
     }
 }
@@ -58,6 +60,7 @@ void MediaBrowserPopup::render(){
 
 void MediaBrowserPopup::draw_header(const CameraInfo& c){
     bool is_enable = c.ip.size() > 0;
+    bool have_select = selected.size() > 0;
     ImGui::Dummy(ImVec2(10, 10));
     ImGui::Dummy(ImVec2(10, 10));
     ImGui::SameLine();
@@ -65,32 +68,40 @@ void MediaBrowserPopup::draw_header(const CameraInfo& c){
     if(ImGui::Button("Cancel")){
         trigger(false);
     }
-    ImGui::BeginDisabled(!is_enable);
     ImGui::SameLine();
+    ImGui::BeginDisabled(!have_select);
     if(ImGui::Button("Copy URL")){
         
     }
     ImGui::SameLine();
     if(ImGui::Button("Download")){
-        
+
     }
     ImGui::SameLine();
     if(ImGui::Button("Download To")){
         
     }
+    ImGui::EndDisabled();
     ImGui::SameLine();
     if(ImGui::Button("Download All To")){
         
     }
     ImGui::SameLine();
+    ImGui::BeginDisabled(!have_select);
     if(ImGui::Button("Delete")){
         
     }
+    ImGui::EndDisabled();
     ImGui::SameLine();
     if(ImGui::Button("Delete All")){
         
     }
-    ImGui::EndDisabled();
+
+    ImGui::Dummy(ImVec2(10, 10));
+
+    ImGui::Dummy(ImVec2(10, 10));
+    ImGui::SameLine();
+    ImGui::Text("Camera: %s", c.name.c_str());
 }
 
 void MediaBrowserPopup::draw_body(const CameraInfo& c){
@@ -107,4 +118,51 @@ void MediaBrowserPopup::draw_body(const CameraInfo& c){
 
 bool MediaBrowserPopup::draw_item(const MediaInfo& mi){
     return ImGui::Selectable(mi.filename.c_str(), selected == mi.filename);
+}
+
+void MediaBrowserPopup::open_dialog_for_download_all_folder_selection(){
+    SDL_Window* win = SDL_GL_GetCurrentWindow();
+    SDL_ShowOpenFolderDialog([](void* userdata, const char* const* filelist, int filter){
+        if (!filelist) {
+            SDL_Log("Error opening file dialog: %s", SDL_GetError());
+        } else if (!*filelist) {
+            SDL_Log("User canceled the dialog.");
+        } else {
+            std::string path = "";
+            while (*filelist) {
+                SDL_Log("Selected file: %s", *filelist);
+                path = *filelist;
+                filelist++;
+            }
+            MediaBrowserPopup* self = static_cast<MediaBrowserPopup*>(userdata); 
+            self->download_all_folder_callback(path);
+        }
+    }, this, win, NULL, false);
+}
+
+void MediaBrowserPopup::open_dialog_for_download_file_selection(){
+
+}
+
+void MediaBrowserPopup::download_all_folder_callback(const std::string folder){
+    int32_t s = master->findCamera(state->current_camera_server, state->current_camera_item);
+    if(s >= 0) {
+        const CameraInfo ci = master->getCamera_Clone(s);
+        master->download_all_media(ci.server, ci.ip, folder, state->current_media_list);
+    }
+}
+
+void MediaBrowserPopup::download_file_callback(const std::string fullpath){
+    int32_t s = master->findCamera(state->current_camera_server, state->current_camera_item);
+    if(s >= 0) {
+        const CameraInfo ci = master->getCamera_Clone(s);
+
+        for(int32_t i = 0; i < state->current_media_list.size(); i++){
+            const MediaInfo& mi = state->current_media_list.at(i);
+            if(mi.filename == selected){
+                master->download_single_media(ci.server, ci.ip, fullpath, mi);
+                break;
+            }
+        }
+    }
 }
