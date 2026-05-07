@@ -347,7 +347,7 @@ void GoProMaster::download_last_media(const std::string ip, const DownloadMediaP
     }).detach();
 }
 
-void GoProMaster::get_media_info(const std::string ip, const std::string path){
+void GoProMaster::get_media_info(const std::string server, const std::string ip, const std::string path){
     json data = json::object();
     data["key"] = "media";
     data["value"] = json::object();
@@ -356,7 +356,8 @@ void GoProMaster::get_media_info(const std::string ip, const std::string path){
     data["value"]["target"] = ip;
 
     for(auto s : servers){
-        bool islocal = s->server == "127.0.0.1";
+        if(s->ip != server) continue;
+        bool islocal = s->ip == "127.0.0.1";
         data["value"]["local"] = islocal;
         if((s->ip == server || server.size() == 0) && s->connected){
             s->client->send(data.dump());
@@ -365,7 +366,7 @@ void GoProMaster::get_media_info(const std::string ip, const std::string path){
     }
 }
 
-void GoProMaster::get_media_list(const std::string ip){
+void GoProMaster::get_media_list(const std::string server, const std::string ip){
     json data = json::object();
     data["key"] = "media";
     data["value"] = json::object();
@@ -373,7 +374,8 @@ void GoProMaster::get_media_list(const std::string ip){
     data["value"]["target"] = ip;
 
     for(auto s : servers){
-        bool islocal = s->server == "127.0.0.1";
+        if(s->ip != server) continue;
+        bool islocal = s->ip == "127.0.0.1";
         data["value"]["local"] = islocal;
         if((s->ip == server || server.size() == 0) && s->connected){
             s->client->send(data.dump());
@@ -954,29 +956,29 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
                 } else continue;
                 if(ip.value()["status"].is_object()){
                     if(ip.value()["status"]["media"].is_array()){
-                        json mediaarr = ip.value()["status"]["media"];
+                        auto mediaarr = ip.value()["status"]["media"];
                         for(auto ip2 = mediaarr.begin(); ip2 != mediaarr.end(); ++ip2){
                             std::string d = "";
-                            if(ip2["d"].is_string()){
-                                d = ip2["d"].get<std::string>();
+                            if(ip2.value()["d"].is_string()){
+                                d = ip2.value()["d"].get<std::string>();
                             } else continue;
-                            if(ip2["fs"].is_array()){
-                                json fsarr = ip2["fs"];
+                            if(ip2.value()["fs"].is_array()){
+                                auto fsarr = ip2.value()["fs"];
                                 for(auto ip3 = fsarr.begin(); ip3 != fsarr.end(); ++ip3){
                                     MediaInfo info = MediaInfo();
-                                    if(ip3["n"].is_string()){
+                                    if(ip3.value()["n"].is_string()){
                                         info.filename = d;
                                         info.filename += "/";
-                                        info.filename += ip3["n"].get<std::string>();
+                                        info.filename += ip3.value()["n"].get<std::string>();
                                     } else continue;
-                                    if(ip3["s"].is_number()){
-                                        info.size = ip3["s"].get<int64_t>();
+                                    if(ip3.value()["s"].is_number()){
+                                        info.size = ip3.value()["s"].get<int64_t>();
                                     }
-                                    if(ip3["cre"].is_number()){
-                                        info.created = ip3["cre"].get<int64_t>();
+                                    if(ip3.value()["cre"].is_number()){
+                                        info.created = ip3.value()["cre"].get<int64_t>();
                                     }
-                                    if(ip3["mod"].is_number()){
-                                        info.modified = ip3["mod"].get<int64_t>();
+                                    if(ip3.value()["mod"].is_number()){
+                                        info.modified = ip3.value()["mod"].get<int64_t>();
                                     }
                                     media_list.push_back(info);
                                 }

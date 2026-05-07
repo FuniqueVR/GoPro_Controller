@@ -393,7 +393,7 @@ void MediaAction(const WebSocketChannelPtr& channel, json j){
         }else{
             r["data"] = json::array();
         }
-        channel->send(getPacket("media:list", wr));
+        channel->send(getPacket("media:list", r));
     }else if(name == "thumbnail"){
         r["local"] = local;
         r["data"] = controller.getThumbnailData(ip, path, local);

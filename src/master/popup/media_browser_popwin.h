@@ -9,7 +9,7 @@ public:
         std::shared_ptr<GoProMaster> _master);
     ~MediaBrowserPopup();
 
-    //virtual void trigger(bool value) override;
+    virtual void trigger(bool value) override;
     virtual void render() override;
 protected:
     virtual void draw_header(const CameraInfo& c);

@@ -14,6 +14,12 @@ MediaBrowserPopup::~MediaBrowserPopup(){
     
 }
 
+void MediaBrowserPopup::trigger(bool value){
+    BasePopWindow::trigger(value);
+    if(value){
+        master->get_media_list(state->current_camera_server, state->current_camera_item);
+    }
+}
 
 void MediaBrowserPopup::render(){
     ImGuiIO& io = ImGui::GetIO();
@@ -53,7 +59,7 @@ void MediaBrowserPopup::render(){
 void MediaBrowserPopup::draw_header(const CameraInfo& c){
     bool is_enable = c.ip.size() > 0;
     if(ImGui::Button("Cancel")){
-
+        trigger(false);
     }
     ImGui::BeginDisabled(!is_enable);
     ImGui::SameLine();
@@ -77,6 +83,12 @@ void MediaBrowserPopup::draw_header(const CameraInfo& c){
 
 void MediaBrowserPopup::draw_body(const CameraInfo& c){
     if(c.ip.size() == 0) return;
+    std::lock_guard<std::mutex> lock(state->media_list_mtx);
+    std::vector<MediaInfo> media_list = state->current_media_list;
+    for(int i = 0; i < media_list.size(); i++){
+        const MediaInfo& mi = media_list.at(i);
+        ImGui::Text("%s", mi.filename.c_str());
+    }
 }
 
 bool MediaBrowserPopup::draw_item(const MediaInfo& mi){

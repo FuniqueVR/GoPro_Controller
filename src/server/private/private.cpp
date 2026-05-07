@@ -86,6 +86,11 @@ std::vector<SingleResponse> GoProController::_getAllResponse(std::vector<std::st
 }
 
 std::string GoProController::base64_encode(const std::vector<u_char>& data) {
+    static const std::string base64_chars = 
+             "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+             "abcdefghijklmnopqrstuvwxyz"
+             "0123456789+/";
+             
     std::string out;
     int val = 0, valb = -6;
     for (u_char c : data) {
