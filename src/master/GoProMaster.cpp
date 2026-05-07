@@ -347,6 +347,14 @@ void GoProMaster::download_last_media(const std::string ip, const DownloadMediaP
     }).detach();
 }
 
+void GoProMaster::get_media_info(const std::string ip, const std::string path){
+
+}
+
+void GoProMaster::get_media_list(const std::string ip){
+
+}
+
 void GoProMaster::presetSwitch(const std::string server, const std::string target, int32_t mode) {
     std::thread([=](){
         for (auto& s : servers) {
