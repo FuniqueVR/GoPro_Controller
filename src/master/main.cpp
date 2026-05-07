@@ -129,6 +129,11 @@ void applyAllFeedback(){
     }
 }
 
+void updateMediaList(std::vector<MediaInfo> data){
+    std::lock_guard<std::mutex> lock(global_state->media_list_mtx);
+    global_state->current_media_list = data;
+}
+
 void updateServerList(){
     std::cout << "updateServerList" << std::endl;
     json data = json::object();
@@ -202,6 +207,7 @@ int main(int, char**)
     WIN_INIT(preset_manager_popwin, PresetManagerPopup, pop_windows_array, 5);
     WIN_INIT(media_browser_popwin, MediaBrowserPopup, pop_windows_array, 6);
     // Register event for master
+    master->registerCameraMediaListFeedback(updateMediaList);
     master->registerCameraSettingFeedback(settingGetterFeedback);
     master->registerCameraStatusFeedback(statusGetterFeedback);
     master->registerCameraHWFeedback(hwGetterFeedback);

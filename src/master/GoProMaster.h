@@ -17,6 +17,7 @@
 #include "data/camera_info.h"
 #include "data/server_connection.h"
 
+typedef void (*camera_media_list_feedback)(std::vector<MediaInfo> media_list);
 typedef void (*camera_setting_feedback)(std::string ip, json setting);
 typedef void (*camera_status_feedback)(std::string ip, json status);
 typedef void (*camera_hw_feedback)(std::string ip, json hw);
@@ -108,6 +109,7 @@ public:
 
     bool directoryExists(const std::string& path);
 
+    void registerCameraMediaListFeedback(camera_media_list_feedback v);
     ///
     /// Register the feedback event
     /// Called when fetch inspector setting data
@@ -185,6 +187,7 @@ private:
      */
     std::unordered_map<std::string, bool> stateQueryFinish = std::unordered_map<std::string, bool>();
     std::unordered_map<std::string, bool> mediaQueryFinish = std::unordered_map<std::string, bool>();
+    camera_media_list_feedback _camera_media_list_feedback = NULL;
     camera_setting_feedback _camera_setting_feedback = NULL;
     camera_status_feedback _camera_status_feedback = NULL;
     camera_hw_feedback _camera_hw_feedback = NULL;

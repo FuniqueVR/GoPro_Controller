@@ -470,6 +470,10 @@ bool GoProMaster::directoryExists(const std::string& path) {
     return false;
 }
 
+void GoProMaster::registerCameraMediaListFeedback(camera_media_list_feedback v){
+    _camera_media_list_feedback = v;
+}
+
 void GoProMaster::registerCameraSettingFeedback(camera_setting_feedback v){
     _camera_setting_feedback = v;
 }
@@ -931,6 +935,68 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
                     downloading_last_media_flag = 0;
                 }
             }
+        }
+        else if(key == "media:info"){
+
+        }
+        else if(key == "media:list"){
+            std::vector<MediaInfo> media_list = std::vector<MediaInfo>();
+            if(!data["value"]["data"].is_array()){
+                std::cerr << "Invalid message from " << server << ": " << msg << std::endl;
+                std::cerr << "media:list, return value should be array" << std::endl;
+                return;
+            }
+
+            for(auto ip = data["value"]["data"].begin(); ip != data["value"]["data"].end(); ++ip){
+                std::string source = "";
+                if(ip.value()["ip"].is_string()){
+                    source = ip.value()["ip"].get<std::string>();
+                } else continue;
+                if(ip.value()["status"].is_object()){
+                    if(ip.value()["status"]["media"].is_array()){
+                        json mediaarr = ip.value()["status"]["media"];
+                        for(auto ip2 = mediaarr.begin(); ip2 != mediaarr.end(); ++ip2){
+                            std::string d = "";
+                            if(ip2["d"].is_string()){
+                                d = ip2["d"].get<std::string>();
+                            } else continue;
+                            if(ip2["fs"].is_array()){
+                                json fsarr = ip2["fs"];
+                                for(auto ip3 = fsarr.begin(); ip3 != fsarr.end(); ++ip3){
+                                    MediaInfo info = MediaInfo();
+                                    if(ip3["n"].is_string()){
+                                        info.filename = d;
+                                        info.filename += "/";
+                                        info.filename += ip3["n"].get<std::string>();
+                                    } else continue;
+                                    if(ip3["s"].is_number()){
+                                        info.size = ip3["s"].get<int64_t>();
+                                    }
+                                    if(ip3["cre"].is_number()){
+                                        info.created = ip3["cre"].get<int64_t>();
+                                    }
+                                    if(ip3["mod"].is_number()){
+                                        info.modified = ip3["mod"].get<int64_t>();
+                                    }
+                                    media_list.push_back(info);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if(_camera_media_list_feedback != NULL)
+                _camera_media_list_feedback(media_list);
+        }
+        else if(key == "thumbnail"){
+            if(!data["value"]["data"].is_string()){
+                std::cerr << "Invalid message from " << server << ": " << msg << std::endl;
+                std::cerr << "media:thumbnail, return value should be string" << std::endl;
+                return;
+            }
+
+            std::vector<u_char> raw_data = decodeBase64(data["value"]["data"].get<std::string>());
         }
         else{
             std::cerr << "Invalid message from " << server << ": " << msg << std::endl;

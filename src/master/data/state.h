@@ -6,6 +6,7 @@
 */
 #pragma once
 #include <string>
+#include <mutex>
 #include <nlohmann/json.hpp>
 
 using json = nlohmann::json;
@@ -36,6 +37,7 @@ struct GlobalState {
     // Current select camera setting
     std::string current_camera_name = "";
     std::string current_download_location = "";
+    std::mutex media_list_mtx;
     std::vector<MediaInfo> current_media_list = std::vector<MediaInfo>();
     json current_setting_items;
     bool current_setting_items_bind = false;
