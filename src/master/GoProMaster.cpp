@@ -282,14 +282,15 @@ void GoProMaster::media_only(const std::string command, std::string target){
 }
 
 void GoProMaster::download_last_media(const std::string ip, const DownloadMediaParameters params){
+    if(downloading_media_flag > 0) return;
     std::thread([=](){
         if(params.put_finish){
-            downloading_last_media_flag = 2;
+            downloading_media_flag = 2;
         }else{
-            downloading_last_media_flag = 1;
+            downloading_media_flag = 1;
         }
-        downloading_last_media_total = 0;
-        downloading_last_media_done = 0;
+        downloading_media_total = 0;
+        downloading_media_done = 0;
 
         for(auto& s : cameras){
             if(!s->connected) continue;
@@ -336,145 +337,93 @@ void GoProMaster::download_last_media(const std::string ip, const DownloadMediaP
             for(auto ss : servers){
                 if(s->server == ss->ip && ss->connected){
                     ss->client->send(data.dump());
-                    downloading_last_media_total++;
+                    downloading_media_total++;
                     break;
                 }
             }
         }
-        if(downloading_last_media_total == 0){
-            downloading_last_media_flag = 0;
+        if(downloading_media_total == 0){
+            downloading_media_flag = 0;
         }
     }).detach();
 }
 
 void GoProMaster::download_all_media(const std::string server, const std::string ip, const std::string folder, std::vector<MediaInfo> media_list){
+    if(downloading_media_flag > 0) return;
     std::thread([=](){
-        if(params.put_finish){
-            downloading_last_media_flag = 2;
-        }else{
-            downloading_last_media_flag = 1;
-        }
-        downloading_last_media_total = 0;
-        downloading_last_media_done = 0;
+        downloading_media_flag = 1;
+        downloading_media_total = 0;
+        downloading_media_done = 0;
 
-        for(auto& s : cameras){
-            if(!s->connected) continue;
-            if(ip.size() == 0 || s->ip != ip || s->server != server) continue;
+        int32_t index = findCamera(server, ip);
+        if(index >= 0){
+            const CameraInfo s = getCamera_Clone(index);
             std::string ext = fs::path(s->last_media).extension().string();
-            std::string filename = s->name;
-            if(filename.size() == 0 || s->name.size() == 0) {
-                std::cerr << "[download_last_media] filename size is 0, we just skip..." << std::endl;
-                continue;
-            }
-            size_t filename_size = filename.size();
-            std::cout << "[download_last_media] \ttype: " << params.type << std::endl;
-            std::cout << "[download_last_media] \tfilename: " << filename.c_str() << std::endl;
-            if(params.c_count > 0){
-                std::string ccc = "";
-                for(int32_t i = 0; i < params.c_count && i < filename_size; i++){
-                    if(params.type == 1){
-                        ccc += filename.at(0);
-                        filename.erase(filename.begin());
-                    }
-                    if(params.type == 2){
-                        ccc += filename.at(filename.size() - 1);
-                        filename.erase(filename.begin() + filename.size() - 1);
-                    }
-                }
-                if(params.type == 2){
-                    ccc.reserve();
-                }
-                filename = ccc;
-            }
-            filename += ext;
             bool islocal = s->server == "127.0.0.1";
 
+            fs::path p(filepath);
             json data = json::object();
             data["key"] = "media";
             data["value"] = json::object();
-            data["value"]["name"] = "url";
-            data["value"]["item"] = s->name;
-            data["value"]["ip"] = s->ip;
+            data["value"]["name"] = "d_all";
+            data["value"]["item"] = s.name;
+            data["value"]["ip"] = s.ip;
             data["value"]["local"] = islocal;
-            data["value"]["dir"] = params.dir;
-            data["value"]["filename"] = filename;
+            data["value"]["dir"] = folder;
+            data["value"]["filenames"] = json::array();
 
+            for(auto& m : media_list){
+                data["value"]["filenames"].push_back(m.filename);
+            }
+            
             for(auto ss : servers){
-                if(s->server == ss->ip && ss->connected){
+                if(s.server == ss->ip && ss->connected){
                     ss->client->send(data.dump());
-                    downloading_last_media_total++;
+                    downloading_media_total++;
                     break;
                 }
             }
         }
-        if(downloading_last_media_total == 0){
-            downloading_last_media_flag = 0;
+        if(downloading_media_total == 0){
+            downloading_media_flag = 0;
         }
     }).detach();
 }
 
 void GoProMaster::download_single_media(const std::string server, const std::string ip, const std::string filepath, MediaInfo media){
+    if(downloading_media_flag > 0) return;
     std::thread([=](){
-        if(params.put_finish){
-            downloading_last_media_flag = 2;
-        }else{
-            downloading_last_media_flag = 1;
-        }
-        downloading_last_media_total = 0;
-        downloading_last_media_done = 0;
+        downloading_media_flag = 1;
+        downloading_media_total = 0;
+        downloading_media_done = 0;
 
-        for(auto& s : cameras){
-            if(!s->connected) continue;
-            if(ip.size() == 0 || s->ip != ip || s->server != server) continue;
+        int32_t index = findCamera(server, ip);
+        if(index >= 0){
+            const CameraInfo s = getCamera_Clone(index);
             std::string ext = fs::path(s->last_media).extension().string();
-            std::string filename = s->name;
-            if(filename.size() == 0 || s->name.size() == 0) {
-                std::cerr << "[download_last_media] filename size is 0, we just skip..." << std::endl;
-                continue;
-            }
-            size_t filename_size = filename.size();
-            std::cout << "[download_last_media] \ttype: " << params.type << std::endl;
-            std::cout << "[download_last_media] \tfilename: " << filename.c_str() << std::endl;
-            if(params.c_count > 0){
-                std::string ccc = "";
-                for(int32_t i = 0; i < params.c_count && i < filename_size; i++){
-                    if(params.type == 1){
-                        ccc += filename.at(0);
-                        filename.erase(filename.begin());
-                    }
-                    if(params.type == 2){
-                        ccc += filename.at(filename.size() - 1);
-                        filename.erase(filename.begin() + filename.size() - 1);
-                    }
-                }
-                if(params.type == 2){
-                    ccc.reserve();
-                }
-                filename = ccc;
-            }
-            filename += ext;
             bool islocal = s->server == "127.0.0.1";
 
+            fs::path p(filepath);
             json data = json::object();
             data["key"] = "media";
             data["value"] = json::object();
-            data["value"]["name"] = "url";
-            data["value"]["item"] = s->name;
-            data["value"]["ip"] = s->ip;
+            data["value"]["name"] = "d_single";
+            data["value"]["item"] = s.name;
+            data["value"]["ip"] = s.ip;
             data["value"]["local"] = islocal;
-            data["value"]["dir"] = params.dir;
-            data["value"]["filename"] = filename;
+            data["value"]["dir"] = p.parent_path().string();
+            data["value"]["filename"] = p.filename().string();
 
             for(auto ss : servers){
-                if(s->server == ss->ip && ss->connected){
+                if(s.server == ss->ip && ss->connected){
                     ss->client->send(data.dump());
-                    downloading_last_media_total++;
+                    downloading_media_total++;
                     break;
                 }
             }
         }
-        if(downloading_last_media_total == 0){
-            downloading_last_media_flag = 0;
+        if(downloading_media_total == 0){
+            downloading_media_flag = 0;
         }
     }).detach();
 }
@@ -1057,16 +1006,16 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
                 size_t size = requests::downloadFile(urls.c_str(), path_target.c_str(), [&urls, &path_target](size_t received_bytes, size_t total_bytes){
                     std::cout << "[last_media] download " << urls << " => " << path_target << " " << received_bytes << " / " << total_bytes << std::endl;
                 });
-                downloading_last_media_done++;
-                if(downloading_last_media_done == downloading_last_media_total){
-                    if(downloading_last_media_flag == 2){
+                downloading_media_done++;
+                if(downloading_media_done == downloading_media_total){
+                    if(downloading_media_flag == 2){
                         std::string finish_file = dir + "/" + "finish.txt";
                         FILE* f = fopen(finish_file.c_str(), "wb");
                         fclose(f);
                     }
-                    downloading_last_media_total = 0;
-                    downloading_last_media_done = 0;
-                    downloading_last_media_flag = 0;
+                    downloading_media_total = 0;
+                    downloading_media_done = 0;
+                    downloading_media_flag = 0;
                 }
             }
         }
