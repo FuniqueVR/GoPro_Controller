@@ -61,17 +61,25 @@ void MediaBrowserPopup::draw_header(const CameraInfo& c){
     ImGui::Dummy(ImVec2(10, 10));
     ImGui::Dummy(ImVec2(10, 10));
     ImGui::SameLine();
-    
+
     if(ImGui::Button("Cancel")){
         trigger(false);
     }
     ImGui::BeginDisabled(!is_enable);
+    ImGui::SameLine();
+    if(ImGui::Button("Copy URL")){
+        
+    }
     ImGui::SameLine();
     if(ImGui::Button("Download")){
         
     }
     ImGui::SameLine();
     if(ImGui::Button("Download To")){
+        
+    }
+    ImGui::SameLine();
+    if(ImGui::Button("Download All To")){
         
     }
     ImGui::SameLine();
