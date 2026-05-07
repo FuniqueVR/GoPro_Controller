@@ -17,5 +17,5 @@ protected:
 
     virtual bool draw_item(const MediaInfo& mi);
 private:
-    int32_t selected = -1;
+    std::string selected = "";
 };

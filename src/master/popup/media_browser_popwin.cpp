@@ -87,10 +87,12 @@ void MediaBrowserPopup::draw_body(const CameraInfo& c){
     std::vector<MediaInfo> media_list = state->current_media_list;
     for(int i = 0; i < media_list.size(); i++){
         const MediaInfo& mi = media_list.at(i);
-        ImGui::Text("%s", mi.filename.c_str());
+        if(draw_item(mi)){
+            selected = mi.filename;
+        }
     }
 }
 
 bool MediaBrowserPopup::draw_item(const MediaInfo& mi){
-    return false;
+    return ImGui::Selectable(mi.filename.c_str(), selected == mi.filename);
 }
