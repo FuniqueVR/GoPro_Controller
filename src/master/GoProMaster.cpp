@@ -348,11 +348,38 @@ void GoProMaster::download_last_media(const std::string ip, const DownloadMediaP
 }
 
 void GoProMaster::get_media_info(const std::string ip, const std::string path){
+    json data = json::object();
+    data["key"] = "media";
+    data["value"] = json::object();
+    data["value"]["name"] = "info";
+    data["value"]["path"] = path;
+    data["value"]["target"] = ip;
 
+    for(auto s : servers){
+        bool islocal = s->server == "127.0.0.1";
+        data["value"]["local"] = islocal;
+        if((s->ip == server || server.size() == 0) && s->connected){
+            s->client->send(data.dump());
+            break;
+        }
+    }
 }
 
 void GoProMaster::get_media_list(const std::string ip){
+    json data = json::object();
+    data["key"] = "media";
+    data["value"] = json::object();
+    data["value"]["name"] = "list";
+    data["value"]["target"] = ip;
 
+    for(auto s : servers){
+        bool islocal = s->server == "127.0.0.1";
+        data["value"]["local"] = islocal;
+        if((s->ip == server || server.size() == 0) && s->connected){
+            s->client->send(data.dump());
+            break;
+        }
+    }
 }
 
 void GoProMaster::presetSwitch(const std::string server, const std::string target, int32_t mode) {
