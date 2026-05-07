@@ -58,6 +58,10 @@ void MediaBrowserPopup::render(){
 
 void MediaBrowserPopup::draw_header(const CameraInfo& c){
     bool is_enable = c.ip.size() > 0;
+    ImGui::Dummy(ImVec2(10, 10));
+    ImGui::Dummy(ImVec2(10, 10));
+    ImGui::SameLine();
+    
     if(ImGui::Button("Cancel")){
         trigger(false);
     }
