@@ -78,3 +78,7 @@ void MediaBrowserPopup::draw_header(const CameraInfo& c){
 void MediaBrowserPopup::draw_body(const CameraInfo& c){
     if(c.ip.size() == 0) return;
 }
+
+bool MediaBrowserPopup::draw_item(const MediaInfo& mi){
+    return false;
+}

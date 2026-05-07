@@ -17,6 +17,13 @@ enum class InspectorObjectType {
     Camera
 };
 
+struct MediaInfo {
+    std::string filename;
+    uint32_t created;
+    uint32_t modified;
+    size_t size;
+};
+
 struct GlobalState {
     bool done;
     int32_t applying_all_count = 0;
@@ -29,6 +36,7 @@ struct GlobalState {
     // Current select camera setting
     std::string current_camera_name = "";
     std::string current_download_location = "";
+    std::vector<MediaInfo> current_media_list = std::vector<MediaInfo>();
     json current_setting_items;
     bool current_setting_items_bind = false;
     json current_status_items;
