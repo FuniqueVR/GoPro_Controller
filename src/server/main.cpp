@@ -340,7 +340,7 @@ void MediaAction(const WebSocketChannelPtr& channel, json j){
     std::string ip = "";
     std::string dir = "";
     std::string filename = "";
-    json filenames = json::array();
+    std::vector<std::string> filenames = std::vector<std::string>;
     bool local = true;
     json r = json::object();
     
@@ -365,8 +365,12 @@ void MediaAction(const WebSocketChannelPtr& channel, json j){
     if(j["filename"].is_string()){
         filename = j["filename"].get<std::string>();
     }
-    if(j["filename"].is_array()){
-        filenames = j["filename"];
+    if(j["filenames"].is_array()){
+        for(size_t i = 0; i < j["filenames"].size(); i++){
+            if(j["filenames"][i].is_string()){
+                filenames.push_back(j["filenames"][i].get<std::string>());
+            }
+        }
     }
     if(j["local"].is_boolean()){
         local = j["local"].get<bool>();
@@ -412,15 +416,15 @@ void MediaAction(const WebSocketChannelPtr& channel, json j){
         r["item"] = item;
         r["dir"] = dir;
         r["filename"] = filename;
-        r["path"] = controller.getFetchURL(ip, local);
+        r["path"] = controller.getSingleFetchURL(ip, filename, local);
         channel->send(getPacket("media:url", r));
     }else if(name == "d_all"){
         std::lock_guard<std::mutex> lock(download_mtx);
         r["local"] = local;
         r["item"] = item;
         r["dir"] = dir;
-        r["filename"] = filename;
-        r["path"] = controller.getFetchURL(ip, local);
+        r["filenames"] = filenames;
+        r["paths"] = controller.getAllFetchURL(ip, filenames, local);
         channel->send(getPacket("media:url", r));
     }else{
         channel->send(getPacket("media:unknown", r));
