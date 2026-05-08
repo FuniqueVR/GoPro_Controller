@@ -420,11 +420,15 @@ void MediaAction(const WebSocketChannelPtr& channel, json j){
         channel->send(getPacket("media:url", r));
     }else if(name == "d_all"){
         std::lock_guard<std::mutex> lock(download_mtx);
+        std::vector<std::string> results = controller.getAllFetchURL(ip, filenames, local);
         r["local"] = local;
         r["item"] = item;
         r["dir"] = dir;
         r["filenames"] = filenames;
-        r["paths"] = controller.getAllFetchURL(ip, filenames, local);
+        r["paths"] = json::array();
+        for(size_t i = 0; i < results.size(); i++){
+            r["paths"].push_back(results.at(i));
+        }
         channel->send(getPacket("media:url", r));
     }else{
         channel->send(getPacket("media:unknown", r));

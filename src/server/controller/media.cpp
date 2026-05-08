@@ -170,14 +170,41 @@ std::string GoProController::getSingleFetchURL(std::string target_ip, const std:
     }
 
     try{
-        return "";
+        std::string gopro_url = "http://" + target_ip + ":8080/videos/DCIM/" + filename + "?download=true";
+        if(is_local){
+            std::cout << "[last_media] return value: " << target_ip << " => " << gopro_url << std::endl;
+            return gopro_url;
+        }else{
+            int32_t t = 0;
+            std::string download_path = "temp.download";
+            while(fs::exists("res/" + download_path)){
+                download_path = "temp.download" + std::to_string(t);
+                t++;
+            }
+            std::cout << "[last_media] try download " << gopro_url.c_str() << std::endl;
+#ifdef SERVER_MEDIA_DOWNLOAD_LOG
+            auto start = std::chrono::high_resolution_clock::now();
+#endif
+            size_t size = requests::downloadFile(gopro_url.c_str(), ("res/" + download_path).c_str(), [&target_ip, &start](size_t received_bytes, size_t total_bytes){
+#ifdef SERVER_MEDIA_DOWNLOAD_LOG
+                auto end = std::chrono::high_resolution_clock::now();
+                std::chrono::duration<double> elapsed = end - start;
+                if(elapsed.count() >= SERVER_MEDIA_DOWNLOAD_PERIOD){
+                    start = end;
+                    std::cout << "[last_media] download " << target_ip << " " << received_bytes << " / " << total_bytes << std::endl;
+                }
+#endif
+            });
+            std::cout << "[last_media] return value: " << target_ip << " => " << download_path << std::endl;
+            return download_path;
+        }
     }catch(const std::exception& ex){
         std::cerr << ex.what() << std::endl;
         return "";
     }
 }
 
-std::string GoProController::getAllFetchURL(std::string target_ip, std::vector<std::string> filenames, bool is_local){
+std::vector<std::string> GoProController::getAllFetchURL(std::string target_ip, std::vector<std::string> filenames, bool is_local){
     std::cout << "Http GET /all_media " << target_ip << ", " << is_local << std::endl;
 
     if (target_ip.empty()) {
@@ -186,7 +213,38 @@ std::string GoProController::getAllFetchURL(std::string target_ip, std::vector<s
     }
     
     try{
-        return "";
+        std::vector<std::string> results = std::vector<std::string>();
+        for(auto filename : filenames){
+            std::string gopro_url = "http://" + target_ip + ":8080/videos/DCIM/" + filename + "?download=true";
+            if(is_local){
+                std::cout << "[last_media] return value: " << target_ip << " => " << gopro_url << std::endl;
+                results.push_back(gopro_url);
+            }else{
+                int32_t t = 0;
+                std::string download_path = "temp.download";
+                while(fs::exists("res/" + download_path)){
+                    download_path = "temp.download" + std::to_string(t);
+                    t++;
+                }
+                std::cout << "[last_media] try download " << gopro_url.c_str() << std::endl;
+    #ifdef SERVER_MEDIA_DOWNLOAD_LOG
+                auto start = std::chrono::high_resolution_clock::now();
+    #endif
+                size_t size = requests::downloadFile(gopro_url.c_str(), ("res/" + download_path).c_str(), [&target_ip, &start](size_t received_bytes, size_t total_bytes){
+    #ifdef SERVER_MEDIA_DOWNLOAD_LOG
+                    auto end = std::chrono::high_resolution_clock::now();
+                    std::chrono::duration<double> elapsed = end - start;
+                    if(elapsed.count() >= SERVER_MEDIA_DOWNLOAD_PERIOD){
+                        start = end;
+                        std::cout << "[last_media] download " << target_ip << " " << received_bytes << " / " << total_bytes << std::endl;
+                    }
+    #endif
+                });
+                std::cout << "[last_media] return value: " << target_ip << " => " << download_path << std::endl;
+                results.push_back(download_path);
+            }
+        }
+        return results;
     }catch(const std::exception& ex){
         std::cerr << ex.what() << std::endl;
         return "";
