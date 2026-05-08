@@ -213,12 +213,12 @@ std::vector<std::string> GoProController::getAllFetchURL(std::string target_ip, 
     }
     
     try{
-        std::vector<std::string> results = std::vector<std::string>();
+        std::vector<std::pair<std::string, std::string>> results = std::vector<std::pair<std::string, std::string>>();
         for(auto filename : filenames){
             std::string gopro_url = "http://" + target_ip + ":8080/videos/DCIM/" + filename + "?download=true";
             if(is_local){
                 std::cout << "[last_media] return value: " << target_ip << " => " << gopro_url << std::endl;
-                results.push_back(gopro_url);
+                results.push_back(std::make_pair(filename, gopro_url));
             }else{
                 int32_t t = 0;
                 std::string download_path = "temp.download";
@@ -241,7 +241,7 @@ std::vector<std::string> GoProController::getAllFetchURL(std::string target_ip, 
     #endif
                 });
                 std::cout << "[last_media] return value: " << target_ip << " => " << download_path << std::endl;
-                results.push_back(download_path);
+                results.push_back(std::make_pair(filename, download_path));
             }
         }
         return results;
