@@ -204,12 +204,12 @@ std::string GoProController::getSingleFetchURL(std::string target_ip, const std:
     }
 }
 
-std::vector<std::string> GoProController::getAllFetchURL(std::string target_ip, std::vector<std::string> filenames, bool is_local){
+std::vector<std::pair<std::string, std::string>> GoProController::getAllFetchURL(std::string target_ip, std::vector<std::string> filenames, bool is_local){
     std::cout << "Http GET /all_media " << target_ip << ", " << is_local << std::endl;
 
     if (target_ip.empty()) {
         std::cerr << "[all_media] " << target_ip << " Missing ip parameter" << std::endl;
-        return "";
+        return std::vector<std::pair<std::string, std::string>>();
     }
     
     try{
@@ -247,7 +247,7 @@ std::vector<std::string> GoProController::getAllFetchURL(std::string target_ip, 
         return results;
     }catch(const std::exception& ex){
         std::cerr << ex.what() << std::endl;
-        return "";
+        return std::vector<std::pair<std::string, std::string>>();;
     }
 }
 

@@ -340,7 +340,7 @@ void MediaAction(const WebSocketChannelPtr& channel, json j){
     std::string ip = "";
     std::string dir = "";
     std::string filename = "";
-    std::vector<std::string> filenames = std::vector<std::string>;
+    std::vector<std::string> filenames = std::vector<std::string>();
     bool local = true;
     json r = json::object();
     
