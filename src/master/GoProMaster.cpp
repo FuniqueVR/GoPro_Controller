@@ -358,10 +358,9 @@ void GoProMaster::download_all_media(const std::string server, const std::string
         int32_t index = findCamera(server, ip);
         if(index >= 0){
             const CameraInfo s = getCamera_Clone(index);
-            std::string ext = fs::path(s->last_media).extension().string();
-            bool islocal = s->server == "127.0.0.1";
+            std::string ext = fs::path(s.last_media).extension().string();
+            bool islocal = s.server == "127.0.0.1";
 
-            fs::path p(filepath);
             json data = json::object();
             data["key"] = "media";
             data["value"] = json::object();
@@ -400,8 +399,8 @@ void GoProMaster::download_single_media(const std::string server, const std::str
         int32_t index = findCamera(server, ip);
         if(index >= 0){
             const CameraInfo s = getCamera_Clone(index);
-            std::string ext = fs::path(s->last_media).extension().string();
-            bool islocal = s->server == "127.0.0.1";
+            std::string ext = fs::path(s.last_media).extension().string();
+            bool islocal = s.server == "127.0.0.1";
 
             fs::path p(filepath);
             json data = json::object();
@@ -544,6 +543,19 @@ void GoProMaster::quickApplyAll(const CameraInfo& target){
         std::cout << "trying apply all, preset: " << p << std::endl;
         applyAll(target.ip, root);
     }
+}
+
+void GoProMaster::stopApplyAll(const CameraInfo& target){
+    std::thread([=](){    
+        for (auto& s : servers) {
+            if (!s->connected) continue;
+            json get_status = json::object();
+            get_status["key"] = "query";
+            get_status["value"] = json::object();
+            get_status["value"]["name"] = "setall_cancel";
+            s->client->send(get_status.dump());
+        }
+    }).detach();
 }
 
 bool GoProMaster::directoryExists(const std::string& path) {
@@ -1072,7 +1084,7 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
             if(_camera_media_list_feedback != NULL)
                 _camera_media_list_feedback(media_list);
         }
-        else if(key == "thumbnail"){
+        else if(key == "media:thumbnail"){
             if(!data["value"]["data"].is_string()){
                 std::cerr << "Invalid message from " << server << ": " << msg << std::endl;
                 std::cerr << "media:thumbnail, return value should be string" << std::endl;
@@ -1080,6 +1092,12 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
             }
 
             std::vector<u_char> raw_data = decodeBase64(data["value"]["data"].get<std::string>());
+        }
+        else if(key == "media:d_single"){
+
+        }
+        else if(key == "media:d_all"){
+            
         }
         else{
             std::cerr << "Invalid message from " << server << ": " << msg << std::endl;

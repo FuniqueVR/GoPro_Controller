@@ -109,6 +109,7 @@ public:
     void apply(const std::string& ip, const std::string& target, const int32_t id, const int32_t value);
     void applyAll(const std::string& ip, const json& res);
     void quickApplyAll(const CameraInfo& target);
+    void stopApplyAll(const CameraInfo& target);
 
     bool directoryExists(const std::string& path);
 

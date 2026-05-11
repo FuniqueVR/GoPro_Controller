@@ -234,7 +234,8 @@ void QueryAction(const WebSocketChannelPtr& channel, json j){
         channel->send(getPacket("query:set", r));
     }
     else if(name == "setall_cancel"){
-        
+        controller.setSettingCancelAll();
+        channel->send(getPacket("query:setall_cancel", r));
     }
     else if(name == "setall"){
         resultText = controller.setSettingAll(source, target, preset, jvalue);
@@ -417,7 +418,7 @@ void MediaAction(const WebSocketChannelPtr& channel, json j){
         r["dir"] = dir;
         r["filename"] = filename;
         r["path"] = controller.getSingleFetchURL(ip, filename, local);
-        channel->send(getPacket("media:url", r));
+        channel->send(getPacket("media:d_single", r));
     }else if(name == "d_all"){
         std::lock_guard<std::mutex> lock(download_mtx);
         std::vector<std::pair<std::string, std::string>> results = controller.getAllFetchURL(ip, filenames, local);
@@ -432,7 +433,7 @@ void MediaAction(const WebSocketChannelPtr& channel, json j){
             buffer["path"] = results.at(i).second;
             r["paths"].push_back(buffer);
         }
-        channel->send(getPacket("media:url", r));
+        channel->send(getPacket("media:d_all", r));
     }else{
         channel->send(getPacket("media:unknown", r));
     }

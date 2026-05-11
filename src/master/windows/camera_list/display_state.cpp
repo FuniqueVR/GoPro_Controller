@@ -278,9 +278,11 @@ void CameraListWindow::draw_group_state(const CameraInfo& c){
             );
 
             std::string record_time;
+            bool record_time_red = false;
 
             if(status[std::to_string(VIDEO_ENCODING_DURATION_ID)].is_number_integer()){
                 int32_t re = status[std::to_string(VIDEO_ENCODING_DURATION_ID)].get<int32_t>();
+                record_time_red = re > 0;
                 record_time = toTimeCode(re);
             }
 
@@ -289,7 +291,7 @@ void CameraListWindow::draw_group_state(const CameraInfo& c){
                 center.x + ( record_time_size.x / -2.0F ),
                 image_pos.y + frame_padding.y
             );
-            draw_list->AddText(record_time_min, col_white, record_time.c_str());
+            draw_list->AddText(record_time_min, record_time_red ? col_red : col_white, record_time.c_str());
         }
         // Preset mode
         if(c.connected){

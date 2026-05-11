@@ -148,12 +148,21 @@ void InspectorWindow::render(){
                 ImGui::EndDisabled();
 
                 ImGui::SameLine();
-                ImGui::BeginDisabled(should_disabled || state->applying_all);
-                if(ImGui::Button("Quick Apply All##Inspector_Bar_Item")){
-                    if(s != -1){
-                        const CameraInfo c = master->getCamera_Clone(s);
-                        master->quickApplyAll(c);
-                        state->applying_all = true;
+                ImGui::BeginDisabled(should_disabled);
+                if(state->applying_all){
+                    if(ImGui::Button("Stop Apply All##Inspector_Bar_Item")){
+                        if(s != -1){
+                            const CameraInfo c = master->getCamera_Clone(s);
+                            master->stopApplyAll(c);
+                        }
+                    }
+                }else{
+                    if(ImGui::Button("Quick Apply All##Inspector_Bar_Item")){
+                        if(s != -1){
+                            const CameraInfo c = master->getCamera_Clone(s);
+                            master->quickApplyAll(c);
+                            state->applying_all = true;
+                        }
                     }
                 }
                 ImGui::EndDisabled();
