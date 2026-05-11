@@ -420,7 +420,7 @@ private:
     /// State of current server
     /// Is applying something
     ///
-    bool applying_cancel  = false;
+    std::atomic<bool> applying_cancel  = false;
     ///
     /// The handle for mdns service manager
     ///
