@@ -62,7 +62,6 @@ void GoProController::_webcamOff(std::string target){
     _getSingleResponse(target, "/gopro/webcam/stop");
 }
 
-
 std::pair<std::string, std::string> GoProController::_webcamStatus(std::string target){
     return _getSingleResponse(target, "/gopro/webcam/status");
 }

@@ -1032,7 +1032,7 @@ void GoProMaster::processMessage(const std::string& server, const std::string& m
             }
         }
         else if(key == "media:info"){
-
+            
         }
         else if(key == "media:list"){
             std::vector<MediaInfo> media_list = std::vector<MediaInfo>();

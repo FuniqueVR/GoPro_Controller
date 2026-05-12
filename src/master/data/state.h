@@ -7,6 +7,7 @@
 #pragma once
 #include <string>
 #include <mutex>
+#include <SDL3/SDL.h>
 #include <nlohmann/json.hpp>
 
 using json = nlohmann::json;
@@ -26,6 +27,7 @@ struct MediaInfo {
 };
 
 struct GlobalState {
+    SDL_Renderer* m_renderer;
     bool done;
     int32_t applying_all_count = 0;
     bool applying_all;

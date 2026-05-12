@@ -26,27 +26,27 @@ c[d] = a; \
 a = std::make_shared<b>(r, gui, global_state, master); \
 c[d] = a; \
 
-std::queue<std::string> command_queue = std::queue<std::string>();
-std::shared_ptr<GoProMaster> master = std::make_shared<GoProMaster>();
-std::shared_ptr<json> gui;
-std::shared_ptr<json> servers;
-std::shared_ptr<json> presets;
-std::shared_ptr<GlobalState> global_state = std::make_shared<GlobalState>();
+static std::queue<std::string> command_queue = std::queue<std::string>();
+static std::shared_ptr<GoProMaster> master = std::make_shared<GoProMaster>();
+static std::shared_ptr<json> gui;
+static std::shared_ptr<json> servers;
+static std::shared_ptr<json> presets;
+static std::shared_ptr<GlobalState> global_state = std::make_shared<GlobalState>();
 
-std::shared_ptr<CameraListWindow> camera_list_win;
-std::shared_ptr<InspectorWindow> inspector_win;
-std::shared_ptr<WebsocketWindow> websocket_win;
-std::shared_ptr<StyleSetting> style_setting_win;
-std::shared_ptr<BaseWindow> windows_array[4];
+static std::shared_ptr<CameraListWindow> camera_list_win;
+static std::shared_ptr<InspectorWindow> inspector_win;
+static std::shared_ptr<WebsocketWindow> websocket_win;
+static std::shared_ptr<StyleSetting> style_setting_win;
+static std::shared_ptr<BaseWindow> windows_array[4];
 
-std::shared_ptr<AddCameraPopup> add_camera_popwin;
-std::shared_ptr<ScanCameraPopup> scan_camera_popwin;
-std::shared_ptr<StartWebcamPopup> start_webcam_popwin;
-std::shared_ptr<PreviewPopup> preview_popwin;
-std::shared_ptr<AddPresetPopup> add_preset_popwin;
-std::shared_ptr<PresetManagerPopup> preset_manager_popwin;
-std::shared_ptr<MediaBrowserPopup> media_browser_popwin;
-std::shared_ptr<BasePopWindow> pop_windows_array[7];
+static std::shared_ptr<AddCameraPopup> add_camera_popwin;
+static std::shared_ptr<ScanCameraPopup> scan_camera_popwin;
+static std::shared_ptr<StartWebcamPopup> start_webcam_popwin;
+static std::shared_ptr<PreviewPopup> preview_popwin;
+static std::shared_ptr<AddPresetPopup> add_preset_popwin;
+static std::shared_ptr<PresetManagerPopup> preset_manager_popwin;
+static std::shared_ptr<MediaBrowserPopup> media_browser_popwin;
+static std::shared_ptr<BasePopWindow> pop_windows_array[7];
 
 // All the window flags
 ExecutionType execution_type = ExecutionType::SetAll;
@@ -189,6 +189,7 @@ int main(int, char**)
         SDL_GL_MakeCurrent(window, gl_context);
     }
     SDL_Renderer* renderer = SDL_CreateRenderer(window, NULL);
+    global_state->m_renderer = renderer;
 
     servers = std::make_shared<json>(loadServerList());
     gui = std::make_shared<json>(loadGUI());

@@ -166,3 +166,45 @@ void MediaBrowserPopup::download_file_callback(const std::string fullpath){
         }
     }
 }
+
+void MediaBrowserPopup::add_thumbnail(const std::string filename, const std::vector<u_char> rawData, const std::pair<int32_t, int32_t> resolution){
+    thumbnail_rawData.insert_or_assign(filename, std::make_pair(rawData, resolution));
+}
+
+void MediaBrowserPopup::convert_rawData_to_texture(){
+    for(auto& i : thumbnail_rawData){
+        const std::string& filename = i.first;
+        const std::vector<u_char>& rawData = i.second.first;
+        const std::pair<int32_t, int32_t>& resolution = i.second.second;
+
+        SDL_Texture* texture = SDL_CreateTexture(state->m_renderer, 
+                                               SDL_PIXELFORMAT_RGBA8888, 
+                                               SDL_TEXTUREACCESS_STATIC, 
+                                               resolution.first, resolution.second);
+        if (texture) {
+            // 2. Upload the raw pixel data
+            // Pitch is the number of bytes in a row (width * 4 bytes for RGBA)
+            SDL_UpdateTexture(texture, nullptr, rawData.data(), resolution.first * 4);
+            // 3. Set filtering (Scaling mode)
+            // SDL_SCALEMODE_LINEAR is the equivalent to GL_LINEAR
+            SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_LINEAR);
+
+            // 4. Store in your map
+            // In SDL3 + Dear ImGui, ImTextureID is typically just the SDL_Texture pointer
+            thumbnail_textures.insert_or_assign(filename, (ImTextureID)texture);
+        }
+    }
+    thumbnail_rawData.clear();
+}
+
+void MediaBrowserPopup::clean_thumbnail(){
+    thumbnail_rawData.clear();
+}
+
+void MediaBrowserPopup::clean_textures(){
+    for(auto& i : thumbnail_textures){
+        ImTextureID textureID = i.second;
+        SDL_DestroyTexture((SDL_Texture*)textureID);
+    }
+    thumbnail_textures.clear();
+}
