@@ -14,9 +14,11 @@
 #include <functional>
 #include "../common/iphelper.h"
 #include "../common/camera_code.h"
+#include "data/state.h"
 #include "data/camera_info.h"
 #include "data/server_connection.h"
 
+typedef void (*camera_media_list_feedback)(std::vector<MediaInfo> media_list);
 typedef void (*camera_setting_feedback)(std::string ip, json setting);
 typedef void (*camera_status_feedback)(std::string ip, json status);
 typedef void (*camera_hw_feedback)(std::string ip, json hw);
@@ -96,6 +98,10 @@ public:
     void preview_end(std::string server, std::string target);
     void media_only(const std::string command, std::string target = "");
     void download_last_media(const std::string ip, const DownloadMediaParameters params);
+    void download_all_media(const std::string server, const std::string ip, const std::string folder, std::vector<MediaInfo> media_list);
+    void download_single_media(const std::string server, const std::string ip, const std::string filepath, MediaInfo media);
+    void get_media_info(const std::string server, const std::string ip, const std::string path);
+    void get_media_list(const std::string server, const std::string ip);
 
     void presetSwitch(const std::string server, const std::string target, int32_t mode);
     void locate(const std::string server, const std::string target);
@@ -103,9 +109,11 @@ public:
     void apply(const std::string& ip, const std::string& target, const int32_t id, const int32_t value);
     void applyAll(const std::string& ip, const json& res);
     void quickApplyAll(const CameraInfo& target);
+    void stopApplyAll(const CameraInfo& target);
 
     bool directoryExists(const std::string& path);
 
+    void registerCameraMediaListFeedback(camera_media_list_feedback v);
     ///
     /// Register the feedback event
     /// Called when fetch inspector setting data
@@ -183,6 +191,7 @@ private:
      */
     std::unordered_map<std::string, bool> stateQueryFinish = std::unordered_map<std::string, bool>();
     std::unordered_map<std::string, bool> mediaQueryFinish = std::unordered_map<std::string, bool>();
+    camera_media_list_feedback _camera_media_list_feedback = NULL;
     camera_setting_feedback _camera_setting_feedback = NULL;
     camera_status_feedback _camera_status_feedback = NULL;
     camera_hw_feedback _camera_hw_feedback = NULL;
@@ -199,9 +208,9 @@ private:
      * 1: On (no finish txt)
      * 2: On (with finish txt)
      */
-    std::atomic_char32_t downloading_last_media_flag = 0;
-    std::atomic_char32_t downloading_last_media_total;
-    std::atomic_char32_t downloading_last_media_done;
+    std::atomic_char32_t downloading_media_flag = 0;
+    std::atomic_char32_t downloading_media_total;
+    std::atomic_char32_t downloading_media_done;
 
     /**
      * The background thread for fetch update from all websocket server and update etc...
@@ -234,4 +243,5 @@ public:
     size_t getServerCount();
     int32_t findServer(const std::string ip);
     int32_t findCamera(const std::string server, const std::string ip);
+    std::vector<u_char> decodeBase64(const std::string& input);
 };

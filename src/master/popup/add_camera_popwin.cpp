@@ -17,29 +17,27 @@ AddCameraPopup::~AddCameraPopup(){
 void AddCameraPopup::trigger(bool value){
     BasePopWindow::trigger(value);
     if(value){
-        std::lock_guard<std::mutex> lock(master->camera_mtx);
-        const std::vector<std::shared_ptr<ServerConnection>>& refs = master->getServers();
+        const std::vector<ServerConnection> refs = master->getServers_Clone();
         if(refs.size() > 0){
-            server_ip_buf = refs[0]->ip;
+            server_ip_buf = refs[0].ip;
         }
     }
 }
 
 void AddCameraPopup::render(){
     if(ImGui::BeginPopupModal(title.c_str(), NULL, wp_flag)){
-        std::lock_guard<std::mutex> lock(master->camera_mtx);
-        const std::vector<std::shared_ptr<ServerConnection>>& all_servers = master->getServers();
+        const std::vector<ServerConnection> all_servers = master->getServers_Clone();
         bool updated = false;
         if(ImGui::BeginCombo("Server IP", server_ip_buf.c_str())){
             for (int n = 0; n < all_servers.size(); n++)
             {
-                std::string option = all_servers.at(n)->ip;
-                bool is_selected = all_servers[n]->ip == server_ip_buf;
+                std::string option = all_servers.at(n).ip;
+                bool is_selected = all_servers.at(n).ip == server_ip_buf;
                 option += "##PopupServerOption"; 
-                ImGui::BeginDisabled(!all_servers[n]->connected);
+                ImGui::BeginDisabled(!all_servers.at(n).connected);
                 if (ImGui::Selectable(option.c_str(), is_selected))
                 {
-                    server_ip_buf = all_servers.at(n)->ip;
+                    server_ip_buf = all_servers.at(n).ip;
                 }
                 ImGui::EndDisabled();
                 if (is_selected)
@@ -63,7 +61,7 @@ void AddCameraPopup::render(){
                 error = "Server does not exist.";
                 pass = false;
             }
-            if(!all_servers[index]->connected){
+            if(!all_servers.at(index).connected){
                 error = "Server is disconnected.";
                 pass = false;
             }

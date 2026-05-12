@@ -48,7 +48,7 @@ void InspectorWindow::draw_media_global(){
     if(ImGui::InputText("Media Download", &state->current_download_location)){
         state->update_server();
     }
-    if(ImGui::Button("All Download", button_size)){
+    if(ImGui::Button("All Download", button3_size)){
         std::string buffer = state->current_download_location;
         while(buffer.size() > 0 && buffer.at(buffer.size() - 1) == '/'){
             buffer.pop_back();
@@ -65,7 +65,7 @@ void InspectorWindow::draw_media_global(){
     }
     if(ImGui::IsItemHovered()) ImGui::SetTooltip("Download all exist camera instances");
     ImGui::SameLine();
-    if(ImGui::Button("Single Download", button_size)){
+    if(ImGui::Button("Single Download", button3_size)){
         std::string buffer = state->current_download_location;
         while(buffer.size() > 0 && buffer.at(buffer.size() - 1) == '/'){
             buffer.pop_back();
@@ -79,6 +79,10 @@ void InspectorWindow::draw_media_global(){
             params.dir = buffer;
             master->download_last_media(state->current_camera_item, params);
         }
+    }
+    ImGui::SameLine();
+    if(ImGui::Button("Media Browser", button3_size)){
+        state->command_sender("media_browser");
     }
     if(ImGui::IsItemHovered()) ImGui::SetTooltip("Download current select camera instance");
 

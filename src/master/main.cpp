@@ -45,7 +45,8 @@ std::shared_ptr<StartWebcamPopup> start_webcam_popwin;
 std::shared_ptr<PreviewPopup> preview_popwin;
 std::shared_ptr<AddPresetPopup> add_preset_popwin;
 std::shared_ptr<PresetManagerPopup> preset_manager_popwin;
-std::shared_ptr<BasePopWindow> pop_windows_array[6];
+std::shared_ptr<MediaBrowserPopup> media_browser_popwin;
+std::shared_ptr<BasePopWindow> pop_windows_array[7];
 
 // All the window flags
 ExecutionType execution_type = ExecutionType::SetAll;
@@ -81,6 +82,10 @@ void background_worker(){
             else if(cmd == "preset_manager"){
                 preset_manager_popwin->trigger(true);
                 std::cout << "Detect preset_manager popup" << std::endl;
+            }
+            else if(cmd == "media_browser"){
+                media_browser_popwin->trigger(true);
+                std::cout << "Detect media_browser popup" << std::endl;
             }
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -122,6 +127,11 @@ void applyAllFeedback(){
     if(global_state->applying_all_count >= master->getServerCount()){
         global_state->applying_all = false;
     }
+}
+
+void updateMediaList(std::vector<MediaInfo> data){
+    std::lock_guard<std::mutex> lock(global_state->media_list_mtx);
+    global_state->current_media_list = data;
 }
 
 void updateServerList(){
@@ -179,6 +189,7 @@ int main(int, char**)
         SDL_GL_MakeCurrent(window, gl_context);
     }
     SDL_Renderer* renderer = SDL_CreateRenderer(window, NULL);
+    global_state->m_renderer = renderer;
 
     servers = std::make_shared<json>(loadServerList());
     gui = std::make_shared<json>(loadGUI());
@@ -195,7 +206,9 @@ int main(int, char**)
     WIN_INIT2(preview_popwin, PreviewPopup, renderer, pop_windows_array, 3);
     WIN_INIT(add_preset_popwin, AddPresetPopup, pop_windows_array, 4);
     WIN_INIT(preset_manager_popwin, PresetManagerPopup, pop_windows_array, 5);
+    WIN_INIT(media_browser_popwin, MediaBrowserPopup, pop_windows_array, 6);
     // Register event for master
+    master->registerCameraMediaListFeedback(updateMediaList);
     master->registerCameraSettingFeedback(settingGetterFeedback);
     master->registerCameraStatusFeedback(statusGetterFeedback);
     master->registerCameraHWFeedback(hwGetterFeedback);
