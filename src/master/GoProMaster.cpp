@@ -13,6 +13,8 @@
 
 namespace fs = std::filesystem;
 
+extern std::shared_ptr<GlobalState> global_state;
+
 GoProMaster::GoProMaster() {
     t1 = std::thread(&GoProMaster::update, this);
     std::cout << "GoProMaster created" << std::endl;
