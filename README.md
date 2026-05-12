@@ -21,15 +21,15 @@ Tool for control multiple GoPro Cameras, The design is for above 100 cameras con
   - [x] Preset changer
   - [x] Monitor cameras information
   - [x] Modify GoPro Camera Setting
-  - [ ] Custom preset apply pipeline
-  - [ ] Sync custom preset setting to all
+  - [x] Custom preset apply pipeline
+  - [x] Sync custom preset setting to all
 * WebCam
   - [x] Change to WebCam Mode
 * Preview
   - [x] Display selected GoPro camera
   - [x] Change setting while in preview Popup window
 * Media
-  - [ ] One click pull latest media file
+  - [x] One click pull latest media file
   - [ ] Media Browser for download and modify and delete etc...
 
 ## Screenshot

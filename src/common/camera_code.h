@@ -322,6 +322,7 @@ const static int32_t GOPRO_MEDIA_STATUS_IDS[] = {
 // Lookup functions
 inline const int32_t GET_SETTING_SIZE_BY_ID(int32_t x) {
     switch(x) {
+        case DENOISE_ID                     : return DENOISE_SIZE;
         case BURST_OUTPUT_ID                : return BURST_OUTPUT_SIZE;
         case PHOTO_BURST_RATE_ID            : return PHOTO_BURST_RATE_SIZE;
         case ISO_MIN_BURST_ID               : return ISO_MIN_BURST_SIZE;
@@ -393,6 +394,7 @@ inline const int32_t GET_SETTING_SIZE_BY_ID(int32_t x) {
 
 inline const int32_t GET_SETTING_AVA_BY_ID(int32_t x) {
     switch(x) {
+        case DENOISE_ID                     : return DENOISE_AVA;
         case BURST_OUTPUT_ID                : return BURST_OUTPUT_AVA;
         case PHOTO_BURST_RATE_ID            : return PHOTO_BURST_RATE_AVA;
         case ISO_MIN_BURST_ID               : return ISO_MIN_BURST_AVA;
@@ -464,6 +466,7 @@ inline const int32_t GET_SETTING_AVA_BY_ID(int32_t x) {
 
 inline const char* GET_SETTING_NAME_BY_ID(int32_t x) {
     switch(x) {
+        case DENOISE_ID                     : return DENOISE_NAME;
         case BURST_OUTPUT_ID                : return BURST_OUTPUT_NAME;
         case PHOTO_BURST_RATE_ID            : return PHOTO_BURST_RATE_NAME;
         case ISO_MIN_BURST_ID               : return ISO_MIN_BURST_NAME;
@@ -535,6 +538,7 @@ inline const char* GET_SETTING_NAME_BY_ID(int32_t x) {
 
 inline const char** GET_SETTING_STRING_BY_ID(int32_t x) {
     switch(x) {
+        case DENOISE_ID                     : return DENOISE_STRING;
         case BURST_OUTPUT_ID                : return BURST_OUTPUT_STRING;
         case PHOTO_BURST_RATE_ID            : return PHOTO_BURST_RATE_STRING;
         case ISO_MIN_BURST_ID               : return ISO_MIN_BURST_STRING;
@@ -606,6 +610,7 @@ inline const char** GET_SETTING_STRING_BY_ID(int32_t x) {
 
 inline const int32_t* GET_SETTING_VALUE_BY_ID(int32_t x) {
     switch(x) {
+        case DENOISE_ID                     : return DENOISE_VALUE;
         case BURST_OUTPUT_ID                : return BURST_OUTPUT_VALUE;
         case PHOTO_BURST_RATE_ID            : return PHOTO_BURST_RATE_VALUE;
         case ISO_MIN_BURST_ID               : return ISO_MIN_BURST_VALUE;
@@ -677,6 +682,7 @@ inline const int32_t* GET_SETTING_VALUE_BY_ID(int32_t x) {
 
 inline const int32_t* GET_SETTING_SUPPORT_BY_ID(int32_t x) {
     switch(x) {
+        case DENOISE_ID                     : return DENOISE_SUPPORT;
         case BURST_OUTPUT_ID                : return BURST_OUTPUT_SUPPORT;
         case PHOTO_BURST_RATE_ID            : return PHOTO_BURST_RATE_SUPPORT;
         case ISO_MIN_BURST_ID               : return ISO_MIN_BURST_SUPPORT;

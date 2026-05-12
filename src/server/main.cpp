@@ -24,10 +24,7 @@
 #include "hv/hsocket.h"
 #include "GoProController.h"
 
-///
-/// All the master websocket instances
-///
-std::vector<const WebSocketChannelPtr*> hosts = std::vector<const WebSocketChannelPtr*>();
+
 ///
 /// Main worker, HERO is here
 ///
@@ -236,6 +233,10 @@ void QueryAction(const WebSocketChannelPtr& channel, json j){
         }
         channel->send(getPacket("query:set", r));
     }
+    else if(name == "setall_cancel"){
+        controller.setSettingCancelAll();
+        channel->send(getPacket("query:setall_cancel", r));
+    }
     else if(name == "setall"){
         resultText = controller.setSettingAll(source, target, preset, jvalue);
         if(json::accept(resultText)){
@@ -336,9 +337,11 @@ void MediaAction(const WebSocketChannelPtr& channel, json j){
     std::string target = "";
     std::string name = "";
     std::string item = "";
+    std::string path = "";
     std::string ip = "";
     std::string dir = "";
     std::string filename = "";
+    std::vector<std::string> filenames = std::vector<std::string>();
     bool local = true;
     json r = json::object();
     
@@ -351,6 +354,9 @@ void MediaAction(const WebSocketChannelPtr& channel, json j){
     if(j["item"].is_string()){
         item = j["item"].get<std::string>();
     }
+    if(j["path"].is_string()){
+        path = j["path"].get<std::string>();
+    }
     if(j["ip"].is_string()){
         ip = j["ip"].get<std::string>();
     }
@@ -360,11 +366,19 @@ void MediaAction(const WebSocketChannelPtr& channel, json j){
     if(j["filename"].is_string()){
         filename = j["filename"].get<std::string>();
     }
+    if(j["filenames"].is_array()){
+        for(size_t i = 0; i < j["filenames"].size(); i++){
+            if(j["filenames"][i].is_string()){
+                filenames.push_back(j["filenames"][i].get<std::string>());
+            }
+        }
+    }
     if(j["local"].is_boolean()){
         local = j["local"].get<bool>();
     }
 
     if(name == "lastmedia"){
+        controller.keep_alive("");
         resultText = controller.getLastMedia(target);
         if(json::accept(resultText)){
             r["data"] = json::parse(resultText);
@@ -372,8 +386,7 @@ void MediaAction(const WebSocketChannelPtr& channel, json j){
             r["data"] = json::array();
         }
         channel->send(getPacket("media:lastmedia", r));
-    }
-    else if(name == "url"){
+    }else if(name == "url"){
         // Download the media one at the time... thanks
         std::lock_guard<std::mutex> lock(download_mtx);
         r["local"] = local;
@@ -382,11 +395,49 @@ void MediaAction(const WebSocketChannelPtr& channel, json j){
         r["filename"] = filename;
         r["path"] = controller.getFetchURL(ip, local);
         channel->send(getPacket("media:url", r));
+    }else if(name == "list"){
+        resultText = controller.getMediaList(target);
+        if(json::accept(resultText)){
+            r["data"] = json::parse(resultText);
+        }else{
+            r["data"] = json::array();
+        }
+        channel->send(getPacket("media:list", r));
+    }else if(name == "thumbnail"){
+        r["local"] = local;
+        r["data"] = controller.getThumbnailData(ip, path, local);
+        channel->send(getPacket("media:thumbnail", r));
+    }else if(name == "info"){
+        r["local"] = local;
+        r["data"] = controller.getMediaInfoData(ip, path, local);
+        channel->send(getPacket("media:info", r));
+    }else if(name == "d_single"){
+        std::lock_guard<std::mutex> lock(download_mtx);
+        r["local"] = local;
+        r["item"] = item;
+        r["dir"] = dir;
+        r["filename"] = filename;
+        r["path"] = controller.getSingleFetchURL(ip, filename, local);
+        channel->send(getPacket("media:d_single", r));
+    }else if(name == "d_all"){
+        std::lock_guard<std::mutex> lock(download_mtx);
+        std::vector<std::pair<std::string, std::string>> results = controller.getAllFetchURL(ip, filenames, local);
+        r["local"] = local;
+        r["item"] = item;
+        r["dir"] = dir;
+        r["filenames"] = filenames;
+        r["paths"] = json::array();
+        for(size_t i = 0; i < results.size(); i++){
+            json buffer = json::object();
+            buffer["filename"] = results.at(i).first;
+            buffer["path"] = results.at(i).second;
+            r["paths"].push_back(buffer);
+        }
+        channel->send(getPacket("media:d_all", r));
     }else{
         channel->send(getPacket("media:unknown", r));
     }
 }
-
 
 void PreviewAction(const WebSocketChannelPtr& channel, json j){
     std::string target = "";
@@ -422,7 +473,6 @@ void WebsocketServer(){
     ws.onopen = [&](const WebSocketChannelPtr& channel, const HttpRequestPtr& req) {
         std::lock_guard<std::mutex> lock(broadcast_mtx);
         printf("Client connected: %s\n", channel->peeraddr().c_str());
-        hosts.push_back(&channel);
 
         int32_t f = -1;
         for(int32_t i = 0; i < broadcast_addrs.size(); i++){
@@ -487,14 +537,6 @@ void WebsocketServer(){
     ws.onclose = [&](const WebSocketChannelPtr& channel) {
         std::lock_guard<std::mutex> lock(broadcast_mtx);
         printf("Client disconnected: %s\n", channel->peeraddr().c_str());
-        for(int32_t i = 0; i < hosts.size(); i++){
-            bool find = std::strcmp(hosts[i]->get()->peeraddr().c_str(),
-            channel->peeraddr().c_str());
-            if(find){
-                hosts.erase(hosts.begin() + i);
-                break;
-            }
-        }
         
         int32_t f = -1;
         for(int32_t i = 0; i < broadcast_addrs.size(); i++){
@@ -595,8 +637,10 @@ int main() {
 
     controller.update();
 
+    
     t3.join();
     t2.join();
     t1.join();
     return 0;
 }
+

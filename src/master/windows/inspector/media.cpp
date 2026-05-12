@@ -38,11 +38,17 @@ void InspectorWindow::draw_media_global(){
     ImVec2 button_size = ImVec2(size.x / 2.0F - style.ItemSpacing.x, 0);
     ImVec2 button3_size = ImVec2(size.x / 3.0F - style.ItemSpacing.x, 0);
 
-    int32_t camera_ip = master->findCamera(state->current_camera_item);
+    DownloadMediaParameters params;
+    params.dir = state->current_download_location;
+    params.put_finish = put_finish;
+    params.type = media_name_rule_type;
+    params.c_count = media_name_character_count;
+
+    int32_t camera_ip = master->findCamera(state->current_camera_server, state->current_camera_item);
     if(ImGui::InputText("Media Download", &state->current_download_location)){
         state->update_server();
     }
-    if(ImGui::Button("All Download", button_size)){
+    if(ImGui::Button("All Download", button3_size)){
         std::string buffer = state->current_download_location;
         while(buffer.size() > 0 && buffer.at(buffer.size() - 1) == '/'){
             buffer.pop_back();
@@ -53,12 +59,13 @@ void InspectorWindow::draw_media_global(){
                 buffer.append("/" + date);
             }
             fs::create_directories(buffer);
-            master->download_last_media(buffer, put_finish);
+            params.dir = buffer;
+            master->download_last_media("", params);
         }
     }
     if(ImGui::IsItemHovered()) ImGui::SetTooltip("Download all exist camera instances");
     ImGui::SameLine();
-    if(ImGui::Button("Single Download", button_size)){
+    if(ImGui::Button("Single Download", button3_size)){
         std::string buffer = state->current_download_location;
         while(buffer.size() > 0 && buffer.at(buffer.size() - 1) == '/'){
             buffer.pop_back();
@@ -69,8 +76,13 @@ void InspectorWindow::draw_media_global(){
                 buffer.append("/" + date);
             }
             fs::create_directories(buffer);
-            master->download_last_media(state->current_camera_item, buffer, put_finish);
+            params.dir = buffer;
+            master->download_last_media(state->current_camera_item, params);
         }
+    }
+    ImGui::SameLine();
+    if(ImGui::Button("Media Browser", button3_size)){
+        state->command_sender("media_browser");
     }
     if(ImGui::IsItemHovered()) ImGui::SetTooltip("Download current select camera instance");
 
@@ -92,6 +104,28 @@ void InspectorWindow::draw_media_global(){
     }
     if(ImGui::Checkbox("Added Finish File", &put_finish)){
         state->update_server();
+    }
+
+    const char* selection = MEDIA_DOWNLOAD_TYPE_STRING[media_name_rule_type];
+    if(ImGui::BeginCombo("Media Name Rule", selection)){
+        for(int32_t i = 0; i < MEDIA_DOWNLOAD_TYPE_SIZE; i++){
+            bool selected = (media_name_rule_type == i);
+            if(ImGui::Selectable(MEDIA_DOWNLOAD_TYPE_STRING[i], selected)){
+                media_name_rule_type = i;
+                state->update_server();
+            }
+            if(selected){
+                ImGui::SetItemDefaultFocus();
+            }
+        }
+        ImGui::EndCombo();
+    }
+
+    if(media_name_rule_type > 0){
+        if(ImGui::InputInt("Character Count", &media_name_character_count, 1, 5)){
+            if(media_name_character_count < 1) media_name_character_count = 1;
+            state->update_server();
+        }
     }
 
     if(ImGui::IsItemHovered()) ImGui::SetTooltip("Open file explorer for path select directory");

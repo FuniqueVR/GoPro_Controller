@@ -49,6 +49,8 @@ json InspectorWindow::get_window_data() {
     json data = json::object();
     data["put_finish"] = put_finish;
     data["create_date_folder"] = create_date_folder;
+    data["media_name_rule_type"] = media_name_rule_type;
+    data["media_name_character_count"] = media_name_character_count;
     data["current_download_location"] = state->current_download_location;
     data["setting_order"] = json::object();
     data["status_order"] = json::object();
@@ -74,6 +76,15 @@ void InspectorWindow::set_window_data(json data) {
     if(data["create_date_folder"].is_boolean()){
         create_date_folder = data["create_date_folder"].get<bool>();
     }
+    if(data["media_name_rule_type"].is_number()){
+        media_name_rule_type = data["media_name_rule_type"].get<int32_t>();
+    }
+    if(data["media_name_character_count"].is_number()){
+        media_name_character_count = data["media_name_character_count"].get<int32_t>();
+    }
+    if(data["put_finish"].is_number()){
+        put_finish = data["put_finish"].get<int32_t>();
+    }
     if(data["current_download_location"].is_string()){
         state->current_download_location = data["current_download_location"].get<std::string>();
     }
@@ -98,11 +109,10 @@ void InspectorWindow::set_window_data(json data) {
 void InspectorWindow::render(){
     ImGui::Begin("Inspector", &enable, w_flag);
     {
-        std::lock_guard<std::mutex> lock(master->camera_mtx);
-        int32_t s = master->findCamera(state->current_camera_item);
+        int32_t s = master->findCamera(state->current_camera_server, state->current_camera_item);
         if(s != -1){
-            auto& c = master->getCameras().at(s);
-            should_disabled = !c->connected || state->current_camera_item.size() < 10 || s == -1 || !state->current_setting_items_bind;
+            CameraInfo c = master->getCamera_Clone(s);
+            should_disabled = !c.connected || state->current_camera_item.size() < 10 || s == -1 || !state->current_setting_items_bind;
         }
         draw_header();
 
@@ -138,12 +148,21 @@ void InspectorWindow::render(){
                 ImGui::EndDisabled();
 
                 ImGui::SameLine();
-                ImGui::BeginDisabled(should_disabled || state->applying_all);
-                if(ImGui::Button("Quick Apply All##Inspector_Bar_Item")){
-                    if(s != -1){
-                        const std::shared_ptr<CameraInfo>& c = master->getCameras().at(s);
-                        master->quickApplyAll(c);
-                        state->applying_all = true;
+                ImGui::BeginDisabled(should_disabled);
+                if(state->applying_all){
+                    if(ImGui::Button("Stop Apply All##Inspector_Bar_Item")){
+                        if(s != -1){
+                            const CameraInfo c = master->getCamera_Clone(s);
+                            master->stopApplyAll(c);
+                        }
+                    }
+                }else{
+                    if(ImGui::Button("Quick Apply All##Inspector_Bar_Item")){
+                        if(s != -1){
+                            const CameraInfo c = master->getCamera_Clone(s);
+                            master->quickApplyAll(c);
+                            state->applying_all = true;
+                        }
                     }
                 }
                 ImGui::EndDisabled();

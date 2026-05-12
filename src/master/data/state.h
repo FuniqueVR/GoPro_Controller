@@ -6,6 +6,8 @@
 */
 #pragma once
 #include <string>
+#include <mutex>
+#include <SDL3/SDL.h>
 #include <nlohmann/json.hpp>
 
 using json = nlohmann::json;
@@ -17,8 +19,17 @@ enum class InspectorObjectType {
     Camera
 };
 
+struct MediaInfo {
+    std::string filename;
+    uint32_t created;
+    uint32_t modified;
+    size_t size;
+};
+
 struct GlobalState {
+    SDL_Renderer* m_renderer;
     bool done;
+    int32_t applying_all_count = 0;
     bool applying_all;
     // Selection
     std::string websocket_server_selection;
@@ -28,6 +39,8 @@ struct GlobalState {
     // Current select camera setting
     std::string current_camera_name = "";
     std::string current_download_location = "";
+    std::mutex media_list_mtx;
+    std::vector<MediaInfo> current_media_list = std::vector<MediaInfo>();
     json current_setting_items;
     bool current_setting_items_bind = false;
     json current_status_items;

@@ -206,6 +206,11 @@ inline size_t write_callback_pure(void* contents, size_t size, size_t nmemb, std
     return size * nmemb;
 }
 
+inline size_t write_callback_char(void* contents, size_t size, size_t nmemb, std::vector<u_char>* userp) {
+    userp->insert(userp->end(), static_cast<u_char*>(contents), static_cast<u_char*>(contents) + size * nmemb);
+    return size * nmemb;
+}
+
 inline std::string GetRemoteIPBySerial(std::string serial){
     if(serial.size() < 3){
         std::cerr << "Serial string must be at least 3" << "\n";
@@ -255,6 +260,26 @@ inline std::string exec(std::string cmd, int64_t timeout = 1500L, int64_t connec
     }
 
     return result;
+}
+
+inline std::vector<u_char> exec_byte(std::string cmd, int64_t timeout = 1500L, int64_t connection_timeout = 1000L){
+    CURL* curl = curl_easy_init();
+    std::vector<u_char> result = std::vector<u_char>();
+
+    if(curl) {
+        curl_easy_setopt(curl, CURLOPT_URL, cmd.c_str());
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback_char);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &result);
+        curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, timeout);
+        curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT_MS, connection_timeout);
+        CURLcode res = curl_easy_perform(curl);
+        
+        curl_easy_cleanup(curl);
+    }else{
+        std::cerr << "[Error] iphelper.h, Curl init failed" << std::endl;
+    }
+
+    return std::move(result);
 }
 
 inline std::vector<std::string> execs(std::vector<std::string> cmds) {

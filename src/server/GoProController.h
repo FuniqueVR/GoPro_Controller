@@ -222,6 +222,7 @@ public:
     /// }]
     ///
     std::string setSettingAll(const std::string source, const std::string target, int32_t preset, json value);
+    void setSettingCancelAll();
 #pragma endregion
 
 #pragma region Webcam part of calls
@@ -329,6 +330,10 @@ public:
     /// - target
     ///
     std::string getFetchURL(std::string target_ip, bool is_local);
+    std::string getSingleFetchURL(std::string target_ip, const std::string filename, bool is_local);
+    std::vector<std::pair<std::string, std::string>> getAllFetchURL(std::string target_ip, std::vector<std::string> filenames, bool is_local);
+    std::string getThumbnailData(std::string target_ip, std::string path, bool is_local);
+    std::string getMediaInfoData(std::string target_ip, std::string path, bool is_local);
 #pragma endregion
 #pragma endregion
 
@@ -404,12 +409,18 @@ protected:
     // Utility calls
     SingleResponse _getSingleResponse(std::string target, std::string suffix);
     std::vector<SingleResponse> _getAllResponse(std::vector<std::string> targets, std::string suffix);
-
+    std::string base64_encode(const std::vector<u_char>& data);
+    
     int32_t _get_current_model(json hwinfo);
 #pragma endregion
 
 private:
 #pragma region private variable
+    ///
+    /// State of current server
+    /// Is applying something
+    ///
+    std::atomic<bool> applying_cancel  = false;
     ///
     /// The handle for mdns service manager
     ///
