@@ -48,11 +48,11 @@ void PreviewPopup::set_window_data(json data){
     }
 }
 
-void PreviewPopup::register_setting_drawer(std::function<void(std::shared_ptr<GlobalState>& state, std::shared_ptr<GoProMaster>& master, const std::shared_ptr<CameraInfo>& c)> caller){
+void PreviewPopup::register_setting_drawer(std::function<void(std::shared_ptr<GlobalState>& state, std::shared_ptr<GoProMaster>& master, const CameraInfo& c)> caller){
     setting_drawer = caller;
 }
 
-void PreviewPopup::register_protune_drawer(std::function<void(std::shared_ptr<GlobalState>& state, std::shared_ptr<GoProMaster>& master, const std::shared_ptr<CameraInfo>& c)> caller){
+void PreviewPopup::register_protune_drawer(std::function<void(std::shared_ptr<GlobalState>& state, std::shared_ptr<GoProMaster>& master, const CameraInfo& c)> caller){
     protune_drawer = caller;
 }
 
@@ -115,7 +115,7 @@ void PreviewPopup::_draw_rotation_button(){
 void PreviewPopup::_draw_camera_selection(){
     int32_t s = -1;
     std::lock_guard<std::mutex> lock(master->camera_mtx);
-    s = master->findCamera(state->preview_ip);
+    s = master->findCamera(state->preview_server, state->preview_ip);
     if(s != -1){
         const std::shared_ptr<CameraInfo>& c = master->getCameras().at(s);
         std::string display_name = c->name;
@@ -162,10 +162,9 @@ void PreviewPopup::_draw_bottom_button(){
 void PreviewPopup::_draw_setting(){
     if(setting_drawer != NULL){
         int32_t s = -1;
-        std::lock_guard<std::mutex> lock(master->camera_mtx);
-        s = master->findCamera(state->preview_ip);
+        s = master->findCamera(state->preview_server, state->preview_ip);
         if(s != -1){
-            const std::shared_ptr<CameraInfo>& c = master->getCameras().at(s);
+            const CameraInfo c = master->getCamera_Clone(s);
             if(ImGui::Button("Quick Apply All##Preview_Popwin_Action")){
                 state->applying_all = true;
                 master->quickApplyAll(c);

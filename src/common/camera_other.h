@@ -3,9 +3,9 @@
 #define CAMERA_OTHER
 #include <cinttypes>
 
+#pragma region GoPro Mode
 #define GOPRO_MODE_SIZE 9
 #define GOPRO_MODE_NAME "Webcam Mode"
-
 const static char* GOPRO_MODE_STRING[] = {
     "Video",
     "Photo Burst",
@@ -17,7 +17,6 @@ const static char* GOPRO_MODE_STRING[] = {
     "Timelapse Video",
     "Timelapse Night Video",
 };
-
 const static int32_t GOPRO_MODE_VALUE[] = {
     0, // Video
     65538, // Photo Burst
@@ -29,6 +28,20 @@ const static int32_t GOPRO_MODE_VALUE[] = {
     131073, // Timelapse Video
     131074, // Timelapse Night Video
 };
+#pragma endregion
+
+#pragma region Media Download Type
+#define MEDIA_DOWNLOAD_TYPE_SIZE 3
+#define MEDIA_DOWNLOAD_TYPE_NAME "Media Download Type"
+const static char* MEDIA_DOWNLOAD_TYPE_STRING[] = {
+    "All",
+    "Front Chars",
+    "Back Chars"
+};
+const static int32_t MEDIA_DOWNLOAD_TYPE_VALUE[] = {
+    0, 1, 2
+};
+#pragma endregion
 
 #define WEBCAM_START_RES_SIZE 3
 #define WEBCAM_START_RES_NAME "Webcam Resolution"

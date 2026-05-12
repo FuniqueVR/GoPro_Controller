@@ -3,7 +3,7 @@
 ; Non-commercial use only
 
 #define MyAppName "GoPro Server"
-#define MyAppVersion "0.1.3"
+#define MyAppVersion "1.0.6"
 #define MyAppPublisher "Elly"
 #define MyAppURL "https://github.com/Elly2018/GoPro_Controller"
 #define MyAppExeName "go-pro-server.exe"

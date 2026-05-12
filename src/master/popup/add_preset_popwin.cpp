@@ -45,7 +45,7 @@ void AddPresetPopup::save_preset(){
     json status = json::object();
     json setting = json::object();
     json data = json::object();
-    int32_t t = master->findCamera(state->current_camera_item);
+    int32_t t = master->findCamera(state->current_camera_server, state->current_camera_item);
     if(t < 0) return;
     std::lock_guard lock(master->camera_mtx);
     const std::shared_ptr<CameraInfo>& c = master->getCameras().at(t);
