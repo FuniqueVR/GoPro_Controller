@@ -32,6 +32,7 @@ const static char* VIDEO_RESOLUTION_STRING[] = {
     "4K 1:1",
     "900",
     "4K SPH",
+    "8K V2",
     "5.3K",
     "5.3K 8:7 V2",
     "4K 8:7 V2",
@@ -61,6 +62,7 @@ const static int32_t VIDEO_RESOLUTION_VALUE[] = {
     37, // 4K 1:1
     38, // 900
     39, // 4K SPH
+    40, // 8K V2
     100,// 5.3K
     107, // 5.3K 8:7 V2
     108, // 4K 8:7 V2
@@ -90,6 +92,7 @@ const static int32_t VIDEO_RESOLUTION_SUPPORT[] = {
     MODEL_13, // 4K 1:1
     MODEL_13, // 900
     MODEL_MISSION|MODEL_MAX2, // 4K SPH
+    MODEL_MISSION, // 8K V2
     MODEL_13_ALL, // 5.3K
     MODEL_13|MODEL_12, // 5.3K 8:7 V2
     MODEL_13|MODEL_12, // 4K 8:7 V2
