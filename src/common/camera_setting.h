@@ -142,6 +142,10 @@ const static int32_t VIDEO_RESOLUTION_RES[][2] = {
 #define FRAMES_PER_SECOND_NAME "Frames Per Second"
 #define FRAMES_PER_SECOND_AVA MODEL_MISSION_ALL
 const static char* FRAMES_PER_SECOND_STRING[] = {
+    "960.0",
+    "800.0",
+    "480.0",
+    "400.0",
     "240.0",
     "120.0",
     "100.0",
@@ -157,6 +161,10 @@ const static char* FRAMES_PER_SECOND_STRING[] = {
     "300.0",
 };
 const static int32_t FRAMES_PER_SECOND_VALUE[] = {
+    19, // 960.0
+    20, // 800.0
+    18, // 480.0
+    15, // 400.0
     0, // 240.0
     1, // 120.0
     2, // 100.0
@@ -172,6 +180,10 @@ const static int32_t FRAMES_PER_SECOND_VALUE[] = {
     17, // 300.0
 };
 const static int32_t FRAMES_PER_SECOND_SUPPORT[] = {
+    MODEL_MISSION, // 960.0
+    MODEL_MISSION, // 800.0
+    MODEL_MISSION, // 480.0
+    MODEL_MISSION, // 400.0
     MODEL_13_ALL, // 240.0
     MODEL_13_ALL, // 120.0
     MODEL_MISSION_ALL, // 100.0
