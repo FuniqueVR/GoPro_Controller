@@ -9,7 +9,7 @@
 
 #pragma region Resolution
 #define VIDEO_RESOLUTION_ID 2
-#define VIDEO_RESOLUTION_SIZE 27
+#define VIDEO_RESOLUTION_SIZE 29
 #define VIDEO_RESOLUTION_NAME "Video Resolution"
 #define VIDEO_RESOLUTION_AVA MODEL_MISSION_ALL
 const static char* VIDEO_RESOLUTION_STRING[] = {
@@ -72,7 +72,7 @@ const static int32_t VIDEO_RESOLUTION_VALUE[] = {
     110, // 1080 9:16 V2
     111, // 2.7K 4:3 V2
     112, // 4K 4:3 V2
-    113// 5.3K 4:3 V
+    113, // 5.3K 4:3 V
 };
 const static int32_t VIDEO_RESOLUTION_SUPPORT[] = {
     MODEL_MISSION_ALL, // 4K
@@ -102,37 +102,39 @@ const static int32_t VIDEO_RESOLUTION_SUPPORT[] = {
     MODEL_MISSION|MODEL_MAX2|MODEL_13|MODEL_12, // 4K 9:16 V2
     MODEL_MISSION|MODEL_MAX2|MODEL_13|MODEL_12, // 1080 9:16 V2
     MODEL_13|MODEL_12, // 2.7K 4:3 V2
-    MODEL_13|MODEL_12, // 4K 4:3 V2
+    MODEL_MISSION|MODEL_13|MODEL_12, // 4K 4:3 V2
     MODEL_13 // 5.3K 4:3 V
 };
 const static int32_t VIDEO_RESOLUTION_RES[][2] = {
-    {3840, 2160},
-    {2704, 1520},
-    {2704, 2028},
-    {1920, 1440},
-    {1920, 1080},
-    {1280, 720}, 
-    {3840, 2880},
-    {5568, 3128},
-    {5120, 2880},
-    {5120, 3840},
-    {5312, 4648},
-    {5312, 3984},
-    {4000, 3500},
-    {7680, 4320},
-    {5312, 2272},
-    {3840, 1645},
-    {3840, 3840},
-    {1600, 900}, 
-    {3840, 1920},
-    {5312, 2988},
-    {5312, 4648},
-    {4000, 3500},
-    {2160, 3840},
-    {1080, 1920},
-    {2704, 2028},
-    {3840, 2880},
-    {5312, 3984} 
+    {3840, 2160},  // 4K
+    {2704, 1520},  // 2.7K
+    {2704, 2028},  // 2.7K 4:3
+    {1920, 1440},  // 1440
+    {1920, 1080},  // 1080
+    {1280, 720},   // 720
+    {3840, 2880},  // 4K 4:3
+    {5568, 3128},  // 5.6K
+    {5120, 2880},  // 5K
+    {5120, 3840}, // 5K 4:3
+    {5312, 4648},  // 5.3K 8:7
+    {5312, 3984},  // 5.3K 4:3
+    {4000, 3500},  // 4K 8:7
+    {7680, 4320},  // 8K
+    {5312, 2272},  // 5.3K 21:9
+    {3840, 1645},  // 4K 21:9
+    {3840, 3840},  // 4K 1:1
+    {1600, 900},   // 900
+    {3840, 1920},  // 4K SPH
+    {7680, 4320},  // 8K V2
+    {1920, 1440},  // 1440 V2
+    {5312, 2988}, // 5.3K
+    {5312, 4648},  // 5.3K 8:7 V2
+    {4000, 3500},  // 4K 8:7 V2
+    {2160, 3840},  // 4K 9:16 V2
+    {1080, 1920},  // 1080 9:16 V2
+    {2704, 2028},  // 2.7K 4:3 V2
+    {3840, 2880}, // 4K 4:3 V2
+    {5312, 3984}, // 5.3K 4:3 V
 };
 #pragma endregion
 
@@ -2312,7 +2314,7 @@ const static int32_t ISO_MIN_VIDEO_SUPPORT[] = {
 
 #pragma region ISO Max Video
 #define ISO_MAX_VIDEO_ID 13
-#define ISO_MAX_VIDEO_SIZE 8
+#define ISO_MAX_VIDEO_SIZE 15
 #define ISO_MAX_VIDEO_NAME "ISO Maximum"
 #define ISO_MAX_VIDEO_AVA MODEL_MISSION_ALL
 const static char* ISO_MAX_VIDEO_STRING[] = {
@@ -2324,6 +2326,13 @@ const static char* ISO_MAX_VIDEO_STRING[] = {
     "200",
     "100",
     "Auto",
+    "25-6400",
+    "25-3200",
+    "25-1600",
+    "25-800",
+    "25-400",
+    "25-200",
+    "25-100",
 };
 const static int32_t ISO_MAX_VIDEO_VALUE[] = {
     0, // 6400
@@ -2334,6 +2343,13 @@ const static int32_t ISO_MAX_VIDEO_VALUE[] = {
     7, // 200
     8, // 100
     9, // Auto
+    101, // 25-6400
+    102, // 25-3200
+    103, // 25-1600
+    104, // 25-800
+    105, // 25-400
+    106, // 25-200
+    107, // 25-100
 };
 const static int32_t ISO_MAX_VIDEO_SUPPORT[] = {
     MODEL_MISSION_ALL, // 6400
@@ -2344,6 +2360,13 @@ const static int32_t ISO_MAX_VIDEO_SUPPORT[] = {
     MODEL_MISSION_ALL, // 200
     MODEL_MISSION_ALL, // 100
     MODEL_MISSION_ALL, // Auto
+    MODEL_MISSION, // 25-6400
+    MODEL_MISSION, // 25-3200
+    MODEL_MISSION, // 25-1600
+    MODEL_MISSION, // 25-800
+    MODEL_MISSION, // 25-400
+    MODEL_MISSION, // 25-200
+    MODEL_MISSION, // 25-100
 };
 #pragma endregion
 
@@ -2744,6 +2767,28 @@ const static int32_t PHOTO_BURST_RATE_SUPPORT[] = {
     MODEL_MISSION_ALL, // 5 Photos / 1 Second
     MODEL_MISSION_ALL, // 3 Photos / 1 Second
     MODEL_MISSION_ALL, // Auto
+};
+#pragma endregion
+
+#pragma region ISO Auto
+#define ISO_AUTO_ID 259
+#define ISO_AUTO_SIZE 3
+#define ISO_AUTO_NAME "ISO Auto"
+#define ISO_AUTO_AVA MODEL_MISSION
+const static char* ISO_AUTO_STRING[] = {
+    "Auto",
+    "Const",
+    "Range"
+};
+const static int32_t ISO_AUTO_VALUE[] = {
+    0,
+    1,
+    2,
+};
+const static int32_t ISO_AUTO_SUPPORT[] = {
+    MODEL_MISSION,
+    MODEL_MISSION,
+    MODEL_MISSION,
 };
 #pragma endregion
 
